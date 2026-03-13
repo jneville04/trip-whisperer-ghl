@@ -273,27 +273,29 @@ export default function ProposalPreview({ data }: Props) {
                       ];
                       return (
                         <motion.div key={acc.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
-                          {/* Main image */}
-                          {acc.imageUrl && (
-                            <div className="aspect-[16/9] overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, 0)}>
-                              <img src={acc.imageUrl} alt={acc.hotelName} className="w-full h-full object-cover" />
-                            </div>
-                          )}
-                          {!acc.imageUrl && (
-                            <div className="aspect-[16/9] bg-muted flex items-center justify-center">
-                              <BedDouble className="h-12 w-12 text-muted-foreground/30" />
-                            </div>
-                          )}
-                          {/* Gallery grid - show ALL gallery images */}
-                          {galleryUrls.length > 0 && (
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1">
-                              {galleryUrls.map((url, gi) => (
-                                <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, gi + 1)}>
-                                  <img src={url} alt={`${acc.hotelName} ${gi + 2}`} className="w-full h-full object-cover" />
-                                </div>
-                              ))}
-                            </div>
-                          )}
+                          {/* Main image + gallery in a compact grid */}
+                          <div className="grid grid-cols-3 md:grid-cols-4 gap-1">
+                            {acc.imageUrl && (
+                              <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, 0)}>
+                                <img src={acc.imageUrl} alt={acc.hotelName} className="w-full h-full object-cover" />
+                              </div>
+                            )}
+                            {!acc.imageUrl && (
+                              <div className="col-span-2 row-span-2 aspect-[4/3] bg-muted flex items-center justify-center">
+                                <BedDouble className="h-10 w-10 text-muted-foreground/30" />
+                              </div>
+                            )}
+                            {galleryUrls.slice(0, 6).map((url, gi) => (
+                              <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, gi + 1)}>
+                                <img src={url} alt={`${acc.hotelName} ${gi + 2}`} className="w-full h-full object-cover" />
+                              </div>
+                            ))}
+                            {galleryUrls.length > 6 && (
+                              <div className="aspect-[4/3] bg-muted/60 flex items-center justify-center cursor-pointer rounded-sm" onClick={() => openLightbox(allAccImages, 7)}>
+                                <span className="text-sm font-body font-semibold text-muted-foreground">+{galleryUrls.length - 6} more</span>
+                              </div>
+                            )}
+                          </div>
                           <div className="p-6 sm:p-8">
                             <div className="flex items-start justify-between mb-3">
                               <div>
