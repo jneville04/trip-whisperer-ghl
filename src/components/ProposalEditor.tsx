@@ -547,10 +547,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                 </TabsContent>
               </Tabs>
               </div>
-              </CollapsibleContent>
-            </div>
-            )}
-            </Collapsible>
+            </CollapsibleHotel>
             );
           })}
           <div className="flex gap-2">
