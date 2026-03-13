@@ -333,20 +333,24 @@ export default function ProposalPreview({ data }: Props) {
                   <div className="space-y-16">
                     {data.days.map((day, dayIdx) => {
                       const dayImage = day.imageUrl || fallbackImages[dayIdx % fallbackImages.length];
+                      const allDayImages = [
+                        { src: dayImage, alt: day.title },
+                        ...(day.imageUrls || []).map((url, i) => ({ src: url, alt: `${day.title} ${i + 2}` })),
+                      ];
                       return (
                         <motion.div key={day.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} custom={0} className="grid grid-cols-1 lg:grid-cols-5 gap-8">
                           <div className={`lg:col-span-2 ${dayIdx % 2 === 1 ? "lg:order-2" : ""}`}>
                             <div className="space-y-2">
-                              <div className="relative rounded-2xl overflow-hidden aspect-[4/3] shadow-lg">
-                                <img src={dayImage} alt={day.title} className="w-full h-full object-cover" />
+                              <div className="relative rounded-2xl overflow-hidden aspect-[4/3] shadow-lg cursor-pointer" onClick={() => openLightbox(allDayImages, 0)}>
+                                <img src={dayImage} alt={day.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                                 <div className="absolute top-4 left-4 bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-sm font-body font-semibold">Day {dayIdx + 1}</div>
                               </div>
                               {/* Additional images grid */}
                               {(day.imageUrls || []).length > 0 && (
                                 <div className="grid grid-cols-2 gap-2">
                                   {(day.imageUrls || []).slice(0, 4).map((url, imgIdx) => (
-                                    <div key={imgIdx} className="rounded-xl overflow-hidden aspect-[4/3] shadow-md">
-                                      <img src={url} alt={`${day.title} ${imgIdx + 2}`} className="w-full h-full object-cover" />
+                                    <div key={imgIdx} className="rounded-xl overflow-hidden aspect-[4/3] shadow-md cursor-pointer" onClick={() => openLightbox(allDayImages, imgIdx + 1)}>
+                                      <img src={url} alt={`${day.title} ${imgIdx + 2}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                                     </div>
                                   ))}
                                 </div>
