@@ -56,7 +56,7 @@ interface Props {
   shareId?: string;
 }
 
-export default function ProposalPreview({ data }: Props) {
+export default function ProposalPreview({ data, shareId }: Props) {
   const navigate = useNavigate();
   const heroImage = data.heroImageUrl || heroFallback;
   const heroImages = data.heroImageUrls || [];
