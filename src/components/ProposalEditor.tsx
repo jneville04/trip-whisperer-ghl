@@ -691,7 +691,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                 </div>
                 <div className="col-span-2">
                   <FieldLabel>Special Requests</FieldLabel>
-                  <Textarea value={t.specialRequests} onChange={(e) => { const tr = [...travelers]; tr[i] = { ...tr[i], specialRequests: e.target.value }; update("travelers", tr); }} className="text-sm min-h-[60px]" placeholder="Wheelchair access, celebration, etc." />
+                  <Textarea value={t.specialRequests} onChange={(e) => { const tr = [...travelers]; tr[i] = { ...tr[i], specialRequests: e.target.value }; update("travelers", tr); }} className="text-sm min-h-[100px] resize-y" placeholder="Wheelchair access, celebration, etc." />
                 </div>
               </div>
             </div>
