@@ -145,11 +145,11 @@ export default function ProposalPreview({ data }: Props) {
           {/* Image Grid - Tern-style layout */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-1 max-h-[500px] overflow-hidden">
             {/* Main large image */}
-            <div className="md:col-span-2 aspect-[16/9] md:aspect-auto md:h-[500px] overflow-hidden cursor-pointer relative bg-muted/30 p-1 group" onClick={() => {
+            <div className="md:col-span-2 aspect-[16/9] md:aspect-auto md:h-[500px] overflow-hidden cursor-pointer relative group" onClick={() => {
               const allHeroImgs = [{ src: heroImage, alt: data.destination }, ...heroImages.map((u, i) => ({ src: u, alt: `${data.destination} ${i + 2}` }))];
               openLightbox(allHeroImgs, 0);
             }}>
-              <img src={heroImage} alt={data.destination} className="w-full h-full object-contain" />
+              <img src={heroImage} alt={data.destination} className="w-full h-full object-cover" />
             </div>
             {/* Side images */}
             <div className="hidden md:grid grid-rows-2 gap-1 h-[500px]">
