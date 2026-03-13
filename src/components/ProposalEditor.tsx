@@ -613,8 +613,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   <div className="grid grid-cols-3 gap-2 mt-1.5">
                     {/* Primary image */}
                     {day.imageUrl && (
-                      <div className="relative aspect-[4/3] rounded-lg overflow-hidden border border-border/40 bg-muted/30 p-1 group">
-                        <img src={day.imageUrl} alt="Primary" className="w-full h-full object-contain" />
+                      <div className="relative aspect-[4/3] rounded-lg overflow-hidden border border-border/40 group">
+                        <img src={day.imageUrl} alt="Primary" className="w-full h-full object-cover" />
                         <div className="absolute top-1 left-1 bg-primary text-primary-foreground text-[9px] font-semibold px-1.5 py-0.5 rounded">Main</div>
                         <button onClick={() => updateDay(dayIdx, { ...day, imageUrl: "" })} className="absolute top-1 right-1 bg-foreground/70 text-background rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                           <X className="h-3 w-3" />
