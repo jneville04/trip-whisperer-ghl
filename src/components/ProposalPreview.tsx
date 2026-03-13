@@ -179,7 +179,7 @@ export default function ProposalPreview({ data }: Props) {
               <h2 className="font-display text-4xl font-bold text-foreground">Air Travel</h2>
             </motion.div>
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {data.flights.map((flight) => (
+              {flights.map((flight) => (
                 <div key={flight.id} className="bg-background rounded-2xl border border-border/50 shadow-sm p-6 relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
                   <div className="flex items-center gap-2 mb-4">
