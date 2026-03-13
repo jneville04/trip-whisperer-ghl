@@ -735,7 +735,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
           </div>
           <div>
             <FieldLabel>Packing Tips</FieldLabel>
-            <RichTextEditor content={essentials.packingTips} onChange={(html) => update("essentials", { ...essentials, packingTips: html })} placeholder="Comfortable walking shoes, sun protection, light layers..." minHeight="80px" />
+            <RichTextEditor content={essentials.packingTips} onChange={(html) => update("essentials", { ...essentials, packingTips: html })} placeholder="Comfortable walking shoes, sun protection, light layers..." minHeight="120px" />
           </div>
           <div>
             <FieldLabel>Emergency Contacts</FieldLabel>
