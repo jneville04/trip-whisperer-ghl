@@ -58,6 +58,15 @@ interface Props {
 export default function ProposalPreview({ data }: Props) {
   const navigate = useNavigate();
   const heroImage = data.heroImageUrl || heroFallback;
+  const [lightboxImages, setLightboxImages] = useState<{ src: string; alt?: string }[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  const openLightbox = (images: { src: string; alt?: string }[], index: number = 0) => {
+    setLightboxImages(images);
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  };
   const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
   const brandData = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
