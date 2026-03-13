@@ -111,8 +111,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
   const updateFlight = (index: number, field: keyof FlightLeg, value: string) => {
     const f = [...(data.flights || [])];
-    flights[index] = { ...flights[index], [field]: value };
-    update("flights", flights);
+    f[index] = { ...f[index], [field]: value };
+    update("flights", f);
   };
 
   const updateAccommodation = (index: number, field: keyof Accommodation, value: string) => {
