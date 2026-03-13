@@ -254,13 +254,7 @@ export default function ProposalPreview({ data }: Props) {
                         <div>
                           <div className="flex items-center gap-2 mb-1">
                             <h3 className="font-display text-2xl font-bold text-foreground">{acc.hotelName || "Hotel"}</h3>
-                            {acc.starRating && (
-                              <div className="flex items-center gap-0.5">
-                                {[...Array(parseInt(acc.starRating) || 0)].map((_, si) => (
-                                  <Star key={si} className="h-3.5 w-3.5 fill-accent text-accent" />
-                                ))}
-                              </div>
-                            )}
+                          </div>
                           </div>
                           <p className="text-sm text-muted-foreground font-body flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {acc.location}</p>
                         </div>
