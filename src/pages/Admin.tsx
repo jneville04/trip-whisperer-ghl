@@ -254,6 +254,29 @@ function BrandingTab() {
         />
       </div>
 
+      <div className="border-t border-border/50 pt-6 mt-2">
+        <h3 className="font-display text-base font-semibold text-foreground mb-4">GHL Webhook Integration</h3>
+        <p className="text-xs text-muted-foreground font-body mb-4">Paste your GoHighLevel webhook URLs below. When a client approves or requests revisions, the data will be sent to these webhooks to trigger your GHL workflows.</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div>
+            <Label>Approve Webhook URL</Label>
+            <Input
+              value={(form as any).ghl_webhook_approve || ""}
+              onChange={(e) => setForm({ ...form, ghl_webhook_approve: e.target.value } as any)}
+              placeholder="https://services.leadconnectorhq.com/hooks/..."
+            />
+          </div>
+          <div>
+            <Label>Revision Webhook URL</Label>
+            <Input
+              value={(form as any).ghl_webhook_revision || ""}
+              onChange={(e) => setForm({ ...form, ghl_webhook_revision: e.target.value } as any)}
+              placeholder="https://services.leadconnectorhq.com/hooks/..."
+            />
+          </div>
+        </div>
+      </div>
+
       <Button variant="travel" onClick={handleSave} disabled={saving}>
         <Save className="h-4 w-4 mr-1" /> {saving ? "Saving..." : "Save Branding"}
       </Button>
