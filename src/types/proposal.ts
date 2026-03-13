@@ -92,6 +92,10 @@ export interface TermsAndConditions {
   travelInsurance: string;
   bookingTerms: string;
   liability: string;
+  showCancellation: boolean;
+  showInsurance: boolean;
+  showBookingTerms: boolean;
+  showLiability: boolean;
 }
 
 export type SectionKey = "overview" | "flights" | "accommodations" | "itinerary" | "inclusions" | "pricing" | "essentials" | "terms" | "agent";
