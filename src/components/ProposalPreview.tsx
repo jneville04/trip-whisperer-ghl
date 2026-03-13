@@ -171,7 +171,7 @@ export default function ProposalPreview({ data }: Props) {
       )}
 
       {/* FLIGHTS */}
-      {vis.flights && data.flights.length > 0 && (
+      {vis.flights && flights.length > 0 && (
         <section id="flights" className="py-20 bg-card">
           <div className="max-w-4xl mx-auto px-6">
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
