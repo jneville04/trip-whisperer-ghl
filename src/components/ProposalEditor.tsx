@@ -67,6 +67,37 @@ function CollapsibleSection({
   );
 }
 
+function CollapsibleHotel({
+  defaultOpen = false,
+  hotelName,
+  location,
+  onDelete,
+  children,
+}: {
+  defaultOpen?: boolean;
+  hotelName: string;
+  location?: string;
+  onDelete: () => void;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border border-border/40 rounded-lg bg-muted/20 overflow-hidden">
+      <div className="flex items-center justify-between px-3 py-2.5 bg-muted/40">
+        <button className="flex items-center gap-2 flex-1 text-left" onClick={() => setOpen(!open)}>
+          {open ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
+          <span className="font-body font-semibold text-sm text-foreground">{hotelName}</span>
+          {location && <span className="text-xs text-muted-foreground">· {location}</span>}
+        </button>
+        <Button variant="travel-ghost" size="icon" onClick={onDelete} className="h-7 w-7 text-destructive/60 hover:text-destructive">
+          <Trash2 className="h-3.5 w-3.5" />
+        </Button>
+      </div>
+      {open && children}
+    </div>
+  );
+}
+
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1 block font-body">{children}</label>;
 }
