@@ -504,9 +504,28 @@ export default function ProposalEditor({ data, onChange }: Props) {
             </div>
             );
           })}
-          <Button variant="travel-ghost" size="sm" onClick={() => update("accommodations", [...accommodations, createAccommodation()])} className="text-primary text-xs h-7">
-            <Plus className="h-3 w-3 mr-1" /> Add Hotel
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="travel-ghost" size="sm" onClick={() => update("accommodations", [...accommodations, createAccommodation()])} className="text-primary text-xs h-7">
+              <Plus className="h-3 w-3 mr-1" /> Add Hotel
+            </Button>
+            <HotelSearchDialog onSelect={(hotelData) => {
+              const newAcc = {
+                ...createAccommodation(),
+                hotelName: hotelData.hotelName,
+                location: hotelData.location,
+                description: hotelData.description,
+                starRating: hotelData.starRating,
+                amenities: hotelData.amenities,
+                highlights: hotelData.highlights,
+                imageUrl: hotelData.imageUrl,
+              };
+              update("accommodations", [...accommodations, newAcc]);
+            }}>
+              <Button variant="travel-outline" size="sm" className="text-xs h-7">
+                <Search className="h-3 w-3 mr-1" /> Search Hotels
+              </Button>
+            </HotelSearchDialog>
+          </div>
         </div>
       </CollapsibleSection>
 
