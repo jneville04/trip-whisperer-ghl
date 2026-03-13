@@ -312,50 +312,25 @@ export default function ProposalEditor({ data, onChange }: Props) {
           </div>
           <div>
             <FieldLabel>Hero Images</FieldLabel>
-            <div className="grid grid-cols-3 gap-2 mt-1.5">
-              {/* Primary hero image */}
-              {data.heroImageUrl && (
-                <div className="relative col-span-2 row-span-2 aspect-[16/9] rounded-lg overflow-hidden border border-border/40 group">
-                  <img src={data.heroImageUrl} alt="Primary hero" className="w-full h-full object-cover" />
-                  <div className="absolute top-1.5 left-1.5 bg-primary text-primary-foreground text-[10px] font-semibold px-1.5 py-0.5 rounded">Main Photo</div>
-                  <button onClick={() => update("heroImageUrl", "")} className="absolute top-1.5 right-1.5 bg-foreground/70 text-background rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              )}
-              {/* Additional hero images */}
-              {(data.heroImageUrls || []).map((url, i) => (
-                <div key={i} className="relative aspect-square rounded-lg overflow-hidden border border-border/40 group">
-                  <img src={url} alt={`Hero ${i + 2}`} className="w-full h-full object-cover" />
-                  <button onClick={() => update("heroImageUrls", (data.heroImageUrls || []).filter((_, j) => j !== i))} className="absolute top-1 right-1 bg-foreground/70 text-background rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ))}
-              {/* Upload button */}
-              <label className="aspect-square rounded-lg border-2 border-dashed border-border/60 flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary/50 hover:bg-muted/40 transition-colors">
-                <ImagePlus className="h-5 w-5 text-muted-foreground" />
-                <span className="text-[10px] text-muted-foreground font-medium">Add photo</span>
-                <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => {
-                  const files = e.target.files;
-                  if (!files) return;
+            <div className="mt-1.5">
+              <SortableImageGrid
+                primaryImage={data.heroImageUrl}
+                galleryImages={data.heroImageUrls || []}
+                onPrimaryChange={(url) => update("heroImageUrl", url)}
+                onGalleryChange={(urls) => update("heroImageUrls", urls)}
+                onUpload={(files) => {
                   Array.from(files).forEach((file) => {
                     const reader = new FileReader();
                     reader.onload = (ev) => {
                       const url = ev.target?.result as string;
-                      if (!data.heroImageUrl) {
-                        update("heroImageUrl", url);
-                      } else {
-                        update("heroImageUrls", [...(data.heroImageUrls || []), url]);
-                      }
+                      if (!data.heroImageUrl) { update("heroImageUrl", url); }
+                      else { update("heroImageUrls", [...(data.heroImageUrls || []), url]); }
                     };
                     reader.readAsDataURL(file);
                   });
-                  e.target.value = "";
-                }} />
-              </label>
+                }}
+              />
             </div>
-            {/* URL input */}
             <div className="flex gap-1.5 mt-1.5">
               <Input placeholder="Paste image URL..." className="h-7 text-xs flex-1" onKeyDown={(e) => {
                 if (e.key === "Enter") {
