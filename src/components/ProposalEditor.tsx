@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, Eye, EyeOff, ImagePlus, X, Star } from "lucide-react";
+import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, Eye, EyeOff, ImagePlus, X } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -314,7 +314,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
               updateAccField("galleryUrls", accGallery.filter((_: string, j: number) => j !== idx));
             };
 
-            const starRating = parseInt(acc.starRating || "0") || 0;
+            
 
             return (
             <div key={acc.id} className="border border-border/40 rounded-lg bg-muted/20 overflow-hidden">
@@ -322,13 +322,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
               <div className="flex items-center justify-between px-3 py-2.5 bg-muted/40 border-b border-border/30">
                 <div className="flex items-center gap-2">
                   <span className="font-body font-semibold text-sm text-foreground">{acc.hotelName || `Hotel ${i + 1}`}</span>
-                  <div className="flex items-center gap-0.5">
-                    {[1, 2, 3, 4, 5].map((s) => (
-                      <button key={s} onClick={() => updateAccField("starRating", String(s))} className="p-0">
-                        <Star className={`h-3 w-3 ${s <= starRating ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30"}`} />
-                      </button>
-                    ))}
-                  </div>
                 </div>
                 <Button variant="travel-ghost" size="icon" onClick={() => update("accommodations", accommodations.filter((_, idx) => idx !== i))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
                   <Trash2 className="h-3.5 w-3.5" />

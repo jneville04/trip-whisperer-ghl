@@ -146,11 +146,6 @@ export default function ProposalPreview({ data }: Props) {
               {data.destinationCount && <span className="flex items-center gap-1.5 bg-background/20 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-full text-sm font-body"><MapPin className="h-4 w-4" /> {data.destinationCount}</span>}
             </motion.div>
           </div>
-          <motion.div animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 2 }} className="absolute bottom-8 left-1/2 -translate-x-1/2">
-            <div className="w-6 h-10 rounded-full border-2 border-primary-foreground/50 flex justify-center pt-2">
-              <div className="w-1 h-2 rounded-full bg-primary-foreground/70" />
-            </div>
-          </motion.div>
         </section>
       )}
 
@@ -257,16 +252,7 @@ export default function ProposalPreview({ data }: Props) {
                     <div className="p-6 sm:p-8">
                       <div className="flex items-start justify-between mb-3">
                         <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-display text-2xl font-bold text-foreground">{acc.hotelName || "Hotel"}</h3>
-                            {acc.starRating && (
-                              <div className="flex items-center gap-0.5">
-                                {[...Array(parseInt(acc.starRating) || 0)].map((_, si) => (
-                                  <Star key={si} className="h-3.5 w-3.5 fill-accent text-accent" />
-                                ))}
-                              </div>
-                            )}
-                          </div>
+                          <h3 className="font-display text-2xl font-bold text-foreground mb-1">{acc.hotelName || "Hotel"}</h3>
                           <p className="text-sm text-muted-foreground font-body flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {acc.location}</p>
                         </div>
                         <BedDouble className="h-6 w-6 text-primary mt-1 shrink-0" />
@@ -434,9 +420,6 @@ export default function ProposalPreview({ data }: Props) {
         <section className="py-20">
           <div className="max-w-3xl mx-auto px-6 text-center">
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0}>
-              <div className="flex items-center justify-center gap-1 mb-4">
-                {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-accent text-accent" />)}
-              </div>
               <blockquote className="font-display text-xl sm:text-2xl italic text-foreground leading-relaxed">
                 "{data.testimonialQuote}"
               </blockquote>
