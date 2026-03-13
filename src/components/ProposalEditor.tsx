@@ -138,28 +138,28 @@ export default function ProposalEditor({ data, onChange }: Props) {
         <div className="space-y-3">
           <div>
             <FieldLabel>Logo URL</FieldLabel>
-            <Input value={data.brand.logoUrl} onChange={(e) => update("brand", { ...data.brand, logoUrl: e.target.value })} placeholder="Paste logo image URL" className="h-8 text-sm" />
+            <Input value={brand.logoUrl} onChange={(e) => update("brand", { ...brand, logoUrl: e.target.value })} placeholder="Paste logo image URL" className="h-8 text-sm" />
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
               <FieldLabel>Primary Color</FieldLabel>
               <div className="flex gap-2 items-center">
-                <input type="color" value={data.brand.primaryColor || "#c2631a"} onChange={(e) => update("brand", { ...data.brand, primaryColor: e.target.value })} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                <Input value={data.brand.primaryColor} onChange={(e) => update("brand", { ...data.brand, primaryColor: e.target.value })} placeholder="#c2631a" className="h-8 text-sm flex-1" />
+                <input type="color" value={brand.primaryColor || "#c2631a"} onChange={(e) => update("brand", { ...brand, primaryColor: e.target.value })} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                <Input value={brand.primaryColor} onChange={(e) => update("brand", { ...brand, primaryColor: e.target.value })} placeholder="#c2631a" className="h-8 text-sm flex-1" />
               </div>
             </div>
             <div>
               <FieldLabel>Secondary Color</FieldLabel>
               <div className="flex gap-2 items-center">
-                <input type="color" value={data.brand.secondaryColor || "#337a8a"} onChange={(e) => update("brand", { ...data.brand, secondaryColor: e.target.value })} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                <Input value={data.brand.secondaryColor} onChange={(e) => update("brand", { ...data.brand, secondaryColor: e.target.value })} placeholder="#337a8a" className="h-8 text-sm flex-1" />
+                <input type="color" value={brand.secondaryColor || "#337a8a"} onChange={(e) => update("brand", { ...brand, secondaryColor: e.target.value })} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                <Input value={brand.secondaryColor} onChange={(e) => update("brand", { ...brand, secondaryColor: e.target.value })} placeholder="#337a8a" className="h-8 text-sm flex-1" />
               </div>
             </div>
             <div>
               <FieldLabel>Accent Color</FieldLabel>
               <div className="flex gap-2 items-center">
-                <input type="color" value={data.brand.accentColor || "#d4a824"} onChange={(e) => update("brand", { ...data.brand, accentColor: e.target.value })} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                <Input value={data.brand.accentColor} onChange={(e) => update("brand", { ...data.brand, accentColor: e.target.value })} placeholder="#d4a824" className="h-8 text-sm flex-1" />
+                <input type="color" value={brand.accentColor || "#d4a824"} onChange={(e) => update("brand", { ...brand, accentColor: e.target.value })} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                <Input value={brand.accentColor} onChange={(e) => update("brand", { ...brand, accentColor: e.target.value })} placeholder="#d4a824" className="h-8 text-sm flex-1" />
               </div>
             </div>
           </div>

@@ -62,20 +62,20 @@ export default function ProposalPreview({ data }: Props) {
 
   const brandStyles = useMemo(() => {
     const styles: Record<string, string> = {};
-    if (data.brand.primaryColor) {
-      const hsl = hexToHsl(data.brand.primaryColor);
+    if (brandData.primaryColor) {
+      const hsl = hexToHsl(brandData.primaryColor);
       if (hsl) styles["--primary"] = hsl;
     }
-    if (data.brand.secondaryColor) {
-      const hsl = hexToHsl(data.brand.secondaryColor);
+    if (brandData.secondaryColor) {
+      const hsl = hexToHsl(brandData.secondaryColor);
       if (hsl) styles["--secondary"] = hsl;
     }
-    if (data.brand.accentColor) {
-      const hsl = hexToHsl(data.brand.accentColor);
+    if (brandData.accentColor) {
+      const hsl = hexToHsl(brandData.accentColor);
       if (hsl) styles["--accent"] = hsl;
     }
     return styles;
-  }, [data.brand]);
+  }, [brandData]);
 
   const navItems = useMemo(() => {
     const items: { label: string; id: string }[] = [];
