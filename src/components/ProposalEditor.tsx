@@ -418,7 +418,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       content={acc.description}
                       onChange={(html) => updateAccommodation(i, "description", html)}
                       placeholder="Describe the hotel, its atmosphere, unique features..."
-                      minHeight="150px"
+                      minHeight="180px"
                     />
                   </div>
                 </TabsContent>
