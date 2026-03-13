@@ -21,6 +21,8 @@ export type Database = {
           favicon_url: string | null
           font_body: string
           font_display: string
+          ghl_webhook_approve: string | null
+          ghl_webhook_revision: string | null
           id: number
           login_message: string | null
           logo_url: string | null
@@ -35,6 +37,8 @@ export type Database = {
           favicon_url?: string | null
           font_body?: string
           font_display?: string
+          ghl_webhook_approve?: string | null
+          ghl_webhook_revision?: string | null
           id?: number
           login_message?: string | null
           logo_url?: string | null
@@ -49,6 +53,8 @@ export type Database = {
           favicon_url?: string | null
           font_body?: string
           font_display?: string
+          ghl_webhook_approve?: string | null
+          ghl_webhook_revision?: string | null
           id?: number
           login_message?: string | null
           logo_url?: string | null
