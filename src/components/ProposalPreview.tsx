@@ -521,6 +521,7 @@ export default function ProposalPreview({ data }: Props) {
             return null;
         }
       })}
+      <Lightbox images={lightboxImages} initialIndex={lightboxIndex} open={lightboxOpen} onClose={() => setLightboxOpen(false)} />
     </div>
   );
 }
