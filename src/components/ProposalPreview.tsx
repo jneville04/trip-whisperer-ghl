@@ -252,10 +252,7 @@ export default function ProposalPreview({ data }: Props) {
                     <div className="p-6 sm:p-8">
                       <div className="flex items-start justify-between mb-3">
                         <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-display text-2xl font-bold text-foreground">{acc.hotelName || "Hotel"}</h3>
-                          </div>
-                          </div>
+                          <h3 className="font-display text-2xl font-bold text-foreground mb-1">{acc.hotelName || "Hotel"}</h3>
                           <p className="text-sm text-muted-foreground font-body flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {acc.location}</p>
                         </div>
                         <BedDouble className="h-6 w-6 text-primary mt-1 shrink-0" />
