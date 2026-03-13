@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, Accommodation } from "@/types/proposal";
+import RichTextEditor from "@/components/RichTextEditor";
+import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, Accommodation, SectionKey } from "@/types/proposal";
 import { createActivity, createDay, createPricingLine, createFlightLeg, createAccommodation, defaultSectionOrder } from "@/types/proposal";
-import type { SectionKey } from "@/types/proposal";
 
 interface Props {
   data: ProposalData;
@@ -125,14 +125,18 @@ export default function ProposalEditor({ data, onChange }: Props) {
   };
 
   const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
-  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, agent: true };
+  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
   const flights = data.flights || [];
   const accommodations = data.accommodations || [];
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
+  const travelers = data.travelers || [];
+  const essentials = data.essentials || { visaRequirements: "", passportInfo: "", currency: "", language: "", timeZone: "", weatherInfo: "", packingTips: "", emergencyContacts: "" };
+  const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "" };
 
   const sectionLabels: Record<SectionKey, string> = {
     overview: "🌍 Overview", flights: "✈️ Flights", accommodations: "🏨 Hotels",
-    itinerary: "📋 Itinerary", inclusions: "✅ Included", pricing: "💰 Pricing", agent: "🧑‍💼 Agent",
+    itinerary: "📋 Itinerary", inclusions: "✅ Included", pricing: "💰 Pricing",
+    essentials: "🧳 Essentials", terms: "📄 Terms", agent: "🧑‍💼 Agent",
   };
 
   const moveSection = (index: number, direction: -1 | 1) => {
@@ -253,12 +257,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
           </div>
           <div>
             <FieldLabel>Introduction Text</FieldLabel>
-            <textarea
-              value={data.introText}
-              onChange={(e) => update("introText", e.target.value)}
-              rows={3}
-              className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring font-body"
-              placeholder="Write a compelling introduction..."
+            <RichTextEditor
+              content={data.introText}
+              onChange={(html) => update("introText", html)}
+              placeholder="Write a compelling introduction for your client..."
+              minHeight="150px"
             />
           </div>
         </div>
@@ -409,11 +412,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   </div>
                   <div>
                     <FieldLabel>Lodging Description</FieldLabel>
-                    <Textarea
-                      value={acc.description}
-                      onChange={(e) => updateAccommodation(i, "description", e.target.value)}
-                      placeholder="Describe the hotel, its atmosphere, unique features, and what makes it special for this trip..."
-                      className="text-xs min-h-[120px] resize-y"
+                    <RichTextEditor
+                      content={acc.description}
+                      onChange={(html) => updateAccommodation(i, "description", html)}
+                      placeholder="Describe the hotel, its atmosphere, unique features..."
+                      minHeight="150px"
                     />
                   </div>
                 </TabsContent>
@@ -618,7 +621,116 @@ export default function ProposalEditor({ data, onChange }: Props) {
       </CollapsibleSection>
 
 
-      {/* Agent Info */}
+      {/* Travelers */}
+      <CollapsibleSection title="👥 Travelers" defaultOpen={false}>
+        <div className="space-y-3">
+          {travelers.map((t, i) => (
+            <div key={t.id} className="border border-border/40 rounded-lg p-3 bg-muted/20">
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-body font-semibold text-sm">Traveler {i + 1}</span>
+                <Button variant="travel-ghost" size="icon" onClick={() => update("travelers", travelers.filter((_, idx) => idx !== i))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="col-span-2">
+                  <FieldLabel>Full Name</FieldLabel>
+                  <Input value={t.fullName} onChange={(e) => { const tr = [...travelers]; tr[i] = { ...tr[i], fullName: e.target.value }; update("travelers", tr); }} className="h-8 text-sm" placeholder="John Doe" />
+                </div>
+                <div>
+                  <FieldLabel>Date of Birth</FieldLabel>
+                  <Input value={t.dateOfBirth} onChange={(e) => { const tr = [...travelers]; tr[i] = { ...tr[i], dateOfBirth: e.target.value }; update("travelers", tr); }} className="h-8 text-sm" placeholder="MM/DD/YYYY" />
+                </div>
+                <div>
+                  <FieldLabel>Passport #</FieldLabel>
+                  <Input value={t.passportNumber} onChange={(e) => { const tr = [...travelers]; tr[i] = { ...tr[i], passportNumber: e.target.value }; update("travelers", tr); }} className="h-8 text-sm" placeholder="Optional" />
+                </div>
+                <div className="col-span-2">
+                  <FieldLabel>Dietary Restrictions</FieldLabel>
+                  <Input value={t.dietaryRestrictions} onChange={(e) => { const tr = [...travelers]; tr[i] = { ...tr[i], dietaryRestrictions: e.target.value }; update("travelers", tr); }} className="h-8 text-sm" placeholder="Vegetarian, allergies, etc." />
+                </div>
+                <div className="col-span-2">
+                  <FieldLabel>Special Requests</FieldLabel>
+                  <Textarea value={t.specialRequests} onChange={(e) => { const tr = [...travelers]; tr[i] = { ...tr[i], specialRequests: e.target.value }; update("travelers", tr); }} className="text-sm min-h-[60px]" placeholder="Wheelchair access, celebration, etc." />
+                </div>
+              </div>
+            </div>
+          ))}
+          <Button variant="travel-ghost" size="sm" onClick={() => update("travelers", [...travelers, { id: crypto.randomUUID(), fullName: "", passportNumber: "", dateOfBirth: "", dietaryRestrictions: "", specialRequests: "" }])} className="text-primary text-xs h-7">
+            <Plus className="h-3 w-3 mr-1" /> Add Traveler
+          </Button>
+        </div>
+      </CollapsibleSection>
+
+      {/* Travel Essentials */}
+      <CollapsibleSection title="🧳 Travel Essentials" defaultOpen={false} sectionKey="essentials" visible={vis.essentials} onToggleVisible={() => toggleSection("essentials")}>
+        <div className="space-y-3">
+          <div>
+            <FieldLabel>Visa Requirements</FieldLabel>
+            <RichTextEditor content={essentials.visaRequirements} onChange={(html) => update("essentials", { ...essentials, visaRequirements: html })} placeholder="Visa requirements for this destination..." minHeight="80px" />
+          </div>
+          <div>
+            <FieldLabel>Passport Info</FieldLabel>
+            <Textarea value={essentials.passportInfo} onChange={(e) => update("essentials", { ...essentials, passportInfo: e.target.value })} className="text-sm min-h-[60px]" placeholder="Passport validity requirements..." />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <FieldLabel>Currency</FieldLabel>
+              <Input value={essentials.currency} onChange={(e) => update("essentials", { ...essentials, currency: e.target.value })} className="h-8 text-sm" placeholder="EUR (€)" />
+            </div>
+            <div>
+              <FieldLabel>Language</FieldLabel>
+              <Input value={essentials.language} onChange={(e) => update("essentials", { ...essentials, language: e.target.value })} className="h-8 text-sm" placeholder="Portuguese" />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <FieldLabel>Time Zone</FieldLabel>
+              <Input value={essentials.timeZone} onChange={(e) => update("essentials", { ...essentials, timeZone: e.target.value })} className="h-8 text-sm" placeholder="GMT+1 (WEST)" />
+            </div>
+            <div>
+              <FieldLabel>Weather</FieldLabel>
+              <Input value={essentials.weatherInfo} onChange={(e) => update("essentials", { ...essentials, weatherInfo: e.target.value })} className="h-8 text-sm" placeholder="Warm, 22-28°C" />
+            </div>
+          </div>
+          <div>
+            <FieldLabel>Packing Tips</FieldLabel>
+            <RichTextEditor content={essentials.packingTips} onChange={(html) => update("essentials", { ...essentials, packingTips: html })} placeholder="Comfortable walking shoes, sun protection, light layers..." minHeight="80px" />
+          </div>
+          <div>
+            <FieldLabel>Emergency Contacts</FieldLabel>
+            <Textarea value={essentials.emergencyContacts} onChange={(e) => update("essentials", { ...essentials, emergencyContacts: e.target.value })} className="text-sm min-h-[60px]" placeholder="Local emergency: 112&#10;Embassy: +351..." />
+          </div>
+        </div>
+      </CollapsibleSection>
+
+      {/* Terms & Conditions */}
+      <CollapsibleSection title="📄 Terms & Conditions" defaultOpen={false} sectionKey="terms" visible={vis.terms} onToggleVisible={() => toggleSection("terms")}>
+        <div className="space-y-3">
+          <div>
+            <FieldLabel>Cancellation Policy</FieldLabel>
+            <RichTextEditor content={terms.cancellationPolicy} onChange={(html) => update("terms", { ...terms, cancellationPolicy: html })} placeholder="Cancellation and refund policy details..." minHeight="100px" />
+          </div>
+          <div>
+            <FieldLabel>Travel Insurance</FieldLabel>
+            <RichTextEditor content={terms.travelInsurance} onChange={(html) => update("terms", { ...terms, travelInsurance: html })} placeholder="Travel insurance requirements and recommendations..." minHeight="80px" />
+          </div>
+          <div>
+            <FieldLabel>Booking Terms</FieldLabel>
+            <RichTextEditor content={terms.bookingTerms} onChange={(html) => update("terms", { ...terms, bookingTerms: html })} placeholder="Payment schedule, deposit requirements, balance due..." minHeight="80px" />
+          </div>
+          <div>
+            <FieldLabel>Liability</FieldLabel>
+            <RichTextEditor content={terms.liability} onChange={(html) => update("terms", { ...terms, liability: html })} placeholder="Agency liability disclaimers..." minHeight="80px" />
+          </div>
+        </div>
+      </CollapsibleSection>
+
+      {/* Notes */}
+      <CollapsibleSection title="📝 Notes & Special Arrangements" defaultOpen={false}>
+        <RichTextEditor content={data.notes || ""} onChange={(html) => update("notes", html)} placeholder="Honeymoon decorations, birthday cake at dinner, VIP transfers, special celebrations..." minHeight="120px" />
+      </CollapsibleSection>
+
       <CollapsibleSection title="🧑‍💼 Agent Info" defaultOpen={false} sectionKey="agent" visible={vis.agent} onToggleVisible={() => toggleSection("agent")}>
         <div className="space-y-2">
           <div className="grid grid-cols-2 gap-2">

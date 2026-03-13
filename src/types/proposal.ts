@@ -67,7 +67,34 @@ export interface BrandSettings {
   logoUrl: string;
 }
 
-export type SectionKey = "overview" | "flights" | "accommodations" | "itinerary" | "inclusions" | "pricing" | "agent";
+export interface Traveler {
+  id: string;
+  fullName: string;
+  passportNumber: string;
+  dateOfBirth: string;
+  dietaryRestrictions: string;
+  specialRequests: string;
+}
+
+export interface TravelEssentials {
+  visaRequirements: string;
+  passportInfo: string;
+  currency: string;
+  language: string;
+  timeZone: string;
+  weatherInfo: string;
+  packingTips: string;
+  emergencyContacts: string;
+}
+
+export interface TermsAndConditions {
+  cancellationPolicy: string;
+  travelInsurance: string;
+  bookingTerms: string;
+  liability: string;
+}
+
+export type SectionKey = "overview" | "flights" | "accommodations" | "itinerary" | "inclusions" | "pricing" | "essentials" | "terms" | "agent";
 
 export interface SectionVisibility {
   hero: boolean;
@@ -77,11 +104,13 @@ export interface SectionVisibility {
   itinerary: boolean;
   inclusions: boolean;
   pricing: boolean;
+  essentials: boolean;
+  terms: boolean;
   agent: boolean;
 }
 
 export const defaultSectionOrder: SectionKey[] = [
-  "overview", "flights", "accommodations", "itinerary", "inclusions", "pricing", "agent",
+  "overview", "flights", "accommodations", "itinerary", "inclusions", "essentials", "terms", "pricing", "agent",
 ];
 
 export interface ProposalData {
@@ -100,6 +129,10 @@ export interface ProposalData {
   pricing: PricingLine[];
   paymentTerms: string;
   validUntil: string;
+  travelers: Traveler[];
+  essentials: TravelEssentials;
+  terms: TermsAndConditions;
+  notes: string;
   agent: AgentInfo;
   brand: BrandSettings;
   sectionVisibility: SectionVisibility;
@@ -327,7 +360,27 @@ export const defaultProposal: ProposalData = {
     itinerary: true,
     inclusions: true,
     pricing: true,
+    essentials: true,
+    terms: true,
     agent: true,
   },
+  travelers: [],
+  essentials: {
+    visaRequirements: "",
+    passportInfo: "Valid passport required with at least 6 months validity beyond travel dates.",
+    currency: "",
+    language: "",
+    timeZone: "",
+    weatherInfo: "",
+    packingTips: "",
+    emergencyContacts: "",
+  },
+  terms: {
+    cancellationPolicy: "Full refund if cancelled 60+ days before departure. 50% refund 30-59 days before. No refund within 30 days.",
+    travelInsurance: "Comprehensive travel insurance is strongly recommended and can be arranged upon request.",
+    bookingTerms: "",
+    liability: "",
+  },
+  notes: "",
   sectionOrder: [...defaultSectionOrder],
 };

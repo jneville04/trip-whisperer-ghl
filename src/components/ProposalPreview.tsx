@@ -57,12 +57,14 @@ interface Props {
 export default function ProposalPreview({ data }: Props) {
   const navigate = useNavigate();
   const heroImage = data.heroImageUrl || heroFallback;
-  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, agent: true };
+  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
   const brandData = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
   const flights = data.flights || [];
   const accommodations = data.accommodations || [];
   const agent = data.agent || { name: "", title: "", phone: "", email: "", website: "", agencyName: "", logoUrl: "", photoUrl: "" };
+  const essentials = data.essentials || { visaRequirements: "", passportInfo: "", currency: "", language: "", timeZone: "", weatherInfo: "", packingTips: "", emergencyContacts: "" };
+  const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "" };
 
   const brandStyles = useMemo(() => {
     const styles: Record<string, string> = {};
@@ -83,7 +85,8 @@ export default function ProposalPreview({ data }: Props) {
 
   const sectionLabels: Record<SectionKey, string> = {
     overview: "Overview", flights: "Flights", accommodations: "Hotels",
-    itinerary: "Itinerary", inclusions: "Included", pricing: "Pricing", agent: "Advisor",
+    itinerary: "Itinerary", inclusions: "Included", pricing: "Pricing",
+    essentials: "Essentials", terms: "Terms", agent: "Advisor",
   };
 
   const navItems = useMemo(() => {
@@ -166,9 +169,7 @@ export default function ProposalPreview({ data }: Props) {
                   </motion.h2>
                   <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2} className="w-16 h-0.5 bg-primary mx-auto mt-6 mb-8" />
                   {data.introText && (
-                    <motion.p variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={3} className="text-muted-foreground leading-relaxed text-lg font-body">
-                      {data.introText}
-                    </motion.p>
+                    <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={3} className="text-muted-foreground leading-relaxed text-lg font-body prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: data.introText }} />
                   )}
                 </div>
               </section>
@@ -266,7 +267,7 @@ export default function ProposalPreview({ data }: Props) {
                               <BedDouble className="h-6 w-6 text-primary mt-1 shrink-0" />
                             </div>
                             {acc.roomType && <p className="font-body text-foreground font-semibold mt-3">{acc.roomType}</p>}
-                            {acc.description && <p className="text-sm text-muted-foreground font-body mt-2 leading-relaxed">{acc.description}</p>}
+                            {acc.description && <div className="text-sm text-muted-foreground font-body mt-2 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: acc.description }} />}
                             {highlights.length > 0 && (
                               <div className="mt-4">
                                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">Highlights</p>
@@ -418,6 +419,110 @@ export default function ProposalPreview({ data }: Props) {
                 </div>
               </section>
             );
+
+          case "essentials": {
+            const hasContent = essentials.visaRequirements || essentials.passportInfo || essentials.currency || essentials.language || essentials.timeZone || essentials.weatherInfo || essentials.packingTips || essentials.emergencyContacts;
+            if (!hasContent) return null;
+            return (
+              <section key="essentials" id="essentials" className="py-20">
+                <div className="max-w-4xl mx-auto px-6">
+                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
+                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Before You Go</p>
+                    <h2 className="font-display text-4xl font-bold text-foreground">Travel Essentials</h2>
+                  </motion.div>
+                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {essentials.currency && (
+                      <div className="bg-card rounded-xl border border-border/50 p-5">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">💱 Currency</p>
+                        <p className="font-body text-foreground font-semibold">{essentials.currency}</p>
+                      </div>
+                    )}
+                    {essentials.language && (
+                      <div className="bg-card rounded-xl border border-border/50 p-5">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">🗣️ Language</p>
+                        <p className="font-body text-foreground font-semibold">{essentials.language}</p>
+                      </div>
+                    )}
+                    {essentials.timeZone && (
+                      <div className="bg-card rounded-xl border border-border/50 p-5">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">🕐 Time Zone</p>
+                        <p className="font-body text-foreground font-semibold">{essentials.timeZone}</p>
+                      </div>
+                    )}
+                    {essentials.weatherInfo && (
+                      <div className="bg-card rounded-xl border border-border/50 p-5">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">☀️ Weather</p>
+                        <p className="font-body text-foreground font-semibold">{essentials.weatherInfo}</p>
+                      </div>
+                    )}
+                  </motion.div>
+                  {(essentials.visaRequirements || essentials.passportInfo) && (
+                    <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2} className="mt-8 bg-card rounded-xl border border-border/50 p-6">
+                      {essentials.visaRequirements && (
+                        <div className="mb-4">
+                          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">🛂 Visa Requirements</p>
+                          <div className="prose prose-sm max-w-none text-foreground font-body" dangerouslySetInnerHTML={{ __html: essentials.visaRequirements }} />
+                        </div>
+                      )}
+                      {essentials.passportInfo && (
+                        <div>
+                          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">📘 Passport Info</p>
+                          <p className="text-sm text-muted-foreground font-body">{essentials.passportInfo}</p>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+                  {essentials.packingTips && (
+                    <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={3} className="mt-6 bg-card rounded-xl border border-border/50 p-6">
+                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">🧳 Packing Tips</p>
+                      <div className="prose prose-sm max-w-none text-foreground font-body" dangerouslySetInnerHTML={{ __html: essentials.packingTips }} />
+                    </motion.div>
+                  )}
+                </div>
+              </section>
+            );
+          }
+
+          case "terms": {
+            const hasTerms = terms.cancellationPolicy || terms.travelInsurance || terms.bookingTerms || terms.liability;
+            if (!hasTerms) return null;
+            return (
+              <section key="terms" id="terms" className="py-20 bg-card">
+                <div className="max-w-4xl mx-auto px-6">
+                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
+                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Important Information</p>
+                    <h2 className="font-display text-4xl font-bold text-foreground">Terms & Conditions</h2>
+                  </motion.div>
+                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="space-y-6">
+                    {terms.cancellationPolicy && (
+                      <div className="bg-background rounded-xl border border-border/50 p-6">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Cancellation Policy</p>
+                        <div className="prose prose-sm max-w-none text-foreground font-body" dangerouslySetInnerHTML={{ __html: terms.cancellationPolicy }} />
+                      </div>
+                    )}
+                    {terms.travelInsurance && (
+                      <div className="bg-background rounded-xl border border-border/50 p-6">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Travel Insurance</p>
+                        <div className="prose prose-sm max-w-none text-foreground font-body" dangerouslySetInnerHTML={{ __html: terms.travelInsurance }} />
+                      </div>
+                    )}
+                    {terms.bookingTerms && (
+                      <div className="bg-background rounded-xl border border-border/50 p-6">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Booking Terms</p>
+                        <div className="prose prose-sm max-w-none text-foreground font-body" dangerouslySetInnerHTML={{ __html: terms.bookingTerms }} />
+                      </div>
+                    )}
+                    {terms.liability && (
+                      <div className="bg-background rounded-xl border border-border/50 p-6">
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Liability</p>
+                        <div className="prose prose-sm max-w-none text-foreground font-body" dangerouslySetInnerHTML={{ __html: terms.liability }} />
+                      </div>
+                    )}
+                  </motion.div>
+                </div>
+              </section>
+            );
+          }
 
           case "agent":
             return (
