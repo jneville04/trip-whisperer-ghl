@@ -73,8 +73,16 @@ export default function AuthPage() {
     }
   };
 
+  // Reset to default theme so login always looks neutral
+  const defaultVars: React.CSSProperties = {
+    ["--primary" as any]: "25 75% 47%",
+    ["--ring" as any]: "25 75% 47%",
+    ["--secondary" as any]: "195 45% 40%",
+    ["--accent" as any]: "45 80% 55%",
+  };
+
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-6">
+    <div className="min-h-screen bg-background flex items-center justify-center px-6" style={defaultVars}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           {settings.logo_url ? (

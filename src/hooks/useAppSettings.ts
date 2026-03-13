@@ -72,9 +72,18 @@ export function useAppSettings() {
   const primaryHsl = hexToHsl(s.primary_color);
   const secondaryHsl = hexToHsl(s.secondary_color);
   const accentHsl = hexToHsl(s.accent_color);
-  if (primaryHsl) cssVars["--primary"] = primaryHsl;
-  if (secondaryHsl) cssVars["--secondary"] = secondaryHsl;
-  if (accentHsl) cssVars["--accent"] = accentHsl;
+  if (primaryHsl) {
+    cssVars["--primary"] = primaryHsl;
+    cssVars["--ring"] = primaryHsl;
+    cssVars["--sidebar-primary"] = primaryHsl;
+    cssVars["--sidebar-ring"] = primaryHsl;
+  }
+  if (secondaryHsl) {
+    cssVars["--secondary"] = secondaryHsl;
+  }
+  if (accentHsl) {
+    cssVars["--accent"] = accentHsl;
+  }
 
   return { settings: s, cssVars };
 }
