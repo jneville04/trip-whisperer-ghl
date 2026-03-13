@@ -195,30 +195,61 @@ export default function ProposalEditor({ data, onChange }: Props) {
             <FieldLabel>Logo</FieldLabel>
             <ImageUploadField value={brand.logoUrl} onChange={(url) => update("brand", { ...brand, logoUrl: url })} placeholder="Paste logo URL" />
           </div>
+          <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
+            <div>
+              <p className="text-sm font-body font-medium text-foreground">Show agency name with logo</p>
+              <p className="text-xs text-muted-foreground font-body">Keeps both logo and agency name visible in top navigation.</p>
+            </div>
+            <Switch
+              checked={brand.showAgencyNameWithLogo ?? true}
+              onCheckedChange={(checked) => update("brand", { ...brand, showAgencyNameWithLogo: checked })}
+            />
+          </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
               <FieldLabel>Primary Color</FieldLabel>
               <div className="flex gap-2 items-center">
-                <input type="color" value={brand.primaryColor || "#c2631a"} onChange={(e) => update("brand", { ...brand, primaryColor: e.target.value })} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                <Input value={brand.primaryColor} onChange={(e) => update("brand", { ...brand, primaryColor: e.target.value })} placeholder="#c2631a" className="h-8 text-sm flex-1" />
+                <input type="color" value={brand.primaryColor || "#C2631A"} onChange={(e) => update("brand", { ...brand, primaryColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                <Input
+                  value={brand.primaryColor}
+                  onChange={(e) => update("brand", { ...brand, primaryColor: normalizeHexInput(e.target.value) })}
+                  placeholder="#C2631A"
+                  className="h-8 text-sm flex-1"
+                  inputMode="text"
+                  maxLength={7}
+                />
               </div>
             </div>
             <div>
               <FieldLabel>Secondary Color</FieldLabel>
               <div className="flex gap-2 items-center">
-                <input type="color" value={brand.secondaryColor || "#337a8a"} onChange={(e) => update("brand", { ...brand, secondaryColor: e.target.value })} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                <Input value={brand.secondaryColor} onChange={(e) => update("brand", { ...brand, secondaryColor: e.target.value })} placeholder="#337a8a" className="h-8 text-sm flex-1" />
+                <input type="color" value={brand.secondaryColor || "#337A8A"} onChange={(e) => update("brand", { ...brand, secondaryColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                <Input
+                  value={brand.secondaryColor}
+                  onChange={(e) => update("brand", { ...brand, secondaryColor: normalizeHexInput(e.target.value) })}
+                  placeholder="#337A8A"
+                  className="h-8 text-sm flex-1"
+                  inputMode="text"
+                  maxLength={7}
+                />
               </div>
             </div>
             <div>
               <FieldLabel>Accent Color</FieldLabel>
               <div className="flex gap-2 items-center">
-                <input type="color" value={brand.accentColor || "#d4a824"} onChange={(e) => update("brand", { ...brand, accentColor: e.target.value })} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                <Input value={brand.accentColor} onChange={(e) => update("brand", { ...brand, accentColor: e.target.value })} placeholder="#d4a824" className="h-8 text-sm flex-1" />
+                <input type="color" value={brand.accentColor || "#D4A824"} onChange={(e) => update("brand", { ...brand, accentColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                <Input
+                  value={brand.accentColor}
+                  onChange={(e) => update("brand", { ...brand, accentColor: normalizeHexInput(e.target.value) })}
+                  placeholder="#D4A824"
+                  className="h-8 text-sm flex-1"
+                  inputMode="text"
+                  maxLength={7}
+                />
               </div>
             </div>
           </div>
-          <p className="text-xs text-muted-foreground">Leave blank to use defaults. Colors apply to the preview header, buttons, and accents.</p>
+          <p className="text-xs text-muted-foreground">Use hex colors only (example: #1A2B3C). Leave blank to use defaults.</p>
         </div>
       </CollapsibleSection>
 

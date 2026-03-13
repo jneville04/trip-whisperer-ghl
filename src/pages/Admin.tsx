@@ -227,13 +227,16 @@ function BrandingTab() {
             <input
               type="color"
               value={form.primary_color}
-              onChange={(e) => setForm({ ...form, primary_color: e.target.value })}
+              onChange={(e) => setForm({ ...form, primary_color: e.target.value.toUpperCase() })}
               className="h-10 w-10 rounded border border-border cursor-pointer"
             />
             <Input
               value={form.primary_color}
-              onChange={(e) => setForm({ ...form, primary_color: e.target.value })}
+              onChange={(e) => setForm({ ...form, primary_color: normalizeHexInput(e.target.value) })}
               className="flex-1"
+              inputMode="text"
+              maxLength={7}
+              placeholder="#1A2B3C"
             />
           </div>
         </div>
@@ -243,13 +246,16 @@ function BrandingTab() {
             <input
               type="color"
               value={form.secondary_color}
-              onChange={(e) => setForm({ ...form, secondary_color: e.target.value })}
+              onChange={(e) => setForm({ ...form, secondary_color: e.target.value.toUpperCase() })}
               className="h-10 w-10 rounded border border-border cursor-pointer"
             />
             <Input
               value={form.secondary_color}
-              onChange={(e) => setForm({ ...form, secondary_color: e.target.value })}
+              onChange={(e) => setForm({ ...form, secondary_color: normalizeHexInput(e.target.value) })}
               className="flex-1"
+              inputMode="text"
+              maxLength={7}
+              placeholder="#1A2B3C"
             />
           </div>
         </div>
@@ -259,13 +265,16 @@ function BrandingTab() {
             <input
               type="color"
               value={form.accent_color}
-              onChange={(e) => setForm({ ...form, accent_color: e.target.value })}
+              onChange={(e) => setForm({ ...form, accent_color: e.target.value.toUpperCase() })}
               className="h-10 w-10 rounded border border-border cursor-pointer"
             />
             <Input
               value={form.accent_color}
-              onChange={(e) => setForm({ ...form, accent_color: e.target.value })}
+              onChange={(e) => setForm({ ...form, accent_color: normalizeHexInput(e.target.value) })}
               className="flex-1"
+              inputMode="text"
+              maxLength={7}
+              placeholder="#1A2B3C"
             />
           </div>
         </div>
