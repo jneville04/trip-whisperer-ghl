@@ -4,6 +4,7 @@ import { MessageSquare, ArrowLeft, Send, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
+import { useBrandStyles } from "@/hooks/useBrandStyles";
 
 const revisionCategories = [
   { id: "dates", label: "Travel Dates" },
@@ -20,6 +21,7 @@ export default function RevisionsPage() {
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [selected, setSelected] = useState<string[]>([]);
+  const brandStyles = useBrandStyles();
 
   const toggle = (id: string) => {
     setSelected((prev) => prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]);
@@ -32,7 +34,7 @@ export default function RevisionsPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-6">
+      <div className="min-h-screen bg-background flex items-center justify-center px-6" style={brandStyles as React.CSSProperties}>
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md">
           <div className="w-20 h-20 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 className="h-10 w-10 text-secondary" />
@@ -50,7 +52,7 @@ export default function RevisionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
       <div className="max-w-xl mx-auto px-6 py-16">
         <button onClick={() => navigate("/")} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors font-body mb-8">
           <ArrowLeft className="h-4 w-4" /> Back to Proposal
