@@ -30,6 +30,7 @@ const defaults: AppSettings = {
   login_message: null,
   ghl_webhook_approve: "",
   ghl_webhook_revision: "",
+  admin_photo_url: null,
 };
 
 function hexToHsl(hex: string): string | null {

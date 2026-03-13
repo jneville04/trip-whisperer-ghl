@@ -1,0 +1,1 @@
+ALTER TABLE public.app_settings ADD COLUMN admin_photo_url text DEFAULT '';
