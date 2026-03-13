@@ -274,9 +274,9 @@ export default function ProposalPreview({ data }: Props) {
                       return (
                         <motion.div key={acc.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
-                            <div className="md:col-span-2 aspect-[16/9] md:aspect-auto overflow-hidden cursor-pointer bg-muted/30 p-1" onClick={() => acc.imageUrl && openLightbox(allAccImages, 0)}>
+                            <div className="md:col-span-2 aspect-[16/9] md:aspect-auto overflow-hidden cursor-pointer" onClick={() => acc.imageUrl && openLightbox(allAccImages, 0)}>
                               {acc.imageUrl ? (
-                                <img src={acc.imageUrl} alt={acc.hotelName} className="w-full h-full object-contain" />
+                                <img src={acc.imageUrl} alt={acc.hotelName} className="w-full h-full object-cover" />
                               ) : (
                                 <div className="w-full h-full min-h-[200px] bg-muted flex items-center justify-center">
                                   <BedDouble className="h-12 w-12 text-muted-foreground/30" />
