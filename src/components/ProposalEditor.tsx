@@ -524,8 +524,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                           <SortableImageGrid
                                             primaryImage={acc.imageUrl}
                                             galleryImages={accGallery}
-                                            onPrimaryChange={(url) => updateAccField("imageUrl", url)}
-                                            onGalleryChange={(urls) => updateAccField("galleryUrls", urls)}
+                                            onReorder={(primary, gallery) => {
+                                              const a = [...(data.accommodations || [])];
+                                              a[i] = { ...a[i], imageUrl: primary, galleryUrls: gallery };
+                                              update("accommodations", a);
+                                            }}
                                             primaryAspectClass="aspect-[4/3]"
                                             onUpload={(files) => handleImageUpload({ target: { files, value: "" } } as any, acc.imageUrl ? "gallery" : "main")}
                                           />
