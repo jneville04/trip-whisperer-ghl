@@ -775,7 +775,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
       {/* Notes */}
       <CollapsibleSection title="📝 Notes & Special Arrangements" defaultOpen={false}>
-        <RichTextEditor content={data.notes || ""} onChange={(html) => update("notes", html)} placeholder="Honeymoon decorations, birthday cake at dinner, VIP transfers, special celebrations..." minHeight="120px" />
+        <RichTextEditor content={data.notes || ""} onChange={(html) => update("notes", html)} placeholder="Honeymoon decorations, birthday cake at dinner, VIP transfers, special celebrations..." minHeight="160px" />
       </CollapsibleSection>
 
       <CollapsibleSection title="🧑‍💼 Agent Info" defaultOpen={false} sectionKey="agent" visible={vis.agent} onToggleVisible={() => toggleSection("agent")}>
