@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, Eye, EyeOff, ImagePlus, X, ArrowUp, ArrowDown } from "lucide-react";
 import ImageUploadField from "@/components/ImageUploadField";
+import HotelSearchDialog from "@/components/HotelSearchDialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
