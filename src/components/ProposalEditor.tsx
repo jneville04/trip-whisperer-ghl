@@ -280,7 +280,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
       {/* Accommodations */}
       <CollapsibleSection title="🏨 Accommodations" sectionKey="accommodations" visible={vis.accommodations} onToggleVisible={() => toggleSection("accommodations")} defaultOpen={false}>
         <div className="space-y-4">
-          {data.accommodations.map((acc, i) => (
+          {accommodations.map((acc, i) => (
             <div key={acc.id} className="border border-border/40 rounded-lg p-3 bg-muted/20">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-body font-semibold text-sm text-foreground">🏨 Hotel {i + 1}</span>
