@@ -452,17 +452,13 @@ export default function ProposalEditor({ data, onChange }: Props) {
                               update("accommodations", a);
                             };
 
-                            const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, target: "main" | "gallery") => {
+                            const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: "main" | "gallery") => {
                               const files = e.target.files;
                               if (!files) return;
-                              Array.from(files).forEach((file) => {
-                                const reader = new FileReader();
-                                reader.onload = (ev) => {
-                                  const url = ev.target?.result as string;
-                                  if (target === "main") { updateAccField("imageUrl", url); }
-                                  else { updateAccField("galleryUrls", [...accGallery, url]); }
-                                };
-                                reader.readAsDataURL(file);
+                              const urls = await uploadImages(files);
+                              urls.forEach((url) => {
+                                if (target === "main") { updateAccField("imageUrl", url); }
+                                else { updateAccField("galleryUrls", [...accGallery, url]); }
                               });
                               e.target.value = "";
                             };
