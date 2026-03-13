@@ -542,7 +542,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                     {agent.email && <a href={`mailto:${agent.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-4 w-4" /> {agent.email}</a>}
                     {agent.website && <a href="#" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Globe className="h-4 w-4" /> {agent.website}</a>}
                   </div>
-                  <Button variant="travel" size="lg" className="text-base px-8" onClick={() => navigate("/approve")}>
+                  <Button variant="travel" size="lg" className="text-base px-8" onClick={() => navigate(`/approve${shareId ? `?share=${shareId}` : ""}`)}>
                     Sign Up Today! <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                   <p className="text-xs text-muted-foreground/60 mt-10 font-body">© 2026 {agent.agencyName} · All prices in USD · Subject to availability</p>
