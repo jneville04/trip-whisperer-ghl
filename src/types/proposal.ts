@@ -53,7 +53,11 @@ export interface Accommodation {
   roomType: string;
   nights: string;
   imageUrl: string;
+  galleryUrls: string[];
   description: string;
+  starRating: string;
+  amenities: string[];
+  highlights: string[];
 }
 
 export interface BrandSettings {
@@ -143,7 +147,11 @@ export const createAccommodation = (): Accommodation => ({
   roomType: "",
   nights: "",
   imageUrl: "",
+  galleryUrls: [],
   description: "",
+  starRating: "",
+  amenities: [],
+  highlights: [],
 });
 
 export const defaultProposal: ProposalData = {
@@ -190,7 +198,11 @@ export const defaultProposal: ProposalData = {
       roomType: "Superior Suite – Tagus River View",
       nights: "2 Nights",
       imageUrl: "",
+      galleryUrls: [],
       description: "Iconic luxury hotel overlooking Eduardo VII Park with world-class spa and dining.",
+      starRating: "5",
+      amenities: ["Spa & Wellness Center", "Rooftop Pool", "Michelin-star Restaurant", "24h Room Service", "Fitness Center", "Concierge"],
+      highlights: ["Tagus River panoramic views", "Walking distance to historic Alfama", "Award-winning Portuguese cuisine"],
     },
     {
       id: crypto.randomUUID(),
@@ -201,7 +213,11 @@ export const defaultProposal: ProposalData = {
       roomType: "Deluxe Room – Douro River View",
       nights: "1 Night",
       imageUrl: "",
+      galleryUrls: [],
       description: "Award-winning wine spa & resort with panoramic views of Porto and the Douro River.",
+      starRating: "5",
+      amenities: ["Wine Spa", "Infinity Pool", "2 Michelin-star Restaurant", "Wine Cellar Tours", "Terrace Bar"],
+      highlights: ["Panoramic Douro River views", "Over 25,000 bottles in wine cellar", "Voted World's Leading Wine Hotel"],
     },
   ],
   days: [

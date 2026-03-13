@@ -280,7 +280,16 @@ export default function ProposalEditor({ data, onChange }: Props) {
       {/* Accommodations */}
       <CollapsibleSection title="🏨 Accommodations" sectionKey="accommodations" visible={vis.accommodations} onToggleVisible={() => toggleSection("accommodations")} defaultOpen={false}>
         <div className="space-y-4">
-          {accommodations.map((acc, i) => (
+          {accommodations.map((acc, i) => {
+            const accAmenities = acc.amenities || [];
+            const accHighlights = acc.highlights || [];
+            const accGallery = acc.galleryUrls || [];
+            const updateAccField = (field: string, value: any) => {
+              const a = [...(data.accommodations || [])];
+              a[i] = { ...a[i], [field]: value };
+              update("accommodations", a);
+            };
+            return (
             <div key={acc.id} className="border border-border/40 rounded-lg p-3 bg-muted/20">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-body font-semibold text-sm text-foreground">🏨 Hotel {i + 1}</span>
@@ -298,8 +307,16 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   <Input value={acc.location} onChange={(e) => updateAccommodation(i, "location", e.target.value)} placeholder="Lisbon" className="h-7 text-xs" />
                 </div>
                 <div>
+                  <FieldLabel>Star Rating</FieldLabel>
+                  <Input value={acc.starRating || ""} onChange={(e) => updateAccField("starRating", e.target.value)} placeholder="5" className="h-7 text-xs" />
+                </div>
+                <div>
                   <FieldLabel>Room Type</FieldLabel>
                   <Input value={acc.roomType} onChange={(e) => updateAccommodation(i, "roomType", e.target.value)} placeholder="Superior Suite" className="h-7 text-xs" />
+                </div>
+                <div>
+                  <FieldLabel>Nights</FieldLabel>
+                  <Input value={acc.nights} onChange={(e) => updateAccommodation(i, "nights", e.target.value)} placeholder="2 Nights" className="h-7 text-xs" />
                 </div>
                 <div>
                   <FieldLabel>Check-in</FieldLabel>
@@ -309,21 +326,30 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   <FieldLabel>Check-out</FieldLabel>
                   <Input value={acc.checkOut} onChange={(e) => updateAccommodation(i, "checkOut", e.target.value)} placeholder="Sep 17" className="h-7 text-xs" />
                 </div>
-                <div>
-                  <FieldLabel>Nights</FieldLabel>
-                  <Input value={acc.nights} onChange={(e) => updateAccommodation(i, "nights", e.target.value)} placeholder="2 Nights" className="h-7 text-xs" />
+                <div className="col-span-2">
+                  <FieldLabel>Main Image URL</FieldLabel>
+                  <Input value={acc.imageUrl} onChange={(e) => updateAccommodation(i, "imageUrl", e.target.value)} placeholder="Paste main photo URL" className="h-7 text-xs" />
                 </div>
-                <div>
-                  <FieldLabel>Image URL</FieldLabel>
-                  <Input value={acc.imageUrl} onChange={(e) => updateAccommodation(i, "imageUrl", e.target.value)} placeholder="Paste URL" className="h-7 text-xs" />
+                <div className="col-span-2">
+                  <FieldLabel>Gallery Images (comma-separated URLs)</FieldLabel>
+                  <Input value={accGallery.join(", ")} onChange={(e) => updateAccField("galleryUrls", e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean))} placeholder="url1, url2" className="h-7 text-xs" />
                 </div>
                 <div className="col-span-2">
                   <FieldLabel>Description</FieldLabel>
                   <Input value={acc.description} onChange={(e) => updateAccommodation(i, "description", e.target.value)} placeholder="Brief description..." className="h-7 text-xs" />
                 </div>
+                <div className="col-span-2">
+                  <FieldLabel>Highlights (comma-separated)</FieldLabel>
+                  <Input value={accHighlights.join(", ")} onChange={(e) => updateAccField("highlights", e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean))} placeholder="Ocean views, Walking distance to town" className="h-7 text-xs" />
+                </div>
+                <div className="col-span-2">
+                  <FieldLabel>Amenities (comma-separated)</FieldLabel>
+                  <Input value={accAmenities.join(", ")} onChange={(e) => updateAccField("amenities", e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean))} placeholder="Spa, Pool, Restaurant, WiFi" className="h-7 text-xs" />
+                </div>
               </div>
             </div>
-          ))}
+            );
+          })}
           <Button variant="travel-ghost" size="sm" onClick={() => update("accommodations", [...accommodations, createAccommodation()])} className="text-primary text-xs h-7">
             <Plus className="h-3 w-3 mr-1" /> Add Hotel
           </Button>
