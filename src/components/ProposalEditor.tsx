@@ -496,7 +496,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       value={accAmenities.join("\n")}
                       onChange={(e) => updateAccField("amenities", e.target.value.split("\n").filter(Boolean))}
                       placeholder="One amenity per line&#10;e.g. Spa & Wellness Center&#10;Rooftop Pool&#10;24h Room Service"
-                      className="text-xs min-h-[80px] resize-y"
+                      className="text-xs min-h-[120px] resize-y"
                     />
                   </div>
                 </TabsContent>
