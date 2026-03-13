@@ -263,7 +263,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
               content={data.introText}
               onChange={(html) => update("introText", html)}
               placeholder="Write a compelling introduction for your client..."
-              minHeight="150px"
+              minHeight="200px"
             />
           </div>
         </div>
@@ -418,7 +418,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       content={acc.description}
                       onChange={(html) => updateAccommodation(i, "description", html)}
                       placeholder="Describe the hotel, its atmosphere, unique features..."
-                      minHeight="150px"
+                      minHeight="180px"
                     />
                   </div>
                 </TabsContent>
@@ -487,7 +487,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       value={accHighlights.join("\n")}
                       onChange={(e) => updateAccField("highlights", e.target.value.split("\n").filter(Boolean))}
                       placeholder="One highlight per line&#10;e.g. Tagus River panoramic views&#10;Walking distance to historic Alfama"
-                      className="text-xs min-h-[80px] resize-y"
+                      className="text-xs min-h-[120px] resize-y"
                     />
                   </div>
                   <div>
@@ -496,7 +496,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       value={accAmenities.join("\n")}
                       onChange={(e) => updateAccField("amenities", e.target.value.split("\n").filter(Boolean))}
                       placeholder="One amenity per line&#10;e.g. Spa & Wellness Center&#10;Rooftop Pool&#10;24h Room Service"
-                      className="text-xs min-h-[80px] resize-y"
+                      className="text-xs min-h-[120px] resize-y"
                     />
                   </div>
                 </TabsContent>
@@ -600,7 +600,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       </div>
                     </div>
                     <Input value={act.title} onChange={(e) => updateActivity(dayIdx, actIdx, "title", e.target.value)} placeholder="Activity name" className="h-8 text-sm font-medium" />
-                    <Textarea value={act.description} onChange={(e) => updateActivity(dayIdx, actIdx, "description", e.target.value)} placeholder="Describe this activity in detail..." className="text-sm min-h-[60px] resize-y" />
+                    <Textarea value={act.description} onChange={(e) => updateActivity(dayIdx, actIdx, "description", e.target.value)} placeholder="Describe this activity in detail..." className="text-sm min-h-[100px] resize-y" />
                   </div>
                 ))}
                 <Button variant="travel-ghost" size="sm" onClick={() => addActivity(dayIdx)} className="text-primary text-xs h-7">
@@ -691,7 +691,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                 </div>
                 <div className="col-span-2">
                   <FieldLabel>Special Requests</FieldLabel>
-                  <Textarea value={t.specialRequests} onChange={(e) => { const tr = [...travelers]; tr[i] = { ...tr[i], specialRequests: e.target.value }; update("travelers", tr); }} className="text-sm min-h-[60px]" placeholder="Wheelchair access, celebration, etc." />
+                  <Textarea value={t.specialRequests} onChange={(e) => { const tr = [...travelers]; tr[i] = { ...tr[i], specialRequests: e.target.value }; update("travelers", tr); }} className="text-sm min-h-[100px] resize-y" placeholder="Wheelchair access, celebration, etc." />
                 </div>
               </div>
             </div>
@@ -707,11 +707,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
         <div className="space-y-3">
           <div>
             <FieldLabel>Visa Requirements</FieldLabel>
-            <RichTextEditor content={essentials.visaRequirements} onChange={(html) => update("essentials", { ...essentials, visaRequirements: html })} placeholder="Visa requirements for this destination..." minHeight="80px" />
+            <RichTextEditor content={essentials.visaRequirements} onChange={(html) => update("essentials", { ...essentials, visaRequirements: html })} placeholder="Visa requirements for this destination..." minHeight="120px" />
           </div>
           <div>
             <FieldLabel>Passport Info</FieldLabel>
-            <Textarea value={essentials.passportInfo} onChange={(e) => update("essentials", { ...essentials, passportInfo: e.target.value })} className="text-sm min-h-[60px]" placeholder="Passport validity requirements..." />
+            <Textarea value={essentials.passportInfo} onChange={(e) => update("essentials", { ...essentials, passportInfo: e.target.value })} className="text-sm min-h-[100px] resize-y" placeholder="Passport validity requirements..." />
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
@@ -735,11 +735,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
           </div>
           <div>
             <FieldLabel>Packing Tips</FieldLabel>
-            <RichTextEditor content={essentials.packingTips} onChange={(html) => update("essentials", { ...essentials, packingTips: html })} placeholder="Comfortable walking shoes, sun protection, light layers..." minHeight="80px" />
+            <RichTextEditor content={essentials.packingTips} onChange={(html) => update("essentials", { ...essentials, packingTips: html })} placeholder="Comfortable walking shoes, sun protection, light layers..." minHeight="120px" />
           </div>
           <div>
             <FieldLabel>Emergency Contacts</FieldLabel>
-            <Textarea value={essentials.emergencyContacts} onChange={(e) => update("essentials", { ...essentials, emergencyContacts: e.target.value })} className="text-sm min-h-[60px]" placeholder="Local emergency: 112&#10;Embassy: +351..." />
+            <Textarea value={essentials.emergencyContacts} onChange={(e) => update("essentials", { ...essentials, emergencyContacts: e.target.value })} className="text-sm min-h-[100px] resize-y" placeholder="Local emergency: 112&#10;Embassy: +351..." />
           </div>
         </div>
       </CollapsibleSection>
@@ -765,7 +765,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
               </div>
               {terms[key] !== false && (
                 <div className="p-3">
-                  <RichTextEditor content={terms[field]} onChange={(html) => update("terms", { ...terms, [field]: html })} placeholder={placeholder} minHeight="80px" />
+                  <RichTextEditor content={terms[field]} onChange={(html) => update("terms", { ...terms, [field]: html })} placeholder={placeholder} minHeight="120px" />
                 </div>
               )}
             </div>
@@ -775,7 +775,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
       {/* Notes */}
       <CollapsibleSection title="📝 Notes & Special Arrangements" defaultOpen={false}>
-        <RichTextEditor content={data.notes || ""} onChange={(html) => update("notes", html)} placeholder="Honeymoon decorations, birthday cake at dinner, VIP transfers, special celebrations..." minHeight="120px" />
+        <RichTextEditor content={data.notes || ""} onChange={(html) => update("notes", html)} placeholder="Honeymoon decorations, birthday cake at dinner, VIP transfers, special celebrations..." minHeight="160px" />
       </CollapsibleSection>
 
       <CollapsibleSection title="🧑‍💼 Agent Info" defaultOpen={false} sectionKey="agent" visible={vis.agent} onToggleVisible={() => toggleSection("agent")}>
