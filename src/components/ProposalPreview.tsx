@@ -83,7 +83,8 @@ export default function ProposalPreview({ data }: Props) {
 
   const sectionLabels: Record<SectionKey, string> = {
     overview: "Overview", flights: "Flights", accommodations: "Hotels",
-    itinerary: "Itinerary", inclusions: "Included", pricing: "Pricing", agent: "Advisor",
+    itinerary: "Itinerary", inclusions: "Included", pricing: "Pricing",
+    essentials: "Essentials", terms: "Terms", agent: "Advisor",
   };
 
   const navItems = useMemo(() => {

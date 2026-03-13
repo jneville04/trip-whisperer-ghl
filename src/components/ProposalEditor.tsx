@@ -125,14 +125,18 @@ export default function ProposalEditor({ data, onChange }: Props) {
   };
 
   const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
-  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, agent: true };
+  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
   const flights = data.flights || [];
   const accommodations = data.accommodations || [];
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
+  const travelers = data.travelers || [];
+  const essentials = data.essentials || { visaRequirements: "", passportInfo: "", currency: "", language: "", timeZone: "", weatherInfo: "", packingTips: "", emergencyContacts: "" };
+  const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "" };
 
   const sectionLabels: Record<SectionKey, string> = {
     overview: "🌍 Overview", flights: "✈️ Flights", accommodations: "🏨 Hotels",
-    itinerary: "📋 Itinerary", inclusions: "✅ Included", pricing: "💰 Pricing", agent: "🧑‍💼 Agent",
+    itinerary: "📋 Itinerary", inclusions: "✅ Included", pricing: "💰 Pricing",
+    essentials: "🧳 Essentials", terms: "📄 Terms", agent: "🧑‍💼 Agent",
   };
 
   const moveSection = (index: number, direction: -1 | 1) => {
