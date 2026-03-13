@@ -213,7 +213,11 @@ export const defaultProposal: ProposalData = {
       roomType: "Deluxe Room – Douro River View",
       nights: "1 Night",
       imageUrl: "",
+      galleryUrls: [],
       description: "Award-winning wine spa & resort with panoramic views of Porto and the Douro River.",
+      starRating: "5",
+      amenities: ["Wine Spa", "Infinity Pool", "2 Michelin-star Restaurant", "Wine Cellar Tours", "Terrace Bar"],
+      highlights: ["Panoramic Douro River views", "Over 25,000 bottles in wine cellar", "Voted World's Leading Wine Hotel"],
     },
   ],
   days: [
