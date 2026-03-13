@@ -222,7 +222,7 @@ export default function ProposalPreview({ data }: Props) {
               <h2 className="font-display text-4xl font-bold text-foreground">Accommodations</h2>
             </motion.div>
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {data.accommodations.map((acc) => (
+              {accommodations.map((acc) => (
                 <div key={acc.id} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
                   {acc.imageUrl && (
                     <div className="aspect-[16/9] overflow-hidden">
