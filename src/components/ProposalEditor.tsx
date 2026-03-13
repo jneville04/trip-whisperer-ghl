@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, Accommodation } from "@/types/proposal";
+import RichTextEditor from "@/components/RichTextEditor";
+import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, Accommodation, SectionKey } from "@/types/proposal";
 import { createActivity, createDay, createPricingLine, createFlightLeg, createAccommodation, defaultSectionOrder } from "@/types/proposal";
-import type { SectionKey } from "@/types/proposal";
 
 interface Props {
   data: ProposalData;
