@@ -83,9 +83,9 @@ export default function RichTextEditor({ content, onChange, placeholder, minHeig
   );
 
   return (
-    <div className="rounded-md border border-input bg-background overflow-hidden">
+    <div className="rounded-md border border-input bg-background overflow-hidden" style={{ resize: "vertical", overflow: "auto", minHeight: minHeight }}>
       {/* Toolbar */}
-      <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-border/50 bg-muted/30 flex-wrap">
+      <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-border/50 bg-muted/30 flex-wrap sticky top-0 z-10">
         <ToolBtn active={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()} title="Bold (Ctrl+B)">
           <Bold className="h-3.5 w-3.5" />
         </ToolBtn>
@@ -135,6 +135,11 @@ export default function RichTextEditor({ content, onChange, placeholder, minHeig
       {/* Editor area */}
       <EditorContent editor={editor} />
 
+      {/* Resize handle hint */}
+      <div className="h-1.5 bg-muted/20 border-t border-border/30 cursor-ns-resize flex items-center justify-center">
+        <div className="w-8 h-0.5 rounded-full bg-border/50" />
+      </div>
+
       {/* Placeholder styling */}
       <style>{`
         .tiptap p.is-editor-empty:first-child::before {
@@ -153,6 +158,10 @@ export default function RichTextEditor({ content, onChange, placeholder, minHeig
         .tiptap a {
           color: hsl(var(--primary));
           text-decoration: underline;
+        }
+        .tiptap {
+          padding: 0.75rem;
+          min-height: ${minHeight};
         }
       `}</style>
     </div>
