@@ -80,13 +80,15 @@ export default function ProposalPreview({ data, shareId }: Props) {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const returnTo = window.location.pathname;
+
   const goToApprove = useCallback(() => {
-    navigate(`/approve${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData } });
-  }, [navigate, shareId, brandData]);
+    navigate(`/approve${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
+  }, [navigate, shareId, brandData, returnTo]);
 
   const goToRevisions = useCallback(() => {
-    navigate(`/revisions${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData } });
-  }, [navigate, shareId, brandData]);
+    navigate(`/revisions${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
+  }, [navigate, shareId, brandData, returnTo]);
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
