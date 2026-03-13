@@ -98,10 +98,10 @@ export default function ProposalPreview({ data }: Props) {
       <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
           <div className="flex items-center gap-3">
-            {data.brand.logoUrl ? (
-              <img src={data.brand.logoUrl} alt="Logo" className="h-8 max-w-[120px] object-contain" />
+            {brandData.logoUrl ? (
+              <img src={brandData.logoUrl} alt="Logo" className="h-8 max-w-[120px] object-contain" />
             ) : (
-              <span className="font-display text-lg font-bold text-foreground">✈️ {data.agent.agencyName || "Travel Co."}</span>
+              <span className="font-display text-lg font-bold text-foreground">✈️ {agent.agencyName || "Travel Co."}</span>
             )}
           </div>
           <div className="hidden sm:flex items-center gap-1">
