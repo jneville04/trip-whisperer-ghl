@@ -198,7 +198,11 @@ export const defaultProposal: ProposalData = {
       roomType: "Superior Suite – Tagus River View",
       nights: "2 Nights",
       imageUrl: "",
+      galleryUrls: [],
       description: "Iconic luxury hotel overlooking Eduardo VII Park with world-class spa and dining.",
+      starRating: "5",
+      amenities: ["Spa & Wellness Center", "Rooftop Pool", "Michelin-star Restaurant", "24h Room Service", "Fitness Center", "Concierge"],
+      highlights: ["Tagus River panoramic views", "Walking distance to historic Alfama", "Award-winning Portuguese cuisine"],
     },
     {
       id: crypto.randomUUID(),
