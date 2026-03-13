@@ -92,7 +92,7 @@ export default function RichTextEditor({ content, onChange, placeholder, minHeig
         <ToolBtn active={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()} title="Italic (Ctrl+I)">
           <Italic className="h-3.5 w-3.5" />
         </ToolBtn>
-        <ToolBtn active={editor.isActive("underline")} onClick={() => editor.chain().focus().toggleUnderline().run()} title="Underline (Ctrl+U)">
+        <ToolBtn active={editor.isActive("underline")} onClick={() => (editor.chain().focus() as any).toggleUnderline().run()} title="Underline (Ctrl+U)">
           <UnderlineIcon className="h-3.5 w-3.5" />
         </ToolBtn>
         <ToolBtn active={editor.isActive("highlight")} onClick={() => editor.chain().focus().toggleHighlight().run()} title="Highlight">
