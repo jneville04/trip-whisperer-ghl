@@ -206,8 +206,8 @@ export default function HotelSearchDialog({ onSelect, children }: HotelSearchDia
                           )}
                           <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{result.description}</p>
                           <div className="flex items-center gap-2 mt-1">
-                            {result.images?.length > 0 && (
-                              <span className="text-[10px] text-primary font-medium">{result.images.length} photos available</span>
+                            {resultImages.length > 0 && (
+                              <span className="text-[10px] text-primary font-medium">{resultImages.length} photos available</span>
                             )}
                             <span className="text-[10px] text-muted-foreground/50 truncate">{result.url}</span>
                           </div>
