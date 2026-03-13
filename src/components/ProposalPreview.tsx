@@ -6,6 +6,7 @@ import Lightbox from "@/components/Lightbox";
 import { Button } from "@/components/ui/button";
 import type { ProposalData, Activity, SectionKey } from "@/types/proposal";
 import { defaultSectionOrder } from "@/types/proposal";
+import { buildBrandCssVars } from "@/lib/brand";
 import heroFallback from "@/assets/portugal-hero.jpg";
 import sintraFallback from "@/assets/portugal-sintra.jpg";
 import portoFallback from "@/assets/portugal-porto.jpg";
@@ -33,24 +34,6 @@ function getActivityIcon(type: Activity["type"]) {
   }
 }
 
-function hexToHsl(hex: string): string | null {
-  if (!hex || !hex.startsWith("#")) return null;
-  const r = parseInt(hex.slice(1, 3), 16) / 255;
-  const g = parseInt(hex.slice(3, 5), 16) / 255;
-  const b = parseInt(hex.slice(5, 7), 16) / 255;
-  const max = Math.max(r, g, b), min = Math.min(r, g, b);
-  let h = 0, s = 0;
-  const l = (max + min) / 2;
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
-    else if (max === g) h = ((b - r) / d + 2) / 6;
-    else h = ((r - g) / d + 4) / 6;
-  }
-  return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
-}
-
 interface Props {
   data: ProposalData;
   shareId?: string;
@@ -70,7 +53,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
     setLightboxOpen(true);
   };
   const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
-  const brandData = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
+  const brandData = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "", showAgencyNameWithLogo: true };
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
   const flights = data.flights || [];
   const accommodations = data.accommodations || [];
@@ -78,22 +61,8 @@ export default function ProposalPreview({ data, shareId }: Props) {
   const essentials = data.essentials || { visaRequirements: "", passportInfo: "", currency: "", language: "", timeZone: "", weatherInfo: "", packingTips: "", emergencyContacts: "" };
   const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
 
-  const brandStyles = useMemo(() => {
-    const styles: Record<string, string> = {};
-    if (brandData.primaryColor) {
-      const hsl = hexToHsl(brandData.primaryColor);
-      if (hsl) styles["--primary"] = hsl;
-    }
-    if (brandData.secondaryColor) {
-      const hsl = hexToHsl(brandData.secondaryColor);
-      if (hsl) styles["--secondary"] = hsl;
-    }
-    if (brandData.accentColor) {
-      const hsl = hexToHsl(brandData.accentColor);
-      if (hsl) styles["--accent"] = hsl;
-    }
-    return styles;
-  }, [brandData]);
+  const brandStyles = useMemo(() => buildBrandCssVars(brandData), [brandData]);
+  const showAgencyNameWithLogo = brandData.showAgencyNameWithLogo ?? true;
 
   const sectionLabels: Record<SectionKey, string> = {
     overview: "Overview", flights: "Flights", accommodations: "Hotels",
@@ -111,16 +80,25 @@ export default function ProposalPreview({ data, shareId }: Props) {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  const goToApprove = useCallback(() => {
+    navigate(`/approve${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData } });
+  }, [navigate, shareId, brandData]);
+
+  const goToRevisions = useCallback(() => {
+    navigate(`/revisions${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData } });
+  }, [navigate, shareId, brandData]);
+
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
       {/* STICKY HEADER NAV */}
       <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
-          <div className="flex items-center gap-3">
-            {brandData.logoUrl ? (
-              <img src={brandData.logoUrl} alt="Logo" className="h-8 max-w-[120px] object-contain" />
-            ) : (
-              <span className="font-display text-lg font-bold text-foreground">{agent.agencyName || "Travel Co."}</span>
+          <div className="flex items-center gap-2 min-w-0">
+            {brandData.logoUrl && (
+              <img src={brandData.logoUrl} alt={`${agent.agencyName || "Agency"} logo`} className="h-8 max-w-[120px] object-contain shrink-0" />
+            )}
+            {(!brandData.logoUrl || showAgencyNameWithLogo) && (
+              <span className="font-display text-lg font-bold text-foreground truncate">{agent.agencyName || "Travel Co."}</span>
             )}
           </div>
           <div className="hidden sm:flex items-center gap-1">
@@ -134,7 +112,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
               </button>
             ))}
           </div>
-          <Button variant="travel" size="sm" className="text-xs" onClick={() => navigate(`/approve${shareId ? `?share=${shareId}` : ""}`)}>
+          <Button variant="travel" size="sm" className="text-xs" onClick={goToApprove}>
             Book Now
           </Button>
         </div>
