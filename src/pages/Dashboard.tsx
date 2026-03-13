@@ -21,6 +21,7 @@ interface ProposalRow {
 }
 
 export default function Dashboard() {
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [proposals, setProposals] = useState<ProposalRow[]>([]);
   const [loading, setLoading] = useState(true);
