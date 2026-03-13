@@ -604,13 +604,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       <CollapsibleSection title={sectionTitles.itinerary} sectionKey="itinerary" visible={vis.itinerary} onToggleVisible={() => toggleSection("itinerary")} dragHandleProps={dragHandleProps}>
                         <div className="space-y-6">
                           {data.days.map((day, dayIdx) => (
-                            <div key={day.id} className="border border-border/40 rounded-lg p-4 bg-muted/20">
-                              <div className="flex items-center justify-between mb-3">
-                                <span className="font-display font-bold text-foreground">Day {dayIdx + 1}</span>
-                                <Button variant="travel-ghost" size="icon" onClick={() => removeDay(dayIdx)} className="h-7 w-7 text-destructive/60 hover:text-destructive">
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </Button>
-                              </div>
+                            <CollapsibleHotel key={day.id} defaultOpen={dayIdx === 0} hotelName={`Day ${dayIdx + 1}${day.title ? `: ${day.title}` : ""}`} location={day.location} onDelete={() => removeDay(dayIdx)}>
+                              <div className="p-4 space-y-3">
                               <div className="grid grid-cols-2 gap-2 mb-2">
                                 <div>
                                   <FieldLabel>Title</FieldLabel>
@@ -707,7 +702,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                   <Plus className="h-3 w-3 mr-1" /> Activity
                                 </Button>
                               </div>
-                            </div>
+                              </div>
+                            </CollapsibleHotel>
                           ))}
                           <Button variant="travel-outline" size="sm" onClick={addDay} className="w-full">
                             <Plus className="h-4 w-4 mr-1" /> Add Day
