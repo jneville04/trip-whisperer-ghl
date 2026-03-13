@@ -192,25 +192,44 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
   const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
 
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor)
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      const oldIndex = sectionOrder.indexOf(active.id as SectionKey);
+      const newIndex = sectionOrder.indexOf(over.id as SectionKey);
+      update("sectionOrder", arrayMove(sectionOrder, oldIndex, newIndex));
+    }
+  };
+
   const sectionLabels: Record<SectionKey, string> = {
     overview: "🌍 Overview", flights: "✈️ Flights", accommodations: "🏨 Hotels",
     itinerary: "📋 Itinerary", inclusions: "✅ Included", pricing: "💰 Pricing",
     essentials: "🧳 Essentials", terms: "📄 Terms", agent: "🧑‍💼 Agent",
   };
 
-  const moveSection = (index: number, direction: -1 | 1) => {
-    const newOrder = [...sectionOrder];
-    const targetIdx = index + direction;
-    if (targetIdx < 0 || targetIdx >= newOrder.length) return;
-    [newOrder[index], newOrder[targetIdx]] = [newOrder[targetIdx], newOrder[index]];
-    update("sectionOrder", newOrder);
+  // Map each section key to its title for CollapsibleSection
+  const sectionTitles: Record<SectionKey, string> = {
+    overview: "👤 Client Details",
+    flights: "✈️ Flights",
+    accommodations: "🏨 Accommodations",
+    itinerary: "📅 Itinerary Days",
+    inclusions: "✅ What's Included",
+    pricing: "💰 Pricing",
+    essentials: "🧳 Travel Essentials",
+    terms: "📄 Terms & Conditions",
+    agent: "🧑‍💼 Agent Info",
   };
 
   return (
     <div className="space-y-4 p-4 sm:p-6 overflow-y-auto h-full">
       <div className="mb-6">
         <h2 className="font-display text-2xl font-bold text-foreground">Proposal Builder</h2>
-        <p className="text-sm text-muted-foreground font-body mt-1">Fill in the details below — preview updates live. Use the 👁 icon to show/hide sections.</p>
+        <p className="text-sm text-muted-foreground font-body mt-1">Fill in the details below — preview updates live. Drag sections to reorder.</p>
       </div>
 
       {/* Brand Settings */}
