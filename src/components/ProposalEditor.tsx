@@ -224,7 +224,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
       {/* Flights */}
       <CollapsibleSection title="✈️ Flights" sectionKey="flights" visible={vis.flights} onToggleVisible={() => toggleSection("flights")} defaultOpen={false}>
         <div className="space-y-4">
-          {data.flights.map((flight, i) => (
+          {flights.map((flight, i) => (
             <div key={flight.id} className="border border-border/40 rounded-lg p-3 bg-muted/20">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-body font-semibold text-sm text-foreground">{flight.type === "departure" ? "🛫 Departure" : "🛬 Return"}</span>
