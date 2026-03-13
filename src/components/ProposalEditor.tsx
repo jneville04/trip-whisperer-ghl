@@ -324,7 +324,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
               </div>
             </div>
           ))}
-          <Button variant="travel-ghost" size="sm" onClick={() => update("accommodations", [...data.accommodations, createAccommodation()])} className="text-primary text-xs h-7">
+          <Button variant="travel-ghost" size="sm" onClick={() => update("accommodations", [...accommodations, createAccommodation()])} className="text-primary text-xs h-7">
             <Plus className="h-3 w-3 mr-1" /> Add Hotel
           </Button>
         </div>
