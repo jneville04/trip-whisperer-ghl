@@ -1,5 +1,8 @@
-import { useState, useRef } from "react";
+import { useState, useRef, ReactNode } from "react";
 import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, ChevronRight, Eye, EyeOff, ImagePlus, X, ArrowUp, ArrowDown, Search } from "lucide-react";
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 import DatePickerField from "@/components/DatePickerField";
 import ImageUploadField from "@/components/ImageUploadField";
