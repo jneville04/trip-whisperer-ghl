@@ -66,6 +66,7 @@ export interface BrandSettings {
   secondaryColor: string;
   accentColor: string;
   logoUrl: string;
+  showAgencyNameWithLogo?: boolean;
 }
 
 export interface Traveler {
@@ -424,6 +425,7 @@ export const defaultProposal: ProposalData = {
     secondaryColor: "",
     accentColor: "",
     logoUrl: "",
+    showAgencyNameWithLogo: true,
   },
   sectionVisibility: {
     hero: true,

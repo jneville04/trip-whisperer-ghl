@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import { isValidHexColor, normalizeHexInput } from "@/lib/brand";
 import {
   Palette, Users, ArrowLeft, Save, Upload, Check, X, UserX,
 } from "lucide-react";
@@ -85,6 +86,17 @@ function BrandingTab() {
 
   const handleSave = async () => {
     setSaving(true);
+
+    if (
+      !isValidHexColor(form.primary_color) ||
+      !isValidHexColor(form.secondary_color) ||
+      !isValidHexColor(form.accent_color)
+    ) {
+      toast({ title: "Invalid colors", description: "Use full hex colors only, like #1A2B3C.", variant: "destructive" });
+      setSaving(false);
+      return;
+    }
+
     const { error } = await supabase
       .from("app_settings")
       .update({
@@ -215,13 +227,16 @@ function BrandingTab() {
             <input
               type="color"
               value={form.primary_color}
-              onChange={(e) => setForm({ ...form, primary_color: e.target.value })}
+              onChange={(e) => setForm({ ...form, primary_color: e.target.value.toUpperCase() })}
               className="h-10 w-10 rounded border border-border cursor-pointer"
             />
             <Input
               value={form.primary_color}
-              onChange={(e) => setForm({ ...form, primary_color: e.target.value })}
+              onChange={(e) => setForm({ ...form, primary_color: normalizeHexInput(e.target.value) })}
               className="flex-1"
+              inputMode="text"
+              maxLength={7}
+              placeholder="#1A2B3C"
             />
           </div>
         </div>
@@ -231,13 +246,16 @@ function BrandingTab() {
             <input
               type="color"
               value={form.secondary_color}
-              onChange={(e) => setForm({ ...form, secondary_color: e.target.value })}
+              onChange={(e) => setForm({ ...form, secondary_color: e.target.value.toUpperCase() })}
               className="h-10 w-10 rounded border border-border cursor-pointer"
             />
             <Input
               value={form.secondary_color}
-              onChange={(e) => setForm({ ...form, secondary_color: e.target.value })}
+              onChange={(e) => setForm({ ...form, secondary_color: normalizeHexInput(e.target.value) })}
               className="flex-1"
+              inputMode="text"
+              maxLength={7}
+              placeholder="#1A2B3C"
             />
           </div>
         </div>
@@ -247,13 +265,16 @@ function BrandingTab() {
             <input
               type="color"
               value={form.accent_color}
-              onChange={(e) => setForm({ ...form, accent_color: e.target.value })}
+              onChange={(e) => setForm({ ...form, accent_color: e.target.value.toUpperCase() })}
               className="h-10 w-10 rounded border border-border cursor-pointer"
             />
             <Input
               value={form.accent_color}
-              onChange={(e) => setForm({ ...form, accent_color: e.target.value })}
+              onChange={(e) => setForm({ ...form, accent_color: normalizeHexInput(e.target.value) })}
               className="flex-1"
+              inputMode="text"
+              maxLength={7}
+              placeholder="#1A2B3C"
             />
           </div>
         </div>
