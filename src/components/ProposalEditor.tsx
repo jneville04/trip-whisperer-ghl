@@ -267,10 +267,10 @@ export default function ProposalEditor({ data, onChange }: Props) {
             </div>
           ))}
           <div className="flex gap-2">
-            <Button variant="travel-ghost" size="sm" onClick={() => update("flights", [...data.flights, createFlightLeg("departure")])} className="text-primary text-xs h-7">
+            <Button variant="travel-ghost" size="sm" onClick={() => update("flights", [...flights, createFlightLeg("departure")])} className="text-primary text-xs h-7">
               <Plus className="h-3 w-3 mr-1" /> Departure
             </Button>
-            <Button variant="travel-ghost" size="sm" onClick={() => update("flights", [...data.flights, createFlightLeg("return")])} className="text-primary text-xs h-7">
+            <Button variant="travel-ghost" size="sm" onClick={() => update("flights", [...flights, createFlightLeg("return")])} className="text-primary text-xs h-7">
               <Plus className="h-3 w-3 mr-1" /> Return
             </Button>
           </div>
