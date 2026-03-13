@@ -352,7 +352,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                 </div>
                 <div>
                   <FieldLabel>Date</FieldLabel>
-                  <Input value={flight.date} onChange={(e) => updateFlight(i, "date", e.target.value)} placeholder="Sep 14, 2026" className="h-7 text-xs" />
+                  <DatePickerField value={flight.date} onChange={(val) => updateFlight(i, "date", val)} placeholder="Select date" />
                 </div>
                 <div className="grid grid-cols-2 gap-1">
                   <div>
