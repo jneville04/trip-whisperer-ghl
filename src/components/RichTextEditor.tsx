@@ -27,6 +27,7 @@ interface Props {
 
 export default function RichTextEditor({ content, onChange, placeholder, minHeight = "120px" }: Props) {
   const editor = useEditor({
+    // @ts-ignore - tiptap version mismatch between packages
     extensions: [
       StarterKit.configure({
         heading: { levels: [2, 3] },
