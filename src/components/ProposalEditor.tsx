@@ -125,9 +125,23 @@ export default function ProposalEditor({ data, onChange }: Props) {
   };
 
   const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
-  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, testimonial: true, agent: true };
+  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, agent: true };
   const flights = data.flights || [];
   const accommodations = data.accommodations || [];
+  const sectionOrder = data.sectionOrder || defaultSectionOrder;
+
+  const sectionLabels: Record<SectionKey, string> = {
+    overview: "🌍 Overview", flights: "✈️ Flights", accommodations: "🏨 Hotels",
+    itinerary: "📋 Itinerary", inclusions: "✅ Included", pricing: "💰 Pricing", agent: "🧑‍💼 Agent",
+  };
+
+  const moveSection = (index: number, direction: -1 | 1) => {
+    const newOrder = [...sectionOrder];
+    const targetIdx = index + direction;
+    if (targetIdx < 0 || targetIdx >= newOrder.length) return;
+    [newOrder[index], newOrder[targetIdx]] = [newOrder[targetIdx], newOrder[index]];
+    update("sectionOrder", newOrder);
+  };
 
   return (
     <div className="space-y-4 p-4 sm:p-6 overflow-y-auto h-full">
