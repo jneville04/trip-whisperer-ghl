@@ -623,8 +623,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
                     )}
                     {/* Additional images */}
                     {(day.imageUrls || []).map((url, imgIdx) => (
-                      <div key={imgIdx} className="relative aspect-[4/3] rounded-lg overflow-hidden border border-border/40 bg-muted/30 p-1 group">
-                        <img src={url} alt={`Day ${dayIdx + 1} photo ${imgIdx + 2}`} className="w-full h-full object-contain" />
+                      <div key={imgIdx} className="relative aspect-[4/3] rounded-lg overflow-hidden border border-border/40 group">
+                        <img src={url} alt={`Day ${dayIdx + 1} photo ${imgIdx + 2}`} className="w-full h-full object-cover" />
                         <button onClick={() => {
                           const newUrls = (day.imageUrls || []).filter((_, j) => j !== imgIdx);
                           updateDay(dayIdx, { ...day, imageUrls: newUrls });
