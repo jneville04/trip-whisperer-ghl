@@ -78,11 +78,14 @@ export default function AuthPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           {settings.logo_url ? (
-            <img src={settings.logo_url} alt={settings.app_name} className="h-16 w-16 object-contain mx-auto mb-4 rounded-2xl" />
+            <img src={settings.logo_url} alt={settings.app_name} className="h-16 w-auto object-contain mx-auto mb-4" />
           ) : (
             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
               <Plane className="h-8 w-8 text-primary" />
             </div>
+          )}
+          {(settings as any).admin_photo_url && (
+            <img src={(settings as any).admin_photo_url} alt="Admin" className="h-20 w-20 rounded-full object-cover mx-auto mb-4 border-2 border-primary/20" />
           )}
           <h1 className="font-display text-3xl font-bold text-foreground">
             {settings.app_name}

@@ -14,6 +14,7 @@ export interface AppSettings {
   login_message: string | null;
   ghl_webhook_approve: string;
   ghl_webhook_revision: string;
+  admin_photo_url: string | null;
 }
 
 const defaults: AppSettings = {
@@ -29,6 +30,7 @@ const defaults: AppSettings = {
   login_message: null,
   ghl_webhook_approve: "",
   ghl_webhook_revision: "",
+  admin_photo_url: null,
 };
 
 function hexToHsl(hex: string): string | null {

@@ -17,6 +17,7 @@ export type Database = {
       app_settings: {
         Row: {
           accent_color: string
+          admin_photo_url: string | null
           app_name: string
           favicon_url: string | null
           font_body: string
@@ -33,6 +34,7 @@ export type Database = {
         }
         Insert: {
           accent_color?: string
+          admin_photo_url?: string | null
           app_name?: string
           favicon_url?: string | null
           font_body?: string
@@ -49,6 +51,7 @@ export type Database = {
         }
         Update: {
           accent_color?: string
+          admin_photo_url?: string | null
           app_name?: string
           favicon_url?: string | null
           font_body?: string

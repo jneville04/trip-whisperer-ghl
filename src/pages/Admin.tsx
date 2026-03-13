@@ -100,6 +100,7 @@ function BrandingTab() {
         login_message: form.login_message,
         ghl_webhook_approve: (form as any).ghl_webhook_approve || "",
         ghl_webhook_revision: (form as any).ghl_webhook_revision || "",
+        admin_photo_url: (form as any).admin_photo_url || "",
         updated_at: new Date().toISOString(),
       } as any)
       .eq("id", 1);
@@ -157,7 +158,7 @@ function BrandingTab() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div>
           <Label>Logo</Label>
           <div className="flex items-center gap-3">
@@ -180,6 +181,29 @@ function BrandingTab() {
               <Upload className="h-4 w-4" /> Upload
               <input type="file" accept="image/*,.ico" className="hidden" onChange={handleFaviconUpload} />
             </label>
+          </div>
+        </div>
+        <div>
+          <Label>Admin Photo (Login Page)</Label>
+          <div className="flex items-center gap-3">
+            {(form as any).admin_photo_url && (
+              <img src={(form as any).admin_photo_url} alt="Admin" className="h-12 w-12 rounded-full object-cover" />
+            )}
+            <label className="cursor-pointer inline-flex items-center gap-1 text-sm text-primary hover:underline font-body">
+              <Upload className="h-4 w-4" /> Upload
+              <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const path = `admin-photo-${Date.now()}.${file.name.split(".").pop()}`;
+                const { error } = await supabase.storage.from("app-assets").upload(path, file, { upsert: true });
+                if (error) { toast({ title: "Upload error", description: error.message, variant: "destructive" }); return; }
+                const { data: urlData } = supabase.storage.from("app-assets").getPublicUrl(path);
+                setForm({ ...form, admin_photo_url: urlData.publicUrl } as any);
+              }} />
+            </label>
+            {(form as any).admin_photo_url && (
+              <button onClick={() => setForm({ ...form, admin_photo_url: "" } as any)} className="text-xs text-destructive hover:underline">Remove</button>
+            )}
           </div>
         </div>
       </div>
