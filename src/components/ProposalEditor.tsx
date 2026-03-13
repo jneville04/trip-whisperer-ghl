@@ -487,7 +487,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       value={accHighlights.join("\n")}
                       onChange={(e) => updateAccField("highlights", e.target.value.split("\n").filter(Boolean))}
                       placeholder="One highlight per line&#10;e.g. Tagus River panoramic views&#10;Walking distance to historic Alfama"
-                      className="text-xs min-h-[80px] resize-y"
+                      className="text-xs min-h-[120px] resize-y"
                     />
                   </div>
                   <div>
