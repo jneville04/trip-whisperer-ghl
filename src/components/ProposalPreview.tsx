@@ -1,5 +1,6 @@
+import { useState, useEffect, useMemo } from "react";
 import { motion, type Easing } from "framer-motion";
-import { MapPin, Calendar, Users, Star, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe } from "lucide-react";
+import { MapPin, Calendar, Users, Star, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe, PlaneTakeoff, PlaneLanding, BedDouble } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { ProposalData, Activity } from "@/types/proposal";
 import heroFallback from "@/assets/portugal-hero.jpg";
@@ -29,63 +30,228 @@ function getActivityIcon(type: Activity["type"]) {
   }
 }
 
+function hexToHsl(hex: string): string | null {
+  if (!hex || !hex.startsWith("#")) return null;
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0;
+  const l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+    else if (max === g) h = ((b - r) / d + 2) / 6;
+    else h = ((r - g) / d + 4) / 6;
+  }
+  return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+}
+
 interface Props {
   data: ProposalData;
 }
 
 export default function ProposalPreview({ data }: Props) {
   const heroImage = data.heroImageUrl || heroFallback;
+  const vis = data.sectionVisibility;
+  const [activeSection, setActiveSection] = useState("");
+
+  const brandStyles = useMemo(() => {
+    const styles: Record<string, string> = {};
+    if (data.brand.primaryColor) {
+      const hsl = hexToHsl(data.brand.primaryColor);
+      if (hsl) styles["--primary"] = hsl;
+    }
+    if (data.brand.secondaryColor) {
+      const hsl = hexToHsl(data.brand.secondaryColor);
+      if (hsl) styles["--secondary"] = hsl;
+    }
+    if (data.brand.accentColor) {
+      const hsl = hexToHsl(data.brand.accentColor);
+      if (hsl) styles["--accent"] = hsl;
+    }
+    return styles;
+  }, [data.brand]);
+
+  const navItems = useMemo(() => {
+    const items: { label: string; id: string }[] = [];
+    if (vis.overview) items.push({ label: "Overview", id: "overview" });
+    if (vis.flights) items.push({ label: "Flights", id: "flights" });
+    if (vis.accommodations) items.push({ label: "Hotels", id: "accommodations" });
+    if (vis.itinerary) items.push({ label: "Itinerary", id: "itinerary" });
+    if (vis.inclusions) items.push({ label: "Included", id: "inclusions" });
+    if (vis.pricing) items.push({ label: "Pricing", id: "pricing" });
+    return items;
+  }, [vis]);
+
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* HERO */}
-      <section className="relative h-[85vh] min-h-[600px] overflow-hidden">
-        <img src={heroImage} alt={data.destination} className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-b from-foreground/50 via-foreground/30 to-foreground/70" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-          <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-primary-foreground/70 font-body text-sm tracking-[0.3em] uppercase mb-4">
-            Curated Travel Experience
-          </motion.p>
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="font-display text-5xl sm:text-7xl lg:text-8xl font-bold text-primary-foreground leading-tight">
-            {data.destination || "Your Destination"}
-          </motion.h1>
-          {data.subtitle && (
-            <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="font-display text-xl sm:text-2xl text-primary-foreground/80 mt-3 italic">
-              {data.subtitle}
-            </motion.p>
-          )}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.7 }} className="flex items-center gap-6 mt-10 text-primary-foreground/60 text-sm font-body">
-            {data.travelDates && <span className="flex items-center gap-1.5"><Calendar className="h-4 w-4" /> {data.travelDates}</span>}
-            {data.travelerCount && <span className="flex items-center gap-1.5"><Users className="h-4 w-4" /> {data.travelerCount}</span>}
-            {data.destinationCount && <span className="flex items-center gap-1.5"><MapPin className="h-4 w-4" /> {data.destinationCount}</span>}
-          </motion.div>
-        </div>
-        <motion.div animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 2 }} className="absolute bottom-8 left-1/2 -translate-x-1/2">
-          <div className="w-6 h-10 rounded-full border-2 border-primary-foreground/30 flex justify-center pt-2">
-            <div className="w-1 h-2 rounded-full bg-primary-foreground/50" />
+    <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
+      {/* STICKY HEADER NAV */}
+      <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50 shadow-sm">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
+          <div className="flex items-center gap-3">
+            {data.brand.logoUrl ? (
+              <img src={data.brand.logoUrl} alt="Logo" className="h-8 max-w-[120px] object-contain" />
+            ) : (
+              <span className="font-display text-lg font-bold text-foreground">✈️ {data.agent.agencyName || "Travel Co."}</span>
+            )}
           </div>
-        </motion.div>
-      </section>
+          <div className="hidden sm:flex items-center gap-1">
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => scrollTo(item.id)}
+                className="px-3 py-1.5 text-sm font-body text-muted-foreground hover:text-primary transition-colors rounded-md hover:bg-muted/50"
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+          <Button variant="travel" size="sm" className="text-xs">
+            Book Now
+          </Button>
+        </div>
+      </nav>
+
+      {/* HERO */}
+      {vis.hero && (
+        <section className="relative h-[80vh] min-h-[550px] overflow-hidden">
+          <img src={heroImage} alt={data.destination} className="absolute inset-0 w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-b from-foreground/50 via-foreground/30 to-foreground/70" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+            <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-primary-foreground/70 font-body text-sm tracking-[0.3em] uppercase mb-4">
+              Curated Travel Experience
+            </motion.p>
+            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="font-display text-5xl sm:text-7xl lg:text-8xl font-bold text-primary-foreground leading-tight">
+              {data.destination || "Your Destination"}
+            </motion.h1>
+            {data.subtitle && (
+              <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="font-display text-xl sm:text-2xl text-primary-foreground/80 mt-3 italic">
+                {data.subtitle}
+              </motion.p>
+            )}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.7 }} className="flex items-center gap-6 mt-10 text-primary-foreground/60 text-sm font-body">
+              {data.travelDates && <span className="flex items-center gap-1.5"><Calendar className="h-4 w-4" /> {data.travelDates}</span>}
+              {data.travelerCount && <span className="flex items-center gap-1.5"><Users className="h-4 w-4" /> {data.travelerCount}</span>}
+              {data.destinationCount && <span className="flex items-center gap-1.5"><MapPin className="h-4 w-4" /> {data.destinationCount}</span>}
+            </motion.div>
+          </div>
+          <motion.div animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 2 }} className="absolute bottom-8 left-1/2 -translate-x-1/2">
+            <div className="w-6 h-10 rounded-full border-2 border-primary-foreground/30 flex justify-center pt-2">
+              <div className="w-1 h-2 rounded-full bg-primary-foreground/50" />
+            </div>
+          </motion.div>
+        </section>
+      )}
 
       {/* PREPARED FOR */}
-      <section className="py-20 px-6">
-        <div className="max-w-3xl mx-auto text-center">
-          <motion.p variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Prepared Exclusively For</motion.p>
-          <motion.h2 variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="font-display text-4xl sm:text-5xl font-bold text-foreground">
-            {data.clientName || "Your Client"}
-          </motion.h2>
-          <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2} className="w-16 h-0.5 bg-primary mx-auto mt-6 mb-8" />
-          {data.introText && (
-            <motion.p variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={3} className="text-muted-foreground leading-relaxed text-lg font-body">
-              {data.introText}
-            </motion.p>
-          )}
-        </div>
-      </section>
+      {vis.overview && (
+        <section id="overview" className="py-20 px-6">
+          <div className="max-w-3xl mx-auto text-center">
+            <motion.p variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Prepared Exclusively For</motion.p>
+            <motion.h2 variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="font-display text-4xl sm:text-5xl font-bold text-foreground">
+              {data.clientName || "Your Client"}
+            </motion.h2>
+            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2} className="w-16 h-0.5 bg-primary mx-auto mt-6 mb-8" />
+            {data.introText && (
+              <motion.p variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={3} className="text-muted-foreground leading-relaxed text-lg font-body">
+                {data.introText}
+              </motion.p>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* FLIGHTS */}
+      {vis.flights && data.flights.length > 0 && (
+        <section id="flights" className="py-20 bg-card">
+          <div className="max-w-4xl mx-auto px-6">
+            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
+              <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Flights</p>
+              <h2 className="font-display text-4xl font-bold text-foreground">Air Travel</h2>
+            </motion.div>
+            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {data.flights.map((flight) => (
+                <div key={flight.id} className="bg-background rounded-2xl border border-border/50 shadow-sm p-6 relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
+                  <div className="flex items-center gap-2 mb-4">
+                    {flight.type === "departure" ? <PlaneTakeoff className="h-5 w-5 text-primary" /> : <PlaneLanding className="h-5 w-5 text-primary" />}
+                    <span className="font-body font-semibold text-foreground text-sm uppercase tracking-wide">{flight.type === "departure" ? "Departure" : "Return"}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground font-body mb-3">{flight.date}</p>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="text-center">
+                      <p className="font-display text-2xl font-bold text-foreground">{flight.departureAirport.split("–")[0]?.trim() || "—"}</p>
+                      <p className="text-xs text-muted-foreground font-body">{flight.departureTime}</p>
+                    </div>
+                    <div className="flex-1 mx-4 flex items-center">
+                      <div className="flex-1 border-t border-dashed border-border" />
+                      <Plane className="h-4 w-4 text-primary mx-2" />
+                      <div className="flex-1 border-t border-dashed border-border" />
+                    </div>
+                    <div className="text-center">
+                      <p className="font-display text-2xl font-bold text-foreground">{flight.arrivalAirport.split("–")[0]?.trim() || "—"}</p>
+                      <p className="text-xs text-muted-foreground font-body">{flight.arrivalTime}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground font-body">
+                    <span>{flight.airline}</span>
+                    {flight.flightNumber && <span className="text-primary font-semibold">{flight.flightNumber}</span>}
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+      )}
+
+      {/* ACCOMMODATIONS */}
+      {vis.accommodations && data.accommodations.length > 0 && (
+        <section id="accommodations" className="py-20">
+          <div className="max-w-5xl mx-auto px-6">
+            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
+              <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Where You'll Stay</p>
+              <h2 className="font-display text-4xl font-bold text-foreground">Accommodations</h2>
+            </motion.div>
+            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {data.accommodations.map((acc) => (
+                <div key={acc.id} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
+                  {acc.imageUrl && (
+                    <div className="aspect-[16/9] overflow-hidden">
+                      <img src={acc.imageUrl} alt={acc.hotelName} className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <div className="p-6">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <h3 className="font-display text-xl font-bold text-foreground">{acc.hotelName || "Hotel"}</h3>
+                        <p className="text-sm text-muted-foreground font-body flex items-center gap-1 mt-0.5"><MapPin className="h-3 w-3" /> {acc.location}</p>
+                      </div>
+                      <BedDouble className="h-5 w-5 text-primary mt-1" />
+                    </div>
+                    {acc.roomType && <p className="text-sm font-body text-foreground mt-2 font-medium">{acc.roomType}</p>}
+                    {acc.description && <p className="text-sm text-muted-foreground font-body mt-1">{acc.description}</p>}
+                    <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground font-body border-t border-border/30 pt-3">
+                      {acc.checkIn && <span>Check-in: {acc.checkIn}</span>}
+                      {acc.checkOut && <span>Check-out: {acc.checkOut}</span>}
+                      {acc.nights && <span className="text-primary font-semibold">{acc.nights}</span>}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+      )}
 
       {/* ITINERARY */}
-      {data.days.length > 0 && (
-        <section className="pb-20">
+      {vis.itinerary && data.days.length > 0 && (
+        <section id="itinerary" className="pb-20 pt-20 bg-card">
           <div className="max-w-5xl mx-auto px-6">
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-16">
               <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Journey</p>
@@ -139,8 +305,8 @@ export default function ProposalPreview({ data }: Props) {
       )}
 
       {/* INCLUSIONS */}
-      {data.inclusions.filter(Boolean).length > 0 && (
-        <section className="py-20 bg-card">
+      {vis.inclusions && data.inclusions.filter(Boolean).length > 0 && (
+        <section id="inclusions" className="py-20">
           <div className="max-w-4xl mx-auto px-6">
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
               <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Everything Taken Care Of</p>
@@ -161,14 +327,14 @@ export default function ProposalPreview({ data }: Props) {
       )}
 
       {/* PRICING */}
-      {data.pricing.length > 0 && (
-        <section className="py-20">
+      {vis.pricing && data.pricing.length > 0 && (
+        <section id="pricing" className="py-20 bg-card">
           <div className="max-w-3xl mx-auto px-6 text-center">
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0}>
               <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Investment</p>
               <h2 className="font-display text-4xl font-bold text-foreground mb-8">Trip Pricing</h2>
             </motion.div>
-            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="bg-card rounded-2xl border border-border/50 shadow-lg p-10">
+            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="bg-background rounded-2xl border border-border/50 shadow-lg p-10">
               <div className="space-y-4 mb-8">
                 {data.pricing.map((line) => (
                   <div key={line.id} className="flex justify-between items-center py-2 border-b border-border/30 font-body">
@@ -190,8 +356,8 @@ export default function ProposalPreview({ data }: Props) {
       )}
 
       {/* TESTIMONIAL */}
-      {data.testimonialQuote && (
-        <section className="py-20 bg-card">
+      {vis.testimonial && data.testimonialQuote && (
+        <section className="py-20">
           <div className="max-w-3xl mx-auto px-6 text-center">
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0}>
               <div className="flex items-center justify-center gap-1 mb-4">
@@ -209,19 +375,43 @@ export default function ProposalPreview({ data }: Props) {
       )}
 
       {/* AGENT FOOTER */}
-      <footer className="py-16 px-6 border-t border-border/50">
-        <div className="max-w-3xl mx-auto text-center">
-          <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Travel Advisor</p>
-          <h3 className="font-display text-2xl font-bold text-foreground">{data.agent.name}</h3>
-          <p className="text-muted-foreground font-body mt-1">{data.agent.title}</p>
-          <div className="flex items-center justify-center gap-6 mt-6 text-sm font-body text-muted-foreground flex-wrap">
-            {data.agent.phone && <a href={`tel:${data.agent.phone}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Phone className="h-4 w-4" /> {data.agent.phone}</a>}
-            {data.agent.email && <a href={`mailto:${data.agent.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-4 w-4" /> {data.agent.email}</a>}
-            {data.agent.website && <a href="#" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Globe className="h-4 w-4" /> {data.agent.website}</a>}
+      {vis.agent && (
+        <footer className="py-16 px-6 border-t border-border/50 bg-card">
+          <div className="max-w-4xl mx-auto">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+              <div className="flex flex-col items-center text-center md:items-start md:text-left flex-1">
+                <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Travel Advisor</p>
+                <div className="flex items-center gap-4 mb-4">
+                  {data.agent.photoUrl && (
+                    <img src={data.agent.photoUrl} alt={data.agent.name} className="w-16 h-16 rounded-full object-cover border-2 border-primary/20" />
+                  )}
+                  <div>
+                    <h3 className="font-display text-2xl font-bold text-foreground">{data.agent.name}</h3>
+                    <p className="text-muted-foreground font-body mt-0.5">{data.agent.title}</p>
+                    <p className="text-sm text-muted-foreground font-body">{data.agent.agencyName}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-6 text-sm font-body text-muted-foreground flex-wrap">
+                  {data.agent.phone && <a href={`tel:${data.agent.phone}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Phone className="h-4 w-4" /> {data.agent.phone}</a>}
+                  {data.agent.email && <a href={`mailto:${data.agent.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-4 w-4" /> {data.agent.email}</a>}
+                  {data.agent.website && <a href="#" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Globe className="h-4 w-4" /> {data.agent.website}</a>}
+                </div>
+              </div>
+              {data.agent.logoUrl && (
+                <div className="shrink-0">
+                  <img src={data.agent.logoUrl} alt={data.agent.agencyName} className="h-16 max-w-[180px] object-contain" />
+                </div>
+              )}
+            </div>
+            <div className="mt-8 pt-6 border-t border-border/30">
+              <Button variant="travel" size="lg" className="w-full sm:w-auto text-base px-8">
+                Sign Up Today! <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground/60 mt-8 font-body text-center">© 2026 {data.agent.agencyName} · All prices in USD · Subject to availability</p>
           </div>
-          <p className="text-xs text-muted-foreground/60 mt-10 font-body">© 2026 {data.agent.agencyName} · All prices in USD · Subject to availability</p>
-        </div>
-      </footer>
+        </footer>
+      )}
     </div>
   );
 }
