@@ -267,7 +267,7 @@ export default function ProposalPreview({ data }: Props) {
                               <BedDouble className="h-6 w-6 text-primary mt-1 shrink-0" />
                             </div>
                             {acc.roomType && <p className="font-body text-foreground font-semibold mt-3">{acc.roomType}</p>}
-                            {acc.description && <p className="text-sm text-muted-foreground font-body mt-2 leading-relaxed">{acc.description}</p>}
+                            {acc.description && <div className="text-sm text-muted-foreground font-body mt-2 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: acc.description }} />}
                             {highlights.length > 0 && (
                               <div className="mt-4">
                                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">Highlights</p>
