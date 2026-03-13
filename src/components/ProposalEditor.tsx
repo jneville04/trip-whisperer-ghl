@@ -121,7 +121,10 @@ export default function ProposalEditor({ data, onChange }: Props) {
     update("accommodations", accs);
   };
 
-  const vis = data.sectionVisibility;
+  const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
+  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, testimonial: true, agent: true };
+  const flights = data.flights || [];
+  const accommodations = data.accommodations || [];
 
   return (
     <div className="space-y-4 p-4 sm:p-6 overflow-y-auto h-full">

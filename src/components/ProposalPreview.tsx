@@ -54,8 +54,11 @@ interface Props {
 
 export default function ProposalPreview({ data }: Props) {
   const heroImage = data.heroImageUrl || heroFallback;
-  const vis = data.sectionVisibility;
-  const [activeSection, setActiveSection] = useState("");
+  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, testimonial: true, agent: true };
+  const brandData = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
+  const flights = data.flights || [];
+  const accommodations = data.accommodations || [];
+  const agent = data.agent || { name: "", title: "", phone: "", email: "", website: "", agencyName: "", logoUrl: "", photoUrl: "" };
 
   const brandStyles = useMemo(() => {
     const styles: Record<string, string> = {};
