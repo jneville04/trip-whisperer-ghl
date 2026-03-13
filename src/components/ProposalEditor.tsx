@@ -432,6 +432,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
                 </Button>
               </div>
 
+              <CollapsibleContent>
+              <div className="border-t border-border/30">
               {/* Tabbed Content */}
               <Tabs defaultValue="general" className="w-full">
                 <TabsList className="w-full justify-start rounded-none border-b border-border/30 bg-transparent h-9 px-3">
@@ -486,7 +488,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   <div>
                     <FieldLabel>Displayed Photos</FieldLabel>
                     <div className="grid grid-cols-3 gap-2 mt-1.5">
-                      {/* Primary photo */}
                       {acc.imageUrl && (
                          <div className="relative col-span-2 row-span-2 aspect-[4/3] rounded-lg overflow-hidden border border-border/40 group">
                           <img src={acc.imageUrl} alt="Primary" className="w-full h-full object-cover" />
@@ -496,7 +497,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
                           </button>
                         </div>
                       )}
-                      {/* Gallery images */}
                       {accGallery.map((url: string, gi: number) => (
                         <div key={gi} className="relative aspect-square rounded-lg overflow-hidden border border-border/40 group">
                           <img src={url} alt={`Gallery ${gi + 1}`} className="w-full h-full object-cover" />
@@ -505,7 +505,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
                           </button>
                         </div>
                       ))}
-                      {/* Add photo button */}
                       <label className="aspect-square rounded-lg border-2 border-dashed border-border/60 flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary/50 hover:bg-muted/40 transition-colors">
                         <ImagePlus className="h-5 w-5 text-muted-foreground" />
                         <span className="text-[10px] text-muted-foreground font-medium">Add photos</span>
@@ -559,7 +558,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   </div>
                 </TabsContent>
               </Tabs>
+              </div>
+              </CollapsibleContent>
             </div>
+            )}
+            </Collapsible>
             );
           })}
           <div className="flex gap-2">
