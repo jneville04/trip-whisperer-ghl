@@ -119,7 +119,7 @@ export default function ProposalPreview({ data }: Props) {
             {brandData.logoUrl ? (
               <img src={brandData.logoUrl} alt="Logo" className="h-8 max-w-[120px] object-contain" />
             ) : (
-              <span className="font-display text-lg font-bold text-foreground">✈️ {agent.agencyName || "Travel Co."}</span>
+              <span className="font-display text-lg font-bold text-foreground">{agent.agencyName || "Travel Co."}</span>
             )}
           </div>
           <div className="hidden sm:flex items-center gap-1">
