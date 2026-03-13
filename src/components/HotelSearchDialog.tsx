@@ -90,7 +90,7 @@ export default function HotelSearchDialog({ onSelect, children }: HotelSearchDia
     setSelectedImages([]);
 
     try {
-      const response = await firecrawlApi.search(query, { limit: 5 });
+      const response = await firecrawlApi.search(query, { limit: 10 });
 
       if (response.success && response.data) {
         setResults(Array.isArray(response.data) ? response.data : []);
