@@ -53,6 +53,7 @@ function hexToHsl(hex: string): string | null {
 
 interface Props {
   data: ProposalData;
+  shareId?: string;
 }
 
 export default function ProposalPreview({ data }: Props) {
