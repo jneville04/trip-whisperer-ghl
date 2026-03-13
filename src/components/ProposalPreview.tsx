@@ -413,9 +413,14 @@ export default function ProposalPreview({ data }: Props) {
               {data.paymentTerms && <p className="text-xs text-muted-foreground mt-3 font-body">{data.paymentTerms}</p>}
             </motion.div>
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2} className="mt-10">
-              <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto">
-                Approve & Book This Trip <ArrowRight className="h-5 w-5 ml-2" />
-              </Button>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto">
+                  <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
+                </Button>
+                <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto">
+                  <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
+                </Button>
+              </div>
               {data.validUntil && <p className="text-sm text-muted-foreground mt-4 font-body">This proposal is valid until {data.validUntil}</p>}
             </motion.div>
           </div>
