@@ -228,7 +228,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
             <div key={flight.id} className="border border-border/40 rounded-lg p-3 bg-muted/20">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-body font-semibold text-sm text-foreground">{flight.type === "departure" ? "🛫 Departure" : "🛬 Return"}</span>
-                <Button variant="travel-ghost" size="icon" onClick={() => update("flights", data.flights.filter((_, idx) => idx !== i))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
+                <Button variant="travel-ghost" size="icon" onClick={() => update("flights", flights.filter((_, idx) => idx !== i))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </div>
