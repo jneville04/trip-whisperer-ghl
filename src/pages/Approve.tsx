@@ -1,20 +1,49 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { CheckCircle2, ArrowLeft, Send } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { CheckCircle2, ArrowLeft, Send, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { useBrandStyles } from "@/hooks/useBrandStyles";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 export default function ApprovePage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", notes: "" });
   const brandStyles = useBrandStyles();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const proposalId = searchParams.get("proposal") || "";
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSending(true);
+
+    try {
+      const { error } = await supabase.functions.invoke("ghl-webhook", {
+        body: {
+          type: "approve",
+          payload: {
+            ...form,
+            proposalId,
+            source: window.location.href,
+          },
+        },
+      });
+
+      if (error) {
+        console.error("Webhook error:", error);
+        toast({ title: "Submitted with warning", description: "Your approval was recorded but the notification may have failed.", variant: "destructive" });
+      }
+    } catch (err) {
+      console.error("Failed to call webhook:", err);
+    }
+
     setSubmitted(true);
+    setSending(false);
   };
 
   if (submitted) {
@@ -79,8 +108,9 @@ export default function ApprovePage() {
             <p>By approving, you agree to the payment terms outlined in the proposal. Your travel advisor will send a booking confirmation and deposit invoice.</p>
           </div>
 
-          <Button type="submit" variant="travel" size="lg" className="w-full text-base py-6 h-auto">
-            <Send className="h-4 w-4 mr-2" /> Confirm & Approve Trip
+          <Button type="submit" variant="travel" size="lg" className="w-full text-base py-6 h-auto" disabled={sending}>
+            {sending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
+            {sending ? "Sending..." : "Confirm & Approve Trip"}
           </Button>
         </form>
       </div>

@@ -27,6 +27,8 @@ const defaults: AppSettings = {
   font_display: "Playfair Display",
   font_body: "Inter",
   login_message: null,
+  ghl_webhook_approve: "",
+  ghl_webhook_revision: "",
 };
 
 function hexToHsl(hex: string): string | null {

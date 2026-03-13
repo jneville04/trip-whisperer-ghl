@@ -98,6 +98,8 @@ function BrandingTab() {
         font_display: form.font_display,
         font_body: form.font_body,
         login_message: form.login_message,
+        ghl_webhook_approve: (form as any).ghl_webhook_approve || "",
+        ghl_webhook_revision: (form as any).ghl_webhook_revision || "",
         updated_at: new Date().toISOString(),
       } as any)
       .eq("id", 1);
