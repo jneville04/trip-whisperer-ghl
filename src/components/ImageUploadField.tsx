@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
-import { ImagePlus, Link, X, Upload } from "lucide-react";
+import { ImagePlus, Link, X, Upload, Loader2 } from "lucide-react";
+import { uploadImage } from "@/lib/uploadImage";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -24,16 +25,18 @@ export default function ImageUploadField({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [mode, setMode] = useState<"upload" | "url">("upload");
   const [urlInput, setUrlInput] = useState("");
+  const [uploading, setUploading] = useState(false);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const dataUrl = ev.target?.result as string;
-      onChange(dataUrl);
-    };
-    reader.readAsDataURL(file);
+    setUploading(true);
+    try {
+      const url = await uploadImage(file);
+      onChange(url);
+    } finally {
+      setUploading(false);
+    }
     e.target.value = "";
   };
 

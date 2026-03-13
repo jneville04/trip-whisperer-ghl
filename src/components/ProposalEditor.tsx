@@ -1,4 +1,5 @@
 import { useState, useRef, ReactNode } from "react";
+import { uploadImages } from "@/lib/uploadImage";
 import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, ChevronRight, Eye, EyeOff, ImagePlus, X, ArrowUp, ArrowDown, Search } from "lucide-react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
@@ -319,15 +320,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                 onReorder={(primary, gallery) => {
                   onChange({ ...data, heroImageUrl: primary, heroImageUrls: gallery });
                 }}
-                onUpload={(files) => {
-                  Array.from(files).forEach((file) => {
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                      const url = ev.target?.result as string;
-                      if (!data.heroImageUrl) { update("heroImageUrl", url); }
-                      else { update("heroImageUrls", [...(data.heroImageUrls || []), url]); }
-                    };
-                    reader.readAsDataURL(file);
+                onUpload={async (files) => {
+                  const urls = await uploadImages(files);
+                  urls.forEach((url) => {
+                    if (!data.heroImageUrl) { update("heroImageUrl", url); }
+                    else { update("heroImageUrls", [...(data.heroImageUrls || []), url]); }
                   });
                 }}
               />
@@ -455,17 +452,13 @@ export default function ProposalEditor({ data, onChange }: Props) {
                               update("accommodations", a);
                             };
 
-                            const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, target: "main" | "gallery") => {
+                            const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, target: "main" | "gallery") => {
                               const files = e.target.files;
                               if (!files) return;
-                              Array.from(files).forEach((file) => {
-                                const reader = new FileReader();
-                                reader.onload = (ev) => {
-                                  const url = ev.target?.result as string;
-                                  if (target === "main") { updateAccField("imageUrl", url); }
-                                  else { updateAccField("galleryUrls", [...accGallery, url]); }
-                                };
-                                reader.readAsDataURL(file);
+                              const urls = await uploadImages(files);
+                              urls.forEach((url) => {
+                                if (target === "main") { updateAccField("imageUrl", url); }
+                                else { updateAccField("galleryUrls", [...accGallery, url]); }
                               });
                               e.target.value = "";
                             };
@@ -633,16 +626,12 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                       aspectClass="aspect-[4/3]"
                                       primaryAspectClass="aspect-[4/3]"
                                       primaryLarge={false}
-                                      onUpload={(files) => {
-                                        Array.from(files).forEach((file) => {
-                                          const reader = new FileReader();
-                                          reader.onload = (ev) => {
-                                            const url = ev.target?.result as string;
-                                            if (!day.imageUrl) { updateDay(dayIdx, { ...day, imageUrl: url }); }
-                                            else { updateDay(dayIdx, { ...day, imageUrls: [...(day.imageUrls || []), url] }); }
-                                          };
-                                          reader.readAsDataURL(file);
-                                        });
+                                      onUpload={async (files) => {
+                                        const urls = await uploadImages(files);
+                                        for (const url of urls) {
+                                          if (!day.imageUrl) { updateDay(dayIdx, { ...day, imageUrl: url }); }
+                                          else { updateDay(dayIdx, { ...day, imageUrls: [...(day.imageUrls || []), url] }); }
+                                        }
                                       }}
                                     />
                                   </div>
