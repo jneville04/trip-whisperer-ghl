@@ -711,7 +711,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
           </div>
           <div>
             <FieldLabel>Passport Info</FieldLabel>
-            <Textarea value={essentials.passportInfo} onChange={(e) => update("essentials", { ...essentials, passportInfo: e.target.value })} className="text-sm min-h-[60px]" placeholder="Passport validity requirements..." />
+            <Textarea value={essentials.passportInfo} onChange={(e) => update("essentials", { ...essentials, passportInfo: e.target.value })} className="text-sm min-h-[100px] resize-y" placeholder="Passport validity requirements..." />
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
