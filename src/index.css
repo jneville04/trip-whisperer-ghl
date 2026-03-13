@@ -7,13 +7,13 @@
 @layer base {
   :root {
     --background: 35 30% 97%;
-    --foreground: 25 20% 12%;
+    --foreground: 0 0% 10%;
 
     --card: 35 25% 95%;
-    --card-foreground: 25 20% 12%;
+    --card-foreground: 0 0% 10%;
 
     --popover: 35 30% 97%;
-    --popover-foreground: 25 20% 12%;
+    --popover-foreground: 0 0% 10%;
 
     --primary: 25 75% 47%;
     --primary-foreground: 35 30% 97%;
@@ -25,7 +25,7 @@
     --muted-foreground: 25 10% 45%;
 
     --accent: 45 80% 55%;
-    --accent-foreground: 25 20% 12%;
+    --accent-foreground: 0 0% 10%;
 
     --destructive: 0 65% 50%;
     --destructive-foreground: 35 30% 97%;
@@ -37,11 +37,11 @@
     --radius: 0.75rem;
 
     --sidebar-background: 35 25% 95%;
-    --sidebar-foreground: 25 20% 12%;
+    --sidebar-foreground: 0 0% 10%;
     --sidebar-primary: 25 75% 47%;
     --sidebar-primary-foreground: 35 30% 97%;
     --sidebar-accent: 35 18% 90%;
-    --sidebar-accent-foreground: 25 20% 12%;
+    --sidebar-accent-foreground: 0 0% 10%;
     --sidebar-border: 30 15% 85%;
     --sidebar-ring: 25 75% 47%;
 
@@ -105,4 +105,41 @@
     @apply bg-clip-text text-transparent;
     background-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--travel-sunset)));
   }
+}
+
+/* Rich text / prose overrides for dangerouslySetInnerHTML */
+.prose ul {
+  list-style-type: disc;
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+.prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+.prose li {
+  margin: 0.25em 0;
+}
+.prose h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0.75em 0 0.5em;
+}
+.prose h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0.75em 0 0.5em;
+}
+.prose p {
+  margin: 0.5em 0;
+}
+.prose a {
+  color: hsl(var(--primary));
+  text-decoration: underline;
+}
+.prose mark {
+  background-color: hsl(var(--accent) / 0.3);
+  padding: 0.1em 0.2em;
+  border-radius: 0.2em;
 }
