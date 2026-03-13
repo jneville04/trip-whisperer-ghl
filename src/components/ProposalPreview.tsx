@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, type Easing } from "framer-motion";
 import { MapPin, Calendar, Users, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe, PlaneTakeoff, PlaneLanding, BedDouble, MessageSquare, CheckCircle2, Sparkles } from "lucide-react";
+import Lightbox from "@/components/Lightbox";
 import { Button } from "@/components/ui/button";
 import type { ProposalData, Activity, SectionKey } from "@/types/proposal";
 import { defaultSectionOrder } from "@/types/proposal";
@@ -57,6 +58,15 @@ interface Props {
 export default function ProposalPreview({ data }: Props) {
   const navigate = useNavigate();
   const heroImage = data.heroImageUrl || heroFallback;
+  const [lightboxImages, setLightboxImages] = useState<{ src: string; alt?: string }[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  const openLightbox = (images: { src: string; alt?: string }[], index: number = 0) => {
+    setLightboxImages(images);
+    setLightboxIndex(index);
+    setLightboxOpen(true);
+  };
   const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
   const brandData = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
@@ -233,12 +243,16 @@ export default function ProposalPreview({ data }: Props) {
                       const amenities = acc.amenities || [];
                       const highlights = acc.highlights || [];
                       const galleryUrls = acc.galleryUrls || [];
+                      const allAccImages = [
+                        ...(acc.imageUrl ? [{ src: acc.imageUrl, alt: acc.hotelName }] : []),
+                        ...galleryUrls.map((url, gi) => ({ src: url, alt: `${acc.hotelName} ${gi + 2}` })),
+                      ];
                       return (
                         <motion.div key={acc.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
-                            <div className="md:col-span-2 aspect-[16/9] md:aspect-auto overflow-hidden">
+                            <div className="md:col-span-2 aspect-[16/9] md:aspect-auto overflow-hidden cursor-pointer" onClick={() => acc.imageUrl && openLightbox(allAccImages, 0)}>
                               {acc.imageUrl ? (
-                                <img src={acc.imageUrl} alt={acc.hotelName} className="w-full h-full object-cover" />
+                                <img src={acc.imageUrl} alt={acc.hotelName} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                               ) : (
                                 <div className="w-full h-full min-h-[200px] bg-muted flex items-center justify-center">
                                   <BedDouble className="h-12 w-12 text-muted-foreground/30" />
@@ -247,8 +261,8 @@ export default function ProposalPreview({ data }: Props) {
                             </div>
                             <div className="hidden md:grid grid-rows-2 gap-1">
                               {galleryUrls.length > 0 ? galleryUrls.slice(0, 2).map((url, gi) => (
-                                <div key={gi} className="overflow-hidden">
-                                  <img src={url} alt={`${acc.hotelName} ${gi + 2}`} className="w-full h-full object-cover" />
+                                <div key={gi} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, gi + 1)}>
+                                  <img src={url} alt={`${acc.hotelName} ${gi + 2}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                                 </div>
                               )) : (
                                 <>
@@ -319,20 +333,24 @@ export default function ProposalPreview({ data }: Props) {
                   <div className="space-y-16">
                     {data.days.map((day, dayIdx) => {
                       const dayImage = day.imageUrl || fallbackImages[dayIdx % fallbackImages.length];
+                      const allDayImages = [
+                        { src: dayImage, alt: day.title },
+                        ...(day.imageUrls || []).map((url, i) => ({ src: url, alt: `${day.title} ${i + 2}` })),
+                      ];
                       return (
                         <motion.div key={day.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} custom={0} className="grid grid-cols-1 lg:grid-cols-5 gap-8">
                           <div className={`lg:col-span-2 ${dayIdx % 2 === 1 ? "lg:order-2" : ""}`}>
                             <div className="space-y-2">
-                              <div className="relative rounded-2xl overflow-hidden aspect-[4/3] shadow-lg">
-                                <img src={dayImage} alt={day.title} className="w-full h-full object-cover" />
+                              <div className="relative rounded-2xl overflow-hidden aspect-[4/3] shadow-lg cursor-pointer" onClick={() => openLightbox(allDayImages, 0)}>
+                                <img src={dayImage} alt={day.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                                 <div className="absolute top-4 left-4 bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-sm font-body font-semibold">Day {dayIdx + 1}</div>
                               </div>
                               {/* Additional images grid */}
                               {(day.imageUrls || []).length > 0 && (
                                 <div className="grid grid-cols-2 gap-2">
                                   {(day.imageUrls || []).slice(0, 4).map((url, imgIdx) => (
-                                    <div key={imgIdx} className="rounded-xl overflow-hidden aspect-[4/3] shadow-md">
-                                      <img src={url} alt={`${day.title} ${imgIdx + 2}`} className="w-full h-full object-cover" />
+                                    <div key={imgIdx} className="rounded-xl overflow-hidden aspect-[4/3] shadow-md cursor-pointer" onClick={() => openLightbox(allDayImages, imgIdx + 1)}>
+                                      <img src={url} alt={`${day.title} ${imgIdx + 2}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                                     </div>
                                   ))}
                                 </div>
@@ -511,6 +529,7 @@ export default function ProposalPreview({ data }: Props) {
             return null;
         }
       })}
+      <Lightbox images={lightboxImages} initialIndex={lightboxIndex} open={lightboxOpen} onClose={() => setLightboxOpen(false)} />
     </div>
   );
 }
