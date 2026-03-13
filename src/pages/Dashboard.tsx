@@ -194,19 +194,27 @@ export default function Dashboard() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filtered.map((proposal) => (
+            {filtered.map((proposal) => {
+              const heroImg = proposal.data?.heroImageUrl || (proposal.data?.heroImageUrls?.length ? proposal.data.heroImageUrls[0] : "");
+              return (
               <div
                 key={proposal.id}
                 className="group bg-card border border-border/50 rounded-xl overflow-hidden hover:shadow-lg transition-all cursor-pointer"
                 onClick={() => navigate(`/editor/${proposal.id}`)}
               >
-                <div className="h-32 bg-gradient-to-br from-primary/20 to-secondary/20 relative flex items-end p-4">
+                <div className="h-36 relative overflow-hidden">
+                  {heroImg ? (
+                    <img src={heroImg} alt={proposal.destination || "Proposal"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20" />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
                   <div className="absolute top-3 right-3">
                     <span className={`text-[10px] font-medium uppercase tracking-wider px-2 py-1 rounded-full ${statusColors[proposal.status] || statusColors.draft}`}>
                       {proposal.status}
                     </span>
                   </div>
-                  <h3 className="font-display text-lg font-bold text-foreground leading-tight line-clamp-2">
+                  <h3 className="absolute bottom-3 left-4 right-4 font-display text-lg font-bold text-white leading-tight line-clamp-2 drop-shadow-md">
                     {proposal.title || "Untitled"}
                   </h3>
                 </div>
@@ -262,7 +270,8 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
