@@ -707,7 +707,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
         <div className="space-y-3">
           <div>
             <FieldLabel>Visa Requirements</FieldLabel>
-            <RichTextEditor content={essentials.visaRequirements} onChange={(html) => update("essentials", { ...essentials, visaRequirements: html })} placeholder="Visa requirements for this destination..." minHeight="80px" />
+            <RichTextEditor content={essentials.visaRequirements} onChange={(html) => update("essentials", { ...essentials, visaRequirements: html })} placeholder="Visa requirements for this destination..." minHeight="120px" />
           </div>
           <div>
             <FieldLabel>Passport Info</FieldLabel>
