@@ -273,29 +273,27 @@ export default function ProposalPreview({ data }: Props) {
                       ];
                       return (
                         <motion.div key={acc.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
-                            <div className="md:col-span-2 aspect-[16/9] md:aspect-auto overflow-hidden cursor-pointer" onClick={() => acc.imageUrl && openLightbox(allAccImages, 0)}>
-                              {acc.imageUrl ? (
-                                <img src={acc.imageUrl} alt={acc.hotelName} className="w-full h-full object-cover" />
-                              ) : (
-                                <div className="w-full h-full min-h-[200px] bg-muted flex items-center justify-center">
-                                  <BedDouble className="h-12 w-12 text-muted-foreground/30" />
-                                </div>
-                              )}
+                          {/* Main image */}
+                          {acc.imageUrl && (
+                            <div className="aspect-[16/9] overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, 0)}>
+                              <img src={acc.imageUrl} alt={acc.hotelName} className="w-full h-full object-cover" />
                             </div>
-                            <div className="hidden md:grid grid-rows-2 gap-1">
-                              {galleryUrls.length > 0 ? galleryUrls.slice(0, 2).map((url, gi) => (
-                                <div key={gi} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, gi + 1)}>
+                          )}
+                          {!acc.imageUrl && (
+                            <div className="aspect-[16/9] bg-muted flex items-center justify-center">
+                              <BedDouble className="h-12 w-12 text-muted-foreground/30" />
+                            </div>
+                          )}
+                          {/* Gallery grid - show ALL gallery images */}
+                          {galleryUrls.length > 0 && (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1">
+                              {galleryUrls.map((url, gi) => (
+                                <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, gi + 1)}>
                                   <img src={url} alt={`${acc.hotelName} ${gi + 2}`} className="w-full h-full object-cover" />
                                 </div>
-                              )) : (
-                                <>
-                                  <div className="bg-muted flex items-center justify-center"><Camera className="h-8 w-8 text-muted-foreground/20" /></div>
-                                  <div className="bg-muted flex items-center justify-center"><Camera className="h-8 w-8 text-muted-foreground/20" /></div>
-                                </>
-                              )}
+                              ))}
                             </div>
-                          </div>
+                          )}
                           <div className="p-6 sm:p-8">
                             <div className="flex items-start justify-between mb-3">
                               <div>
