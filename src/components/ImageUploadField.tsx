@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 import { ImagePlus, Link, X, Upload, Loader2 } from "lucide-react";
 import { uploadImage } from "@/lib/uploadImage";
-import { ImagePlus, Link, X, Upload } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Button } from "@/components/ui/button";
 
 interface ImageUploadFieldProps {
