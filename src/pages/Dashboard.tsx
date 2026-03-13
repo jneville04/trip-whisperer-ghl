@@ -5,7 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { Plus, Search, Copy, Trash2, ExternalLink, LogOut, MapPin, Calendar, FileText } from "lucide-react";
+import { useAdminCheck } from "@/hooks/useAdminCheck";
+import { useAppSettings } from "@/hooks/useAppSettings";
+import PendingApproval from "@/components/PendingApproval";
+import { Plus, Search, Copy, Trash2, ExternalLink, LogOut, MapPin, Calendar, FileText, Shield } from "lucide-react";
 import { defaultProposal, type ProposalData } from "@/types/proposal";
 
 interface ProposalRow {
@@ -21,15 +24,24 @@ interface ProposalRow {
 }
 
 export default function Dashboard() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, profileStatus } = useAuth();
+  const { data: isAdmin } = useAdminCheck(user?.id);
+  const { settings } = useAppSettings();
   const navigate = useNavigate();
   const [proposals, setProposals] = useState<ProposalRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    loadProposals();
-  }, []);
+    if (profileStatus === "approved" || isAdmin) {
+      loadProposals();
+    }
+  }, [profileStatus, isAdmin]);
+
+  // Show pending/rejected screen
+  if (!authLoading && profileStatus && profileStatus !== "approved" && !isAdmin) {
+    return <PendingApproval status={profileStatus as "pending" | "rejected"} />;
+  }
 
   const loadProposals = async () => {
     const { data, error } = await supabase
@@ -133,8 +145,13 @@ export default function Dashboard() {
       {/* Header */}
       <div className="border-b border-border/50 bg-card">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          <h1 className="font-display text-xl font-bold text-foreground">My Proposals</h1>
+          <h1 className="font-display text-xl font-bold text-foreground">{settings.app_name}</h1>
           <div className="flex items-center gap-3">
+            {isAdmin && (
+              <Button variant="travel-ghost" size="sm" onClick={() => navigate("/admin")}>
+                <Shield className="h-4 w-4 mr-1" /> Admin
+              </Button>
+            )}
             <Button variant="travel" size="sm" onClick={createProposal}>
               <Plus className="h-4 w-4 mr-1" /> New Proposal
             </Button>
@@ -183,7 +200,6 @@ export default function Dashboard() {
                 className="group bg-card border border-border/50 rounded-xl overflow-hidden hover:shadow-lg transition-all cursor-pointer"
                 onClick={() => navigate(`/editor/${proposal.id}`)}
               >
-                {/* Card header with destination image or gradient */}
                 <div className="h-32 bg-gradient-to-br from-primary/20 to-secondary/20 relative flex items-end p-4">
                   <div className="absolute top-3 right-3">
                     <span className={`text-[10px] font-medium uppercase tracking-wider px-2 py-1 rounded-full ${statusColors[proposal.status] || statusColors.draft}`}>
