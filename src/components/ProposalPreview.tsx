@@ -243,12 +243,16 @@ export default function ProposalPreview({ data }: Props) {
                       const amenities = acc.amenities || [];
                       const highlights = acc.highlights || [];
                       const galleryUrls = acc.galleryUrls || [];
+                      const allAccImages = [
+                        ...(acc.imageUrl ? [{ src: acc.imageUrl, alt: acc.hotelName }] : []),
+                        ...galleryUrls.map((url, gi) => ({ src: url, alt: `${acc.hotelName} ${gi + 2}` })),
+                      ];
                       return (
                         <motion.div key={acc.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
-                            <div className="md:col-span-2 aspect-[16/9] md:aspect-auto overflow-hidden">
+                            <div className="md:col-span-2 aspect-[16/9] md:aspect-auto overflow-hidden cursor-pointer" onClick={() => acc.imageUrl && openLightbox(allAccImages, 0)}>
                               {acc.imageUrl ? (
-                                <img src={acc.imageUrl} alt={acc.hotelName} className="w-full h-full object-cover" />
+                                <img src={acc.imageUrl} alt={acc.hotelName} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                               ) : (
                                 <div className="w-full h-full min-h-[200px] bg-muted flex items-center justify-center">
                                   <BedDouble className="h-12 w-12 text-muted-foreground/30" />
@@ -257,8 +261,8 @@ export default function ProposalPreview({ data }: Props) {
                             </div>
                             <div className="hidden md:grid grid-rows-2 gap-1">
                               {galleryUrls.length > 0 ? galleryUrls.slice(0, 2).map((url, gi) => (
-                                <div key={gi} className="overflow-hidden">
-                                  <img src={url} alt={`${acc.hotelName} ${gi + 2}`} className="w-full h-full object-cover" />
+                                <div key={gi} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, gi + 1)}>
+                                  <img src={url} alt={`${acc.hotelName} ${gi + 2}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
                                 </div>
                               )) : (
                                 <>
