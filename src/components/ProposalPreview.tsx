@@ -134,7 +134,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
               </button>
             ))}
           </div>
-          <Button variant="travel" size="sm" className="text-xs" onClick={() => navigate("/approve")}>
+          <Button variant="travel" size="sm" className="text-xs" onClick={() => navigate(`/approve${shareId ? `?share=${shareId}` : ""}`)}>
             Book Now
           </Button>
         </div>
