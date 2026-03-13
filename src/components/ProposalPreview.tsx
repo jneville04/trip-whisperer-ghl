@@ -451,38 +451,30 @@ export default function ProposalPreview({ data }: Props) {
       {/* AGENT FOOTER */}
       {vis.agent && (
         <footer className="py-16 px-6 border-t border-border/50 bg-card">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
-              <div className="flex flex-col items-center text-center md:items-start md:text-left flex-1">
-                <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Travel Advisor</p>
-                <div className="flex items-center gap-4 mb-4">
-                  {agent.photoUrl && (
-                    <img src={agent.photoUrl} alt={agent.name} className="w-16 h-16 rounded-full object-cover border-2 border-primary/20" />
-                  )}
-                  <div>
-                    <h3 className="font-display text-2xl font-bold text-foreground">{agent.name}</h3>
-                    <p className="text-muted-foreground font-body mt-0.5">{agent.title}</p>
-                    <p className="text-sm text-muted-foreground font-body">{agent.agencyName}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-6 text-sm font-body text-muted-foreground flex-wrap">
-                  {agent.phone && <a href={`tel:${agent.phone}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Phone className="h-4 w-4" /> {agent.phone}</a>}
-                  {agent.email && <a href={`mailto:${agent.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-4 w-4" /> {agent.email}</a>}
-                  {agent.website && <a href="#" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Globe className="h-4 w-4" /> {agent.website}</a>}
-                </div>
+          <div className="max-w-3xl mx-auto text-center">
+            <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Travel Advisor</p>
+            <div className="flex flex-col items-center gap-4 mb-6">
+              {agent.photoUrl && (
+                <img src={agent.photoUrl} alt={agent.name} className="w-20 h-20 rounded-full object-cover border-2 border-primary/20" />
+              )}
+              <div>
+                <h3 className="font-display text-2xl font-bold text-foreground">{agent.name}</h3>
+                <p className="text-muted-foreground font-body mt-0.5">{agent.title}</p>
+                <p className="text-sm text-muted-foreground font-body">{agent.agencyName}</p>
               </div>
               {agent.logoUrl && (
-                <div className="shrink-0">
-                  <img src={agent.logoUrl} alt={agent.agencyName} className="h-16 max-w-[180px] object-contain" />
-                </div>
+                <img src={agent.logoUrl} alt={agent.agencyName} className="h-12 max-w-[160px] object-contain" />
               )}
             </div>
-            <div className="mt-8 pt-6 border-t border-border/30">
-              <Button variant="travel" size="lg" className="w-full sm:w-auto text-base px-8">
-                Sign Up Today! <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
+            <div className="flex items-center justify-center gap-6 text-sm font-body text-muted-foreground flex-wrap mb-8">
+              {agent.phone && <a href={`tel:${agent.phone}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Phone className="h-4 w-4" /> {agent.phone}</a>}
+              {agent.email && <a href={`mailto:${agent.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-4 w-4" /> {agent.email}</a>}
+              {agent.website && <a href="#" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Globe className="h-4 w-4" /> {agent.website}</a>}
             </div>
-            <p className="text-xs text-muted-foreground/60 mt-8 font-body text-center">© 2026 {agent.agencyName} · All prices in USD · Subject to availability</p>
+            <Button variant="travel" size="lg" className="text-base px-8" onClick={() => navigate("/approve")}>
+              Sign Up Today! <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
+            <p className="text-xs text-muted-foreground/60 mt-10 font-body">© 2026 {agent.agencyName} · All prices in USD · Subject to availability</p>
           </div>
         </footer>
       )}
