@@ -412,11 +412,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   </div>
                   <div>
                     <FieldLabel>Lodging Description</FieldLabel>
-                    <Textarea
-                      value={acc.description}
-                      onChange={(e) => updateAccommodation(i, "description", e.target.value)}
-                      placeholder="Describe the hotel, its atmosphere, unique features, and what makes it special for this trip..."
-                      className="text-xs min-h-[120px] resize-y"
+                    <RichTextEditor
+                      content={acc.description}
+                      onChange={(html) => updateAccommodation(i, "description", html)}
+                      placeholder="Describe the hotel, its atmosphere, unique features..."
+                      minHeight="150px"
                     />
                   </div>
                 </TabsContent>
