@@ -365,8 +365,8 @@ export default function ProposalPreview({ data }: Props) {
                         <motion.div key={day.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} custom={0} className="grid grid-cols-1 lg:grid-cols-5 gap-8">
                           <div className={`lg:col-span-2 ${dayIdx % 2 === 1 ? "lg:order-2" : ""}`}>
                             <div className="space-y-2">
-                              <div className="relative rounded-2xl overflow-hidden aspect-[4/3] shadow-lg cursor-pointer bg-muted/30 p-1" onClick={() => openLightbox(allDayImages, 0)}>
-                                <img src={dayImage} alt={day.title} className="w-full h-full object-contain" />
+                              <div className="relative rounded-2xl overflow-hidden aspect-[4/3] shadow-lg cursor-pointer" onClick={() => openLightbox(allDayImages, 0)}>
+                                <img src={dayImage} alt={day.title} className="w-full h-full object-cover" />
                                 <div className="absolute top-4 left-4 bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-sm font-body font-semibold">Day {dayIdx + 1}</div>
                               </div>
                               {/* Additional images grid */}
