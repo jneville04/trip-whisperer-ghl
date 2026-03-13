@@ -229,8 +229,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
             </div>
           </div>
           <div>
-            <FieldLabel>Hero Image URL</FieldLabel>
-            <Input value={data.heroImageUrl} onChange={(e) => update("heroImageUrl", e.target.value)} placeholder="Paste image URL" />
+            <FieldLabel>Hero Image</FieldLabel>
+            <ImageUploadField value={data.heroImageUrl} onChange={(url) => update("heroImageUrl", url)} placeholder="Paste hero image URL" />
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
