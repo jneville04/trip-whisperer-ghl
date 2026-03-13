@@ -297,33 +297,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
         </div>
       </CollapsibleSection>
 
-      {/* Section Order */}
-      <CollapsibleSection title="📐 Section Order" defaultOpen={false}>
-        <div className="space-y-1">
-          <p className="text-xs text-muted-foreground mb-2">Drag sections up/down to reorder the proposal layout.</p>
-          {sectionOrder.map((key, idx) => (
-            <div key={key} className="flex items-center gap-2 py-1.5 px-2 rounded-md bg-background border border-border/30">
-              <GripVertical className="h-3.5 w-3.5 text-muted-foreground/40 shrink-0" />
-              <span className="text-sm font-body flex-1">{sectionLabels[key]}</span>
-              <div className="flex items-center gap-0.5">
-                <button
-                  onClick={() => toggleSection(key as keyof typeof vis)}
-                  className={`p-1 rounded transition-colors ${vis[key as keyof typeof vis] ? "text-primary hover:text-primary/70" : "text-muted-foreground/30 hover:text-muted-foreground"}`}
-                >
-                  {vis[key as keyof typeof vis] ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
-                </button>
-                <button onClick={() => moveSection(idx, -1)} disabled={idx === 0} className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-20 disabled:cursor-not-allowed">
-                  <ArrowUp className="h-3.5 w-3.5" />
-                </button>
-                <button onClick={() => moveSection(idx, 1)} disabled={idx === sectionOrder.length - 1} className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-20 disabled:cursor-not-allowed">
-                  <ArrowDown className="h-3.5 w-3.5" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </CollapsibleSection>
-
       <CollapsibleSection title="🌍 Trip Overview" sectionKey="hero" visible={vis.hero} onToggleVisible={() => toggleSection("hero")}>
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
