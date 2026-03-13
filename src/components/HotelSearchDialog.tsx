@@ -58,7 +58,8 @@ function parseHotelFromResult(result: HotelResult, selectedImages: string[]): Pa
     .trim();
 
   // Use selected images or fall back to first available
-  const primaryImage = selectedImages[0] || (result.images.length > 0 ? result.images[0].url : "");
+  const images = result.images || [];
+  const primaryImage = selectedImages[0] || (images.length > 0 ? images[0].url : "");
   const gallery = selectedImages.length > 1 ? selectedImages.slice(1) : [];
 
   return {
@@ -176,7 +177,8 @@ export default function HotelSearchDialog({ onSelect, children }: HotelSearchDia
                       .replace(/\s*\|.*$/i, "")
                       .trim();
                     const starMatch = (result.markdown || "").match(/(\d)[- ]?star/i) || result.title.match(/(\d)[- ]?star/i);
-                    const previewImg = result.images?.[0]?.url;
+                    const resultImages = result.images || [];
+                    const previewImg = resultImages[0]?.url;
 
                     return (
                       <button
@@ -204,8 +206,8 @@ export default function HotelSearchDialog({ onSelect, children }: HotelSearchDia
                           )}
                           <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{result.description}</p>
                           <div className="flex items-center gap-2 mt-1">
-                            {result.images?.length > 0 && (
-                              <span className="text-[10px] text-primary font-medium">{result.images.length} photos available</span>
+                            {resultImages.length > 0 && (
+                              <span className="text-[10px] text-primary font-medium">{resultImages.length} photos available</span>
                             )}
                             <span className="text-[10px] text-muted-foreground/50 truncate">{result.url}</span>
                           </div>
@@ -235,9 +237,9 @@ export default function HotelSearchDialog({ onSelect, children }: HotelSearchDia
             </div>
 
             <ScrollArea className="flex-1 max-h-[50vh]">
-              {selectedResult.images.length > 0 ? (
+              {(selectedResult.images || []).length > 0 ? (
                 <div className="grid grid-cols-3 gap-2 pr-2">
-                  {selectedResult.images.map((img, i) => {
+                  {(selectedResult.images || []).map((img, i) => {
                     const isSelected = selectedImages.includes(img.url);
                     const isPrimary = selectedImages[0] === img.url;
                     return (
