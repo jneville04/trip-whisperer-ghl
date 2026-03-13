@@ -14,7 +14,7 @@ const Index = () => {
       {/* Top Bar */}
       <div className="h-14 border-b border-border/50 flex items-center justify-between px-4 sm:px-6 bg-card shrink-0">
         <div className="flex items-center gap-3">
-          <span className="font-display text-lg font-bold text-foreground">✈️ Proposal Builder</span>
+          <span className="font-display text-lg font-bold text-foreground">Proposal Builder</span>
           <span className="text-xs text-muted-foreground font-body hidden sm:inline">— {data.destination || "New Trip"} for {data.clientName || "Client"}</span>
         </div>
         <div className="flex items-center gap-2">
