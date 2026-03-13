@@ -35,7 +35,7 @@ export default function RichTextEditor({ content, onChange, placeholder, minHeig
       Highlight.configure({ multicolor: false }),
       Link.configure({ openOnClick: false }),
       TextAlign.configure({ types: ["heading", "paragraph"] }),
-    ],
+    ] as any,
     content,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
@@ -51,7 +51,7 @@ export default function RichTextEditor({ content, onChange, placeholder, minHeig
   // Sync external content changes (but avoid cursor jumps)
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
-      editor.commands.setContent(content, { emitUpdate: false });
+      editor.commands.setContent(content, false);
     }
   }, [content]);
 
@@ -92,10 +92,10 @@ export default function RichTextEditor({ content, onChange, placeholder, minHeig
         <ToolBtn active={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()} title="Italic (Ctrl+I)">
           <Italic className="h-3.5 w-3.5" />
         </ToolBtn>
-        <ToolBtn active={editor.isActive("underline")} onClick={() => editor.chain().focus().toggleUnderline().run()} title="Underline (Ctrl+U)">
+        <ToolBtn active={editor.isActive("underline")} onClick={() => (editor.chain().focus() as any).toggleUnderline().run()} title="Underline (Ctrl+U)">
           <UnderlineIcon className="h-3.5 w-3.5" />
         </ToolBtn>
-        <ToolBtn active={editor.isActive("highlight")} onClick={() => editor.chain().focus().toggleHighlight().run()} title="Highlight">
+        <ToolBtn active={editor.isActive("highlight")} onClick={() => (editor.chain().focus() as any).toggleHighlight().run()} title="Highlight">
           <Highlighter className="h-3.5 w-3.5" />
         </ToolBtn>
         <div className="w-px h-4 bg-border/50 mx-1" />
@@ -109,10 +109,10 @@ export default function RichTextEditor({ content, onChange, placeholder, minHeig
           <ListOrdered className="h-3.5 w-3.5" />
         </ToolBtn>
         <div className="w-px h-4 bg-border/50 mx-1" />
-        <ToolBtn active={editor.isActive({ textAlign: "left" })} onClick={() => editor.chain().focus().setTextAlign("left").run()} title="Align Left">
+        <ToolBtn active={editor.isActive({ textAlign: "left" })} onClick={() => (editor.chain().focus() as any).setTextAlign("left").run()} title="Align Left">
           <AlignLeft className="h-3.5 w-3.5" />
         </ToolBtn>
-        <ToolBtn active={editor.isActive({ textAlign: "center" })} onClick={() => editor.chain().focus().setTextAlign("center").run()} title="Align Center">
+        <ToolBtn active={editor.isActive({ textAlign: "center" })} onClick={() => (editor.chain().focus() as any).setTextAlign("center").run()} title="Align Center">
           <AlignCenter className="h-3.5 w-3.5" />
         </ToolBtn>
         <div className="w-px h-4 bg-border/50 mx-1" />
@@ -120,10 +120,10 @@ export default function RichTextEditor({ content, onChange, placeholder, minHeig
           active={editor.isActive("link")}
           onClick={() => {
             if (editor.isActive("link")) {
-              editor.chain().focus().unsetLink().run();
+              (editor.chain().focus() as any).unsetLink().run();
             } else {
               const url = window.prompt("URL:");
-              if (url) editor.chain().focus().setLink({ href: url }).run();
+              if (url) (editor.chain().focus() as any).setLink({ href: url }).run();
             }
           }}
           title="Link"
