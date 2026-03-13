@@ -102,7 +102,7 @@ export default function EditorPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-background overflow-hidden" style={builderBrandStyles as React.CSSProperties}>
+    <div className="h-screen flex flex-col bg-background overflow-hidden" style={appBrandVars as React.CSSProperties}>
       {/* Top Bar */}
       <div className="h-14 border-b border-border/50 flex items-center justify-between px-4 sm:px-6 bg-card shrink-0">
         <div className="flex items-center gap-3">
@@ -163,7 +163,7 @@ export default function EditorPage() {
             <ProposalEditor data={data} onChange={handleChange} />
           </div>
         )}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto" style={builderBrandStyles as React.CSSProperties}>
           <ProposalPreview data={data} shareId={shareId} />
         </div>
       </div>
