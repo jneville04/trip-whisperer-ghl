@@ -4,10 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
+import { useAppSettings } from "@/hooks/useAppSettings";
 import { Plane, Mail, Lock, User, Building2 } from "lucide-react";
 
 export default function AuthPage() {
   const navigate = useNavigate();
+  const { settings } = useAppSettings();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -23,12 +25,26 @@ export default function AuthPage() {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data: authData, error } = await supabase.auth.signInWithPassword({
           email: form.email,
           password: form.password,
         });
         if (error) throw error;
-        navigate("/dashboard");
+
+        // Check profile status
+        if (authData.user) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("status")
+            .eq("id", authData.user.id)
+            .single();
+          const status = (profile as any)?.status;
+          if (status === "pending" || status === "rejected") {
+            navigate("/dashboard"); // Dashboard will show PendingApproval
+          } else {
+            navigate("/dashboard");
+          }
+        }
       } else {
         const { error } = await supabase.auth.signUp({
           email: form.email,
@@ -61,15 +77,19 @@ export default function AuthPage() {
     <div className="min-h-screen bg-background flex items-center justify-center px-6">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <Plane className="h-8 w-8 text-primary" />
-          </div>
+          {settings.logo_url ? (
+            <img src={settings.logo_url} alt={settings.app_name} className="h-16 w-16 object-contain mx-auto mb-4 rounded-2xl" />
+          ) : (
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+              <Plane className="h-8 w-8 text-primary" />
+            </div>
+          )}
           <h1 className="font-display text-3xl font-bold text-foreground">
-            Proposal Builder
+            {settings.app_name}
           </h1>
           <p className="text-muted-foreground font-body mt-2">
             {isLogin
-              ? "Sign in to manage your travel proposals"
+              ? settings.login_message || settings.tagline
               : "Create your account to start building proposals"}
           </p>
         </div>

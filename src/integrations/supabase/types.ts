@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          accent_color: string
+          app_name: string
+          favicon_url: string | null
+          font_body: string
+          font_display: string
+          id: number
+          login_message: string | null
+          logo_url: string | null
+          primary_color: string
+          secondary_color: string
+          tagline: string
+          updated_at: string | null
+        }
+        Insert: {
+          accent_color?: string
+          app_name?: string
+          favicon_url?: string | null
+          font_body?: string
+          font_display?: string
+          id?: number
+          login_message?: string | null
+          logo_url?: string | null
+          primary_color?: string
+          secondary_color?: string
+          tagline?: string
+          updated_at?: string | null
+        }
+        Update: {
+          accent_color?: string
+          app_name?: string
+          favicon_url?: string | null
+          font_body?: string
+          font_display?: string
+          id?: number
+          login_message?: string | null
+          logo_url?: string | null
+          primary_color?: string
+          secondary_color?: string
+          tagline?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           agency_name: string | null
@@ -21,6 +66,7 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          status: string
         }
         Insert: {
           agency_name?: string | null
@@ -28,6 +74,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          status?: string
         }
         Update: {
           agency_name?: string | null
@@ -35,6 +82,7 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          status?: string
         }
         Relationships: []
       }
@@ -77,15 +125,40 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
       generate_share_id: { Args: never; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -212,6 +285,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
