@@ -146,11 +146,6 @@ export default function ProposalPreview({ data }: Props) {
               {data.destinationCount && <span className="flex items-center gap-1.5 bg-background/20 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-full text-sm font-body"><MapPin className="h-4 w-4" /> {data.destinationCount}</span>}
             </motion.div>
           </div>
-          <motion.div animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 2 }} className="absolute bottom-8 left-1/2 -translate-x-1/2">
-            <div className="w-6 h-10 rounded-full border-2 border-primary-foreground/50 flex justify-center pt-2">
-              <div className="w-1 h-2 rounded-full bg-primary-foreground/70" />
-            </div>
-          </motion.div>
         </section>
       )}
 
