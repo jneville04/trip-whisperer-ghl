@@ -28,6 +28,51 @@ export interface AgentInfo {
   email: string;
   website: string;
   agencyName: string;
+  logoUrl: string;
+  photoUrl: string;
+}
+
+export interface FlightLeg {
+  id: string;
+  type: "departure" | "return";
+  airline: string;
+  flightNumber: string;
+  departureAirport: string;
+  arrivalAirport: string;
+  departureTime: string;
+  arrivalTime: string;
+  date: string;
+}
+
+export interface Accommodation {
+  id: string;
+  hotelName: string;
+  location: string;
+  checkIn: string;
+  checkOut: string;
+  roomType: string;
+  nights: string;
+  imageUrl: string;
+  description: string;
+}
+
+export interface BrandSettings {
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+  logoUrl: string;
+}
+
+export interface SectionVisibility {
+  hero: boolean;
+  overview: boolean;
+  flights: boolean;
+  accommodations: boolean;
+  itinerary: boolean;
+  inclusions: boolean;
+  pricing: boolean;
+  testimonial: boolean;
+  agent: boolean;
 }
 
 export interface ProposalData {
@@ -40,6 +85,8 @@ export interface ProposalData {
   clientName: string;
   introText: string;
   days: ItineraryDay[];
+  flights: FlightLeg[];
+  accommodations: Accommodation[];
   inclusions: string[];
   pricing: PricingLine[];
   paymentTerms: string;
@@ -48,6 +95,8 @@ export interface ProposalData {
   testimonialAuthor: string;
   testimonialTrip: string;
   agent: AgentInfo;
+  brand: BrandSettings;
+  sectionVisibility: SectionVisibility;
 }
 
 export const createActivity = (type: Activity["type"] = "activity"): Activity => ({
@@ -73,6 +122,30 @@ export const createPricingLine = (): PricingLine => ({
   amount: "",
 });
 
+export const createFlightLeg = (type: FlightLeg["type"] = "departure"): FlightLeg => ({
+  id: crypto.randomUUID(),
+  type,
+  airline: "",
+  flightNumber: "",
+  departureAirport: "",
+  arrivalAirport: "",
+  departureTime: "",
+  arrivalTime: "",
+  date: "",
+});
+
+export const createAccommodation = (): Accommodation => ({
+  id: crypto.randomUUID(),
+  hotelName: "",
+  location: "",
+  checkIn: "",
+  checkOut: "",
+  roomType: "",
+  nights: "",
+  imageUrl: "",
+  description: "",
+});
+
 export const defaultProposal: ProposalData = {
   destination: "Portugal",
   subtitle: "Lisbon · Sintra · Porto · Algarve",
@@ -83,6 +156,54 @@ export const defaultProposal: ProposalData = {
   clientName: "Michael & Sarah Johnson",
   introText:
     "An unforgettable 5-day journey through Portugal's most enchanting destinations — from the cobblestone streets of Lisbon to the golden cliffs of the Algarve. This bespoke itinerary blends world-class dining, cultural immersion, and coastal adventure into the trip of a lifetime.",
+  flights: [
+    {
+      id: crypto.randomUUID(),
+      type: "departure",
+      airline: "TAP Air Portugal",
+      flightNumber: "TP 236",
+      departureAirport: "SFO – San Francisco",
+      arrivalAirport: "LIS – Lisbon",
+      departureTime: "6:30 PM",
+      arrivalTime: "1:00 PM +1",
+      date: "September 14, 2026",
+    },
+    {
+      id: crypto.randomUUID(),
+      type: "return",
+      airline: "TAP Air Portugal",
+      flightNumber: "TP 237",
+      departureAirport: "LIS – Lisbon",
+      arrivalAirport: "SFO – San Francisco",
+      departureTime: "10:00 AM",
+      arrivalTime: "1:30 PM",
+      date: "September 19, 2026",
+    },
+  ],
+  accommodations: [
+    {
+      id: crypto.randomUUID(),
+      hotelName: "Four Seasons Hotel Ritz Lisbon",
+      location: "Lisbon",
+      checkIn: "Sep 15, 2026",
+      checkOut: "Sep 17, 2026",
+      roomType: "Superior Suite – Tagus River View",
+      nights: "2 Nights",
+      imageUrl: "",
+      description: "Iconic luxury hotel overlooking Eduardo VII Park with world-class spa and dining.",
+    },
+    {
+      id: crypto.randomUUID(),
+      hotelName: "The Yeatman Hotel",
+      location: "Porto",
+      checkIn: "Sep 17, 2026",
+      checkOut: "Sep 18, 2026",
+      roomType: "Deluxe Room – Douro River View",
+      nights: "1 Night",
+      imageUrl: "",
+      description: "Award-winning wine spa & resort with panoramic views of Porto and the Douro River.",
+    },
+  ],
   days: [
     {
       id: crypto.randomUUID(),
@@ -174,5 +295,24 @@ export const defaultProposal: ProposalData = {
     email: "jessica@travelagency.com",
     website: "travelagency.com",
     agencyName: "Luxury Travel Co.",
+    logoUrl: "",
+    photoUrl: "",
+  },
+  brand: {
+    primaryColor: "",
+    secondaryColor: "",
+    accentColor: "",
+    logoUrl: "",
+  },
+  sectionVisibility: {
+    hero: true,
+    overview: true,
+    flights: true,
+    accommodations: true,
+    itinerary: true,
+    inclusions: true,
+    pricing: true,
+    testimonial: true,
+    agent: true,
   },
 };
