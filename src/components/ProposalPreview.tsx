@@ -58,6 +58,7 @@ interface Props {
 export default function ProposalPreview({ data }: Props) {
   const navigate = useNavigate();
   const heroImage = data.heroImageUrl || heroFallback;
+  const heroImages = data.heroImageUrls || [];
   const [lightboxImages, setLightboxImages] = useState<{ src: string; alt?: string }[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
@@ -140,25 +141,48 @@ export default function ProposalPreview({ data }: Props) {
 
       {/* HERO */}
       {vis.hero && (
-        <section className="relative h-[80vh] min-h-[550px] overflow-hidden">
-          <img src={heroImage} alt={data.destination} className="absolute inset-0 w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-b from-foreground/70 via-foreground/50 to-foreground/80" />
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-            <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="font-body text-sm tracking-[0.3em] uppercase mb-4">
-              <span className="bg-background/20 backdrop-blur-sm text-primary-foreground px-4 py-1.5 rounded-full">Curated Travel Experience</span>
-            </motion.p>
-            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="font-display text-5xl sm:text-7xl lg:text-8xl font-bold text-primary-foreground leading-tight drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
+        <section className="relative">
+          {/* Image Grid - Tern-style layout */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-1 max-h-[500px] overflow-hidden">
+            {/* Main large image */}
+            <div className="md:col-span-2 aspect-[16/9] md:aspect-auto md:h-[500px] overflow-hidden cursor-pointer relative group" onClick={() => {
+              const allHeroImgs = [{ src: heroImage, alt: data.destination }, ...heroImages.map((u, i) => ({ src: u, alt: `${data.destination} ${i + 2}` }))];
+              openLightbox(allHeroImgs, 0);
+            }}>
+              <img src={heroImage} alt={data.destination} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            </div>
+            {/* Side images */}
+            <div className="hidden md:grid grid-rows-2 gap-1 h-[500px]">
+              {heroImages.length > 0 ? heroImages.slice(0, 2).map((url, i) => (
+                <div key={i} className="overflow-hidden cursor-pointer relative group" onClick={() => {
+                  const allHeroImgs = [{ src: heroImage, alt: data.destination }, ...heroImages.map((u, j) => ({ src: u, alt: `${data.destination} ${j + 2}` }))];
+                  openLightbox(allHeroImgs, i + 1);
+                }}>
+                  <img src={url} alt={`${data.destination} ${i + 2}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                </div>
+              )) : (
+                <>
+                  <div className="bg-muted flex items-center justify-center"><Camera className="h-10 w-10 text-muted-foreground/20" /></div>
+                  <div className="bg-muted flex items-center justify-center"><Camera className="h-10 w-10 text-muted-foreground/20" /></div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Title section below images */}
+          <div className="max-w-5xl mx-auto px-6 py-10 text-center">
+            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
               {data.destination || "Your Destination"}
             </motion.h1>
             {data.subtitle && (
-              <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="font-display text-xl sm:text-2xl text-primary-foreground mt-3 italic drop-shadow-[0_2px_10px_rgba(0,0,0,0.4)]">
+              <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="font-display text-lg sm:text-xl text-muted-foreground mt-3 italic">
                 {data.subtitle}
               </motion.p>
             )}
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.7 }} className="flex items-center gap-4 mt-10">
-              {data.travelDates && <span className="flex items-center gap-1.5 bg-background/20 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-full text-sm font-body"><Calendar className="h-4 w-4" /> {data.travelDates}</span>}
-              {data.travelerCount && <span className="flex items-center gap-1.5 bg-background/20 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-full text-sm font-body"><Users className="h-4 w-4" /> {data.travelerCount}</span>}
-              {data.destinationCount && <span className="flex items-center gap-1.5 bg-background/20 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-full text-sm font-body"><MapPin className="h-4 w-4" /> {data.destinationCount}</span>}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.4 }} className="flex items-center justify-center gap-4 mt-6 flex-wrap">
+              {data.travelDates && <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body"><Calendar className="h-4 w-4 text-primary" /> {data.travelDates}</span>}
+              {data.travelerCount && <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body"><Users className="h-4 w-4 text-primary" /> {data.travelerCount}</span>}
+              {data.destinationCount && <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body"><MapPin className="h-4 w-4 text-primary" /> {data.destinationCount}</span>}
             </motion.div>
           </div>
         </section>
