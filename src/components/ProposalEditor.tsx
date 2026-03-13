@@ -632,8 +632,9 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     <SortableImageGrid
                                       primaryImage={day.imageUrl}
                                       galleryImages={day.imageUrls || []}
-                                      onPrimaryChange={(url) => updateDay(dayIdx, { ...day, imageUrl: url })}
-                                      onGalleryChange={(urls) => updateDay(dayIdx, { ...day, imageUrls: urls })}
+                                      onReorder={(primary, gallery) => {
+                                        updateDay(dayIdx, { ...day, imageUrl: primary, imageUrls: gallery });
+                                      }}
                                       aspectClass="aspect-[4/3]"
                                       primaryAspectClass="aspect-[4/3]"
                                       primaryLarge={false}
