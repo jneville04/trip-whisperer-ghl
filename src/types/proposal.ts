@@ -425,6 +425,7 @@ export const defaultProposal: ProposalData = {
     secondaryColor: "",
     accentColor: "",
     logoUrl: "",
+    showAgencyNameWithLogo: true,
   },
   sectionVisibility: {
     hero: true,
