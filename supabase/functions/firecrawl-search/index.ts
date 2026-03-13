@@ -27,7 +27,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    console.log('Searching:', query);
+    console.log('Searching for hotels:', query);
 
     const response = await fetch('https://api.firecrawl.dev/v1/search', {
       method: 'POST',
