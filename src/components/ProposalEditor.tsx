@@ -454,11 +454,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   <div className="grid grid-cols-3 gap-2">
                     <div>
                       <FieldLabel>Check-in</FieldLabel>
-                      <Input value={acc.checkIn} onChange={(e) => updateAccommodation(i, "checkIn", e.target.value)} placeholder="Sep 15" className="h-8 text-xs" />
+                      <DatePickerField value={acc.checkIn} onChange={(val) => updateAccommodation(i, "checkIn", val)} placeholder="Check-in" />
                     </div>
                     <div>
                       <FieldLabel>Check-out</FieldLabel>
-                      <Input value={acc.checkOut} onChange={(e) => updateAccommodation(i, "checkOut", e.target.value)} placeholder="Sep 17" className="h-8 text-xs" />
+                      <DatePickerField value={acc.checkOut} onChange={(val) => updateAccommodation(i, "checkOut", val)} placeholder="Check-out" />
                     </div>
                     <div>
                       <FieldLabel>Nights</FieldLabel>
