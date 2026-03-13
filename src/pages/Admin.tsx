@@ -86,6 +86,17 @@ function BrandingTab() {
 
   const handleSave = async () => {
     setSaving(true);
+
+    if (
+      !isValidHexColor(form.primary_color) ||
+      !isValidHexColor(form.secondary_color) ||
+      !isValidHexColor(form.accent_color)
+    ) {
+      toast({ title: "Invalid colors", description: "Use full hex colors only, like #1A2B3C.", variant: "destructive" });
+      setSaving(false);
+      return;
+    }
+
     const { error } = await supabase
       .from("app_settings")
       .update({
