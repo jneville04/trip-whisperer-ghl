@@ -739,7 +739,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
           </div>
           <div>
             <FieldLabel>Emergency Contacts</FieldLabel>
-            <Textarea value={essentials.emergencyContacts} onChange={(e) => update("essentials", { ...essentials, emergencyContacts: e.target.value })} className="text-sm min-h-[60px]" placeholder="Local emergency: 112&#10;Embassy: +351..." />
+            <Textarea value={essentials.emergencyContacts} onChange={(e) => update("essentials", { ...essentials, emergencyContacts: e.target.value })} className="text-sm min-h-[100px] resize-y" placeholder="Local emergency: 112&#10;Embassy: +351..." />
           </div>
         </div>
       </CollapsibleSection>
