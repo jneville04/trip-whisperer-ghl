@@ -1,9 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, type Easing } from "framer-motion";
-import { MapPin, Calendar, Users, Star, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe, PlaneTakeoff, PlaneLanding, BedDouble, MessageSquare, CheckCircle2, Sparkles } from "lucide-react";
+import { MapPin, Calendar, Users, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe, PlaneTakeoff, PlaneLanding, BedDouble, MessageSquare, CheckCircle2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { ProposalData, Activity } from "@/types/proposal";
+import type { ProposalData, Activity, SectionKey } from "@/types/proposal";
+import { defaultSectionOrder } from "@/types/proposal";
 import heroFallback from "@/assets/portugal-hero.jpg";
 import sintraFallback from "@/assets/portugal-sintra.jpg";
 import portoFallback from "@/assets/portugal-porto.jpg";
