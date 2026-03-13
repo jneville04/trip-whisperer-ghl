@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, Eye, EyeOff, ImagePlus, X, ArrowUp, ArrowDown } from "lucide-react";
+import ImageUploadField from "@/components/ImageUploadField";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -158,8 +159,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
       <CollapsibleSection title="🎨 Brand & Colors" defaultOpen={false}>
         <div className="space-y-3">
           <div>
-            <FieldLabel>Logo URL</FieldLabel>
-            <Input value={brand.logoUrl} onChange={(e) => update("brand", { ...brand, logoUrl: e.target.value })} placeholder="Paste logo image URL" className="h-8 text-sm" />
+            <FieldLabel>Logo</FieldLabel>
+            <ImageUploadField value={brand.logoUrl} onChange={(url) => update("brand", { ...brand, logoUrl: url })} placeholder="Paste logo URL" />
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
@@ -228,8 +229,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
             </div>
           </div>
           <div>
-            <FieldLabel>Hero Image URL</FieldLabel>
-            <Input value={data.heroImageUrl} onChange={(e) => update("heroImageUrl", e.target.value)} placeholder="Paste image URL" />
+            <FieldLabel>Hero Image</FieldLabel>
+            <ImageUploadField value={data.heroImageUrl} onChange={(url) => update("heroImageUrl", url)} placeholder="Paste hero image URL" />
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
@@ -535,8 +536,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   <Input value={day.location} onChange={(e) => updateDay(dayIdx, { ...day, location: e.target.value })} placeholder="Lisbon" className="h-8 text-sm" />
                 </div>
                 <div>
-                  <FieldLabel>Image URL</FieldLabel>
-                  <Input value={day.imageUrl} onChange={(e) => updateDay(dayIdx, { ...day, imageUrl: e.target.value })} placeholder="Paste image URL" className="h-8 text-sm" />
+                  <FieldLabel>Day Image</FieldLabel>
+                  <ImageUploadField value={day.imageUrl} onChange={(url) => updateDay(dayIdx, { ...day, imageUrl: url })} placeholder="Paste image URL" />
                 </div>
               </div>
               <div className="space-y-2">
@@ -789,15 +790,13 @@ export default function ProposalEditor({ data, onChange }: Props) {
               <Input value={data.agent.agencyName} onChange={(e) => update("agent", { ...data.agent, agencyName: e.target.value })} className="h-8 text-sm" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <FieldLabel>Agent Photo URL</FieldLabel>
-              <Input value={data.agent.photoUrl} onChange={(e) => update("agent", { ...data.agent, photoUrl: e.target.value })} className="h-8 text-sm" placeholder="Photo URL" />
-            </div>
-            <div>
-              <FieldLabel>Agency Logo URL</FieldLabel>
-              <Input value={data.agent.logoUrl} onChange={(e) => update("agent", { ...data.agent, logoUrl: e.target.value })} className="h-8 text-sm" placeholder="Logo URL" />
-            </div>
+          <div>
+            <FieldLabel>Agent Photo</FieldLabel>
+            <ImageUploadField value={data.agent.photoUrl} onChange={(url) => update("agent", { ...data.agent, photoUrl: url })} placeholder="Agent photo URL" />
+          </div>
+          <div>
+            <FieldLabel>Agency Logo</FieldLabel>
+            <ImageUploadField value={data.agent.logoUrl} onChange={(url) => update("agent", { ...data.agent, logoUrl: url })} placeholder="Agency logo URL" />
           </div>
         </div>
       </CollapsibleSection>
