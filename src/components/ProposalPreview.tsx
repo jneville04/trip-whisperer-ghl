@@ -214,7 +214,7 @@ export default function ProposalPreview({ data }: Props) {
       )}
 
       {/* ACCOMMODATIONS */}
-      {vis.accommodations && data.accommodations.length > 0 && (
+      {vis.accommodations && accommodations.length > 0 && (
         <section id="accommodations" className="py-20">
           <div className="max-w-5xl mx-auto px-6">
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
