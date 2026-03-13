@@ -316,8 +316,9 @@ export default function ProposalEditor({ data, onChange }: Props) {
               <SortableImageGrid
                 primaryImage={data.heroImageUrl}
                 galleryImages={data.heroImageUrls || []}
-                onPrimaryChange={(url) => update("heroImageUrl", url)}
-                onGalleryChange={(urls) => update("heroImageUrls", urls)}
+                onReorder={(primary, gallery) => {
+                  onChange({ ...data, heroImageUrl: primary, heroImageUrls: gallery });
+                }}
                 onUpload={(files) => {
                   Array.from(files).forEach((file) => {
                     const reader = new FileReader();
