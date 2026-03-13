@@ -1,7 +1,7 @@
-import ItineraryBuilder from "@/components/ItineraryBuilder";
+import TravelProposal from "@/components/TravelProposal";
 
 const Index = () => {
-  return <ItineraryBuilder />;
+  return <TravelProposal />;
 };
 
 export default Index;
