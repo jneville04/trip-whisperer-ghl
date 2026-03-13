@@ -373,8 +373,8 @@ export default function ProposalPreview({ data }: Props) {
                               {(day.imageUrls || []).length > 0 && (
                                 <div className="grid grid-cols-2 gap-2">
                                   {(day.imageUrls || []).slice(0, 4).map((url, imgIdx) => (
-                                    <div key={imgIdx} className="rounded-xl overflow-hidden aspect-[4/3] shadow-md cursor-pointer bg-muted/30 p-1" onClick={() => openLightbox(allDayImages, imgIdx + 1)}>
-                                      <img src={url} alt={`${day.title} ${imgIdx + 2}`} className="w-full h-full object-contain" />
+                                    <div key={imgIdx} className="rounded-xl overflow-hidden aspect-[4/3] shadow-md cursor-pointer" onClick={() => openLightbox(allDayImages, imgIdx + 1)}>
+                                      <img src={url} alt={`${day.title} ${imgIdx + 2}`} className="w-full h-full object-cover" />
                                     </div>
                                   ))}
                                 </div>
