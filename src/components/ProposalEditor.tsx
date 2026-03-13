@@ -417,20 +417,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
             
 
             return (
-            <Collapsible key={acc.id} defaultOpen={i === 0}>
-            {({ open }: { open: boolean }) => (
-            <div className="border border-border/40 rounded-lg bg-muted/20 overflow-hidden">
-              {/* Header */}
-              <div className="flex items-center justify-between px-3 py-2.5 bg-muted/40">
-                <CollapsibleTrigger className="flex items-center gap-2 flex-1 cursor-pointer">
-                  {open ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
-                  <span className="font-body font-semibold text-sm text-foreground">{acc.hotelName || `Hotel ${i + 1}`}</span>
-                  {acc.location && <span className="text-xs text-muted-foreground">· {acc.location}</span>}
-                </CollapsibleTrigger>
-                <Button variant="travel-ghost" size="icon" onClick={() => update("accommodations", accommodations.filter((_, idx) => idx !== i))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
-              </div>
+            <CollapsibleHotel key={acc.id} defaultOpen={i === 0} hotelName={acc.hotelName || `Hotel ${i + 1}`} location={acc.location} onDelete={() => update("accommodations", accommodations.filter((_, idx) => idx !== i))}>
+              <div className="border-t border-border/30">
 
               <CollapsibleContent>
               <div className="border-t border-border/30">
