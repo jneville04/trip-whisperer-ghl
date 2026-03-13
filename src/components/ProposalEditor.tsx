@@ -314,7 +314,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
               updateAccField("galleryUrls", accGallery.filter((_: string, j: number) => j !== idx));
             };
 
-            const starRating = parseInt(acc.starRating || "0") || 0;
+            
 
             return (
             <div key={acc.id} className="border border-border/40 rounded-lg bg-muted/20 overflow-hidden">
