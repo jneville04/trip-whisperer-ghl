@@ -95,7 +95,7 @@ export default function RichTextEditor({ content, onChange, placeholder, minHeig
         <ToolBtn active={editor.isActive("underline")} onClick={() => (editor.chain().focus() as any).toggleUnderline().run()} title="Underline (Ctrl+U)">
           <UnderlineIcon className="h-3.5 w-3.5" />
         </ToolBtn>
-        <ToolBtn active={editor.isActive("highlight")} onClick={() => editor.chain().focus().toggleHighlight().run()} title="Highlight">
+        <ToolBtn active={editor.isActive("highlight")} onClick={() => (editor.chain().focus() as any).toggleHighlight().run()} title="Highlight">
           <Highlighter className="h-3.5 w-3.5" />
         </ToolBtn>
         <div className="w-px h-4 bg-border/50 mx-1" />
