@@ -519,29 +519,15 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     <TabsContent value="media" className="p-3 space-y-3 mt-0">
                                       <div>
                                         <FieldLabel>Displayed Photos</FieldLabel>
-                                        <div className="grid grid-cols-3 gap-2 mt-1.5">
-                                          {acc.imageUrl && (
-                                            <div className="relative col-span-2 row-span-2 aspect-[4/3] rounded-lg overflow-hidden border border-border/40 group">
-                                              <img src={acc.imageUrl} alt="Primary" className="w-full h-full object-cover" />
-                                              <div className="absolute top-1.5 left-1.5 bg-primary text-primary-foreground text-[10px] font-semibold px-1.5 py-0.5 rounded">Primary Photo</div>
-                                              <button onClick={() => updateAccField("imageUrl", "")} className="absolute top-1.5 right-1.5 bg-foreground/70 text-background rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <X className="h-3 w-3" />
-                                              </button>
-                                            </div>
-                                          )}
-                                          {accGallery.map((url: string, gi: number) => (
-                                            <div key={gi} className="relative aspect-square rounded-lg overflow-hidden border border-border/40 group">
-                                              <img src={url} alt={`Gallery ${gi + 1}`} className="w-full h-full object-cover" />
-                                              <button onClick={() => removeGalleryImage(gi)} className="absolute top-1 right-1 bg-foreground/70 text-background rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                <X className="h-3 w-3" />
-                                              </button>
-                                            </div>
-                                          ))}
-                                          <label className="aspect-square rounded-lg border-2 border-dashed border-border/60 flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary/50 hover:bg-muted/40 transition-colors">
-                                            <ImagePlus className="h-5 w-5 text-muted-foreground" />
-                                            <span className="text-[10px] text-muted-foreground font-medium">Add photos</span>
-                                            <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleImageUpload(e, acc.imageUrl ? "gallery" : "main")} />
-                                          </label>
+                                        <div className="mt-1.5">
+                                          <SortableImageGrid
+                                            primaryImage={acc.imageUrl}
+                                            galleryImages={accGallery}
+                                            onPrimaryChange={(url) => updateAccField("imageUrl", url)}
+                                            onGalleryChange={(urls) => updateAccField("galleryUrls", urls)}
+                                            primaryAspectClass="aspect-[4/3]"
+                                            onUpload={(files) => handleImageUpload({ target: { files, value: "" } } as any, acc.imageUrl ? "gallery" : "main")}
+                                          />
                                         </div>
                                       </div>
                                       <div>
