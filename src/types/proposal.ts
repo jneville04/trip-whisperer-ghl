@@ -122,6 +122,7 @@ export interface ProposalData {
   destination: string;
   subtitle: string;
   heroImageUrl: string;
+  heroImageUrls: string[];
   travelDates: string;
   travelerCount: string;
   destinationCount: string;
