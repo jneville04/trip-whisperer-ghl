@@ -284,7 +284,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
             <div key={acc.id} className="border border-border/40 rounded-lg p-3 bg-muted/20">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-body font-semibold text-sm text-foreground">🏨 Hotel {i + 1}</span>
-                <Button variant="travel-ghost" size="icon" onClick={() => update("accommodations", data.accommodations.filter((_, idx) => idx !== i))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
+                <Button variant="travel-ghost" size="icon" onClick={() => update("accommodations", accommodations.filter((_, idx) => idx !== i))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </div>
