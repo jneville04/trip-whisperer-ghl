@@ -626,16 +626,12 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                       aspectClass="aspect-[4/3]"
                                       primaryAspectClass="aspect-[4/3]"
                                       primaryLarge={false}
-                                      onUpload={(files) => {
-                                        Array.from(files).forEach((file) => {
-                                          const reader = new FileReader();
-                                          reader.onload = (ev) => {
-                                            const url = ev.target?.result as string;
-                                            if (!day.imageUrl) { updateDay(dayIdx, { ...day, imageUrl: url }); }
-                                            else { updateDay(dayIdx, { ...day, imageUrls: [...(day.imageUrls || []), url] }); }
-                                          };
-                                          reader.readAsDataURL(file);
-                                        });
+                                      onUpload={async (files) => {
+                                        const urls = await uploadImages(files);
+                                        for (const url of urls) {
+                                          if (!day.imageUrl) { updateDay(dayIdx, { ...day, imageUrl: url }); }
+                                          else { updateDay(dayIdx, { ...day, imageUrls: [...(day.imageUrls || []), url] }); }
+                                        }
                                       }}
                                     />
                                   </div>
