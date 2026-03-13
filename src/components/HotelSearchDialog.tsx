@@ -237,9 +237,9 @@ export default function HotelSearchDialog({ onSelect, children }: HotelSearchDia
             </div>
 
             <ScrollArea className="flex-1 max-h-[50vh]">
-              {selectedResult.images.length > 0 ? (
+              {(selectedResult.images || []).length > 0 ? (
                 <div className="grid grid-cols-3 gap-2 pr-2">
-                  {selectedResult.images.map((img, i) => {
+                  {(selectedResult.images || []).map((img, i) => {
                     const isSelected = selectedImages.includes(img.url);
                     const isPrimary = selectedImages[0] === img.url;
                     return (
