@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, Eye, EyeOff, ImagePlus, X, ArrowUp, ArrowDown, Search } from "lucide-react";
+import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, ChevronRight, Eye, EyeOff, ImagePlus, X, ArrowUp, ArrowDown, Search } from "lucide-react";
+
 import DatePickerField from "@/components/DatePickerField";
 import ImageUploadField from "@/components/ImageUploadField";
 import HotelSearchDialog from "@/components/HotelSearchDialog";
@@ -63,6 +64,37 @@ function CollapsibleSection({
       </CardHeader>
       {open && <CardContent className="pt-0">{children}</CardContent>}
     </Card>
+  );
+}
+
+function CollapsibleHotel({
+  defaultOpen = false,
+  hotelName,
+  location,
+  onDelete,
+  children,
+}: {
+  defaultOpen?: boolean;
+  hotelName: string;
+  location?: string;
+  onDelete: () => void;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="border border-border/40 rounded-lg bg-muted/20 overflow-hidden">
+      <div className="flex items-center justify-between px-3 py-2.5 bg-muted/40">
+        <button className="flex items-center gap-2 flex-1 text-left" onClick={() => setOpen(!open)}>
+          {open ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
+          <span className="font-body font-semibold text-sm text-foreground">{hotelName}</span>
+          {location && <span className="text-xs text-muted-foreground">· {location}</span>}
+        </button>
+        <Button variant="travel-ghost" size="icon" onClick={onDelete} className="h-7 w-7 text-destructive/60 hover:text-destructive">
+          <Trash2 className="h-3.5 w-3.5" />
+        </Button>
+      </div>
+      {open && children}
+    </div>
   );
 }
 
@@ -416,17 +448,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
             
 
             return (
-            <div key={acc.id} className="border border-border/40 rounded-lg bg-muted/20 overflow-hidden">
-              {/* Header */}
-              <div className="flex items-center justify-between px-3 py-2.5 bg-muted/40 border-b border-border/30">
-                <div className="flex items-center gap-2">
-                  <span className="font-body font-semibold text-sm text-foreground">{acc.hotelName || `Hotel ${i + 1}`}</span>
-                </div>
-                <Button variant="travel-ghost" size="icon" onClick={() => update("accommodations", accommodations.filter((_, idx) => idx !== i))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-
+            <CollapsibleHotel key={acc.id} defaultOpen={i === 0} hotelName={acc.hotelName || `Hotel ${i + 1}`} location={acc.location} onDelete={() => update("accommodations", accommodations.filter((_, idx) => idx !== i))}>
+              <div className="border-t border-border/30">
               {/* Tabbed Content */}
               <Tabs defaultValue="general" className="w-full">
                 <TabsList className="w-full justify-start rounded-none border-b border-border/30 bg-transparent h-9 px-3">
@@ -481,7 +504,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   <div>
                     <FieldLabel>Displayed Photos</FieldLabel>
                     <div className="grid grid-cols-3 gap-2 mt-1.5">
-                      {/* Primary photo */}
                       {acc.imageUrl && (
                          <div className="relative col-span-2 row-span-2 aspect-[4/3] rounded-lg overflow-hidden border border-border/40 group">
                           <img src={acc.imageUrl} alt="Primary" className="w-full h-full object-cover" />
@@ -491,7 +513,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
                           </button>
                         </div>
                       )}
-                      {/* Gallery images */}
                       {accGallery.map((url: string, gi: number) => (
                         <div key={gi} className="relative aspect-square rounded-lg overflow-hidden border border-border/40 group">
                           <img src={url} alt={`Gallery ${gi + 1}`} className="w-full h-full object-cover" />
@@ -500,7 +521,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
                           </button>
                         </div>
                       ))}
-                      {/* Add photo button */}
                       <label className="aspect-square rounded-lg border-2 border-dashed border-border/60 flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary/50 hover:bg-muted/40 transition-colors">
                         <ImagePlus className="h-5 w-5 text-muted-foreground" />
                         <span className="text-[10px] text-muted-foreground font-medium">Add photos</span>
@@ -554,7 +574,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   </div>
                 </TabsContent>
               </Tabs>
-            </div>
+              </div>
+            </CollapsibleHotel>
             );
           })}
           <div className="flex gap-2">
