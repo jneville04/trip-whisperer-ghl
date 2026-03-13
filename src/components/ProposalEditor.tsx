@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, Eye, EyeOff, ImagePlus, X } from "lucide-react";
+import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, Eye, EyeOff, ImagePlus, X, ArrowUp, ArrowDown } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, Accommodation } from "@/types/proposal";
-import { createActivity, createDay, createPricingLine, createFlightLeg, createAccommodation } from "@/types/proposal";
+import { createActivity, createDay, createPricingLine, createFlightLeg, createAccommodation, defaultSectionOrder } from "@/types/proposal";
+import type { SectionKey } from "@/types/proposal";
 
 interface Props {
   data: ProposalData;
@@ -124,9 +125,23 @@ export default function ProposalEditor({ data, onChange }: Props) {
   };
 
   const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
-  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, testimonial: true, agent: true };
+  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, agent: true };
   const flights = data.flights || [];
   const accommodations = data.accommodations || [];
+  const sectionOrder = data.sectionOrder || defaultSectionOrder;
+
+  const sectionLabels: Record<SectionKey, string> = {
+    overview: "🌍 Overview", flights: "✈️ Flights", accommodations: "🏨 Hotels",
+    itinerary: "📋 Itinerary", inclusions: "✅ Included", pricing: "💰 Pricing", agent: "🧑‍💼 Agent",
+  };
+
+  const moveSection = (index: number, direction: -1 | 1) => {
+    const newOrder = [...sectionOrder];
+    const targetIdx = index + direction;
+    if (targetIdx < 0 || targetIdx >= newOrder.length) return;
+    [newOrder[index], newOrder[targetIdx]] = [newOrder[targetIdx], newOrder[index]];
+    update("sectionOrder", newOrder);
+  };
 
   return (
     <div className="space-y-4 p-4 sm:p-6 overflow-y-auto h-full">
@@ -169,7 +184,33 @@ export default function ProposalEditor({ data, onChange }: Props) {
         </div>
       </CollapsibleSection>
 
-      {/* Trip Overview */}
+      {/* Section Order */}
+      <CollapsibleSection title="📐 Section Order" defaultOpen={false}>
+        <div className="space-y-1">
+          <p className="text-xs text-muted-foreground mb-2">Drag sections up/down to reorder the proposal layout.</p>
+          {sectionOrder.map((key, idx) => (
+            <div key={key} className="flex items-center gap-2 py-1.5 px-2 rounded-md bg-background border border-border/30">
+              <GripVertical className="h-3.5 w-3.5 text-muted-foreground/40 shrink-0" />
+              <span className="text-sm font-body flex-1">{sectionLabels[key]}</span>
+              <div className="flex items-center gap-0.5">
+                <button
+                  onClick={() => toggleSection(key as keyof typeof vis)}
+                  className={`p-1 rounded transition-colors ${vis[key as keyof typeof vis] ? "text-primary hover:text-primary/70" : "text-muted-foreground/30 hover:text-muted-foreground"}`}
+                >
+                  {vis[key as keyof typeof vis] ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
+                </button>
+                <button onClick={() => moveSection(idx, -1)} disabled={idx === 0} className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-20 disabled:cursor-not-allowed">
+                  <ArrowUp className="h-3.5 w-3.5" />
+                </button>
+                <button onClick={() => moveSection(idx, 1)} disabled={idx === sectionOrder.length - 1} className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-20 disabled:cursor-not-allowed">
+                  <ArrowDown className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </CollapsibleSection>
+
       <CollapsibleSection title="🌍 Trip Overview" sectionKey="hero" visible={vis.hero} onToggleVisible={() => toggleSection("hero")}>
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
@@ -576,25 +617,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
         </div>
       </CollapsibleSection>
 
-      {/* Testimonial */}
-      <CollapsibleSection title="⭐ Testimonial" defaultOpen={false} sectionKey="testimonial" visible={vis.testimonial} onToggleVisible={() => toggleSection("testimonial")}>
-        <div className="space-y-2">
-          <div>
-            <FieldLabel>Quote</FieldLabel>
-            <textarea value={data.testimonialQuote} onChange={(e) => update("testimonialQuote", e.target.value)} rows={2} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring font-body" />
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <FieldLabel>Author</FieldLabel>
-              <Input value={data.testimonialAuthor} onChange={(e) => update("testimonialAuthor", e.target.value)} className="h-8 text-sm" />
-            </div>
-            <div>
-              <FieldLabel>Trip</FieldLabel>
-              <Input value={data.testimonialTrip} onChange={(e) => update("testimonialTrip", e.target.value)} className="h-8 text-sm" />
-            </div>
-          </div>
-        </div>
-      </CollapsibleSection>
 
       {/* Agent Info */}
       <CollapsibleSection title="🧑‍💼 Agent Info" defaultOpen={false} sectionKey="agent" visible={vis.agent} onToggleVisible={() => toggleSection("agent")}>
