@@ -109,10 +109,10 @@ export default function RichTextEditor({ content, onChange, placeholder, minHeig
           <ListOrdered className="h-3.5 w-3.5" />
         </ToolBtn>
         <div className="w-px h-4 bg-border/50 mx-1" />
-        <ToolBtn active={editor.isActive({ textAlign: "left" })} onClick={() => editor.chain().focus().setTextAlign("left").run()} title="Align Left">
+        <ToolBtn active={editor.isActive({ textAlign: "left" })} onClick={() => (editor.chain().focus() as any).setTextAlign("left").run()} title="Align Left">
           <AlignLeft className="h-3.5 w-3.5" />
         </ToolBtn>
-        <ToolBtn active={editor.isActive({ textAlign: "center" })} onClick={() => editor.chain().focus().setTextAlign("center").run()} title="Align Center">
+        <ToolBtn active={editor.isActive({ textAlign: "center" })} onClick={() => (editor.chain().focus() as any).setTextAlign("center").run()} title="Align Center">
           <AlignCenter className="h-3.5 w-3.5" />
         </ToolBtn>
         <div className="w-px h-4 bg-border/50 mx-1" />
