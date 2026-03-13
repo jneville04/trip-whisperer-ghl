@@ -147,7 +147,11 @@ export const createAccommodation = (): Accommodation => ({
   roomType: "",
   nights: "",
   imageUrl: "",
+  galleryUrls: [],
   description: "",
+  starRating: "",
+  amenities: [],
+  highlights: [],
 });
 
 export const defaultProposal: ProposalData = {
