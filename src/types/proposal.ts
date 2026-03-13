@@ -60,6 +60,13 @@ export interface Accommodation {
   highlights: string[];
 }
 
+export interface BrandSettings {
+  primaryColor: string;
+  secondaryColor: string;
+  accentColor: string;
+  logoUrl: string;
+}
+
 export interface Traveler {
   id: string;
   fullName: string;
