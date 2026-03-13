@@ -38,6 +38,7 @@ function CollapsibleSection({
   sectionKey,
   visible,
   onToggleVisible,
+  dragHandleProps,
 }: {
   title: string;
   children: React.ReactNode;
@@ -45,12 +46,18 @@ function CollapsibleSection({
   sectionKey?: keyof SectionVisibility;
   visible?: boolean;
   onToggleVisible?: () => void;
+  dragHandleProps?: Record<string, any>;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <Card className={`border-border/50 ${visible === false ? "opacity-50" : ""}`}>
       <CardHeader className="py-4">
         <div className="flex items-center justify-between">
+          {dragHandleProps && (
+            <button {...dragHandleProps} className="cursor-grab active:cursor-grabbing p-1 -ml-1 mr-1 text-muted-foreground/40 hover:text-muted-foreground touch-none">
+              <GripVertical className="h-4 w-4" />
+            </button>
+          )}
           <div className="flex items-center gap-2 cursor-pointer flex-1" onClick={() => setOpen(!open)}>
             <CardTitle className="text-base font-display">{title}</CardTitle>
             {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
@@ -68,6 +75,21 @@ function CollapsibleSection({
       </CardHeader>
       {open && <CardContent className="pt-0">{children}</CardContent>}
     </Card>
+  );
+}
+
+function SortableSection({ id, children }: { id: string; children: (dragHandleProps: Record<string, any>) => ReactNode }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : undefined,
+  };
+  return (
+    <div ref={setNodeRef} style={style}>
+      {children({ ...attributes, ...listeners })}
+    </div>
   );
 }
 
