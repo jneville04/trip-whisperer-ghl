@@ -40,19 +40,22 @@ export default function RevisionsPage() {
       return;
     }
 
-    setBrandLoading(true);
-    supabase
-      .from("proposals")
-      .select("data")
-      .eq("share_id", shareId)
-      .single()
-      .then(({ data: row }) => {
-        const proposalData = (row as any)?.data;
-        if (proposalData?.brand) {
-          setBrandData(proposalData.brand as BrandColors);
-        }
-      })
-      .finally(() => setBrandLoading(false));
+    const loadBrand = async () => {
+      setBrandLoading(true);
+      const { data: row } = await supabase
+        .from("proposals")
+        .select("data")
+        .eq("share_id", shareId)
+        .single();
+
+      const proposalData = (row as any)?.data;
+      if (proposalData?.brand) {
+        setBrandData(proposalData.brand as BrandColors);
+      }
+      setBrandLoading(false);
+    };
+
+    loadBrand();
   }, [shareId, initialBrand]);
 
   const brandStyles = buildBrandCssVars(brandData);
