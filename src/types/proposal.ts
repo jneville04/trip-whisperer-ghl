@@ -66,6 +66,7 @@ export interface BrandSettings {
   secondaryColor: string;
   accentColor: string;
   logoUrl: string;
+  showAgencyNameWithLogo?: boolean;
 }
 
 export interface Traveler {
