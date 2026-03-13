@@ -67,6 +67,8 @@ export interface BrandSettings {
   logoUrl: string;
 }
 
+export type SectionKey = "overview" | "flights" | "accommodations" | "itinerary" | "inclusions" | "pricing" | "agent";
+
 export interface SectionVisibility {
   hero: boolean;
   overview: boolean;
@@ -75,9 +77,12 @@ export interface SectionVisibility {
   itinerary: boolean;
   inclusions: boolean;
   pricing: boolean;
-  testimonial: boolean;
   agent: boolean;
 }
+
+export const defaultSectionOrder: SectionKey[] = [
+  "overview", "flights", "accommodations", "itinerary", "inclusions", "pricing", "agent",
+];
 
 export interface ProposalData {
   destination: string;
