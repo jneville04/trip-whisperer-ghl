@@ -12,6 +12,8 @@ export interface AppSettings {
   font_display: string;
   font_body: string;
   login_message: string | null;
+  ghl_webhook_approve: string;
+  ghl_webhook_revision: string;
 }
 
 const defaults: AppSettings = {
@@ -25,6 +27,8 @@ const defaults: AppSettings = {
   font_display: "Playfair Display",
   font_body: "Inter",
   login_message: null,
+  ghl_webhook_approve: "",
+  ghl_webhook_revision: "",
 };
 
 function hexToHsl(hex: string): string | null {

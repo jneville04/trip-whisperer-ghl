@@ -1,10 +1,12 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { MessageSquare, ArrowLeft, Send, CheckCircle2 } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { MessageSquare, ArrowLeft, Send, CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
 import { useBrandStyles } from "@/hooks/useBrandStyles";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const revisionCategories = [
   { id: "dates", label: "Travel Dates" },
@@ -18,18 +20,46 @@ const revisionCategories = [
 
 export default function RevisionsPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [selected, setSelected] = useState<string[]>([]);
   const brandStyles = useBrandStyles();
+
+  const proposalId = searchParams.get("proposal") || "";
 
   const toggle = (id: string) => {
     setSelected((prev) => prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSending(true);
+
+    try {
+      const { error } = await supabase.functions.invoke("ghl-webhook", {
+        body: {
+          type: "revision",
+          payload: {
+            ...form,
+            categories: selected,
+            proposalId,
+            source: window.location.href,
+          },
+        },
+      });
+
+      if (error) {
+        console.error("Webhook error:", error);
+        toast({ title: "Submitted with warning", description: "Your revision request was recorded but the notification may have failed.", variant: "destructive" });
+      }
+    } catch (err) {
+      console.error("Failed to call webhook:", err);
+    }
+
     setSubmitted(true);
+    setSending(false);
   };
 
   if (submitted) {
@@ -108,8 +138,9 @@ export default function RevisionsPage() {
             />
           </div>
 
-          <Button type="submit" variant="travel" size="lg" className="w-full text-base py-6 h-auto">
-            <Send className="h-4 w-4 mr-2" /> Send Revision Request
+          <Button type="submit" variant="travel" size="lg" className="w-full text-base py-6 h-auto" disabled={sending}>
+            {sending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
+            {sending ? "Sending..." : "Send Revision Request"}
           </Button>
         </form>
       </div>
