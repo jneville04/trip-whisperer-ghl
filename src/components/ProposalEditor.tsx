@@ -316,8 +316,9 @@ export default function ProposalEditor({ data, onChange }: Props) {
               <SortableImageGrid
                 primaryImage={data.heroImageUrl}
                 galleryImages={data.heroImageUrls || []}
-                onPrimaryChange={(url) => update("heroImageUrl", url)}
-                onGalleryChange={(urls) => update("heroImageUrls", urls)}
+                onReorder={(primary, gallery) => {
+                  onChange({ ...data, heroImageUrl: primary, heroImageUrls: gallery });
+                }}
                 onUpload={(files) => {
                   Array.from(files).forEach((file) => {
                     const reader = new FileReader();
@@ -523,8 +524,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                           <SortableImageGrid
                                             primaryImage={acc.imageUrl}
                                             galleryImages={accGallery}
-                                            onPrimaryChange={(url) => updateAccField("imageUrl", url)}
-                                            onGalleryChange={(urls) => updateAccField("galleryUrls", urls)}
+                                            onReorder={(primary, gallery) => {
+                                              const a = [...(data.accommodations || [])];
+                                              a[i] = { ...a[i], imageUrl: primary, galleryUrls: gallery };
+                                              update("accommodations", a);
+                                            }}
                                             primaryAspectClass="aspect-[4/3]"
                                             onUpload={(files) => handleImageUpload({ target: { files, value: "" } } as any, acc.imageUrl ? "gallery" : "main")}
                                           />
@@ -628,8 +632,9 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     <SortableImageGrid
                                       primaryImage={day.imageUrl}
                                       galleryImages={day.imageUrls || []}
-                                      onPrimaryChange={(url) => updateDay(dayIdx, { ...day, imageUrl: url })}
-                                      onGalleryChange={(urls) => updateDay(dayIdx, { ...day, imageUrls: urls })}
+                                      onReorder={(primary, gallery) => {
+                                        updateDay(dayIdx, { ...day, imageUrl: primary, imageUrls: gallery });
+                                      }}
                                       aspectClass="aspect-[4/3]"
                                       primaryAspectClass="aspect-[4/3]"
                                       primaryLarge={false}

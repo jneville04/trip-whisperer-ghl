@@ -1,25 +1,17 @@
-import { ReactNode } from "react";
+import { useMemo } from "react";
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, rectSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { X, GripVertical, ImagePlus } from "lucide-react";
 
 interface SortableImageGridProps {
-  /** Primary image URL (shown first, labeled "Main") */
   primaryImage: string;
-  /** Additional gallery image URLs */
   galleryImages: string[];
-  /** Called when primary changes */
-  onPrimaryChange: (url: string) => void;
-  /** Called when gallery changes */
-  onGalleryChange: (urls: string[]) => void;
-  /** Called when files are uploaded */
+  /** Called with [newPrimary, ...newGallery] after any reorder or remove */
+  onReorder: (primary: string, gallery: string[]) => void;
   onUpload: (files: FileList) => void;
-  /** Aspect ratio class for thumbnails */
   aspectClass?: string;
-  /** Primary image aspect class (larger) */
   primaryAspectClass?: string;
-  /** Show col-span-2/row-span-2 for primary */
   primaryLarge?: boolean;
 }
 
@@ -80,19 +72,18 @@ function SortableImageItem({
 export default function SortableImageGrid({
   primaryImage,
   galleryImages,
-  onPrimaryChange,
-  onGalleryChange,
+  onReorder,
   onUpload,
   aspectClass = "aspect-square",
   primaryAspectClass = "aspect-[16/9]",
   primaryLarge = true,
 }: SortableImageGridProps) {
-  // Combine into a single ordered list for DnD
-  const allImages = [
+  const allImages = useMemo(() => [
     ...(primaryImage ? [primaryImage] : []),
     ...galleryImages,
-  ];
-  const itemIds = allImages.map((_, i) => `img-${i}`);
+  ], [primaryImage, galleryImages]);
+
+  const itemIds = useMemo(() => allImages.map((_, i) => `img-${i}`), [allImages.length]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -106,9 +97,12 @@ export default function SortableImageGrid({
     const newIndex = itemIds.indexOf(over.id as string);
     const reordered = arrayMove(allImages, oldIndex, newIndex);
 
-    // First image becomes primary, rest become gallery
-    onPrimaryChange(reordered[0] || "");
-    onGalleryChange(reordered.slice(1));
+    onReorder(reordered[0] || "", reordered.slice(1));
+  };
+
+  const handleRemove = (index: number) => {
+    const remaining = allImages.filter((_, i) => i !== index);
+    onReorder(remaining[0] || "", remaining.slice(1));
   };
 
   return (
@@ -123,19 +117,9 @@ export default function SortableImageGrid({
               label={i === 0 ? "Main Photo" : undefined}
               aspectClass={i === 0 && primaryLarge ? primaryAspectClass : aspectClass}
               isLarge={i === 0 && primaryLarge}
-              onRemove={() => {
-                if (i === 0) {
-                  // Remove primary: promote first gallery image
-                  const newPrimary = galleryImages[0] || "";
-                  onPrimaryChange(newPrimary);
-                  onGalleryChange(galleryImages.slice(1));
-                } else {
-                  onGalleryChange(galleryImages.filter((_, j) => j !== i - 1));
-                }
-              }}
+              onRemove={() => handleRemove(i)}
             />
           ))}
-          {/* Upload button */}
           <label className={`${aspectClass} rounded-lg border-2 border-dashed border-border/60 flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary/50 hover:bg-muted/40 transition-colors`}>
             <ImagePlus className="h-5 w-5 text-muted-foreground" />
             <span className="text-[10px] text-muted-foreground font-medium">Add photo</span>
