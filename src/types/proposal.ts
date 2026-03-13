@@ -60,14 +60,34 @@ export interface Accommodation {
   highlights: string[];
 }
 
-export interface BrandSettings {
-  primaryColor: string;
-  secondaryColor: string;
-  accentColor: string;
-  logoUrl: string;
+export interface Traveler {
+  id: string;
+  fullName: string;
+  passportNumber: string;
+  dateOfBirth: string;
+  dietaryRestrictions: string;
+  specialRequests: string;
 }
 
-export type SectionKey = "overview" | "flights" | "accommodations" | "itinerary" | "inclusions" | "pricing" | "agent";
+export interface TravelEssentials {
+  visaRequirements: string;
+  passportInfo: string;
+  currency: string;
+  language: string;
+  timeZone: string;
+  weatherInfo: string;
+  packingTips: string;
+  emergencyContacts: string;
+}
+
+export interface TermsAndConditions {
+  cancellationPolicy: string;
+  travelInsurance: string;
+  bookingTerms: string;
+  liability: string;
+}
+
+export type SectionKey = "overview" | "flights" | "accommodations" | "itinerary" | "inclusions" | "pricing" | "essentials" | "terms" | "agent";
 
 export interface SectionVisibility {
   hero: boolean;
@@ -77,11 +97,13 @@ export interface SectionVisibility {
   itinerary: boolean;
   inclusions: boolean;
   pricing: boolean;
+  essentials: boolean;
+  terms: boolean;
   agent: boolean;
 }
 
 export const defaultSectionOrder: SectionKey[] = [
-  "overview", "flights", "accommodations", "itinerary", "inclusions", "pricing", "agent",
+  "overview", "flights", "accommodations", "itinerary", "inclusions", "essentials", "terms", "pricing", "agent",
 ];
 
 export interface ProposalData {
@@ -100,6 +122,10 @@ export interface ProposalData {
   pricing: PricingLine[];
   paymentTerms: string;
   validUntil: string;
+  travelers: Traveler[];
+  essentials: TravelEssentials;
+  terms: TermsAndConditions;
+  notes: string;
   agent: AgentInfo;
   brand: BrandSettings;
   sectionVisibility: SectionVisibility;
