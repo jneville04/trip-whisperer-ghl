@@ -516,6 +516,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                 amenities: hotelData.amenities,
                 highlights: hotelData.highlights,
                 imageUrl: hotelData.imageUrl,
+                galleryUrls: hotelData.galleryUrls || [],
               };
               update("accommodations", [...accommodations, newAcc]);
             }}>
