@@ -154,11 +154,11 @@ export default function ProposalPreview({ data }: Props) {
             {/* Side images */}
             <div className="hidden md:grid grid-rows-2 gap-1 h-[500px]">
               {heroImages.length > 0 ? heroImages.slice(0, 2).map((url, i) => (
-                <div key={i} className="overflow-hidden cursor-pointer relative bg-muted/30 p-1 group" onClick={() => {
+                <div key={i} className="overflow-hidden cursor-pointer relative group" onClick={() => {
                   const allHeroImgs = [{ src: heroImage, alt: data.destination }, ...heroImages.map((u, j) => ({ src: u, alt: `${data.destination} ${j + 2}` }))];
                   openLightbox(allHeroImgs, i + 1);
                 }}>
-                  <img src={url} alt={`${data.destination} ${i + 2}`} className="w-full h-full object-contain" />
+                  <img src={url} alt={`${data.destination} ${i + 2}`} className="w-full h-full object-cover" />
                 </div>
               )) : (
                 <>
