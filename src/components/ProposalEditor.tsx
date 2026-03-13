@@ -320,15 +320,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                 onReorder={(primary, gallery) => {
                   onChange({ ...data, heroImageUrl: primary, heroImageUrls: gallery });
                 }}
-                onUpload={(files) => {
-                  Array.from(files).forEach((file) => {
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                      const url = ev.target?.result as string;
-                      if (!data.heroImageUrl) { update("heroImageUrl", url); }
-                      else { update("heroImageUrls", [...(data.heroImageUrls || []), url]); }
-                    };
-                    reader.readAsDataURL(file);
+                onUpload={async (files) => {
+                  const urls = await uploadImages(files);
+                  urls.forEach((url) => {
+                    if (!data.heroImageUrl) { update("heroImageUrl", url); }
+                    else { update("heroImageUrls", [...(data.heroImageUrls || []), url]); }
                   });
                 }}
               />
