@@ -53,7 +53,11 @@ export interface Accommodation {
   roomType: string;
   nights: string;
   imageUrl: string;
+  galleryUrls: string[];
   description: string;
+  starRating: string;
+  amenities: string[];
+  highlights: string[];
 }
 
 export interface BrandSettings {
