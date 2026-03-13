@@ -14,6 +14,7 @@ export interface AppSettings {
   login_message: string | null;
   ghl_webhook_approve: string;
   ghl_webhook_revision: string;
+  admin_photo_url: string | null;
 }
 
 const defaults: AppSettings = {
