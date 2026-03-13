@@ -1,5 +1,7 @@
-import { useState } from "react";
-import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, Eye, EyeOff } from "lucide-react";
+import { useState, useRef } from "react";
+import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, Eye, EyeOff, ImagePlus, X, Star } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
