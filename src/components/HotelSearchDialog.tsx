@@ -57,6 +57,13 @@ function parseHotelFromResult(result: HotelResult, selectedImages: string[]): Pa
     .replace(/\s*\|.*$/i, "")
     .trim();
 
+  // Try to extract location from URL or description
+  const urlObj = (() => { try { return new URL(result.url); } catch { return null; } })();
+  const hostParts = urlObj?.hostname?.replace("www.", "").split(".") || [];
+  // Try to extract city/location from markdown or description
+  const locationMatch = markdown.match(/(?:located?\s+in|situated\s+in|in\s+the\s+heart\s+of|in\s+downtown|city[:\s]+|address[:\s]+)\s+([A-Z][a-zA-Zà-ÿ\s,]+)/i);
+  const extractedLocation = locationMatch ? locationMatch[1].replace(/[.,]+$/, "").trim().split(",")[0].trim() : "";
+
   // Use selected images or fall back to first available
   const images = result.images || [];
   const primaryImage = selectedImages[0] || (images.length > 0 ? images[0].url : "");
@@ -64,7 +71,7 @@ function parseHotelFromResult(result: HotelResult, selectedImages: string[]): Pa
 
   return {
     hotelName,
-    location: "",
+    location: extractedLocation,
     description: result.description || "",
     starRating: starMatch ? starMatch[1] : "",
     amenities,

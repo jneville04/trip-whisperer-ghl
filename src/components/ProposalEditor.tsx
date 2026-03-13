@@ -28,7 +28,7 @@ const activityTypes: { value: Activity["type"]; label: string }[] = [
 function CollapsibleSection({
   title,
   children,
-  defaultOpen = true,
+  defaultOpen = false,
   sectionKey,
   visible,
   onToggleVisible,
