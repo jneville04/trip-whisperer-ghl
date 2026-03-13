@@ -492,8 +492,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       )}
                       {/* Gallery images */}
                       {accGallery.map((url: string, gi: number) => (
-                        <div key={gi} className="relative aspect-square rounded-lg overflow-hidden border border-border/40 bg-muted/30 p-1 group">
-                          <img src={url} alt={`Gallery ${gi + 1}`} className="w-full h-full object-contain" />
+                        <div key={gi} className="relative aspect-square rounded-lg overflow-hidden border border-border/40 group">
+                          <img src={url} alt={`Gallery ${gi + 1}`} className="w-full h-full object-cover" />
                           <button onClick={() => removeGalleryImage(gi)} className="absolute top-1 right-1 bg-foreground/70 text-background rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                             <X className="h-3 w-3" />
                           </button>
