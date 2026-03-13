@@ -765,7 +765,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
               </div>
               {terms[key] !== false && (
                 <div className="p-3">
-                  <RichTextEditor content={terms[field]} onChange={(html) => update("terms", { ...terms, [field]: html })} placeholder={placeholder} minHeight="80px" />
+                  <RichTextEditor content={terms[field]} onChange={(html) => update("terms", { ...terms, [field]: html })} placeholder={placeholder} minHeight="120px" />
                 </div>
               )}
             </div>
