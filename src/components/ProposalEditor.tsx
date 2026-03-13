@@ -263,7 +263,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
               content={data.introText}
               onChange={(html) => update("introText", html)}
               placeholder="Write a compelling introduction for your client..."
-              minHeight="150px"
+              minHeight="200px"
             />
           </div>
         </div>
