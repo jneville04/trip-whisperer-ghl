@@ -177,7 +177,8 @@ export default function HotelSearchDialog({ onSelect, children }: HotelSearchDia
                       .replace(/\s*\|.*$/i, "")
                       .trim();
                     const starMatch = (result.markdown || "").match(/(\d)[- ]?star/i) || result.title.match(/(\d)[- ]?star/i);
-                    const previewImg = result.images?.[0]?.url;
+                    const resultImages = result.images || [];
+                    const previewImg = resultImages[0]?.url;
 
                     return (
                       <button
