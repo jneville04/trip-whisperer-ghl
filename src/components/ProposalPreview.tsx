@@ -54,6 +54,7 @@ interface Props {
 }
 
 export default function ProposalPreview({ data }: Props) {
+  const navigate = useNavigate();
   const heroImage = data.heroImageUrl || heroFallback;
   const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, testimonial: true, agent: true };
   const brandData = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
