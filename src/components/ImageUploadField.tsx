@@ -3,7 +3,6 @@ import { ImagePlus, Link, X, Upload, Loader2 } from "lucide-react";
 import { uploadImage } from "@/lib/uploadImage";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Button } from "@/components/ui/button";
 
 interface ImageUploadFieldProps {
   value: string;
