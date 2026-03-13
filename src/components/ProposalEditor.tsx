@@ -131,8 +131,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const flights = data.flights || [];
   const accommodations = data.accommodations || [];
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
-  const travelers = data.travelers || [];
-  const essentials = data.essentials || { visaRequirements: "", passportInfo: "", currency: "", language: "", timeZone: "", weatherInfo: "", packingTips: "", emergencyContacts: "" };
   const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
 
   const sectionLabels: Record<SectionKey, string> = {
@@ -518,6 +516,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                 amenities: hotelData.amenities,
                 highlights: hotelData.highlights,
                 imageUrl: hotelData.imageUrl,
+                galleryUrls: hotelData.galleryUrls || [],
               };
               update("accommodations", [...accommodations, newAcc]);
             }}>
@@ -660,90 +659,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
         </div>
       </CollapsibleSection>
 
-
-      {/* Travelers */}
-      <CollapsibleSection title="👥 Travelers" defaultOpen={false}>
-        <div className="space-y-3">
-          {travelers.map((t, i) => (
-            <div key={t.id} className="border border-border/40 rounded-lg p-3 bg-muted/20">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-body font-semibold text-sm">Traveler {i + 1}</span>
-                <Button variant="travel-ghost" size="icon" onClick={() => update("travelers", travelers.filter((_, idx) => idx !== i))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="col-span-2">
-                  <FieldLabel>Full Name</FieldLabel>
-                  <Input value={t.fullName} onChange={(e) => { const tr = [...travelers]; tr[i] = { ...tr[i], fullName: e.target.value }; update("travelers", tr); }} className="h-8 text-sm" placeholder="John Doe" />
-                </div>
-                <div>
-                  <FieldLabel>Date of Birth</FieldLabel>
-                  <Input value={t.dateOfBirth} onChange={(e) => { const tr = [...travelers]; tr[i] = { ...tr[i], dateOfBirth: e.target.value }; update("travelers", tr); }} className="h-8 text-sm" placeholder="MM/DD/YYYY" />
-                </div>
-                <div>
-                  <FieldLabel>Passport #</FieldLabel>
-                  <Input value={t.passportNumber} onChange={(e) => { const tr = [...travelers]; tr[i] = { ...tr[i], passportNumber: e.target.value }; update("travelers", tr); }} className="h-8 text-sm" placeholder="Optional" />
-                </div>
-                <div className="col-span-2">
-                  <FieldLabel>Dietary Restrictions</FieldLabel>
-                  <Input value={t.dietaryRestrictions} onChange={(e) => { const tr = [...travelers]; tr[i] = { ...tr[i], dietaryRestrictions: e.target.value }; update("travelers", tr); }} className="h-8 text-sm" placeholder="Vegetarian, allergies, etc." />
-                </div>
-                <div className="col-span-2">
-                  <FieldLabel>Special Requests</FieldLabel>
-                  <Textarea value={t.specialRequests} onChange={(e) => { const tr = [...travelers]; tr[i] = { ...tr[i], specialRequests: e.target.value }; update("travelers", tr); }} className="text-sm min-h-[100px] resize-y" placeholder="Wheelchair access, celebration, etc." />
-                </div>
-              </div>
-            </div>
-          ))}
-          <Button variant="travel-ghost" size="sm" onClick={() => update("travelers", [...travelers, { id: crypto.randomUUID(), fullName: "", passportNumber: "", dateOfBirth: "", dietaryRestrictions: "", specialRequests: "" }])} className="text-primary text-xs h-7">
-            <Plus className="h-3 w-3 mr-1" /> Add Traveler
-          </Button>
-        </div>
-      </CollapsibleSection>
-
-      {/* Travel Essentials */}
-      <CollapsibleSection title="🧳 Travel Essentials" defaultOpen={false} sectionKey="essentials" visible={vis.essentials} onToggleVisible={() => toggleSection("essentials")}>
-        <div className="space-y-3">
-          <div>
-            <FieldLabel>Visa Requirements</FieldLabel>
-            <RichTextEditor content={essentials.visaRequirements} onChange={(html) => update("essentials", { ...essentials, visaRequirements: html })} placeholder="Visa requirements for this destination..." minHeight="120px" />
-          </div>
-          <div>
-            <FieldLabel>Passport Info</FieldLabel>
-            <Textarea value={essentials.passportInfo} onChange={(e) => update("essentials", { ...essentials, passportInfo: e.target.value })} className="text-sm min-h-[100px] resize-y" placeholder="Passport validity requirements..." />
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <FieldLabel>Currency</FieldLabel>
-              <Input value={essentials.currency} onChange={(e) => update("essentials", { ...essentials, currency: e.target.value })} className="h-8 text-sm" placeholder="EUR (€)" />
-            </div>
-            <div>
-              <FieldLabel>Language</FieldLabel>
-              <Input value={essentials.language} onChange={(e) => update("essentials", { ...essentials, language: e.target.value })} className="h-8 text-sm" placeholder="Portuguese" />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <FieldLabel>Time Zone</FieldLabel>
-              <Input value={essentials.timeZone} onChange={(e) => update("essentials", { ...essentials, timeZone: e.target.value })} className="h-8 text-sm" placeholder="GMT+1 (WEST)" />
-            </div>
-            <div>
-              <FieldLabel>Weather</FieldLabel>
-              <Input value={essentials.weatherInfo} onChange={(e) => update("essentials", { ...essentials, weatherInfo: e.target.value })} className="h-8 text-sm" placeholder="Warm, 22-28°C" />
-            </div>
-          </div>
-          <div>
-            <FieldLabel>Packing Tips</FieldLabel>
-            <RichTextEditor content={essentials.packingTips} onChange={(html) => update("essentials", { ...essentials, packingTips: html })} placeholder="Comfortable walking shoes, sun protection, light layers..." minHeight="120px" />
-          </div>
-          <div>
-            <FieldLabel>Emergency Contacts</FieldLabel>
-            <Textarea value={essentials.emergencyContacts} onChange={(e) => update("essentials", { ...essentials, emergencyContacts: e.target.value })} className="text-sm min-h-[100px] resize-y" placeholder="Local emergency: 112&#10;Embassy: +351..." />
-          </div>
-        </div>
-      </CollapsibleSection>
-
       {/* Terms & Conditions */}
       <CollapsibleSection title="📄 Terms & Conditions" defaultOpen={false} sectionKey="terms" visible={vis.terms} onToggleVisible={() => toggleSection("terms")}>
         <div className="space-y-3">
@@ -771,11 +686,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
             </div>
           ))}
         </div>
-      </CollapsibleSection>
-
-      {/* Notes */}
-      <CollapsibleSection title="📝 Notes & Special Arrangements" defaultOpen={false}>
-        <RichTextEditor content={data.notes || ""} onChange={(html) => update("notes", html)} placeholder="Honeymoon decorations, birthday cake at dinner, VIP transfers, special celebrations..." minHeight="160px" />
       </CollapsibleSection>
 
       <CollapsibleSection title="🧑‍💼 Agent Info" defaultOpen={false} sectionKey="agent" visible={vis.agent} onToggleVisible={() => toggleSection("agent")}>

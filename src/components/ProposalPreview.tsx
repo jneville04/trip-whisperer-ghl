@@ -420,68 +420,8 @@ export default function ProposalPreview({ data }: Props) {
               </section>
             );
 
-          case "essentials": {
-            const hasContent = essentials.visaRequirements || essentials.passportInfo || essentials.currency || essentials.language || essentials.timeZone || essentials.weatherInfo || essentials.packingTips || essentials.emergencyContacts;
-            if (!hasContent) return null;
-            return (
-              <section key="essentials" id="essentials" className="py-20">
-                <div className="max-w-4xl mx-auto px-6">
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
-                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Before You Go</p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">Travel Essentials</h2>
-                  </motion.div>
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {essentials.currency && (
-                      <div className="bg-card rounded-xl border border-border/50 p-5">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">💱 Currency</p>
-                        <p className="font-body text-foreground font-semibold">{essentials.currency}</p>
-                      </div>
-                    )}
-                    {essentials.language && (
-                      <div className="bg-card rounded-xl border border-border/50 p-5">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">🗣️ Language</p>
-                        <p className="font-body text-foreground font-semibold">{essentials.language}</p>
-                      </div>
-                    )}
-                    {essentials.timeZone && (
-                      <div className="bg-card rounded-xl border border-border/50 p-5">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">🕐 Time Zone</p>
-                        <p className="font-body text-foreground font-semibold">{essentials.timeZone}</p>
-                      </div>
-                    )}
-                    {essentials.weatherInfo && (
-                      <div className="bg-card rounded-xl border border-border/50 p-5">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">☀️ Weather</p>
-                        <p className="font-body text-foreground font-semibold">{essentials.weatherInfo}</p>
-                      </div>
-                    )}
-                  </motion.div>
-                  {(essentials.visaRequirements || essentials.passportInfo) && (
-                    <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2} className="mt-8 bg-card rounded-xl border border-border/50 p-6">
-                      {essentials.visaRequirements && (
-                        <div className="mb-4">
-                          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">🛂 Visa Requirements</p>
-                          <div className="prose prose-sm max-w-none text-foreground font-body" dangerouslySetInnerHTML={{ __html: essentials.visaRequirements }} />
-                        </div>
-                      )}
-                      {essentials.passportInfo && (
-                        <div>
-                          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">📘 Passport Info</p>
-                          <p className="text-sm text-muted-foreground font-body">{essentials.passportInfo}</p>
-                        </div>
-                      )}
-                    </motion.div>
-                  )}
-                  {essentials.packingTips && (
-                    <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={3} className="mt-6 bg-card rounded-xl border border-border/50 p-6">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">🧳 Packing Tips</p>
-                      <div className="prose prose-sm max-w-none text-foreground font-body" dangerouslySetInnerHTML={{ __html: essentials.packingTips }} />
-                    </motion.div>
-                  )}
-                </div>
-              </section>
-            );
-          }
+          case "essentials":
+            return null;
 
           case "terms": {
             const hasTerms = terms.cancellationPolicy || terms.travelInsurance || terms.bookingTerms || terms.liability;
