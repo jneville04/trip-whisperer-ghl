@@ -285,8 +285,8 @@ export default function ProposalPreview({ data }: Props) {
                             </div>
                             <div className="hidden md:grid grid-rows-2 gap-1">
                               {galleryUrls.length > 0 ? galleryUrls.slice(0, 2).map((url, gi) => (
-                                <div key={gi} className="overflow-hidden cursor-pointer bg-muted/30 p-1" onClick={() => openLightbox(allAccImages, gi + 1)}>
-                                  <img src={url} alt={`${acc.hotelName} ${gi + 2}`} className="w-full h-full object-contain" />
+                                <div key={gi} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, gi + 1)}>
+                                  <img src={url} alt={`${acc.hotelName} ${gi + 2}`} className="w-full h-full object-cover" />
                                 </div>
                               )) : (
                                 <>
