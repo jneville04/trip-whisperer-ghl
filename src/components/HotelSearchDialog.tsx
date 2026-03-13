@@ -58,7 +58,8 @@ function parseHotelFromResult(result: HotelResult, selectedImages: string[]): Pa
     .trim();
 
   // Use selected images or fall back to first available
-  const primaryImage = selectedImages[0] || (result.images.length > 0 ? result.images[0].url : "");
+  const images = result.images || [];
+  const primaryImage = selectedImages[0] || (images.length > 0 ? images[0].url : "");
   const gallery = selectedImages.length > 1 ? selectedImages.slice(1) : [];
 
   return {
