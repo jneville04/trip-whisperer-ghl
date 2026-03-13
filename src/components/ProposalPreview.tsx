@@ -125,28 +125,28 @@ export default function ProposalPreview({ data }: Props) {
       {vis.hero && (
         <section className="relative h-[80vh] min-h-[550px] overflow-hidden">
           <img src={heroImage} alt={data.destination} className="absolute inset-0 w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-b from-foreground/50 via-foreground/30 to-foreground/70" />
+          <div className="absolute inset-0 bg-gradient-to-b from-foreground/70 via-foreground/50 to-foreground/80" />
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-            <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-primary-foreground/70 font-body text-sm tracking-[0.3em] uppercase mb-4">
-              Curated Travel Experience
+            <motion.p initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="font-body text-sm tracking-[0.3em] uppercase mb-4">
+              <span className="bg-background/20 backdrop-blur-sm text-primary-foreground px-4 py-1.5 rounded-full">Curated Travel Experience</span>
             </motion.p>
-            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="font-display text-5xl sm:text-7xl lg:text-8xl font-bold text-primary-foreground leading-tight">
+            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="font-display text-5xl sm:text-7xl lg:text-8xl font-bold text-primary-foreground leading-tight drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)]">
               {data.destination || "Your Destination"}
             </motion.h1>
             {data.subtitle && (
-              <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="font-display text-xl sm:text-2xl text-primary-foreground/80 mt-3 italic">
+              <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.4 }} className="font-display text-xl sm:text-2xl text-primary-foreground mt-3 italic drop-shadow-[0_2px_10px_rgba(0,0,0,0.4)]">
                 {data.subtitle}
               </motion.p>
             )}
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.7 }} className="flex items-center gap-6 mt-10 text-primary-foreground/60 text-sm font-body">
-              {data.travelDates && <span className="flex items-center gap-1.5"><Calendar className="h-4 w-4" /> {data.travelDates}</span>}
-              {data.travelerCount && <span className="flex items-center gap-1.5"><Users className="h-4 w-4" /> {data.travelerCount}</span>}
-              {data.destinationCount && <span className="flex items-center gap-1.5"><MapPin className="h-4 w-4" /> {data.destinationCount}</span>}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.7 }} className="flex items-center gap-4 mt-10">
+              {data.travelDates && <span className="flex items-center gap-1.5 bg-background/20 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-full text-sm font-body"><Calendar className="h-4 w-4" /> {data.travelDates}</span>}
+              {data.travelerCount && <span className="flex items-center gap-1.5 bg-background/20 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-full text-sm font-body"><Users className="h-4 w-4" /> {data.travelerCount}</span>}
+              {data.destinationCount && <span className="flex items-center gap-1.5 bg-background/20 backdrop-blur-sm text-primary-foreground px-3 py-1.5 rounded-full text-sm font-body"><MapPin className="h-4 w-4" /> {data.destinationCount}</span>}
             </motion.div>
           </div>
           <motion.div animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 2 }} className="absolute bottom-8 left-1/2 -translate-x-1/2">
-            <div className="w-6 h-10 rounded-full border-2 border-primary-foreground/30 flex justify-center pt-2">
-              <div className="w-1 h-2 rounded-full bg-primary-foreground/50" />
+            <div className="w-6 h-10 rounded-full border-2 border-primary-foreground/50 flex justify-center pt-2">
+              <div className="w-1 h-2 rounded-full bg-primary-foreground/70" />
             </div>
           </motion.div>
         </section>
