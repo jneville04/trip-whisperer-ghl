@@ -64,7 +64,7 @@ export default function ProposalPreview({ data }: Props) {
   const accommodations = data.accommodations || [];
   const agent = data.agent || { name: "", title: "", phone: "", email: "", website: "", agencyName: "", logoUrl: "", photoUrl: "" };
   const essentials = data.essentials || { visaRequirements: "", passportInfo: "", currency: "", language: "", timeZone: "", weatherInfo: "", packingTips: "", emergencyContacts: "" };
-  const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "" };
+  const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
 
   const brandStyles = useMemo(() => {
     const styles: Record<string, string> = {};
@@ -494,25 +494,25 @@ export default function ProposalPreview({ data }: Props) {
                     <h2 className="font-display text-4xl font-bold text-foreground">Terms & Conditions</h2>
                   </motion.div>
                   <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="space-y-6">
-                    {terms.cancellationPolicy && (
+                    {terms.showCancellation !== false && terms.cancellationPolicy && (
                       <div className="bg-background rounded-xl border border-border/50 p-6">
                         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Cancellation Policy</p>
                         <div className="prose prose-sm max-w-none text-foreground font-body" dangerouslySetInnerHTML={{ __html: terms.cancellationPolicy }} />
                       </div>
                     )}
-                    {terms.travelInsurance && (
+                    {terms.showInsurance !== false && terms.travelInsurance && (
                       <div className="bg-background rounded-xl border border-border/50 p-6">
                         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Travel Insurance</p>
                         <div className="prose prose-sm max-w-none text-foreground font-body" dangerouslySetInnerHTML={{ __html: terms.travelInsurance }} />
                       </div>
                     )}
-                    {terms.bookingTerms && (
+                    {terms.showBookingTerms !== false && terms.bookingTerms && (
                       <div className="bg-background rounded-xl border border-border/50 p-6">
                         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Booking Terms</p>
                         <div className="prose prose-sm max-w-none text-foreground font-body" dangerouslySetInnerHTML={{ __html: terms.bookingTerms }} />
                       </div>
                     )}
-                    {terms.liability && (
+                    {terms.showLiability !== false && terms.liability && (
                       <div className="bg-background rounded-xl border border-border/50 p-6">
                         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Liability</p>
                         <div className="prose prose-sm max-w-none text-foreground font-body" dangerouslySetInnerHTML={{ __html: terms.liability }} />

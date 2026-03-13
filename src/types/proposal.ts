@@ -92,6 +92,10 @@ export interface TermsAndConditions {
   travelInsurance: string;
   bookingTerms: string;
   liability: string;
+  showCancellation: boolean;
+  showInsurance: boolean;
+  showBookingTerms: boolean;
+  showLiability: boolean;
 }
 
 export type SectionKey = "overview" | "flights" | "accommodations" | "itinerary" | "inclusions" | "pricing" | "essentials" | "terms" | "agent";
@@ -380,6 +384,10 @@ export const defaultProposal: ProposalData = {
     travelInsurance: "Comprehensive travel insurance is strongly recommended and can be arranged upon request.",
     bookingTerms: "",
     liability: "",
+    showCancellation: true,
+    showInsurance: true,
+    showBookingTerms: true,
+    showLiability: true,
   },
   notes: "",
   sectionOrder: [...defaultSectionOrder],
