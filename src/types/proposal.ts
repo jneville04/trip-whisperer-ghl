@@ -303,10 +303,6 @@ export const defaultProposal: ProposalData = {
   ],
   paymentTerms: "50% deposit required to confirm booking. Balance due 30 days prior to departure.",
   validUntil: "August 15, 2026",
-  testimonialQuote:
-    "This was the most seamless travel experience we've ever had. Every detail was thought of — from the restaurant reservations to the hidden gems only locals know about.",
-  testimonialAuthor: "David & Emily Carter",
-  testimonialTrip: "Italy Trip 2025",
   agent: {
     name: "Jessica Williams",
     title: "Luxury Travel Specialist · 12 Years Experience",
@@ -331,7 +327,7 @@ export const defaultProposal: ProposalData = {
     itinerary: true,
     inclusions: true,
     pricing: true,
-    testimonial: true,
     agent: true,
   },
+  sectionOrder: [...defaultSectionOrder],
 };
