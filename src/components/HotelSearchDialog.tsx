@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Search, Loader2, Star, ExternalLink, Check, ImagePlus } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -120,7 +120,23 @@ export default function HotelSearchDialog({ onSelect, children }: HotelSearchDia
     setResults([]);
     setSelectedResult(null);
     setSelectedImages([]);
-    toast.success(`"${parsed.hotelName}" added with ${selectedImages.length} photo(s)`);
+    toast.success(`"${parsed.hotelName}" added${selectedImages.length > 0 ? ` with ${selectedImages.length} photo(s)` : ""}`);
+  };
+
+  const handleSelectResult = (result: HotelResult) => {
+    const images = result.images || [];
+    if (images.length > 0) {
+      // Has images — go to photo selection
+      setSelectedResult(result);
+    } else {
+      // No images — add directly with description
+      const parsed = parseHotelFromResult(result, []);
+      onSelect(parsed);
+      setOpen(false);
+      setQuery("");
+      setResults([]);
+      toast.success(`"${parsed.hotelName}" added (no photos found — you can upload manually)`);
+    }
   };
 
   const handleBack = () => {
@@ -136,11 +152,11 @@ export default function HotelSearchDialog({ onSelect, children }: HotelSearchDia
           <DialogTitle className="font-display text-lg">
             {selectedResult ? "Select Photos" : "Search Hotels"}
           </DialogTitle>
-          <p className="text-xs text-muted-foreground">
+          <DialogDescription className="text-xs">
             {selectedResult
               ? `Choose photos for ${selectedResult.title.replace(/\s*[-|–—]\s*(?:Booking|TripAdvisor|Hotels|Expedia).*/i, "").trim()}. Click to select, then confirm.`
               : "Search by hotel name to auto-fill details and photos"}
-          </p>
+          </DialogDescription>
         </DialogHeader>
 
         {!selectedResult ? (
@@ -183,7 +199,7 @@ export default function HotelSearchDialog({ onSelect, children }: HotelSearchDia
                     return (
                       <button
                         key={i}
-                        onClick={() => setSelectedResult(result)}
+                        onClick={() => handleSelectResult(result)}
                         className="w-full text-left flex gap-3 p-3 rounded-lg border border-border/40 hover:border-primary/50 hover:bg-muted/30 transition-colors"
                       >
                         {/* Thumbnail */}
@@ -206,10 +222,11 @@ export default function HotelSearchDialog({ onSelect, children }: HotelSearchDia
                           )}
                           <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{result.description}</p>
                           <div className="flex items-center gap-2 mt-1">
-                            {resultImages.length > 0 && (
+                            {resultImages.length > 0 ? (
                               <span className="text-[10px] text-primary font-medium">{resultImages.length} photos available</span>
+                            ) : (
+                              <span className="text-[10px] text-muted-foreground">No photos • will add info only</span>
                             )}
-                            <span className="text-[10px] text-muted-foreground/50 truncate">{result.url}</span>
                           </div>
                         </div>
                         <ExternalLink className="h-3.5 w-3.5 text-muted-foreground shrink-0 mt-1" />

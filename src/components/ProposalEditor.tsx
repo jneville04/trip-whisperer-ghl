@@ -549,14 +549,71 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   <Input value={day.date} onChange={(e) => updateDay(dayIdx, { ...day, date: e.target.value })} placeholder="September 15, 2026" className="h-8 text-sm" />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-2 mb-3">
-                <div>
+              <div className="mb-3">
+                <div className="mb-2">
                   <FieldLabel>Location</FieldLabel>
                   <Input value={day.location} onChange={(e) => updateDay(dayIdx, { ...day, location: e.target.value })} placeholder="Lisbon" className="h-8 text-sm" />
                 </div>
                 <div>
-                  <FieldLabel>Day Image</FieldLabel>
-                  <ImageUploadField value={day.imageUrl} onChange={(url) => updateDay(dayIdx, { ...day, imageUrl: url })} placeholder="Paste image URL" />
+                  <FieldLabel>Day Images</FieldLabel>
+                  <div className="grid grid-cols-3 gap-2 mt-1.5">
+                    {/* Primary image */}
+                    {day.imageUrl && (
+                      <div className="relative aspect-[4/3] rounded-lg overflow-hidden border border-border/40 group">
+                        <img src={day.imageUrl} alt="Primary" className="w-full h-full object-cover" />
+                        <div className="absolute top-1 left-1 bg-primary text-primary-foreground text-[9px] font-semibold px-1.5 py-0.5 rounded">Main</div>
+                        <button onClick={() => updateDay(dayIdx, { ...day, imageUrl: "" })} className="absolute top-1 right-1 bg-foreground/70 text-background rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    )}
+                    {/* Additional images */}
+                    {(day.imageUrls || []).map((url, imgIdx) => (
+                      <div key={imgIdx} className="relative aspect-[4/3] rounded-lg overflow-hidden border border-border/40 group">
+                        <img src={url} alt={`Day ${dayIdx + 1} photo ${imgIdx + 2}`} className="w-full h-full object-cover" />
+                        <button onClick={() => {
+                          const newUrls = (day.imageUrls || []).filter((_, j) => j !== imgIdx);
+                          updateDay(dayIdx, { ...day, imageUrls: newUrls });
+                        }} className="absolute top-1 right-1 bg-foreground/70 text-background rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                    {/* Upload button */}
+                    <label className="aspect-[4/3] rounded-lg border-2 border-dashed border-border/60 flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary/50 hover:bg-muted/40 transition-colors">
+                      <ImagePlus className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-[9px] text-muted-foreground font-medium">Add photo</span>
+                      <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => {
+                        const files = e.target.files;
+                        if (!files) return;
+                        Array.from(files).forEach((file) => {
+                          const reader = new FileReader();
+                          reader.onload = (ev) => {
+                            const url = ev.target?.result as string;
+                            if (!day.imageUrl) {
+                              updateDay(dayIdx, { ...day, imageUrl: url });
+                            } else {
+                              updateDay(dayIdx, { ...day, imageUrls: [...(day.imageUrls || []), url] });
+                            }
+                          };
+                          reader.readAsDataURL(file);
+                        });
+                        e.target.value = "";
+                      }} />
+                    </label>
+                  </div>
+                  {/* URL input */}
+                  <div className="flex gap-1.5 mt-1.5">
+                    <Input placeholder="Paste image URL..." className="h-7 text-xs flex-1" onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        const val = (e.target as HTMLInputElement).value.trim();
+                        if (!val) return;
+                        if (!day.imageUrl) { updateDay(dayIdx, { ...day, imageUrl: val }); }
+                        else { updateDay(dayIdx, { ...day, imageUrls: [...(day.imageUrls || []), val] }); }
+                        (e.target as HTMLInputElement).value = "";
+                      }
+                    }} />
+                  </div>
                 </div>
               </div>
               <div className="space-y-2">
