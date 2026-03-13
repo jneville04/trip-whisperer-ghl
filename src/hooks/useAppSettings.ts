@@ -12,6 +12,8 @@ export interface AppSettings {
   font_display: string;
   font_body: string;
   login_message: string | null;
+  ghl_webhook_approve: string;
+  ghl_webhook_revision: string;
 }
 
 const defaults: AppSettings = {
