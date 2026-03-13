@@ -462,10 +462,10 @@ export default function ProposalPreview({ data, shareId }: Props) {
                   </motion.div>
                   <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2} className="mt-10">
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                      <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={() => navigate("/approve")}>
+                      <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={() => navigate(`/approve${shareId ? `?share=${shareId}` : ""}`)}>
                         <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
                       </Button>
-                      <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto" onClick={() => navigate("/revisions")}>
+                      <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto" onClick={() => navigate(`/revisions${shareId ? `?share=${shareId}` : ""}`)}>
                         <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
                       </Button>
                     </div>
