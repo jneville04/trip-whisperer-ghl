@@ -542,25 +542,44 @@ export default function ProposalEditor({ data, onChange }: Props) {
               <div className="space-y-2">
                 <FieldLabel>Activities</FieldLabel>
                 {day.activities.map((act, actIdx) => (
-                  <div key={act.id} className="flex gap-2 items-start bg-background rounded-md p-2 border border-border/30">
-                    <GripVertical className="h-4 w-4 text-muted-foreground/30 mt-2 shrink-0" />
-                    <div className="flex-1 grid grid-cols-12 gap-1.5">
-                      <Input value={act.time} onChange={(e) => updateActivity(dayIdx, actIdx, "time", e.target.value)} placeholder="2:00 PM" className="h-7 text-xs col-span-3" />
-                      <Input value={act.title} onChange={(e) => updateActivity(dayIdx, actIdx, "title", e.target.value)} placeholder="Activity name" className="h-7 text-xs col-span-4 font-medium" />
-                      <select
-                        value={act.type}
-                        onChange={(e) => updateActivity(dayIdx, actIdx, "type", e.target.value)}
-                        className="h-7 text-xs col-span-4 rounded-md border border-input bg-background px-1 font-body"
-                      >
-                        {activityTypes.map((t) => (
-                          <option key={t.value} value={t.value}>{t.label}</option>
-                        ))}
-                      </select>
-                      <Button variant="travel-ghost" size="icon" onClick={() => removeActivity(dayIdx, actIdx)} className="h-7 w-7 col-span-1 text-muted-foreground/40 hover:text-destructive" disabled={day.activities.length <= 1}>
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                      <Input value={act.description} onChange={(e) => updateActivity(dayIdx, actIdx, "description", e.target.value)} placeholder="Description..." className="h-7 text-xs col-span-12" />
+                  <div key={act.id} className="bg-background rounded-lg p-3 border border-border/30 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <select
+                          value={act.type}
+                          onChange={(e) => updateActivity(dayIdx, actIdx, "type", e.target.value)}
+                          className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body"
+                        >
+                          {activityTypes.map((t) => (
+                            <option key={t.value} value={t.value}>{t.label}</option>
+                          ))}
+                        </select>
+                        <Input value={act.time} onChange={(e) => updateActivity(dayIdx, actIdx, "time", e.target.value)} placeholder="2:00 PM" className="h-7 text-xs w-24" />
+                      </div>
+                      <div className="flex items-center gap-0.5">
+                        <button onClick={() => {
+                          if (actIdx === 0) return;
+                          const acts = [...day.activities];
+                          [acts[actIdx - 1], acts[actIdx]] = [acts[actIdx], acts[actIdx - 1]];
+                          updateDay(dayIdx, { ...day, activities: acts });
+                        }} disabled={actIdx === 0} className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-20">
+                          <ArrowUp className="h-3.5 w-3.5" />
+                        </button>
+                        <button onClick={() => {
+                          if (actIdx === day.activities.length - 1) return;
+                          const acts = [...day.activities];
+                          [acts[actIdx], acts[actIdx + 1]] = [acts[actIdx + 1], acts[actIdx]];
+                          updateDay(dayIdx, { ...day, activities: acts });
+                        }} disabled={actIdx === day.activities.length - 1} className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-20">
+                          <ArrowDown className="h-3.5 w-3.5" />
+                        </button>
+                        <Button variant="travel-ghost" size="icon" onClick={() => removeActivity(dayIdx, actIdx)} className="h-7 w-7 text-muted-foreground/40 hover:text-destructive" disabled={day.activities.length <= 1}>
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
+                    <Input value={act.title} onChange={(e) => updateActivity(dayIdx, actIdx, "title", e.target.value)} placeholder="Activity name" className="h-8 text-sm font-medium" />
+                    <Textarea value={act.description} onChange={(e) => updateActivity(dayIdx, actIdx, "description", e.target.value)} placeholder="Describe this activity in detail..." className="text-sm min-h-[60px] resize-y" />
                   </div>
                 ))}
                 <Button variant="travel-ghost" size="sm" onClick={() => addActivity(dayIdx)} className="text-primary text-xs h-7">
