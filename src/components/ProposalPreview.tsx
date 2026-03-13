@@ -415,21 +415,6 @@ export default function ProposalPreview({ data }: Props) {
         </section>
       )}
 
-      {/* TESTIMONIAL */}
-      {vis.testimonial && data.testimonialQuote && (
-        <section className="py-20">
-          <div className="max-w-3xl mx-auto px-6 text-center">
-            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0}>
-              <blockquote className="font-display text-xl sm:text-2xl italic text-foreground leading-relaxed">
-                "{data.testimonialQuote}"
-              </blockquote>
-              <p className="mt-6 font-body text-muted-foreground">
-                — {data.testimonialAuthor}{data.testimonialTrip && <>, <span className="text-primary">{data.testimonialTrip}</span></>}
-              </p>
-            </motion.div>
-          </div>
-        </section>
-      )}
 
       {/* AGENT FOOTER */}
       {vis.agent && (

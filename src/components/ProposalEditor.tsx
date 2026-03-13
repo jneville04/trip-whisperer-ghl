@@ -576,25 +576,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
         </div>
       </CollapsibleSection>
 
-      {/* Testimonial */}
-      <CollapsibleSection title="⭐ Testimonial" defaultOpen={false} sectionKey="testimonial" visible={vis.testimonial} onToggleVisible={() => toggleSection("testimonial")}>
-        <div className="space-y-2">
-          <div>
-            <FieldLabel>Quote</FieldLabel>
-            <textarea value={data.testimonialQuote} onChange={(e) => update("testimonialQuote", e.target.value)} rows={2} className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring font-body" />
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <FieldLabel>Author</FieldLabel>
-              <Input value={data.testimonialAuthor} onChange={(e) => update("testimonialAuthor", e.target.value)} className="h-8 text-sm" />
-            </div>
-            <div>
-              <FieldLabel>Trip</FieldLabel>
-              <Input value={data.testimonialTrip} onChange={(e) => update("testimonialTrip", e.target.value)} className="h-8 text-sm" />
-            </div>
-          </div>
-        </div>
-      </CollapsibleSection>
 
       {/* Agent Info */}
       <CollapsibleSection title="🧑‍💼 Agent Info" defaultOpen={false} sectionKey="agent" visible={vis.agent} onToggleVisible={() => toggleSection("agent")}>
