@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, type Easing } from "framer-motion";
 import { MapPin, Calendar, Users, Star, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroImg from "@/assets/portugal-hero.jpg";
@@ -6,12 +6,14 @@ import sintraImg from "@/assets/portugal-sintra.jpg";
 import portoImg from "@/assets/portugal-porto.jpg";
 import algarveImg from "@/assets/portugal-algarve.jpg";
 
+const easeOut: Easing = [0.25, 0.46, 0.45, 0.94];
+
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, delay: i * 0.1, ease: "easeOut" },
+    transition: { duration: 0.6, delay: i * 0.1, ease: easeOut },
   }),
 };
 
