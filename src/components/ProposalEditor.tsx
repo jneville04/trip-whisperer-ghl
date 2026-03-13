@@ -131,7 +131,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
   const travelers = data.travelers || [];
   const essentials = data.essentials || { visaRequirements: "", passportInfo: "", currency: "", language: "", timeZone: "", weatherInfo: "", packingTips: "", emergencyContacts: "" };
-  const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "" };
+  const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
 
   const sectionLabels: Record<SectionKey, string> = {
     overview: "🌍 Overview", flights: "✈️ Flights", accommodations: "🏨 Hotels",
