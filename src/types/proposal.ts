@@ -100,12 +100,10 @@ export interface ProposalData {
   pricing: PricingLine[];
   paymentTerms: string;
   validUntil: string;
-  testimonialQuote: string;
-  testimonialAuthor: string;
-  testimonialTrip: string;
   agent: AgentInfo;
   brand: BrandSettings;
   sectionVisibility: SectionVisibility;
+  sectionOrder: SectionKey[];
 }
 
 export const createActivity = (type: Activity["type"] = "activity"): Activity => ({
