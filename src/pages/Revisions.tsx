@@ -29,7 +29,9 @@ export default function RevisionsPage() {
 
   const shareId = searchParams.get("share") || "";
   const proposalId = searchParams.get("proposal") || "";
-  const initialBrand = (location.state as { brand?: BrandColors } | null)?.brand;
+  const navState = location.state as { brand?: BrandColors; returnTo?: string } | null;
+  const initialBrand = navState?.brand;
+  const returnTo = navState?.returnTo;
 
   const [brandData, setBrandData] = useState<BrandColors>(initialBrand || {});
   const [brandLoading, setBrandLoading] = useState(Boolean(shareId) && !initialBrand);
