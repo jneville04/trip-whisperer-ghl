@@ -58,6 +58,7 @@ interface Props {
 export default function ProposalPreview({ data }: Props) {
   const navigate = useNavigate();
   const heroImage = data.heroImageUrl || heroFallback;
+  const heroImages = data.heroImageUrls || [];
   const [lightboxImages, setLightboxImages] = useState<{ src: string; alt?: string }[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
