@@ -116,9 +116,9 @@ export default function ProposalEditor({ data, onChange }: Props) {
   };
 
   const updateAccommodation = (index: number, field: keyof Accommodation, value: string) => {
-    const accs = [...data.accommodations];
-    accs[index] = { ...accs[index], [field]: value };
-    update("accommodations", accs);
+    const a = [...(data.accommodations || [])];
+    a[index] = { ...a[index], [field]: value };
+    update("accommodations", a);
   };
 
   const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
