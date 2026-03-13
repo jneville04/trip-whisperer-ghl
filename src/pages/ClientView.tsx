@@ -86,7 +86,7 @@ export default function ClientView() {
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
-      <ProposalPreview data={data} />
+      <ProposalPreview data={data} shareId={shareId} />
     </div>
   );
 }

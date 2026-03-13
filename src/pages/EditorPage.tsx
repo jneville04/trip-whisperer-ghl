@@ -159,7 +159,7 @@ export default function EditorPage() {
           </div>
         )}
         <div className="flex-1 overflow-y-auto">
-          <ProposalPreview data={data} />
+          <ProposalPreview data={data} shareId={shareId} />
         </div>
       </div>
     </div>

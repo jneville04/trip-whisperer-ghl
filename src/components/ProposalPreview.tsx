@@ -53,9 +53,10 @@ function hexToHsl(hex: string): string | null {
 
 interface Props {
   data: ProposalData;
+  shareId?: string;
 }
 
-export default function ProposalPreview({ data }: Props) {
+export default function ProposalPreview({ data, shareId }: Props) {
   const navigate = useNavigate();
   const heroImage = data.heroImageUrl || heroFallback;
   const heroImages = data.heroImageUrls || [];
@@ -133,7 +134,7 @@ export default function ProposalPreview({ data }: Props) {
               </button>
             ))}
           </div>
-          <Button variant="travel" size="sm" className="text-xs" onClick={() => navigate("/approve")}>
+          <Button variant="travel" size="sm" className="text-xs" onClick={() => navigate(`/approve${shareId ? `?share=${shareId}` : ""}`)}>
             Book Now
           </Button>
         </div>
@@ -461,10 +462,10 @@ export default function ProposalPreview({ data }: Props) {
                   </motion.div>
                   <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2} className="mt-10">
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                      <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={() => navigate("/approve")}>
+                      <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={() => navigate(`/approve${shareId ? `?share=${shareId}` : ""}`)}>
                         <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
                       </Button>
-                      <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto" onClick={() => navigate("/revisions")}>
+                      <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto" onClick={() => navigate(`/revisions${shareId ? `?share=${shareId}` : ""}`)}>
                         <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
                       </Button>
                     </div>
@@ -541,7 +542,7 @@ export default function ProposalPreview({ data }: Props) {
                     {agent.email && <a href={`mailto:${agent.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-4 w-4" /> {agent.email}</a>}
                     {agent.website && <a href="#" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Globe className="h-4 w-4" /> {agent.website}</a>}
                   </div>
-                  <Button variant="travel" size="lg" className="text-base px-8" onClick={() => navigate("/approve")}>
+                  <Button variant="travel" size="lg" className="text-base px-8" onClick={() => navigate(`/approve${shareId ? `?share=${shareId}` : ""}`)}>
                     Sign Up Today! <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                   <p className="text-xs text-muted-foreground/60 mt-10 font-body">© 2026 {agent.agencyName} · All prices in USD · Subject to availability</p>

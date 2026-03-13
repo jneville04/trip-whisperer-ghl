@@ -1,12 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { MessageSquare, ArrowLeft, Send, CheckCircle2, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { motion } from "framer-motion";
-import { useBrandStyles } from "@/hooks/useBrandStyles";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+
+function hexToHsl(hex: string): string | null {
+  if (!hex || !hex.startsWith("#")) return null;
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h = 0, s = 0;
+  const l = (max + min) / 2;
+  if (max !== min) {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    if (max === r) h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
+    else if (max === g) h = ((b - r) / d + 2) / 6;
+    else h = ((r - g) / d + 4) / 6;
+  }
+  return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
+}
 
 const revisionCategories = [
   { id: "dates", label: "Travel Dates" },
@@ -25,9 +42,50 @@ export default function RevisionsPage() {
   const [sending, setSending] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [selected, setSelected] = useState<string[]>([]);
-  const brandStyles = useBrandStyles();
+  const [brandData, setBrandData] = useState<{ primaryColor?: string; secondaryColor?: string; accentColor?: string }>({});
 
+  const shareId = searchParams.get("share") || "";
   const proposalId = searchParams.get("proposal") || "";
+
+  useEffect(() => {
+    if (!shareId) return;
+    supabase
+      .from("proposals")
+      .select("data, id")
+      .eq("share_id", shareId)
+      .single()
+      .then(({ data: row }) => {
+        if (row) {
+          const d = row.data as any;
+          if (d?.brand) setBrandData(d.brand);
+        }
+      });
+  }, [shareId]);
+
+  const brandStyles = useMemo(() => {
+    const styles: Record<string, string> = {};
+    if (brandData.primaryColor) {
+      const hsl = hexToHsl(brandData.primaryColor);
+      if (hsl) {
+        styles["--primary"] = hsl;
+        styles["--ring"] = hsl;
+      }
+    }
+    if (brandData.secondaryColor) {
+      const hsl = hexToHsl(brandData.secondaryColor);
+      if (hsl) styles["--secondary"] = hsl;
+    }
+    if (brandData.accentColor) {
+      const hsl = hexToHsl(brandData.accentColor);
+      if (hsl) styles["--accent"] = hsl;
+    }
+    return styles;
+  }, [brandData]);
+
+  const goBack = () => {
+    if (shareId) navigate(`/view/${shareId}`);
+    else navigate(-1);
+  };
 
   const toggle = (id: string) => {
     setSelected((prev) => prev.includes(id) ? prev.filter((s) => s !== id) : [...prev, id]);
@@ -44,7 +102,7 @@ export default function RevisionsPage() {
           payload: {
             ...form,
             categories: selected,
-            proposalId,
+            proposalId: proposalId || shareId,
             source: window.location.href,
           },
         },
@@ -73,7 +131,7 @@ export default function RevisionsPage() {
           <p className="text-muted-foreground font-body mb-8">
             Your travel advisor has received your feedback and will update the proposal shortly. You'll receive an email when the revised version is ready.
           </p>
-          <Button variant="travel-ghost" onClick={() => navigate("/")} className="text-sm">
+          <Button variant="travel-ghost" onClick={goBack} className="text-sm">
             <ArrowLeft className="h-4 w-4 mr-1" /> Back to Proposal
           </Button>
         </motion.div>
@@ -84,7 +142,7 @@ export default function RevisionsPage() {
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
       <div className="max-w-xl mx-auto px-6 py-16">
-        <button onClick={() => navigate("/")} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors font-body mb-8">
+        <button onClick={goBack} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors font-body mb-8">
           <ArrowLeft className="h-4 w-4" /> Back to Proposal
         </button>
 
@@ -116,7 +174,7 @@ export default function RevisionsPage() {
                   onClick={() => toggle(cat.id)}
                   className={`px-3 py-1.5 rounded-full text-sm font-body border transition-colors ${
                     selected.includes(cat.id)
-                      ? "bg-primary text-primary-foreground border-primary"
+                      ? "bg-accent text-accent-foreground border-accent"
                       : "bg-background text-muted-foreground border-border hover:border-primary/50"
                   }`}
                 >
