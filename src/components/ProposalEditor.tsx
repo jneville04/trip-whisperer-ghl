@@ -291,64 +291,177 @@ export default function ProposalEditor({ data, onChange }: Props) {
               a[i] = { ...a[i], [field]: value };
               update("accommodations", a);
             };
+
+            const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, target: "main" | "gallery") => {
+              const files = e.target.files;
+              if (!files) return;
+              Array.from(files).forEach((file) => {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                  const url = ev.target?.result as string;
+                  if (target === "main") {
+                    updateAccField("imageUrl", url);
+                  } else {
+                    updateAccField("galleryUrls", [...accGallery, url]);
+                  }
+                };
+                reader.readAsDataURL(file);
+              });
+              e.target.value = "";
+            };
+
+            const removeGalleryImage = (idx: number) => {
+              updateAccField("galleryUrls", accGallery.filter((_: string, j: number) => j !== idx));
+            };
+
+            const starRating = parseInt(acc.starRating || "0") || 0;
+
             return (
-            <div key={acc.id} className="border border-border/40 rounded-lg p-3 bg-muted/20">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-body font-semibold text-sm text-foreground">🏨 Hotel {i + 1}</span>
+            <div key={acc.id} className="border border-border/40 rounded-lg bg-muted/20 overflow-hidden">
+              {/* Header */}
+              <div className="flex items-center justify-between px-3 py-2.5 bg-muted/40 border-b border-border/30">
+                <div className="flex items-center gap-2">
+                  <span className="font-body font-semibold text-sm text-foreground">{acc.hotelName || `Hotel ${i + 1}`}</span>
+                  <div className="flex items-center gap-0.5">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <button key={s} onClick={() => updateAccField("starRating", String(s))} className="p-0">
+                        <Star className={`h-3 w-3 ${s <= starRating ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30"}`} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <Button variant="travel-ghost" size="icon" onClick={() => update("accommodations", accommodations.filter((_, idx) => idx !== i))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="col-span-2">
-                  <FieldLabel>Hotel Name</FieldLabel>
-                  <Input value={acc.hotelName} onChange={(e) => updateAccommodation(i, "hotelName", e.target.value)} placeholder="Four Seasons Hotel" className="h-7 text-xs" />
-                </div>
-                <div>
-                  <FieldLabel>Location</FieldLabel>
-                  <Input value={acc.location} onChange={(e) => updateAccommodation(i, "location", e.target.value)} placeholder="Lisbon" className="h-7 text-xs" />
-                </div>
-                <div>
-                  <FieldLabel>Star Rating</FieldLabel>
-                  <Input value={acc.starRating || ""} onChange={(e) => updateAccField("starRating", e.target.value)} placeholder="5" className="h-7 text-xs" />
-                </div>
-                <div>
-                  <FieldLabel>Room Type</FieldLabel>
-                  <Input value={acc.roomType} onChange={(e) => updateAccommodation(i, "roomType", e.target.value)} placeholder="Superior Suite" className="h-7 text-xs" />
-                </div>
-                <div>
-                  <FieldLabel>Nights</FieldLabel>
-                  <Input value={acc.nights} onChange={(e) => updateAccommodation(i, "nights", e.target.value)} placeholder="2 Nights" className="h-7 text-xs" />
-                </div>
-                <div>
-                  <FieldLabel>Check-in</FieldLabel>
-                  <Input value={acc.checkIn} onChange={(e) => updateAccommodation(i, "checkIn", e.target.value)} placeholder="Sep 15" className="h-7 text-xs" />
-                </div>
-                <div>
-                  <FieldLabel>Check-out</FieldLabel>
-                  <Input value={acc.checkOut} onChange={(e) => updateAccommodation(i, "checkOut", e.target.value)} placeholder="Sep 17" className="h-7 text-xs" />
-                </div>
-                <div className="col-span-2">
-                  <FieldLabel>Main Image URL</FieldLabel>
-                  <Input value={acc.imageUrl} onChange={(e) => updateAccommodation(i, "imageUrl", e.target.value)} placeholder="Paste main photo URL" className="h-7 text-xs" />
-                </div>
-                <div className="col-span-2">
-                  <FieldLabel>Gallery Images (comma-separated URLs)</FieldLabel>
-                  <Input value={accGallery.join(", ")} onChange={(e) => updateAccField("galleryUrls", e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean))} placeholder="url1, url2" className="h-7 text-xs" />
-                </div>
-                <div className="col-span-2">
-                  <FieldLabel>Description</FieldLabel>
-                  <Input value={acc.description} onChange={(e) => updateAccommodation(i, "description", e.target.value)} placeholder="Brief description..." className="h-7 text-xs" />
-                </div>
-                <div className="col-span-2">
-                  <FieldLabel>Highlights (comma-separated)</FieldLabel>
-                  <Input value={accHighlights.join(", ")} onChange={(e) => updateAccField("highlights", e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean))} placeholder="Ocean views, Walking distance to town" className="h-7 text-xs" />
-                </div>
-                <div className="col-span-2">
-                  <FieldLabel>Amenities (comma-separated)</FieldLabel>
-                  <Input value={accAmenities.join(", ")} onChange={(e) => updateAccField("amenities", e.target.value.split(",").map((s: string) => s.trim()).filter(Boolean))} placeholder="Spa, Pool, Restaurant, WiFi" className="h-7 text-xs" />
-                </div>
-              </div>
+
+              {/* Tabbed Content */}
+              <Tabs defaultValue="general" className="w-full">
+                <TabsList className="w-full justify-start rounded-none border-b border-border/30 bg-transparent h-9 px-3">
+                  <TabsTrigger value="general" className="text-xs data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">General Info</TabsTrigger>
+                  <TabsTrigger value="media" className="text-xs data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">Media</TabsTrigger>
+                  <TabsTrigger value="details" className="text-xs data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">Details</TabsTrigger>
+                </TabsList>
+
+                {/* General Info Tab */}
+                <TabsContent value="general" className="p-3 space-y-2 mt-0">
+                  <div>
+                    <FieldLabel>Hotel Name</FieldLabel>
+                    <Input value={acc.hotelName} onChange={(e) => updateAccommodation(i, "hotelName", e.target.value)} placeholder="Four Seasons Hotel" className="h-8 text-xs" />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <FieldLabel>Location</FieldLabel>
+                      <Input value={acc.location} onChange={(e) => updateAccommodation(i, "location", e.target.value)} placeholder="Lisbon" className="h-8 text-xs" />
+                    </div>
+                    <div>
+                      <FieldLabel>Room Type</FieldLabel>
+                      <Input value={acc.roomType} onChange={(e) => updateAccommodation(i, "roomType", e.target.value)} placeholder="Superior Suite" className="h-8 text-xs" />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div>
+                      <FieldLabel>Check-in</FieldLabel>
+                      <Input value={acc.checkIn} onChange={(e) => updateAccommodation(i, "checkIn", e.target.value)} placeholder="Sep 15" className="h-8 text-xs" />
+                    </div>
+                    <div>
+                      <FieldLabel>Check-out</FieldLabel>
+                      <Input value={acc.checkOut} onChange={(e) => updateAccommodation(i, "checkOut", e.target.value)} placeholder="Sep 17" className="h-8 text-xs" />
+                    </div>
+                    <div>
+                      <FieldLabel>Nights</FieldLabel>
+                      <Input value={acc.nights} onChange={(e) => updateAccommodation(i, "nights", e.target.value)} placeholder="2" className="h-8 text-xs" />
+                    </div>
+                  </div>
+                  <div>
+                    <FieldLabel>Lodging Description</FieldLabel>
+                    <Textarea
+                      value={acc.description}
+                      onChange={(e) => updateAccommodation(i, "description", e.target.value)}
+                      placeholder="Describe the hotel, its atmosphere, unique features, and what makes it special for this trip..."
+                      className="text-xs min-h-[120px] resize-y"
+                    />
+                  </div>
+                </TabsContent>
+
+                {/* Media Tab */}
+                <TabsContent value="media" className="p-3 space-y-3 mt-0">
+                  <div>
+                    <FieldLabel>Displayed Photos</FieldLabel>
+                    <div className="grid grid-cols-3 gap-2 mt-1.5">
+                      {/* Primary photo */}
+                      {acc.imageUrl && (
+                        <div className="relative col-span-2 row-span-2 aspect-[4/3] rounded-lg overflow-hidden border border-border/40 group">
+                          <img src={acc.imageUrl} alt="Primary" className="w-full h-full object-cover" />
+                          <div className="absolute top-1.5 left-1.5 bg-primary text-primary-foreground text-[10px] font-semibold px-1.5 py-0.5 rounded">Primary Photo</div>
+                          <button onClick={() => updateAccField("imageUrl", "")} className="absolute top-1.5 right-1.5 bg-foreground/70 text-background rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      )}
+                      {/* Gallery images */}
+                      {accGallery.map((url: string, gi: number) => (
+                        <div key={gi} className="relative aspect-square rounded-lg overflow-hidden border border-border/40 group">
+                          <img src={url} alt={`Gallery ${gi + 1}`} className="w-full h-full object-cover" />
+                          <button onClick={() => removeGalleryImage(gi)} className="absolute top-1 right-1 bg-foreground/70 text-background rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                      {/* Add photo button */}
+                      <label className="aspect-square rounded-lg border-2 border-dashed border-border/60 flex flex-col items-center justify-center gap-1 cursor-pointer hover:border-primary/50 hover:bg-muted/40 transition-colors">
+                        <ImagePlus className="h-5 w-5 text-muted-foreground" />
+                        <span className="text-[10px] text-muted-foreground font-medium">Add photos</span>
+                        <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleImageUpload(e, acc.imageUrl ? "gallery" : "main")} />
+                      </label>
+                    </div>
+                  </div>
+                  <div>
+                    <FieldLabel>Or paste image URL</FieldLabel>
+                    <div className="flex gap-1.5">
+                      <Input placeholder="https://..." className="h-8 text-xs flex-1" onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          const val = (e.target as HTMLInputElement).value.trim();
+                          if (!val) return;
+                          if (!acc.imageUrl) { updateAccField("imageUrl", val); }
+                          else { updateAccField("galleryUrls", [...accGallery, val]); }
+                          (e.target as HTMLInputElement).value = "";
+                        }
+                      }} />
+                      <Button variant="travel" size="sm" className="h-8 text-xs" onClick={(e) => {
+                        const input = (e.currentTarget.previousElementSibling as HTMLInputElement);
+                        const val = input.value.trim();
+                        if (!val) return;
+                        if (!acc.imageUrl) { updateAccField("imageUrl", val); }
+                        else { updateAccField("galleryUrls", [...accGallery, val]); }
+                        input.value = "";
+                      }}>Add</Button>
+                    </div>
+                  </div>
+                </TabsContent>
+
+                {/* Details Tab */}
+                <TabsContent value="details" className="p-3 space-y-2 mt-0">
+                  <div>
+                    <FieldLabel>Highlights</FieldLabel>
+                    <Textarea
+                      value={accHighlights.join("\n")}
+                      onChange={(e) => updateAccField("highlights", e.target.value.split("\n").filter(Boolean))}
+                      placeholder="One highlight per line&#10;e.g. Tagus River panoramic views&#10;Walking distance to historic Alfama"
+                      className="text-xs min-h-[80px] resize-y"
+                    />
+                  </div>
+                  <div>
+                    <FieldLabel>Amenities</FieldLabel>
+                    <Textarea
+                      value={accAmenities.join("\n")}
+                      onChange={(e) => updateAccField("amenities", e.target.value.split("\n").filter(Boolean))}
+                      placeholder="One amenity per line&#10;e.g. Spa & Wellness Center&#10;Rooftop Pool&#10;24h Room Service"
+                      className="text-xs min-h-[80px] resize-y"
+                    />
+                  </div>
+                </TabsContent>
+              </Tabs>
             </div>
             );
           })}
