@@ -81,16 +81,16 @@ export default function ProposalPreview({ data }: Props) {
     return styles;
   }, [brandData]);
 
+  const sectionLabels: Record<SectionKey, string> = {
+    overview: "Overview", flights: "Flights", accommodations: "Hotels",
+    itinerary: "Itinerary", inclusions: "Included", pricing: "Pricing", agent: "Advisor",
+  };
+
   const navItems = useMemo(() => {
-    const items: { label: string; id: string }[] = [];
-    if (vis.overview) items.push({ label: "Overview", id: "overview" });
-    if (vis.flights) items.push({ label: "Flights", id: "flights" });
-    if (vis.accommodations) items.push({ label: "Hotels", id: "accommodations" });
-    if (vis.itinerary) items.push({ label: "Itinerary", id: "itinerary" });
-    if (vis.inclusions) items.push({ label: "Included", id: "inclusions" });
-    if (vis.pricing) items.push({ label: "Pricing", id: "pricing" });
-    return items;
-  }, [vis]);
+    return sectionOrder
+      .filter((key) => key !== "agent" && vis[key])
+      .map((key) => ({ label: sectionLabels[key], id: key }));
+  }, [vis, sectionOrder]);
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
