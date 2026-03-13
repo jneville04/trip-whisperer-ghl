@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Eye, PenLine, ArrowLeft, Save, ExternalLink } from "lucide-react";
+import { Eye, PenLine, ArrowLeft, Save, ExternalLink, PanelLeftClose, PanelLeft, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProposalEditor from "@/components/ProposalEditor";
 import ProposalPreview from "@/components/ProposalPreview";
@@ -13,10 +13,13 @@ export default function EditorPage() {
   const navigate = useNavigate();
   const [data, setData] = useState<ProposalData>(defaultProposal);
   const [mode, setMode] = useState<"split" | "preview">("split");
+  const [panelOpen, setPanelOpen] = useState(true);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [publishing, setPublishing] = useState(false);
   const [shareId, setShareId] = useState("");
   const [dirty, setDirty] = useState(false);
+  const [currentStatus, setCurrentStatus] = useState("draft");
 
   useEffect(() => {
     if (!id) return;
@@ -38,6 +41,7 @@ export default function EditorPage() {
     const r = row as any;
     setData(r.data as ProposalData);
     setShareId(r.share_id || "");
+    setCurrentStatus(r.status || "draft");
     setLoading(false);
   };
 
@@ -46,9 +50,11 @@ export default function EditorPage() {
     setDirty(true);
   }, []);
 
-  const handleSave = async () => {
+  const saveProposal = async (status?: string) => {
     if (!id) return;
-    setSaving(true);
+    const isPublish = status === "sent";
+    if (isPublish) setPublishing(true);
+    else setSaving(true);
 
     const { error } = await supabase
       .from("proposals")
@@ -57,6 +63,7 @@ export default function EditorPage() {
         client_name: data.clientName || "",
         destination: data.destination || "",
         data: data as any,
+        status: status || currentStatus,
         updated_at: new Date().toISOString(),
       })
       .eq("id", id);
@@ -64,11 +71,16 @@ export default function EditorPage() {
     if (error) {
       toast({ title: "Save failed", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Saved!" });
+      if (status) setCurrentStatus(status);
+      toast({ title: isPublish ? "Published!" : "Saved!" });
       setDirty(false);
     }
     setSaving(false);
+    setPublishing(false);
   };
+
+  const handleSave = () => saveProposal();
+  const handlePublish = () => saveProposal("sent");
 
   const copyShareLink = () => {
     const url = `${window.location.origin}/view/${shareId}`;
@@ -92,8 +104,14 @@ export default function EditorPage() {
           <Button variant="travel-ghost" size="sm" onClick={() => navigate("/dashboard")}>
             <ArrowLeft className="h-3.5 w-3.5 mr-1" /> Library
           </Button>
+          {mode === "split" && (
+            <Button variant="travel-ghost" size="icon" className="h-8 w-8" onClick={() => setPanelOpen(!panelOpen)} title={panelOpen ? "Collapse editor panel" : "Open editor panel"}>
+              {panelOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeft className="h-4 w-4" />}
+            </Button>
+          )}
           <span className="text-xs text-muted-foreground font-body hidden sm:inline">
             — {data.destination || "New Trip"} for {data.clientName || "Client"}
+            {currentStatus === "sent" && <span className="ml-2 text-[10px] uppercase tracking-wider text-primary font-semibold bg-primary/10 px-1.5 py-0.5 rounded-full">Published</span>}
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -115,19 +133,27 @@ export default function EditorPage() {
             <Eye className="h-3.5 w-3.5 mr-1" /> Preview
           </Button>
           <Button
-            variant="travel"
+            variant="travel-outline"
             size="sm"
             onClick={handleSave}
             disabled={saving || !dirty}
           >
-            <Save className="h-3.5 w-3.5 mr-1" /> {saving ? "Saving..." : "Save"}
+            <Save className="h-3.5 w-3.5 mr-1" /> {saving ? "Saving..." : "Save Draft"}
+          </Button>
+          <Button
+            variant="travel"
+            size="sm"
+            onClick={handlePublish}
+            disabled={publishing}
+          >
+            <Send className="h-3.5 w-3.5 mr-1" /> {publishing ? "Publishing..." : "Save & Publish"}
           </Button>
         </div>
       </div>
 
       {/* Content */}
       <div className="flex-1 flex overflow-hidden">
-        {mode === "split" && (
+        {mode === "split" && panelOpen && (
           <div className="w-full max-w-lg border-r border-border/50 overflow-y-auto bg-background">
             <ProposalEditor data={data} onChange={handleChange} />
           </div>
