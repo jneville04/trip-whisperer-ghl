@@ -14,13 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          agency_name: string | null
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+        }
+        Insert: {
+          agency_name?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id: string
+        }
+        Update: {
+          agency_name?: string | null
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      proposals: {
+        Row: {
+          client_name: string | null
+          created_at: string | null
+          data: Json
+          destination: string | null
+          id: string
+          share_id: string | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          client_name?: string | null
+          created_at?: string | null
+          data?: Json
+          destination?: string | null
+          id?: string
+          share_id?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          client_name?: string | null
+          created_at?: string | null
+          data?: Json
+          destination?: string | null
+          id?: string
+          share_id?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_share_id: { Args: never; Returns: string }
     }
     Enums: {
       [_ in never]: never
