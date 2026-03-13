@@ -536,8 +536,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   <Input value={day.location} onChange={(e) => updateDay(dayIdx, { ...day, location: e.target.value })} placeholder="Lisbon" className="h-8 text-sm" />
                 </div>
                 <div>
-                  <FieldLabel>Image URL</FieldLabel>
-                  <Input value={day.imageUrl} onChange={(e) => updateDay(dayIdx, { ...day, imageUrl: e.target.value })} placeholder="Paste image URL" className="h-8 text-sm" />
+                  <FieldLabel>Day Image</FieldLabel>
+                  <ImageUploadField value={day.imageUrl} onChange={(url) => updateDay(dayIdx, { ...day, imageUrl: url })} placeholder="Paste image URL" />
                 </div>
               </div>
               <div className="space-y-2">
