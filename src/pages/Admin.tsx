@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import { isValidHexColor, normalizeHexInput } from "@/lib/brand";
 import {
   Palette, Users, ArrowLeft, Save, Upload, Check, X, UserX,
 } from "lucide-react";
