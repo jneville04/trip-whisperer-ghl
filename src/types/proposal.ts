@@ -12,6 +12,7 @@ export interface ItineraryDay {
   title: string;
   location: string;
   imageUrl: string;
+  imageUrls: string[];
   activities: Activity[];
 }
 
@@ -157,6 +158,7 @@ export const createDay = (dayNumber: number): ItineraryDay => ({
   title: `Day ${dayNumber}`,
   location: "",
   imageUrl: "",
+  imageUrls: [],
   activities: [createActivity()],
 });
 
@@ -267,6 +269,7 @@ export const defaultProposal: ProposalData = {
       title: "Arrival in Lisbon",
       location: "Lisbon",
       imageUrl: "",
+      imageUrls: [],
       activities: [
         { id: crypto.randomUUID(), time: "2:00 PM", title: "Airport Transfer", description: "Private luxury transfer from Lisbon Airport to your boutique hotel in Alfama district", type: "transport" },
         { id: crypto.randomUUID(), time: "4:00 PM", title: "Hotel Check-In", description: "Four Seasons Hotel Ritz Lisbon — Superior Suite with Tagus River view", type: "hotel" },
@@ -280,6 +283,7 @@ export const defaultProposal: ProposalData = {
       title: "Sintra & Cascais",
       location: "Sintra · Cascais",
       imageUrl: "",
+      imageUrls: [],
       activities: [
         { id: crypto.randomUUID(), time: "9:00 AM", title: "Breakfast at Hotel", description: "Full Portuguese breakfast buffet with fresh pastéis de nata", type: "dining" },
         { id: crypto.randomUUID(), time: "10:00 AM", title: "Pena Palace Tour", description: "Private guided tour of the colorful Romanticist castle perched above Sintra", type: "sightseeing" },
@@ -294,6 +298,7 @@ export const defaultProposal: ProposalData = {
       title: "Porto & Douro Valley",
       location: "Porto",
       imageUrl: "",
+      imageUrls: [],
       activities: [
         { id: crypto.randomUUID(), time: "8:00 AM", title: "Train to Porto", description: "First-class scenic train journey along the coast (approx. 2.5 hours)", type: "transport" },
         { id: crypto.randomUUID(), time: "11:00 AM", title: "Porto City Tour", description: "Ribeira district, São Bento Station azulejos, Livraria Lello bookshop", type: "sightseeing" },
@@ -308,6 +313,7 @@ export const defaultProposal: ProposalData = {
       title: "Algarve Coast",
       location: "Lagos · Benagil",
       imageUrl: "",
+      imageUrls: [],
       activities: [
         { id: crypto.randomUUID(), time: "7:00 AM", title: "Flight to Faro", description: "Short domestic flight from Porto to Faro", type: "transport" },
         { id: crypto.randomUUID(), time: "10:00 AM", title: "Benagil Cave Tour", description: "Private boat tour to the famous Benagil sea cave and hidden beaches", type: "activity" },
