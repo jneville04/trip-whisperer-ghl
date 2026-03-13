@@ -921,3 +921,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
           ))}
         </SortableContext>
       </DndContext>
+    </div>
+  );
+}
