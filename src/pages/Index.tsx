@@ -1,12 +1,27 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Eye, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProposalEditor from "@/components/ProposalEditor";
 import ProposalPreview from "@/components/ProposalPreview";
 import { defaultProposal, type ProposalData } from "@/types/proposal";
 
+const STORAGE_KEY = "proposal-builder-data";
+
+function loadSavedProposal(): ProposalData {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return defaultProposal;
+}
+
 const Index = () => {
-  const [data, setData] = useState<ProposalData>(defaultProposal);
+  const [data, setData] = useState<ProposalData>(loadSavedProposal);
+
+  // Auto-save to localStorage on every change
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }, [data]);
   const [mode, setMode] = useState<"split" | "preview">("split");
 
   return (
@@ -14,7 +29,7 @@ const Index = () => {
       {/* Top Bar */}
       <div className="h-14 border-b border-border/50 flex items-center justify-between px-4 sm:px-6 bg-card shrink-0">
         <div className="flex items-center gap-3">
-          <span className="font-display text-lg font-bold text-foreground">✈️ Proposal Builder</span>
+          <span className="font-display text-lg font-bold text-foreground">Proposal Builder</span>
           <span className="text-xs text-muted-foreground font-body hidden sm:inline">— {data.destination || "New Trip"} for {data.clientName || "Client"}</span>
         </div>
         <div className="flex items-center gap-2">

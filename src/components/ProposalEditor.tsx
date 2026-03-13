@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, Eye, EyeOff, ImagePlus, X, ArrowUp, ArrowDown, Search } from "lucide-react";
+import DatePickerField from "@/components/DatePickerField";
 import ImageUploadField from "@/components/ImageUploadField";
 import HotelSearchDialog from "@/components/HotelSearchDialog";
 import { Textarea } from "@/components/ui/textarea";
@@ -351,7 +352,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                 </div>
                 <div>
                   <FieldLabel>Date</FieldLabel>
-                  <Input value={flight.date} onChange={(e) => updateFlight(i, "date", e.target.value)} placeholder="Sep 14, 2026" className="h-7 text-xs" />
+                  <DatePickerField value={flight.date} onChange={(val) => updateFlight(i, "date", val)} placeholder="Select date" />
                 </div>
                 <div className="grid grid-cols-2 gap-1">
                   <div>
@@ -453,11 +454,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   <div className="grid grid-cols-3 gap-2">
                     <div>
                       <FieldLabel>Check-in</FieldLabel>
-                      <Input value={acc.checkIn} onChange={(e) => updateAccommodation(i, "checkIn", e.target.value)} placeholder="Sep 15" className="h-8 text-xs" />
+                      <DatePickerField value={acc.checkIn} onChange={(val) => updateAccommodation(i, "checkIn", val)} placeholder="Check-in" />
                     </div>
                     <div>
                       <FieldLabel>Check-out</FieldLabel>
-                      <Input value={acc.checkOut} onChange={(e) => updateAccommodation(i, "checkOut", e.target.value)} placeholder="Sep 17" className="h-8 text-xs" />
+                      <DatePickerField value={acc.checkOut} onChange={(val) => updateAccommodation(i, "checkOut", val)} placeholder="Check-out" />
                     </div>
                     <div>
                       <FieldLabel>Nights</FieldLabel>
@@ -600,7 +601,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                 </div>
                 <div>
                   <FieldLabel>Date</FieldLabel>
-                  <Input value={day.date} onChange={(e) => updateDay(dayIdx, { ...day, date: e.target.value })} placeholder="September 15, 2026" className="h-8 text-sm" />
+                  <DatePickerField value={day.date} onChange={(val) => updateDay(dayIdx, { ...day, date: val })} placeholder="Select date" />
                 </div>
               </div>
               <div className="mb-3">
