@@ -63,7 +63,8 @@ export default function RevisionsPage() {
   const brandStyles = buildBrandCssVars(brandData);
 
   const goBack = () => {
-    if (shareId) navigate(`/view/${shareId}`);
+    if (returnTo) navigate(returnTo);
+    else if (shareId) navigate(`/view/${shareId}`);
     else navigate(-1);
   };
 
