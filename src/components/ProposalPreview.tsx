@@ -221,33 +221,97 @@ export default function ProposalPreview({ data }: Props) {
               <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Where You'll Stay</p>
               <h2 className="font-display text-4xl font-bold text-foreground">Accommodations</h2>
             </motion.div>
-            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {accommodations.map((acc) => (
-                <div key={acc.id} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
-                  {acc.imageUrl && (
-                    <div className="aspect-[16/9] overflow-hidden">
-                      <img src={acc.imageUrl} alt={acc.hotelName} className="w-full h-full object-cover" />
-                    </div>
-                  )}
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h3 className="font-display text-xl font-bold text-foreground">{acc.hotelName || "Hotel"}</h3>
-                        <p className="text-sm text-muted-foreground font-body flex items-center gap-1 mt-0.5"><MapPin className="h-3 w-3" /> {acc.location}</p>
+            <div className="space-y-10">
+              {accommodations.map((acc) => {
+                const amenities = acc.amenities || [];
+                const highlights = acc.highlights || [];
+                const galleryUrls = acc.galleryUrls || [];
+                return (
+                  <motion.div key={acc.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
+                    {/* Image gallery */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
+                      <div className="md:col-span-2 aspect-[16/9] md:aspect-auto overflow-hidden">
+                        {acc.imageUrl ? (
+                          <img src={acc.imageUrl} alt={acc.hotelName} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full min-h-[200px] bg-muted flex items-center justify-center">
+                            <BedDouble className="h-12 w-12 text-muted-foreground/30" />
+                          </div>
+                        )}
                       </div>
-                      <BedDouble className="h-5 w-5 text-primary mt-1" />
+                      <div className="hidden md:grid grid-rows-2 gap-1">
+                        {galleryUrls.length > 0 ? galleryUrls.slice(0, 2).map((url, gi) => (
+                          <div key={gi} className="overflow-hidden">
+                            <img src={url} alt={`${acc.hotelName} ${gi + 2}`} className="w-full h-full object-cover" />
+                          </div>
+                        )) : (
+                          <>
+                            <div className="bg-muted flex items-center justify-center"><Camera className="h-8 w-8 text-muted-foreground/20" /></div>
+                            <div className="bg-muted flex items-center justify-center"><Camera className="h-8 w-8 text-muted-foreground/20" /></div>
+                          </>
+                        )}
+                      </div>
                     </div>
-                    {acc.roomType && <p className="text-sm font-body text-foreground mt-2 font-medium">{acc.roomType}</p>}
-                    {acc.description && <p className="text-sm text-muted-foreground font-body mt-1">{acc.description}</p>}
-                    <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground font-body border-t border-border/30 pt-3">
-                      {acc.checkIn && <span>Check-in: {acc.checkIn}</span>}
-                      {acc.checkOut && <span>Check-out: {acc.checkOut}</span>}
-                      {acc.nights && <span className="text-primary font-semibold">{acc.nights}</span>}
+                    <div className="p-6 sm:p-8">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="font-display text-2xl font-bold text-foreground">{acc.hotelName || "Hotel"}</h3>
+                            {acc.starRating && (
+                              <div className="flex items-center gap-0.5">
+                                {[...Array(parseInt(acc.starRating) || 0)].map((_, si) => (
+                                  <Star key={si} className="h-3.5 w-3.5 fill-accent text-accent" />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground font-body flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {acc.location}</p>
+                        </div>
+                        <BedDouble className="h-6 w-6 text-primary mt-1 shrink-0" />
+                      </div>
+                      {acc.roomType && <p className="font-body text-foreground font-semibold mt-3">{acc.roomType}</p>}
+                      {acc.description && <p className="text-sm text-muted-foreground font-body mt-2 leading-relaxed">{acc.description}</p>}
+
+                      {/* Highlights */}
+                      {highlights.length > 0 && (
+                        <div className="mt-4">
+                          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">Highlights</p>
+                          <div className="space-y-1.5">
+                            {highlights.map((h, hi) => (
+                              <div key={hi} className="flex items-center gap-2 text-sm font-body text-foreground">
+                                <Sparkles className="h-3.5 w-3.5 text-accent shrink-0" />
+                                <span>{h}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Amenities */}
+                      {amenities.length > 0 && (
+                        <div className="mt-4 pt-4 border-t border-border/30">
+                          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Amenities</p>
+                          <div className="flex flex-wrap gap-2">
+                            {amenities.map((a, ai) => (
+                              <span key={ai} className="inline-flex items-center gap-1.5 bg-muted/50 text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full border border-border/30">
+                                <Check className="h-3 w-3 text-primary" /> {a}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Dates */}
+                      <div className="flex items-center gap-6 mt-5 pt-4 border-t border-border/30 text-sm text-muted-foreground font-body">
+                        {acc.checkIn && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Check-in: {acc.checkIn}</span>}
+                        {acc.checkOut && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Check-out: {acc.checkOut}</span>}
+                        {acc.nights && <span className="text-primary font-semibold">{acc.nights}</span>}
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
         </section>
       )}
