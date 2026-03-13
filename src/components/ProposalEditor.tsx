@@ -110,7 +110,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const removeInclusion = (index: number) => update("inclusions", data.inclusions.filter((_, i) => i !== index));
 
   const updateFlight = (index: number, field: keyof FlightLeg, value: string) => {
-    const flights = [...data.flights];
+    const f = [...(data.flights || [])];
     flights[index] = { ...flights[index], [field]: value };
     update("flights", flights);
   };
