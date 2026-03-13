@@ -322,13 +322,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
               <div className="flex items-center justify-between px-3 py-2.5 bg-muted/40 border-b border-border/30">
                 <div className="flex items-center gap-2">
                   <span className="font-body font-semibold text-sm text-foreground">{acc.hotelName || `Hotel ${i + 1}`}</span>
-                  <div className="flex items-center gap-0.5">
-                    {[1, 2, 3, 4, 5].map((s) => (
-                      <button key={s} onClick={() => updateAccField("starRating", String(s))} className="p-0">
-                        <Star className={`h-3 w-3 ${s <= starRating ? "fill-amber-400 text-amber-400" : "text-muted-foreground/30"}`} />
-                      </button>
-                    ))}
-                  </div>
                 </div>
                 <Button variant="travel-ghost" size="icon" onClick={() => update("accommodations", accommodations.filter((_, idx) => idx !== i))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
                   <Trash2 className="h-3.5 w-3.5" />

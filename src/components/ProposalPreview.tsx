@@ -423,9 +423,6 @@ export default function ProposalPreview({ data }: Props) {
         <section className="py-20">
           <div className="max-w-3xl mx-auto px-6 text-center">
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0}>
-              <div className="flex items-center justify-center gap-1 mb-4">
-                {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-accent text-accent" />)}
-              </div>
               <blockquote className="font-display text-xl sm:text-2xl italic text-foreground leading-relaxed">
                 "{data.testimonialQuote}"
               </blockquote>
