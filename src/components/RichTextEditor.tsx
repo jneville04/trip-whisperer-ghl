@@ -120,10 +120,10 @@ export default function RichTextEditor({ content, onChange, placeholder, minHeig
           active={editor.isActive("link")}
           onClick={() => {
             if (editor.isActive("link")) {
-              editor.chain().focus().unsetLink().run();
+              (editor.chain().focus() as any).unsetLink().run();
             } else {
               const url = window.prompt("URL:");
-              if (url) editor.chain().focus().setLink({ href: url }).run();
+              if (url) (editor.chain().focus() as any).setLink({ href: url }).run();
             }
           }}
           title="Link"
