@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, Eye, EyeOff, ImagePlus, X, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, Eye, EyeOff, ImagePlus, X, ArrowUp, ArrowDown, Search } from "lucide-react";
 import ImageUploadField from "@/components/ImageUploadField";
 import HotelSearchDialog from "@/components/HotelSearchDialog";
 import { Textarea } from "@/components/ui/textarea";
