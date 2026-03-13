@@ -117,7 +117,7 @@ export default function ProposalPreview({ data }: Props) {
               </button>
             ))}
           </div>
-          <Button variant="travel" size="sm" className="text-xs">
+          <Button variant="travel" size="sm" className="text-xs" onClick={() => navigate("/approve")}>
             Book Now
           </Button>
         </div>
