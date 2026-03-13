@@ -8,6 +8,7 @@ import { defaultProposal, type ProposalData } from "@/types/proposal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { buildBrandCssVars } from "@/lib/brand";
+import { useAppSettings } from "@/hooks/useAppSettings";
 
 export default function EditorPage() {
   const { id } = useParams<{ id: string }>();
