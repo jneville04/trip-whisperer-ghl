@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Eye, PenLine, ArrowLeft, Save, ExternalLink, PanelLeftClose, PanelLeft, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import ProposalPreview from "@/components/ProposalPreview";
 import { defaultProposal, type ProposalData } from "@/types/proposal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { buildBrandCssVars } from "@/lib/brand";
 
 export default function EditorPage() {
   const { id } = useParams<{ id: string }>();
@@ -88,6 +89,8 @@ export default function EditorPage() {
     toast({ title: "Client link copied!", description: url });
   };
 
+  const builderBrandStyles = useMemo(() => buildBrandCssVars(data.brand), [data.brand]);
+
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center text-muted-foreground font-body">
@@ -97,7 +100,7 @@ export default function EditorPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-background overflow-hidden">
+    <div className="h-screen flex flex-col bg-background overflow-hidden" style={builderBrandStyles as React.CSSProperties}>
       {/* Top Bar */}
       <div className="h-14 border-b border-border/50 flex items-center justify-between px-4 sm:px-6 bg-card shrink-0">
         <div className="flex items-center gap-3">
