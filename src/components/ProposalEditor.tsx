@@ -601,7 +601,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                 </div>
                 <div>
                   <FieldLabel>Date</FieldLabel>
-                  <Input value={day.date} onChange={(e) => updateDay(dayIdx, { ...day, date: e.target.value })} placeholder="September 15, 2026" className="h-8 text-sm" />
+                  <DatePickerField value={day.date} onChange={(val) => updateDay(dayIdx, { ...day, date: val })} placeholder="Select date" />
                 </div>
               </div>
               <div className="mb-3">
