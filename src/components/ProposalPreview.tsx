@@ -64,7 +64,7 @@ export default function ProposalPreview({ data }: Props) {
   const accommodations = data.accommodations || [];
   const agent = data.agent || { name: "", title: "", phone: "", email: "", website: "", agencyName: "", logoUrl: "", photoUrl: "" };
   const essentials = data.essentials || { visaRequirements: "", passportInfo: "", currency: "", language: "", timeZone: "", weatherInfo: "", packingTips: "", emergencyContacts: "" };
-  const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "" };
+  const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
 
   const brandStyles = useMemo(() => {
     const styles: Record<string, string> = {};
