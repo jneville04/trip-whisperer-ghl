@@ -790,15 +790,13 @@ export default function ProposalEditor({ data, onChange }: Props) {
               <Input value={data.agent.agencyName} onChange={(e) => update("agent", { ...data.agent, agencyName: e.target.value })} className="h-8 text-sm" />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <FieldLabel>Agent Photo URL</FieldLabel>
-              <Input value={data.agent.photoUrl} onChange={(e) => update("agent", { ...data.agent, photoUrl: e.target.value })} className="h-8 text-sm" placeholder="Photo URL" />
-            </div>
-            <div>
-              <FieldLabel>Agency Logo URL</FieldLabel>
-              <Input value={data.agent.logoUrl} onChange={(e) => update("agent", { ...data.agent, logoUrl: e.target.value })} className="h-8 text-sm" placeholder="Logo URL" />
-            </div>
+          <div>
+            <FieldLabel>Agent Photo</FieldLabel>
+            <ImageUploadField value={data.agent.photoUrl} onChange={(url) => update("agent", { ...data.agent, photoUrl: url })} placeholder="Agent photo URL" />
+          </div>
+          <div>
+            <FieldLabel>Agency Logo</FieldLabel>
+            <ImageUploadField value={data.agent.logoUrl} onChange={(url) => update("agent", { ...data.agent, logoUrl: url })} placeholder="Agency logo URL" />
           </div>
         </div>
       </CollapsibleSection>
