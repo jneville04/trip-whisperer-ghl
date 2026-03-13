@@ -51,7 +51,7 @@ export default function RichTextEditor({ content, onChange, placeholder, minHeig
   // Sync external content changes (but avoid cursor jumps)
   useEffect(() => {
     if (editor && content !== editor.getHTML()) {
-      editor.commands.setContent(content, false);
+      editor.commands.setContent(content, { emitUpdate: false });
     }
   }, [content]);
 
