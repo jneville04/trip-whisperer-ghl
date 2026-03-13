@@ -159,8 +159,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
       <CollapsibleSection title="🎨 Brand & Colors" defaultOpen={false}>
         <div className="space-y-3">
           <div>
-            <FieldLabel>Logo URL</FieldLabel>
-            <Input value={brand.logoUrl} onChange={(e) => update("brand", { ...brand, logoUrl: e.target.value })} placeholder="Paste logo image URL" className="h-8 text-sm" />
+            <FieldLabel>Logo</FieldLabel>
+            <ImageUploadField value={brand.logoUrl} onChange={(url) => update("brand", { ...brand, logoUrl: url })} placeholder="Paste logo URL" />
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
