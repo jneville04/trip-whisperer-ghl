@@ -702,7 +702,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                   <Plus className="h-3 w-3 mr-1" /> Activity
                                 </Button>
                               </div>
-                            </div>
+                              </div>
+                            </CollapsibleHotel>
                           ))}
                           <Button variant="travel-outline" size="sm" onClick={addDay} className="w-full">
                             <Plus className="h-4 w-4 mr-1" /> Add Day
