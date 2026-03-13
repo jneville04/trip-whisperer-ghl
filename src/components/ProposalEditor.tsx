@@ -110,18 +110,21 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const removeInclusion = (index: number) => update("inclusions", data.inclusions.filter((_, i) => i !== index));
 
   const updateFlight = (index: number, field: keyof FlightLeg, value: string) => {
-    const flights = [...data.flights];
-    flights[index] = { ...flights[index], [field]: value };
-    update("flights", flights);
+    const f = [...(data.flights || [])];
+    f[index] = { ...f[index], [field]: value };
+    update("flights", f);
   };
 
   const updateAccommodation = (index: number, field: keyof Accommodation, value: string) => {
-    const accs = [...data.accommodations];
-    accs[index] = { ...accs[index], [field]: value };
-    update("accommodations", accs);
+    const a = [...(data.accommodations || [])];
+    a[index] = { ...a[index], [field]: value };
+    update("accommodations", a);
   };
 
-  const vis = data.sectionVisibility;
+  const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
+  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, testimonial: true, agent: true };
+  const flights = data.flights || [];
+  const accommodations = data.accommodations || [];
 
   return (
     <div className="space-y-4 p-4 sm:p-6 overflow-y-auto h-full">
@@ -135,28 +138,28 @@ export default function ProposalEditor({ data, onChange }: Props) {
         <div className="space-y-3">
           <div>
             <FieldLabel>Logo URL</FieldLabel>
-            <Input value={data.brand.logoUrl} onChange={(e) => update("brand", { ...data.brand, logoUrl: e.target.value })} placeholder="Paste logo image URL" className="h-8 text-sm" />
+            <Input value={brand.logoUrl} onChange={(e) => update("brand", { ...brand, logoUrl: e.target.value })} placeholder="Paste logo image URL" className="h-8 text-sm" />
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>
               <FieldLabel>Primary Color</FieldLabel>
               <div className="flex gap-2 items-center">
-                <input type="color" value={data.brand.primaryColor || "#c2631a"} onChange={(e) => update("brand", { ...data.brand, primaryColor: e.target.value })} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                <Input value={data.brand.primaryColor} onChange={(e) => update("brand", { ...data.brand, primaryColor: e.target.value })} placeholder="#c2631a" className="h-8 text-sm flex-1" />
+                <input type="color" value={brand.primaryColor || "#c2631a"} onChange={(e) => update("brand", { ...brand, primaryColor: e.target.value })} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                <Input value={brand.primaryColor} onChange={(e) => update("brand", { ...brand, primaryColor: e.target.value })} placeholder="#c2631a" className="h-8 text-sm flex-1" />
               </div>
             </div>
             <div>
               <FieldLabel>Secondary Color</FieldLabel>
               <div className="flex gap-2 items-center">
-                <input type="color" value={data.brand.secondaryColor || "#337a8a"} onChange={(e) => update("brand", { ...data.brand, secondaryColor: e.target.value })} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                <Input value={data.brand.secondaryColor} onChange={(e) => update("brand", { ...data.brand, secondaryColor: e.target.value })} placeholder="#337a8a" className="h-8 text-sm flex-1" />
+                <input type="color" value={brand.secondaryColor || "#337a8a"} onChange={(e) => update("brand", { ...brand, secondaryColor: e.target.value })} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                <Input value={brand.secondaryColor} onChange={(e) => update("brand", { ...brand, secondaryColor: e.target.value })} placeholder="#337a8a" className="h-8 text-sm flex-1" />
               </div>
             </div>
             <div>
               <FieldLabel>Accent Color</FieldLabel>
               <div className="flex gap-2 items-center">
-                <input type="color" value={data.brand.accentColor || "#d4a824"} onChange={(e) => update("brand", { ...data.brand, accentColor: e.target.value })} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                <Input value={data.brand.accentColor} onChange={(e) => update("brand", { ...data.brand, accentColor: e.target.value })} placeholder="#d4a824" className="h-8 text-sm flex-1" />
+                <input type="color" value={brand.accentColor || "#d4a824"} onChange={(e) => update("brand", { ...brand, accentColor: e.target.value })} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                <Input value={brand.accentColor} onChange={(e) => update("brand", { ...brand, accentColor: e.target.value })} placeholder="#d4a824" className="h-8 text-sm flex-1" />
               </div>
             </div>
           </div>
@@ -221,11 +224,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
       {/* Flights */}
       <CollapsibleSection title="✈️ Flights" sectionKey="flights" visible={vis.flights} onToggleVisible={() => toggleSection("flights")} defaultOpen={false}>
         <div className="space-y-4">
-          {data.flights.map((flight, i) => (
+          {flights.map((flight, i) => (
             <div key={flight.id} className="border border-border/40 rounded-lg p-3 bg-muted/20">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-body font-semibold text-sm text-foreground">{flight.type === "departure" ? "🛫 Departure" : "🛬 Return"}</span>
-                <Button variant="travel-ghost" size="icon" onClick={() => update("flights", data.flights.filter((_, idx) => idx !== i))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
+                <Button variant="travel-ghost" size="icon" onClick={() => update("flights", flights.filter((_, idx) => idx !== i))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </div>
@@ -264,10 +267,10 @@ export default function ProposalEditor({ data, onChange }: Props) {
             </div>
           ))}
           <div className="flex gap-2">
-            <Button variant="travel-ghost" size="sm" onClick={() => update("flights", [...data.flights, createFlightLeg("departure")])} className="text-primary text-xs h-7">
+            <Button variant="travel-ghost" size="sm" onClick={() => update("flights", [...flights, createFlightLeg("departure")])} className="text-primary text-xs h-7">
               <Plus className="h-3 w-3 mr-1" /> Departure
             </Button>
-            <Button variant="travel-ghost" size="sm" onClick={() => update("flights", [...data.flights, createFlightLeg("return")])} className="text-primary text-xs h-7">
+            <Button variant="travel-ghost" size="sm" onClick={() => update("flights", [...flights, createFlightLeg("return")])} className="text-primary text-xs h-7">
               <Plus className="h-3 w-3 mr-1" /> Return
             </Button>
           </div>
@@ -277,11 +280,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
       {/* Accommodations */}
       <CollapsibleSection title="🏨 Accommodations" sectionKey="accommodations" visible={vis.accommodations} onToggleVisible={() => toggleSection("accommodations")} defaultOpen={false}>
         <div className="space-y-4">
-          {data.accommodations.map((acc, i) => (
+          {accommodations.map((acc, i) => (
             <div key={acc.id} className="border border-border/40 rounded-lg p-3 bg-muted/20">
               <div className="flex items-center justify-between mb-2">
                 <span className="font-body font-semibold text-sm text-foreground">🏨 Hotel {i + 1}</span>
-                <Button variant="travel-ghost" size="icon" onClick={() => update("accommodations", data.accommodations.filter((_, idx) => idx !== i))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
+                <Button variant="travel-ghost" size="icon" onClick={() => update("accommodations", accommodations.filter((_, idx) => idx !== i))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </div>
@@ -321,7 +324,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
               </div>
             </div>
           ))}
-          <Button variant="travel-ghost" size="sm" onClick={() => update("accommodations", [...data.accommodations, createAccommodation()])} className="text-primary text-xs h-7">
+          <Button variant="travel-ghost" size="sm" onClick={() => update("accommodations", [...accommodations, createAccommodation()])} className="text-primary text-xs h-7">
             <Plus className="h-3 w-3 mr-1" /> Add Hotel
           </Button>
         </div>

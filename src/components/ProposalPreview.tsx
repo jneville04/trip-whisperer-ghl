@@ -54,25 +54,28 @@ interface Props {
 
 export default function ProposalPreview({ data }: Props) {
   const heroImage = data.heroImageUrl || heroFallback;
-  const vis = data.sectionVisibility;
-  const [activeSection, setActiveSection] = useState("");
+  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, testimonial: true, agent: true };
+  const brandData = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
+  const flights = data.flights || [];
+  const accommodations = data.accommodations || [];
+  const agent = data.agent || { name: "", title: "", phone: "", email: "", website: "", agencyName: "", logoUrl: "", photoUrl: "" };
 
   const brandStyles = useMemo(() => {
     const styles: Record<string, string> = {};
-    if (data.brand.primaryColor) {
-      const hsl = hexToHsl(data.brand.primaryColor);
+    if (brandData.primaryColor) {
+      const hsl = hexToHsl(brandData.primaryColor);
       if (hsl) styles["--primary"] = hsl;
     }
-    if (data.brand.secondaryColor) {
-      const hsl = hexToHsl(data.brand.secondaryColor);
+    if (brandData.secondaryColor) {
+      const hsl = hexToHsl(brandData.secondaryColor);
       if (hsl) styles["--secondary"] = hsl;
     }
-    if (data.brand.accentColor) {
-      const hsl = hexToHsl(data.brand.accentColor);
+    if (brandData.accentColor) {
+      const hsl = hexToHsl(brandData.accentColor);
       if (hsl) styles["--accent"] = hsl;
     }
     return styles;
-  }, [data.brand]);
+  }, [brandData]);
 
   const navItems = useMemo(() => {
     const items: { label: string; id: string }[] = [];
@@ -95,10 +98,10 @@ export default function ProposalPreview({ data }: Props) {
       <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50 shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
           <div className="flex items-center gap-3">
-            {data.brand.logoUrl ? (
-              <img src={data.brand.logoUrl} alt="Logo" className="h-8 max-w-[120px] object-contain" />
+            {brandData.logoUrl ? (
+              <img src={brandData.logoUrl} alt="Logo" className="h-8 max-w-[120px] object-contain" />
             ) : (
-              <span className="font-display text-lg font-bold text-foreground">✈️ {data.agent.agencyName || "Travel Co."}</span>
+              <span className="font-display text-lg font-bold text-foreground">✈️ {agent.agencyName || "Travel Co."}</span>
             )}
           </div>
           <div className="hidden sm:flex items-center gap-1">
@@ -168,7 +171,7 @@ export default function ProposalPreview({ data }: Props) {
       )}
 
       {/* FLIGHTS */}
-      {vis.flights && data.flights.length > 0 && (
+      {vis.flights && flights.length > 0 && (
         <section id="flights" className="py-20 bg-card">
           <div className="max-w-4xl mx-auto px-6">
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
@@ -176,7 +179,7 @@ export default function ProposalPreview({ data }: Props) {
               <h2 className="font-display text-4xl font-bold text-foreground">Air Travel</h2>
             </motion.div>
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {data.flights.map((flight) => (
+              {flights.map((flight) => (
                 <div key={flight.id} className="bg-background rounded-2xl border border-border/50 shadow-sm p-6 relative overflow-hidden">
                   <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
                   <div className="flex items-center gap-2 mb-4">
@@ -211,7 +214,7 @@ export default function ProposalPreview({ data }: Props) {
       )}
 
       {/* ACCOMMODATIONS */}
-      {vis.accommodations && data.accommodations.length > 0 && (
+      {vis.accommodations && accommodations.length > 0 && (
         <section id="accommodations" className="py-20">
           <div className="max-w-5xl mx-auto px-6">
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
@@ -219,7 +222,7 @@ export default function ProposalPreview({ data }: Props) {
               <h2 className="font-display text-4xl font-bold text-foreground">Accommodations</h2>
             </motion.div>
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {data.accommodations.map((acc) => (
+              {accommodations.map((acc) => (
                 <div key={acc.id} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
                   {acc.imageUrl && (
                     <div className="aspect-[16/9] overflow-hidden">
@@ -382,24 +385,24 @@ export default function ProposalPreview({ data }: Props) {
               <div className="flex flex-col items-center text-center md:items-start md:text-left flex-1">
                 <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Travel Advisor</p>
                 <div className="flex items-center gap-4 mb-4">
-                  {data.agent.photoUrl && (
-                    <img src={data.agent.photoUrl} alt={data.agent.name} className="w-16 h-16 rounded-full object-cover border-2 border-primary/20" />
+                  {agent.photoUrl && (
+                    <img src={agent.photoUrl} alt={agent.name} className="w-16 h-16 rounded-full object-cover border-2 border-primary/20" />
                   )}
                   <div>
-                    <h3 className="font-display text-2xl font-bold text-foreground">{data.agent.name}</h3>
-                    <p className="text-muted-foreground font-body mt-0.5">{data.agent.title}</p>
-                    <p className="text-sm text-muted-foreground font-body">{data.agent.agencyName}</p>
+                    <h3 className="font-display text-2xl font-bold text-foreground">{agent.name}</h3>
+                    <p className="text-muted-foreground font-body mt-0.5">{agent.title}</p>
+                    <p className="text-sm text-muted-foreground font-body">{agent.agencyName}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-6 text-sm font-body text-muted-foreground flex-wrap">
-                  {data.agent.phone && <a href={`tel:${data.agent.phone}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Phone className="h-4 w-4" /> {data.agent.phone}</a>}
-                  {data.agent.email && <a href={`mailto:${data.agent.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-4 w-4" /> {data.agent.email}</a>}
-                  {data.agent.website && <a href="#" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Globe className="h-4 w-4" /> {data.agent.website}</a>}
+                  {agent.phone && <a href={`tel:${agent.phone}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Phone className="h-4 w-4" /> {agent.phone}</a>}
+                  {agent.email && <a href={`mailto:${agent.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-4 w-4" /> {agent.email}</a>}
+                  {agent.website && <a href="#" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Globe className="h-4 w-4" /> {agent.website}</a>}
                 </div>
               </div>
-              {data.agent.logoUrl && (
+              {agent.logoUrl && (
                 <div className="shrink-0">
-                  <img src={data.agent.logoUrl} alt={data.agent.agencyName} className="h-16 max-w-[180px] object-contain" />
+                  <img src={agent.logoUrl} alt={agent.agencyName} className="h-16 max-w-[180px] object-contain" />
                 </div>
               )}
             </div>
@@ -408,7 +411,7 @@ export default function ProposalPreview({ data }: Props) {
                 Sign Up Today! <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </div>
-            <p className="text-xs text-muted-foreground/60 mt-8 font-body text-center">© 2026 {data.agent.agencyName} · All prices in USD · Subject to availability</p>
+            <p className="text-xs text-muted-foreground/60 mt-8 font-body text-center">© 2026 {agent.agencyName} · All prices in USD · Subject to availability</p>
           </div>
         </footer>
       )}
