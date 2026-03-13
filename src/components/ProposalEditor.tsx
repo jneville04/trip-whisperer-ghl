@@ -232,8 +232,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
             <div className="grid grid-cols-3 gap-2 mt-1.5">
               {/* Primary hero image */}
               {data.heroImageUrl && (
-                <div className="relative col-span-2 row-span-2 aspect-[16/9] rounded-lg overflow-hidden border border-border/40 group">
-                  <img src={data.heroImageUrl} alt="Primary hero" className="w-full h-full object-cover" />
+                <div className="relative col-span-2 row-span-2 aspect-[16/9] rounded-lg overflow-hidden border border-border/40 bg-muted/30 p-1 group">
+                  <img src={data.heroImageUrl} alt="Primary hero" className="w-full h-full object-contain" />
                   <div className="absolute top-1.5 left-1.5 bg-primary text-primary-foreground text-[10px] font-semibold px-1.5 py-0.5 rounded">Main Photo</div>
                   <button onClick={() => update("heroImageUrl", "")} className="absolute top-1.5 right-1.5 bg-foreground/70 text-background rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     <X className="h-3 w-3" />
@@ -242,8 +242,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
               )}
               {/* Additional hero images */}
               {(data.heroImageUrls || []).map((url, i) => (
-                <div key={i} className="relative aspect-square rounded-lg overflow-hidden border border-border/40 group">
-                  <img src={url} alt={`Hero ${i + 2}`} className="w-full h-full object-cover" />
+                <div key={i} className="relative aspect-square rounded-lg overflow-hidden border border-border/40 bg-muted/30 p-1 group">
+                  <img src={url} alt={`Hero ${i + 2}`} className="w-full h-full object-contain" />
                   <button onClick={() => update("heroImageUrls", (data.heroImageUrls || []).filter((_, j) => j !== i))} className="absolute top-1 right-1 bg-foreground/70 text-background rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                     <X className="h-3 w-3" />
                   </button>
