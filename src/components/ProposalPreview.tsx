@@ -972,7 +972,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                       <span className="font-body text-foreground font-medium">Bus Trip</span>
                     </div>
                     <span className="font-body text-sm text-muted-foreground">
-                      {selectedBusTrip ? (busTrips.find(b => b.id === selectedBusTrip)?.routeName || "Selected") : <span className="text-destructive text-xs">Not selected</span>}
+                      {selectedBusTrip ? (() => { const b = busTrips.find(b => b.id === selectedBusTrip); return <>{b?.routeName || "Selected"}{b?.price ? <span className="ml-2 text-primary font-semibold">${b.price}</span> : null}</>; })() : <span className="text-destructive text-xs">Not selected</span>}
                     </span>
                   </div>
                 )}
