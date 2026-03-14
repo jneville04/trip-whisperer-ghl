@@ -921,6 +921,89 @@ export default function ProposalPreview({ data, shareId }: Props) {
             return null;
         }
       })}
+
+      {/* PROPOSAL SELECTION SUMMARY — only for Proposal type */}
+      {!isGroupBooking && (
+        <section id="selection-summary" className="py-20 bg-card border-t border-border/50">
+          <div className="max-w-3xl mx-auto px-6">
+            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-10">
+              <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Selections</p>
+              <h2 className="font-display text-4xl font-bold text-foreground">Trip Summary</h2>
+            </motion.div>
+            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="bg-background rounded-2xl border border-border/50 shadow-lg p-8">
+              <div className="space-y-4 mb-6">
+                {flights.length > 0 && (
+                  <div className="flex justify-between items-center py-3 border-b border-border/30">
+                    <div className="flex items-center gap-2">
+                      <Plane className="h-4 w-4 text-primary" />
+                      <span className="font-body text-foreground font-medium">Flight</span>
+                    </div>
+                    <span className="font-body text-sm text-muted-foreground">
+                      {selectedFlight ? (flights.find(f => f.id === selectedFlight)?.airline || "Selected") + " — " + (flights.find(f => f.id === selectedFlight)?.departureAirport?.split("–")[0]?.trim() || "") + " → " + (flights.find(f => f.id === selectedFlight)?.arrivalAirport?.split("–")[0]?.trim() || "") : <span className="text-destructive text-xs">Not selected</span>}
+                    </span>
+                  </div>
+                )}
+                {accommodations.length > 0 && (
+                  <div className="flex justify-between items-center py-3 border-b border-border/30">
+                    <div className="flex items-center gap-2">
+                      <BedDouble className="h-4 w-4 text-primary" />
+                      <span className="font-body text-foreground font-medium">Accommodation</span>
+                    </div>
+                    <span className="font-body text-sm text-muted-foreground">
+                      {selectedAccommodation ? (accommodations.find(a => a.id === selectedAccommodation)?.hotelName || "Selected") : <span className="text-destructive text-xs">Not selected</span>}
+                    </span>
+                  </div>
+                )}
+                {cruiseShips.length > 0 && (
+                  <div className="flex justify-between items-center py-3 border-b border-border/30">
+                    <div className="flex items-center gap-2">
+                      <Ship className="h-4 w-4 text-primary" />
+                      <span className="font-body text-foreground font-medium">Cruise</span>
+                    </div>
+                    <span className="font-body text-sm text-muted-foreground">
+                      {selectedCruise ? (cruiseShips.find(s => s.id === selectedCruise)?.shipName || "Selected") : <span className="text-destructive text-xs">Not selected</span>}
+                    </span>
+                  </div>
+                )}
+                {busTrips.length > 0 && (
+                  <div className="flex justify-between items-center py-3 border-b border-border/30">
+                    <div className="flex items-center gap-2">
+                      <Bus className="h-4 w-4 text-primary" />
+                      <span className="font-body text-foreground font-medium">Bus Trip</span>
+                    </div>
+                    <span className="font-body text-sm text-muted-foreground">
+                      {selectedBusTrip ? (busTrips.find(b => b.id === selectedBusTrip)?.routeName || "Selected") : <span className="text-destructive text-xs">Not selected</span>}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Pricing lines if available */}
+              {data.pricing.length > 0 && (
+                <div className="space-y-3 mb-6 pt-4 border-t border-border/30">
+                  {data.pricing.map((line) => (
+                    <div key={line.id} className="flex justify-between items-center font-body">
+                      <span className="text-muted-foreground">{line.label}</span>
+                      <span className="font-semibold text-foreground">{line.amount}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>
+                  <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
+                </Button>
+                <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToRevisions}>
+                  <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
+                </Button>
+              </div>
+              {data.validUntil && <p className="text-sm text-muted-foreground mt-4 text-center font-body">This proposal is valid until {data.validUntil}</p>}
+            </motion.div>
+          </div>
+        </section>
+      )}
+
       <Lightbox images={lightboxImages} initialIndex={lightboxIndex} open={lightboxOpen} onClose={() => setLightboxOpen(false)} />
       <BookingModal open={bookingOpen} onClose={() => setBookingOpen(false)} url={bookingModalUrl} agencyName={bookingModalTitle || agent.agencyName} />
     </div>
