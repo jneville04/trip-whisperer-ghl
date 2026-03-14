@@ -57,18 +57,23 @@ export default function Dashboard() {
     setLoading(false);
   };
 
-  const createProposal = async () => {
+  const createProposal = async (type: "group_booking" | "proposal" = "group_booking") => {
     const user = (await supabase.auth.getUser()).data.user;
     if (!user) return;
+
+    const proposalData: ProposalData = {
+      ...defaultProposal,
+      proposalType: type,
+    };
 
     const { data, error } = await supabase
       .from("proposals")
       .insert({
         user_id: user.id,
-        title: "New Proposal",
+        title: type === "group_booking" ? "New Group Booking" : "New Proposal",
         client_name: defaultProposal.clientName,
         destination: defaultProposal.destination,
-        data: defaultProposal as any,
+        data: proposalData as any,
       })
       .select()
       .single();
