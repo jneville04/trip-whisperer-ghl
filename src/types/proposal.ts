@@ -472,11 +472,13 @@ export const defaultProposal: ProposalData = {
     logoUrl: "",
     showAgencyNameWithLogo: true,
   },
+  cruiseShips: [],
   sectionVisibility: {
     hero: true,
     overview: true,
     flights: true,
     accommodations: true,
+    cruiseShips: true,
     itinerary: true,
     inclusions: true,
     pricing: true,
