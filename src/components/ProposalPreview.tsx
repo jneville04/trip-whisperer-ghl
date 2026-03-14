@@ -408,7 +408,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                                     )}
                                   </div>
                                   {!isLastActivity && (
-                                    <div className="mt-6 ml-[6px] border-l-2 border-border/30 h-8" />
+                                    <div className="mt-8 mb-2 border-t border-border" />
                                   )}
                                 </div>
                               );
