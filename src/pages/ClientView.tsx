@@ -19,12 +19,14 @@ export default function ClientView() {
   const loadProposal = async () => {
     const { data: row, error: err } = await supabase
       .from("proposals")
-      .select("data")
+      .select("data, status")
       .eq("share_id", shareId)
       .single();
 
     if (err || !row) {
       setError("Proposal not found or link has expired.");
+    } else if ((row as any).status === "draft") {
+      setError("This proposal is not yet available. Please check back later or contact your travel advisor.");
     } else {
       setData((row as any).data as ProposalData);
     }
@@ -44,8 +46,13 @@ export default function ClientView() {
   if (error || !data) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-6">
-        <div className="text-center">
-          <h1 className="font-display text-2xl font-bold text-foreground mb-2">Proposal Not Found</h1>
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
+            <span className="text-2xl">✈️</span>
+          </div>
+          <h1 className="font-display text-2xl font-bold text-foreground mb-2">
+            {error?.includes("not yet available") ? "Not Yet Available" : "Proposal Not Found"}
+          </h1>
           <p className="text-muted-foreground font-body">{error}</p>
         </div>
       </div>

@@ -72,17 +72,13 @@ export default function AuthPage() {
     }
   };
 
-  const heroUrl = (settings as any).login_hero_url || "";
-  const heroPosition = (settings as any).login_hero_position || "none";
-  const buttonColor = (settings as any).login_button_color || "";
+  const { cssVars } = useAppSettings();
+  const heroUrl = settings.login_hero_url || "";
+  const heroPosition = settings.login_hero_position || "none";
+  const buttonColor = settings.login_button_color || "";
   const hasHero = heroUrl && heroPosition !== "none";
 
-  const defaultVars: React.CSSProperties = {
-    ["--primary" as any]: "25 75% 47%",
-    ["--ring" as any]: "25 75% 47%",
-    ["--secondary" as any]: "195 45% 40%",
-    ["--accent" as any]: "45 80% 55%",
-  };
+  const brandVars: React.CSSProperties = cssVars as React.CSSProperties;
 
   const buttonStyle: React.CSSProperties = buttonColor
     ? { backgroundColor: buttonColor, borderColor: buttonColor }
@@ -207,7 +203,7 @@ export default function AuthPage() {
 
   if (hasHero && heroPosition === "top") {
     return (
-      <div className="min-h-screen bg-background flex flex-col" style={defaultVars}>
+      <div className="min-h-screen bg-background flex flex-col" style={brandVars}>
         <div className="h-56 sm:h-72 overflow-hidden relative">
           <img src={heroUrl} alt="" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background" />
@@ -221,7 +217,7 @@ export default function AuthPage() {
 
   if (hasHero && (heroPosition === "left" || heroPosition === "right")) {
     return (
-      <div className={`min-h-screen bg-background flex ${heroPosition === "right" ? "flex-row" : "flex-row-reverse"}`} style={defaultVars}>
+      <div className={`min-h-screen bg-background flex ${heroPosition === "right" ? "flex-row" : "flex-row-reverse"}`} style={brandVars}>
         <div className="flex-1 flex items-center justify-center px-6 py-12">
           {formContent}
         </div>
@@ -235,7 +231,7 @@ export default function AuthPage() {
 
   // Default: no hero
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-6" style={defaultVars}>
+    <div className="min-h-screen bg-background flex items-center justify-center px-6" style={brandVars}>
       {formContent}
     </div>
   );
