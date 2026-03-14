@@ -145,6 +145,16 @@ export default function EditorPage() {
           >
             <Save className="h-3.5 w-3.5 mr-1" /> {saving ? "Saving..." : "Save Draft"}
           </Button>
+          {currentStatus === "sent" ? (
+            <Button
+              variant="travel-outline"
+              size="sm"
+              onClick={() => saveProposal("draft")}
+              disabled={saving}
+            >
+              <EyeOff className="h-3.5 w-3.5 mr-1" /> Unpublish
+            </Button>
+          ) : null}
           <Button
             variant="travel"
             size="sm"
