@@ -74,6 +74,7 @@ export default function EditorPage() {
       flights: [],
       cruiseShips: saved.cruiseShips || [],
       busTrips: saved.busTrips || [],
+      checkout: saved.checkout || undefined,
     };
     setData(merged);
     setShareId(r.share_id || "");
