@@ -104,6 +104,8 @@ export default function VideoEmbed({ url, title, className = "", thumbnailUrl, a
             src={url}
             controls
             autoPlay
+            muted={autoplay}
+            loop={autoplay}
             className="w-full h-full object-contain bg-black"
             title={title || "Video"}
           />
