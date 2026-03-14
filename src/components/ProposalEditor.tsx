@@ -148,7 +148,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const addDay = () => update("days", [...data.days, createDay(data.days.length + 1)]);
   const removeDay = (index: number) => update("days", data.days.filter((_, i) => i !== index));
 
-  const updateActivity = (dayIndex: number, actIndex: number, field: keyof Activity, value: string) => {
+  const updateActivity = (dayIndex: number, actIndex: number, field: keyof Activity, value: any) => {
     const day = { ...data.days[dayIndex] };
     day.activities = [...day.activities];
     day.activities[actIndex] = { ...day.activities[actIndex], [field]: value };
