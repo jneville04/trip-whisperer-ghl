@@ -230,15 +230,6 @@ export default function CheckoutPage() {
                 )}
               </div>
 
-              {/* Agent info */}
-              {agent.name && (
-                <div className="mt-6 pt-4 border-t border-border/30 text-center">
-                  <p className="text-xs text-muted-foreground font-body">Your Travel Advisor</p>
-                  <p className="text-sm font-semibold text-foreground font-body mt-1">{agent.name}</p>
-                  {agent.email && <p className="text-xs text-muted-foreground font-body">{agent.email}</p>}
-                  {agent.phone && <p className="text-xs text-muted-foreground font-body">{agent.phone}</p>}
-                </div>
-              )}
             </motion.div>
           </div>
 
