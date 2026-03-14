@@ -121,7 +121,7 @@ export interface TermsAndConditions {
   showLiability: boolean;
 }
 
-export type SectionKey = "overview" | "flights" | "accommodations" | "itinerary" | "inclusions" | "pricing" | "essentials" | "terms" | "agent";
+export type SectionKey = "overview" | "flights" | "accommodations" | "cruiseShips" | "itinerary" | "inclusions" | "pricing" | "essentials" | "terms" | "agent";
 
 export interface SectionVisibility {
   hero: boolean;
