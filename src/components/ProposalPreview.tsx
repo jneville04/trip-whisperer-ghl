@@ -187,31 +187,52 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
             <div className={`${data.heroAutoplay ? '' : 'max-h-[500px]'} overflow-hidden`}>
               <VideoEmbed url={data.heroVideoUrl} title={data.destination} thumbnailUrl={data.heroVideoThumbnailUrl} className="rounded-none aspect-[21/9]" autoplay={!!data.heroAutoplay} muted={!!data.heroMuted} />
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-1 max-h-[500px] overflow-hidden">
-              <div className="md:col-span-2 aspect-[16/9] md:aspect-auto md:h-[500px] overflow-hidden cursor-pointer relative group" onClick={() => {
-                const allHeroImgs = [{ src: heroImage, alt: data.destination }, ...heroImages.map((u, i) => ({ src: u, alt: `${data.destination} ${i + 2}` }))];
-                openLightbox(allHeroImgs, 0);
-              }}>
-                <img src={heroImage} alt={data.destination} className="w-full h-full object-cover" />
+          ) : (() => {
+            // Collect all real hero images (skip fallbacks)
+            const mainImg = data.heroImageUrl;
+            const sideImgs = (data.heroImageUrls || []).filter(Boolean);
+            const allReal = [mainImg, ...sideImgs].filter(Boolean) as string[];
+            const allHeroImgs = allReal.map((u, i) => ({ src: u, alt: `${data.destination || "Hero"} ${i + 1}` }));
+            const count = allReal.length;
+
+            if (count === 0) return null; // No images — hide hero image area entirely
+
+            if (count === 1) {
+              return (
+                <div className="max-h-[500px] overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
+                  <img src={allReal[0]} alt={data.destination} className="w-full h-full object-cover" />
+                </div>
+              );
+            }
+
+            if (count === 2) {
+              return (
+                <div className="grid grid-cols-2 gap-1 max-h-[500px] overflow-hidden">
+                  {allReal.map((url, i) => (
+                    <div key={i} className="aspect-[16/9] overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i)}>
+                      <img src={url} alt={`${data.destination} ${i + 1}`} className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
+              );
+            }
+
+            // 3+ images: 1 large + 2 stacked
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-1 max-h-[500px] overflow-hidden">
+                <div className="md:col-span-2 aspect-[16/9] md:aspect-auto md:h-[500px] overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
+                  <img src={allReal[0]} alt={data.destination} className="w-full h-full object-cover" />
+                </div>
+                <div className="hidden md:grid grid-rows-2 gap-1 h-[500px]">
+                  {allReal.slice(1, 3).map((url, i) => (
+                    <div key={i} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i + 1)}>
+                      <img src={url} alt={`${data.destination} ${i + 2}`} className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="hidden md:grid grid-rows-2 gap-1 h-[500px]">
-                {heroImages.length > 0 ? heroImages.slice(0, 2).map((url, i) => (
-                  <div key={i} className="overflow-hidden cursor-pointer relative group" onClick={() => {
-                    const allHeroImgs = [{ src: heroImage, alt: data.destination }, ...heroImages.map((u, j) => ({ src: u, alt: `${data.destination} ${j + 2}` }))];
-                    openLightbox(allHeroImgs, i + 1);
-                  }}>
-                    <img src={url} alt={`${data.destination} ${i + 2}`} className="w-full h-full object-cover" />
-                  </div>
-                )) : (
-                  <>
-                    <div className="bg-muted flex items-center justify-center"><Camera className="h-10 w-10 text-muted-foreground/20" /></div>
-                    <div className="bg-muted flex items-center justify-center"><Camera className="h-10 w-10 text-muted-foreground/20" /></div>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Title section below images */}
           <div className="max-w-5xl mx-auto px-6 py-10 text-center">
