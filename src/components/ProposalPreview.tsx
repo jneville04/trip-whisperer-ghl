@@ -42,7 +42,7 @@ interface Props {
   isEditor?: boolean;
 }
 
-export default function ProposalPreview({ data, shareId }: Props) {
+export default function ProposalPreview({ data, shareId, isEditor }: Props) {
   const isGroupBooking = (data as any).proposalType !== "proposal";
   const navigate = useNavigate();
   const heroImage = data.heroImageUrl || heroFallback;
