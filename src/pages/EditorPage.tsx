@@ -194,6 +194,7 @@ export default function EditorPage() {
         {mode === "split" && panelOpen && (
           <div className="w-full max-w-lg border-r border-border/50 overflow-y-auto bg-background">
             <ProposalEditor data={data} onChange={handleChange} />
+            <HelpdeskFooter />
           </div>
         )}
         <div className="flex-1 overflow-y-auto" style={builderBrandStyles as React.CSSProperties}>

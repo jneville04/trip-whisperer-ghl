@@ -130,6 +130,7 @@ function BrandingTab() {
     if (error) {
       toast({ title: "Error saving", description: error.message, variant: "destructive" });
     } else {
+      await queryClient.invalidateQueries({ queryKey: ["app-settings"] });
       toast({ title: "Branding saved!" });
     }
     setSaving(false);
