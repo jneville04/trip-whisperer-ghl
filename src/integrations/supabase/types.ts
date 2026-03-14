@@ -26,7 +26,13 @@ export type Database = {
           ghl_form_revision: string | null
           ghl_webhook_approve: string | null
           ghl_webhook_revision: string | null
+          helpdesk_email: string | null
+          helpdesk_message: string | null
+          helpdesk_phone: string | null
           id: number
+          login_button_color: string | null
+          login_hero_position: string | null
+          login_hero_url: string | null
           login_message: string | null
           logo_url: string | null
           primary_color: string
@@ -45,7 +51,13 @@ export type Database = {
           ghl_form_revision?: string | null
           ghl_webhook_approve?: string | null
           ghl_webhook_revision?: string | null
+          helpdesk_email?: string | null
+          helpdesk_message?: string | null
+          helpdesk_phone?: string | null
           id?: number
+          login_button_color?: string | null
+          login_hero_position?: string | null
+          login_hero_url?: string | null
           login_message?: string | null
           logo_url?: string | null
           primary_color?: string
@@ -64,7 +76,13 @@ export type Database = {
           ghl_form_revision?: string | null
           ghl_webhook_approve?: string | null
           ghl_webhook_revision?: string | null
+          helpdesk_email?: string | null
+          helpdesk_message?: string | null
+          helpdesk_phone?: string | null
           id?: number
+          login_button_color?: string | null
+          login_hero_position?: string | null
+          login_hero_url?: string | null
           login_message?: string | null
           logo_url?: string | null
           primary_color?: string
