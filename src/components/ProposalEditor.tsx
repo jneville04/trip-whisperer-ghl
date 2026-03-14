@@ -309,12 +309,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
                 }}
               />
             </div>
-            {(brand.primaryColor || brand.secondaryColor || brand.accentColor || brand.logoUrl) && (
+            {(brand.primaryColor || brand.secondaryColor || brand.accentColor) && (
               <div className="space-y-2 pt-2">
-                <div>
-                  <FieldLabel>Logo Override</FieldLabel>
-                  <ImageUploadField value={brand.logoUrl} onChange={(url) => update("brand", { ...brand, logoUrl: url })} placeholder="Paste logo URL" />
-                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <FieldLabel>Primary</FieldLabel>
