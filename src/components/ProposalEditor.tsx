@@ -603,6 +603,146 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       </CollapsibleSection>
                     );
 
+                  case "cruiseShips":
+                    return (
+                      <CollapsibleSection title={sectionTitles.cruiseShips} sectionKey="cruiseShips" visible={vis.cruiseShips} onToggleVisible={() => toggleSection("cruiseShips")} defaultOpen={false} dragHandleProps={dragHandleProps}>
+                        <div className="space-y-4">
+                          {cruiseShips.map((ship, i) => {
+                            const shipAmenities = ship.amenities || [];
+                            const shipHighlights = ship.highlights || [];
+                            const shipGallery = ship.galleryUrls || [];
+                            const updateShipField = (field: string, value: any) => {
+                              const s = [...(data.cruiseShips || [])];
+                              s[i] = { ...s[i], [field]: value };
+                              update("cruiseShips", s);
+                            };
+
+                            return (
+                              <CollapsibleHotel key={ship.id} defaultOpen={i === 0} hotelName={ship.shipName || `Ship ${i + 1}`} location={ship.cruiseLine} onDelete={() => update("cruiseShips", cruiseShips.filter((_, idx) => idx !== i))}>
+                                <div className="border-t border-border/30">
+                                  <Tabs defaultValue="general" className="w-full">
+                                    <TabsList className="w-full justify-start rounded-none border-b border-border/30 bg-transparent h-9 px-3">
+                                      <TabsTrigger value="general" className="text-xs data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">Ship & Cabin</TabsTrigger>
+                                      <TabsTrigger value="ports" className="text-xs data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">Ports & Dates</TabsTrigger>
+                                      <TabsTrigger value="media" className="text-xs data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">Media</TabsTrigger>
+                                      <TabsTrigger value="details" className="text-xs data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">Details</TabsTrigger>
+                                    </TabsList>
+                                    <TabsContent value="general" className="p-3 space-y-2 mt-0">
+                                      <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                          <FieldLabel>Ship Name</FieldLabel>
+                                          <Input value={ship.shipName} onChange={(e) => updateShipField("shipName", e.target.value)} placeholder="Symphony of the Seas" className="h-8 text-xs" />
+                                        </div>
+                                        <div>
+                                          <FieldLabel>Cruise Line</FieldLabel>
+                                          <Input value={ship.cruiseLine} onChange={(e) => updateShipField("cruiseLine", e.target.value)} placeholder="Royal Caribbean" className="h-8 text-xs" />
+                                        </div>
+                                      </div>
+                                      <div className="grid grid-cols-3 gap-2">
+                                        <div>
+                                          <FieldLabel>Cabin Type</FieldLabel>
+                                          <Input value={ship.cabinType} onChange={(e) => updateShipField("cabinType", e.target.value)} placeholder="Balcony Suite" className="h-8 text-xs" />
+                                        </div>
+                                        <div>
+                                          <FieldLabel>Cabin #</FieldLabel>
+                                          <Input value={ship.cabinNumber} onChange={(e) => updateShipField("cabinNumber", e.target.value)} placeholder="D-1234" className="h-8 text-xs" />
+                                        </div>
+                                        <div>
+                                          <FieldLabel>Deck</FieldLabel>
+                                          <Input value={ship.deck} onChange={(e) => updateShipField("deck", e.target.value)} placeholder="Deck 9" className="h-8 text-xs" />
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <FieldLabel>Description</FieldLabel>
+                                        <RichTextEditor content={ship.description} onChange={(html) => updateShipField("description", html)} placeholder="Describe the ship, cabin features, onboard experience..." minHeight="150px" />
+                                      </div>
+                                    </TabsContent>
+                                    <TabsContent value="ports" className="p-3 space-y-2 mt-0">
+                                      <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                          <FieldLabel>Embarkation Port</FieldLabel>
+                                          <Input value={ship.embarkationPort} onChange={(e) => updateShipField("embarkationPort", e.target.value)} placeholder="Miami, FL" className="h-8 text-xs" />
+                                        </div>
+                                        <div>
+                                          <FieldLabel>Disembarkation Port</FieldLabel>
+                                          <Input value={ship.disembarkationPort} onChange={(e) => updateShipField("disembarkationPort", e.target.value)} placeholder="Miami, FL" className="h-8 text-xs" />
+                                        </div>
+                                      </div>
+                                      <div className="grid grid-cols-3 gap-2">
+                                        <div>
+                                          <FieldLabel>Embark Date</FieldLabel>
+                                          <DatePickerField value={ship.embarkationDate} onChange={(val) => updateShipField("embarkationDate", val)} placeholder="Embark date" />
+                                        </div>
+                                        <div>
+                                          <FieldLabel>Disembark Date</FieldLabel>
+                                          <DatePickerField value={ship.disembarkationDate} onChange={(val) => updateShipField("disembarkationDate", val)} placeholder="Disembark date" />
+                                        </div>
+                                        <div>
+                                          <FieldLabel>Nights</FieldLabel>
+                                          <Input value={ship.nights} onChange={(e) => updateShipField("nights", e.target.value)} placeholder="7" className="h-8 text-xs" />
+                                        </div>
+                                      </div>
+                                    </TabsContent>
+                                    <TabsContent value="media" className="p-3 space-y-3 mt-0">
+                                      <div>
+                                        <FieldLabel>Ship / Cabin Photos</FieldLabel>
+                                        <div className="mt-1.5">
+                                          <SortableImageGrid
+                                            primaryImage={ship.imageUrl}
+                                            galleryImages={shipGallery}
+                                            onReorder={(primary, gallery) => {
+                                              const s = [...(data.cruiseShips || [])];
+                                              s[i] = { ...s[i], imageUrl: primary, galleryUrls: gallery };
+                                              update("cruiseShips", s);
+                                            }}
+                                            primaryAspectClass="aspect-[4/3]"
+                                            onUpload={async (files) => {
+                                              const urls = await uploadImages(files);
+                                              urls.forEach((url) => {
+                                                if (!ship.imageUrl) { updateShipField("imageUrl", url); }
+                                                else { updateShipField("galleryUrls", [...shipGallery, url]); }
+                                              });
+                                            }}
+                                          />
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <FieldLabel>Or paste image URL</FieldLabel>
+                                        <div className="flex gap-1.5">
+                                          <Input placeholder="https://..." className="h-8 text-xs flex-1" onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                              const val = (e.target as HTMLInputElement).value.trim();
+                                              if (!val) return;
+                                              if (!ship.imageUrl) { updateShipField("imageUrl", val); }
+                                              else { updateShipField("galleryUrls", [...shipGallery, val]); }
+                                              (e.target as HTMLInputElement).value = "";
+                                            }
+                                          }} />
+                                        </div>
+                                      </div>
+                                    </TabsContent>
+                                    <TabsContent value="details" className="p-3 space-y-2 mt-0">
+                                      <div>
+                                        <FieldLabel>Highlights</FieldLabel>
+                                        <Textarea value={shipHighlights.join("\n")} onChange={(e) => updateShipField("highlights", e.target.value.split("\n").filter(Boolean))} placeholder="One highlight per line&#10;e.g. Private balcony with ocean views&#10;Specialty dining included" className="text-xs min-h-[120px] resize-y" />
+                                      </div>
+                                      <div>
+                                        <FieldLabel>Ship Amenities</FieldLabel>
+                                        <Textarea value={shipAmenities.join("\n")} onChange={(e) => updateShipField("amenities", e.target.value.split("\n").filter(Boolean))} placeholder="One amenity per line&#10;e.g. Main Pool & Water Slides&#10;Broadway Shows&#10;Specialty Restaurants" className="text-xs min-h-[120px] resize-y" />
+                                      </div>
+                                    </TabsContent>
+                                  </Tabs>
+                                </div>
+                              </CollapsibleHotel>
+                            );
+                          })}
+                          <Button variant="travel-ghost" size="sm" onClick={() => update("cruiseShips", [...cruiseShips, createCruiseShip()])} className="text-primary text-xs h-7">
+                            <Plus className="h-3 w-3 mr-1" /> Add Ship
+                          </Button>
+                        </div>
+                      </CollapsibleSection>
+                    );
+
                   case "itinerary":
                     return (
                       <CollapsibleSection title={sectionTitles.itinerary} sectionKey="itinerary" visible={vis.itinerary} onToggleVisible={() => toggleSection("itinerary")} dragHandleProps={dragHandleProps}>
