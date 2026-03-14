@@ -558,9 +558,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
         }
       })}
       <Lightbox images={lightboxImages} initialIndex={lightboxIndex} open={lightboxOpen} onClose={() => setLightboxOpen(false)} />
-      {bookingUrl && (
-        <BookingModal open={bookingOpen} onClose={() => setBookingOpen(false)} url={bookingUrl} agencyName={agent.agencyName} />
-      )}
+      <BookingModal open={bookingOpen} onClose={() => setBookingOpen(false)} url={bookingModalUrl} agencyName={bookingModalTitle || agent.agencyName} />
     </div>
   );
 }
