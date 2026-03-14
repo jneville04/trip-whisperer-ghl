@@ -84,9 +84,15 @@ export default function ProposalPreview({ data, shareId }: Props) {
 
   const returnTo = window.location.pathname;
 
+  const bookingUrl = data.bookingUrl || "";
+
   const goToApprove = useCallback(() => {
-    navigate(`/approve${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
-  }, [navigate, shareId, brandData, returnTo]);
+    if (bookingUrl) {
+      setBookingOpen(true);
+    } else {
+      navigate(`/approve${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
+    }
+  }, [navigate, shareId, brandData, returnTo, bookingUrl]);
 
   const goToRevisions = useCallback(() => {
     navigate(`/revisions${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
