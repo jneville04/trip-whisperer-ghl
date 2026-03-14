@@ -65,6 +65,7 @@ export interface Accommodation {
   videoUrl?: string;
   videoThumbnailUrl?: string;
   mediaType?: "photos" | "video";
+  price?: string;
 }
 
 export interface CruiseShip {
