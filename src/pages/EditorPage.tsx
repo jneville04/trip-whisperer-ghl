@@ -62,6 +62,16 @@ export default function EditorPage() {
         }
         return order;
       })(),
+      // Migrate old flights[] to flightOptions[] for backward compat
+      flightOptions: saved.flightOptions || (saved.flights && saved.flights.length > 0
+        ? [{
+            id: crypto.randomUUID(),
+            legs: saved.flights.map((f: any) => ({ ...f, price: undefined, agentPricing: undefined })),
+            price: saved.flights[0]?.price,
+            agentPricing: saved.flights[0]?.agentPricing,
+          }]
+        : []),
+      flights: [],
       cruiseShips: saved.cruiseShips || [],
       busTrips: saved.busTrips || [],
     };

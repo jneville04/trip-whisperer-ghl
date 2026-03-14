@@ -57,6 +57,13 @@ export interface FlightLeg {
   agentPricing?: AgentPricing;
 }
 
+export interface FlightOption {
+  id: string;
+  legs: FlightLeg[];
+  price?: string;
+  agentPricing?: AgentPricing;
+}
+
 export interface Accommodation {
   id: string;
   hotelName: string;
@@ -219,6 +226,7 @@ export interface ProposalData {
   introText: string;
   days: ItineraryDay[];
   flights: FlightLeg[];
+  flightOptions: FlightOption[];
   accommodations: Accommodation[];
   cruiseShips: CruiseShip[];
   busTrips: BusTrip[];
@@ -270,6 +278,11 @@ export const createFlightLeg = (type: FlightLeg["type"] = "departure"): FlightLe
   departureTime: "",
   arrivalTime: "",
   date: "",
+});
+
+export const createFlightOption = (): FlightOption => ({
+  id: crypto.randomUUID(),
+  legs: [createFlightLeg("departure"), createFlightLeg("return")],
 });
 
 export const createAccommodation = (): Accommodation => ({
@@ -351,28 +364,34 @@ export const defaultProposal: ProposalData = {
   clientName: "Portugal Tour Group",
   introText:
     "Experience the charm, culture, and coastal beauty of Portugal on an unforgettable journey from San Francisco to Lisbon and Porto. Step into a storybook of cobblestone streets, colorful tiles, and ocean breezes as you uncover the very best of Portugal. From the pastel rooftops of Lisbon to the rolling vineyards along the Douro River, every moment is designed to delight your senses and fill your passport with memories.",
-  flights: [
+  flights: [],
+  flightOptions: [
     {
       id: crypto.randomUUID(),
-      type: "departure",
-      airline: "TAP Air Portugal",
-      flightNumber: "",
-      departureAirport: "SFO – San Francisco",
-      arrivalAirport: "LIS – Lisbon",
-      departureTime: "",
-      arrivalTime: "",
-      date: "December 8, 2026",
-    },
-    {
-      id: crypto.randomUUID(),
-      type: "return",
-      airline: "TAP Air Portugal",
-      flightNumber: "",
-      departureAirport: "LIS – Lisbon",
-      arrivalAirport: "SFO – San Francisco",
-      departureTime: "",
-      arrivalTime: "",
-      date: "December 16, 2026",
+      legs: [
+        {
+          id: crypto.randomUUID(),
+          type: "departure",
+          airline: "TAP Air Portugal",
+          flightNumber: "",
+          departureAirport: "SFO – San Francisco",
+          arrivalAirport: "LIS – Lisbon",
+          departureTime: "",
+          arrivalTime: "",
+          date: "December 8, 2026",
+        },
+        {
+          id: crypto.randomUUID(),
+          type: "return",
+          airline: "TAP Air Portugal",
+          flightNumber: "",
+          departureAirport: "LIS – Lisbon",
+          arrivalAirport: "SFO – San Francisco",
+          departureTime: "",
+          arrivalTime: "",
+          date: "December 16, 2026",
+        },
+      ],
     },
   ],
   accommodations: [
