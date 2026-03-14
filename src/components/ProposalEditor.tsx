@@ -419,15 +419,27 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   </div>
                 )}
                 {data.heroVideoUrl && (
-                  <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
-                    <div>
-                      <p className="text-sm font-body font-medium text-foreground">Autoplay (muted)</p>
-                      <p className="text-xs text-muted-foreground font-body">Video plays automatically on load, muted.</p>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
+                      <div>
+                        <p className="text-sm font-body font-medium text-foreground">Autoplay</p>
+                        <p className="text-xs text-muted-foreground font-body">Video plays automatically on load.</p>
+                      </div>
+                      <Switch
+                        checked={!!data.heroAutoplay}
+                        onCheckedChange={(checked) => update("heroAutoplay", checked)}
+                      />
                     </div>
-                    <Switch
-                      checked={!!data.heroAutoplay}
-                      onCheckedChange={(checked) => update("heroAutoplay", checked)}
-                    />
+                    <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
+                      <div>
+                        <p className="text-sm font-body font-medium text-foreground">Muted</p>
+                        <p className="text-xs text-muted-foreground font-body">Video starts muted (required for autoplay on most browsers).</p>
+                      </div>
+                      <Switch
+                        checked={!!data.heroMuted}
+                        onCheckedChange={(checked) => update("heroMuted" as any, checked)}
+                      />
+                    </div>
                   </div>
                 )}
               </div>
