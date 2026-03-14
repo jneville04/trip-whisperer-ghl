@@ -373,36 +373,42 @@ export default function ProposalPreview({ data, shareId }: Props) {
                           <div className="space-y-8">
                             {day.activities.map((act, actIdx) => {
                               const hasImages = act.imageUrls && act.imageUrls.length > 0;
+                              const isLastActivity = actIdx === day.activities.length - 1;
                               return (
-                                <div key={act.id || actIdx} className={`flex flex-col ${hasImages ? 'sm:flex-row' : ''} gap-6`}>
-                                  <div className="flex-1">
-                                    <div className="flex items-start gap-3">
-                                      <div className="relative z-10 mt-1.5 w-[13px] h-[13px] shrink-0 rounded-full border-2 border-primary bg-background" />
-                                      <div className="flex-1">
-                                        {act.time && (
-                                          <span className="text-xs font-semibold text-primary font-body flex items-center gap-1 mb-1"><Clock className="h-3 w-3" /> {act.time}</span>
-                                        )}
-                                        <p className="font-display text-lg font-bold text-foreground">{act.title || "Untitled Activity"}</p>
-                                        {act.description && <p className="text-sm text-muted-foreground font-body mt-1.5 leading-relaxed">{act.description}</p>}
+                                <div key={act.id || actIdx}>
+                                  <div className={`flex flex-col ${hasImages ? 'sm:flex-row' : ''} gap-6`}>
+                                    <div className="flex-1">
+                                      <div className="flex items-start gap-3">
+                                        <div className="relative z-10 mt-1.5 w-[13px] h-[13px] shrink-0 rounded-full border-2 border-primary bg-background" />
+                                        <div className="flex-1">
+                                          {act.time && (
+                                            <span className="text-xs font-semibold text-primary font-body flex items-center gap-1 mb-1"><Clock className="h-3 w-3" /> {act.time}</span>
+                                          )}
+                                          <p className="font-display text-lg font-bold text-foreground">{act.title || "Untitled Activity"}</p>
+                                          {act.description && <p className="text-sm text-muted-foreground font-body mt-1.5 leading-relaxed">{act.description}</p>}
+                                        </div>
                                       </div>
                                     </div>
+                                    {hasImages && (
+                                      <div
+                                        className="sm:w-[260px] md:w-[300px] h-[180px] sm:h-[200px] shrink-0 rounded-xl overflow-hidden cursor-pointer group relative"
+                                        onClick={() => openLightbox(act.imageUrls!.map((u) => ({ src: u, alt: act.title })), 0)}
+                                      >
+                                        <img
+                                          src={act.imageUrls![0]}
+                                          alt={act.title || "Activity photo"}
+                                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        />
+                                        {act.imageUrls!.length > 1 && (
+                                          <div className="absolute bottom-2 right-2 bg-foreground/60 text-background text-xs font-semibold px-2 py-1 rounded-full backdrop-blur-sm">
+                                            +{act.imageUrls!.length - 1} more
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
                                   </div>
-                                  {hasImages && (
-                                    <div
-                                      className="sm:w-[260px] md:w-[300px] h-[180px] sm:h-[200px] shrink-0 rounded-xl overflow-hidden cursor-pointer group relative"
-                                      onClick={() => openLightbox(act.imageUrls!.map((u) => ({ src: u, alt: act.title })), 0)}
-                                    >
-                                      <img
-                                        src={act.imageUrls![0]}
-                                        alt={act.title || "Activity photo"}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                      />
-                                      {act.imageUrls!.length > 1 && (
-                                        <div className="absolute bottom-2 right-2 bg-foreground/60 text-background text-xs font-semibold px-2 py-1 rounded-full backdrop-blur-sm">
-                                          +{act.imageUrls!.length - 1} more
-                                        </div>
-                                      )}
-                                    </div>
+                                  {!isLastActivity && (
+                                    <div className="mt-6 ml-[6px] border-l-2 border-border/30 h-8" />
                                   )}
                                 </div>
                               );
