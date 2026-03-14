@@ -712,6 +712,29 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     </TabsContent>
                                     <TabsContent value="media" className="p-3 space-y-3 mt-0">
                                       <div>
+                                        <FieldLabel>Show in Proposal</FieldLabel>
+                                        <div className="mt-1.5 flex gap-1.5">
+                                          <Button
+                                            type="button"
+                                            size="sm"
+                                            variant={(ship.mediaType || "photos") === "photos" ? "travel" : "travel-outline"}
+                                            className="h-7 text-xs"
+                                            onClick={() => updateShipField("mediaType", "photos")}
+                                          >
+                                            Photos
+                                          </Button>
+                                          <Button
+                                            type="button"
+                                            size="sm"
+                                            variant={(ship.mediaType || "photos") === "video" ? "travel" : "travel-outline"}
+                                            className="h-7 text-xs"
+                                            onClick={() => updateShipField("mediaType", "video")}
+                                          >
+                                            Video
+                                          </Button>
+                                        </div>
+                                      </div>
+                                      <div>
                                         <FieldLabel>Photos & Video</FieldLabel>
                                         <div className="mt-1.5">
                                           <SortableImageGrid
