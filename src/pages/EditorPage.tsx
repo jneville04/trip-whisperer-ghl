@@ -150,12 +150,16 @@ export default function EditorPage() {
   const previewData = useMemo<ProposalData>(() => {
     const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
     const agent = data.agent || { name: "", title: "", phone: "", email: "", website: "", agencyName: "", logoUrl: "", photoUrl: "" };
+
+    const fallbackPrimary = agentSettings.primary_color || appSettings.primary_color;
+    const fallbackSecondary = agentSettings.secondary_color || appSettings.secondary_color;
+
     return {
       ...data,
       brand: {
-        primaryColor: brand.primaryColor || agentSettings.primary_color,
-        secondaryColor: brand.secondaryColor || agentSettings.secondary_color,
-        accentColor: brand.accentColor || agentSettings.accent_color,
+        primaryColor: brand.primaryColor || fallbackPrimary,
+        secondaryColor: brand.secondaryColor || fallbackSecondary,
+        accentColor: brand.accentColor || agentSettings.accent_color || fallbackSecondary,
         logoUrl: brand.logoUrl || agentSettings.logo_url,
         showAgencyNameWithLogo: brand.showAgencyNameWithLogo ?? agentSettings.show_agency_name_with_logo,
       },
@@ -170,7 +174,7 @@ export default function EditorPage() {
         photoUrl: agent.photoUrl || agentSettings.agent_photo_url,
       },
     };
-  }, [data, agentSettings]);
+  }, [data, agentSettings, appSettings.primary_color, appSettings.secondary_color]);
 
   const builderBrandStyles = useMemo(() => buildBrandCssVars(previewData.brand), [previewData.brand]);
   if (loading) {
