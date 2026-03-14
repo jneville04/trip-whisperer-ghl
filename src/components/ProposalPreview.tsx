@@ -70,6 +70,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
 
   const sectionLabels: Record<SectionKey, string> = {
     overview: "Overview", flights: "Flights", accommodations: "Hotels",
+    cruiseShips: "Cruise",
     itinerary: "Itinerary", inclusions: "Included", pricing: "Pricing",
     essentials: "Essentials", terms: "Terms", agent: "Advisor",
   };
