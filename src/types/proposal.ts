@@ -319,6 +319,7 @@ export const createBusTrip = (): BusTrip => ({
   mediaType: "photos",
 });
 
+export const defaultProposal: ProposalData = {
   destination: "Portugal",
   subtitle: "Lisbon · Nazaré · Fátima · Porto · Aveiro · Coimbra",
   heroImageUrl: "",
