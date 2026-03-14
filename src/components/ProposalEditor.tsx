@@ -224,7 +224,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
     pricing: "💰 Pricing",
     essentials: "🧳 Travel Essentials",
     terms: "📄 Terms & Conditions",
-    agent: "🧑‍💼 Agent Info",
+    agent: "💼 Agent Info",
   };
 
   return (
