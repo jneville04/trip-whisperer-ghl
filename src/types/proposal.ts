@@ -182,6 +182,26 @@ export interface TermsAndConditions {
   showLiability: boolean;
 }
 
+export interface PaymentOption {
+  id: string;
+  type: "full" | "deposit" | "installments";
+  label: string;
+  description: string;
+  depositPercent?: number;
+  installmentCount?: number;
+  enabled: boolean;
+}
+
+export interface CheckoutSettings {
+  enabled: boolean;
+  headline: string;
+  message: string;
+  paymentOptions: PaymentOption[];
+  customFormUrl: string;
+  showTripSummary: boolean;
+  confirmationMessage: string;
+}
+
 export type SectionKey = "overview" | "flights" | "accommodations" | "cruiseShips" | "busTrips" | "itinerary" | "inclusions" | "pricing" | "essentials" | "terms" | "agent";
 
 export interface SectionVisibility {
