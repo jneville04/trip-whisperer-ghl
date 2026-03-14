@@ -15,6 +15,7 @@ export default function EditorPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { cssVars: appBrandVars } = useAppSettings();
+  const { settings: agentSettings } = useAgentSettings();
   const [data, setData] = useState<ProposalData>(defaultProposal);
   const [mode, setMode] = useState<"split" | "preview">("split");
   const [panelOpen, setPanelOpen] = useState(true);
