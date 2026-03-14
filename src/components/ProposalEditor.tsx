@@ -223,6 +223,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
     flights: "✈️ Flights",
     accommodations: "🏨 Accommodations",
     cruiseShips: "🚢 Cruise Ship & Cabin",
+    busTrips: "🚌 Bus Trips",
     itinerary: "📅 Itinerary Days",
     inclusions: "✅ What's Included",
     pricing: "💰 Pricing",
