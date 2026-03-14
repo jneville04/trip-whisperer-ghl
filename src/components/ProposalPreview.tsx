@@ -377,25 +377,33 @@ export default function ProposalPreview({ data, shareId }: Props) {
                         ...(ship.imageUrl ? [{ src: ship.imageUrl, alt: ship.shipName }] : []),
                         ...galleryUrls.map((url, gi) => ({ src: url, alt: `${ship.shipName} ${gi + 2}` })),
                       ];
+                      const showShipVideo = (ship.mediaType || "photos") === "video" && !!ship.videoUrl;
+                      const showShipPhotos = !showShipVideo;
                       return (
                         <motion.div key={ship.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
-                          <div className="grid grid-cols-3 md:grid-cols-4 gap-1">
-                            {ship.imageUrl && (
-                              <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, 0)}>
-                                <img src={ship.imageUrl} alt={ship.shipName} className="w-full h-full object-cover" />
-                              </div>
-                            )}
-                            {!ship.imageUrl && (
-                              <div className="col-span-2 row-span-2 aspect-[4/3] bg-muted flex items-center justify-center">
-                                <Ship className="h-10 w-10 text-muted-foreground/30" />
-                              </div>
-                            )}
-                            {galleryUrls.slice(0, 6).map((url, gi) => (
-                              <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, gi + 1)}>
-                                <img src={url} alt={`${ship.shipName} ${gi + 2}`} className="w-full h-full object-cover" />
-                              </div>
-                            ))}
-                          </div>
+                          {showShipPhotos ? (
+                            <div className="grid grid-cols-3 md:grid-cols-4 gap-1">
+                              {ship.imageUrl && (
+                                <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, 0)}>
+                                  <img src={ship.imageUrl} alt={ship.shipName} className="w-full h-full object-cover" />
+                                </div>
+                              )}
+                              {!ship.imageUrl && (
+                                <div className="col-span-2 row-span-2 aspect-[4/3] bg-muted flex items-center justify-center">
+                                  <Ship className="h-10 w-10 text-muted-foreground/30" />
+                                </div>
+                              )}
+                              {galleryUrls.slice(0, 6).map((url, gi) => (
+                                <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, gi + 1)}>
+                                  <img src={url} alt={`${ship.shipName} ${gi + 2}`} className="w-full h-full object-cover" />
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="p-4 sm:p-6 border-b border-border/30">
+                              <VideoEmbed url={ship.videoUrl!} title={ship.shipName} className="w-full" />
+                            </div>
+                          )}
                           <div className="p-6 sm:p-8">
                             <div className="flex items-start justify-between mb-3">
                               <div>
