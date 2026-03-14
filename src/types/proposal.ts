@@ -122,6 +122,7 @@ export const defaultSectionOrder: SectionKey[] = [
 export interface ProposalData {
   destination: string;
   subtitle: string;
+  bookingUrl?: string;
   heroImageUrl: string;
   heroImageUrls: string[];
   travelDates: string;
