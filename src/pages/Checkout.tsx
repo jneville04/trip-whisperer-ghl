@@ -14,11 +14,7 @@ export default function CheckoutPage() {
   const [searchParams] = useSearchParams();
   const shareId = searchParams.get("share") || "";
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [proposalData, setProposalData] = useState<ProposalData | null>(null);
-  const [selectedPayment, setSelectedPayment] = useState<string>("");
-  const [form, setForm] = useState({ name: "", email: "", phone: "", notes: "" });
 
   useEffect(() => {
     if (!shareId) return;
