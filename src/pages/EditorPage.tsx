@@ -169,13 +169,18 @@ export default function EditorPage() {
     const fallbackPrimary = agentSettings.primary_color || appSettings.primary_color;
     const fallbackSecondary = agentSettings.secondary_color || appSettings.secondary_color;
 
+    // Only use logo_url if it's actually set (non-empty string)
+    const agentLogoUrl = agentSettings.logo_url || "";
+    const agentPhotoUrl = agentSettings.agent_photo_url || "";
+    const agentAgencyLogoUrl = agentSettings.agency_logo_url || "";
+
     return {
       ...data,
       brand: {
         primaryColor: brand.primaryColor || fallbackPrimary,
         secondaryColor: brand.secondaryColor || fallbackSecondary,
         accentColor: brand.accentColor || agentSettings.accent_color || fallbackSecondary,
-        logoUrl: brand.logoUrl || agentSettings.logo_url,
+        logoUrl: agentLogoUrl,
         showAgencyNameWithLogo: brand.showAgencyNameWithLogo ?? agentSettings.show_agency_name_with_logo,
       },
       agent: {
@@ -185,8 +190,8 @@ export default function EditorPage() {
         email: agentSettings.agent_email || "",
         website: agentSettings.agent_website || "",
         agencyName: agentSettings.agency_name || "",
-        logoUrl: agentSettings.agency_logo_url || "",
-        photoUrl: agentSettings.agent_photo_url || "",
+        logoUrl: agentAgencyLogoUrl,
+        photoUrl: agentPhotoUrl,
       },
     };
   }, [data, agentSettings, appSettings.primary_color, appSettings.secondary_color]);
