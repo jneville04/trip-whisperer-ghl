@@ -111,13 +111,28 @@ export default function EditorPage() {
     if (isPublish) setPublishing(true);
     else setSaving(true);
 
+    // Sync agent info from settings into proposal data on every save
+    const dataToSave = {
+      ...data,
+      agent: {
+        name: agentSettings.agent_name || "",
+        title: agentSettings.agent_title || "",
+        phone: agentSettings.agent_phone || "",
+        email: agentSettings.agent_email || "",
+        website: agentSettings.agent_website || "",
+        agencyName: agentSettings.agency_name || "",
+        logoUrl: agentSettings.agency_logo_url || "",
+        photoUrl: agentSettings.agent_photo_url || "",
+      },
+    };
+
     const { error } = await supabase
       .from("proposals")
       .update({
         title: data.destination ? `${data.destination} — ${data.clientName}` : "Untitled",
         client_name: data.clientName || "",
         destination: data.destination || "",
-        data: data as any,
+        data: dataToSave as any,
         status: targetStatus,
         updated_at: new Date().toISOString(),
       })
