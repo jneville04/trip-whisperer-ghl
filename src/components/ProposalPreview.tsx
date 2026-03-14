@@ -262,15 +262,14 @@ export default function ProposalPreview({ data, shareId }: Props) {
                       return (
                       <div
                         key={flight.id}
-                        className={`bg-background rounded-2xl border-2 shadow-sm p-6 relative overflow-hidden transition-all cursor-pointer ${
+                        className={`bg-background rounded-2xl border-2 shadow-sm p-6 relative overflow-hidden transition-all ${
                           !isGroupBooking
                             ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40"
                             : "border-border/50"
                         }`}
-                        onClick={() => !isGroupBooking && setSelectedFlight(flight.id)}
                       >
                         {!isGroupBooking && (
-                          <div className={`absolute top-4 right-4 w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30"}`}>
+                          <div className={`absolute top-4 right-4 w-5 h-5 rounded-full border-2 flex items-center justify-center cursor-pointer ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30"}`} onClick={() => setSelectedFlight(isSelected ? "" : flight.id)}>
                             {isSelected && <Check className="h-3 w-3 text-primary-foreground" />}
                           </div>
                         )}
@@ -299,6 +298,33 @@ export default function ProposalPreview({ data, shareId }: Props) {
                           <span>{flight.airline}</span>
                           {flight.flightNumber && <span className="text-primary font-semibold">{flight.flightNumber}</span>}
                         </div>
+                        {flight.price && (
+                          <div className="mt-4 pt-3 border-t border-border/30 flex items-center justify-between">
+                            <span className="font-display text-xl font-bold text-foreground">${flight.price}</span>
+                            {!isGroupBooking && (
+                              <Button
+                                variant={isSelected ? "travel" : "travel-outline"}
+                                size="sm"
+                                className="text-xs"
+                                onClick={(e) => { e.stopPropagation(); setSelectedFlight(isSelected ? "" : flight.id); }}
+                              >
+                                {isSelected ? "✓ Selected" : "Select"}
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                        {!flight.price && !isGroupBooking && (
+                          <div className="mt-4 pt-3 border-t border-border/30 flex justify-end">
+                            <Button
+                              variant={isSelected ? "travel" : "travel-outline"}
+                              size="sm"
+                              className="text-xs"
+                              onClick={(e) => { e.stopPropagation(); setSelectedFlight(isSelected ? "" : flight.id); }}
+                            >
+                              {isSelected ? "✓ Selected" : "Select"}
+                            </Button>
+                          </div>
+                        )}
                       </div>
                       );
                     })}
