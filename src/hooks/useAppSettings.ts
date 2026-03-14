@@ -18,6 +18,12 @@ export interface AppSettings {
   ghl_form_approve: string;
   ghl_form_revision: string;
   admin_photo_url: string | null;
+  login_hero_url: string;
+  login_hero_position: string;
+  login_button_color: string;
+  helpdesk_email: string;
+  helpdesk_phone: string;
+  helpdesk_message: string;
 }
 
 const defaults: AppSettings = {
