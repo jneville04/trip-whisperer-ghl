@@ -217,7 +217,7 @@ export default function AuthPage() {
 
   if (hasHero && (heroPosition === "left" || heroPosition === "right")) {
     return (
-      <div className={`min-h-screen bg-background flex ${heroPosition === "right" ? "flex-row" : "flex-row-reverse"}`} style={defaultVars}>
+      <div className={`min-h-screen bg-background flex ${heroPosition === "right" ? "flex-row" : "flex-row-reverse"}`} style={brandVars}>
         <div className="flex-1 flex items-center justify-center px-6 py-12">
           {formContent}
         </div>
