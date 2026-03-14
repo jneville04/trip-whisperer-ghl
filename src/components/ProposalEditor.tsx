@@ -133,6 +133,8 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 }
 
 export default function ProposalEditor({ data, onChange }: Props) {
+  const { settings: agentSettings } = useAgentSettings();
+  
   const update = <K extends keyof ProposalData>(key: K, value: ProposalData[K]) => {
     onChange({ ...data, [key]: value });
   };
