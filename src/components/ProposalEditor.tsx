@@ -211,7 +211,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const sectionLabels: Record<SectionKey, string> = {
     overview: "🌍 Overview", flights: "✈️ Flights", accommodations: "🏨 Hotels",
     itinerary: "📋 Itinerary", inclusions: "✅ Included", pricing: "💰 Pricing",
-    essentials: "🧳 Essentials", terms: "📄 Terms", agent: "🧑‍💼 Agent",
+    essentials: "🧳 Essentials", terms: "📄 Terms", agent: "💼 Agent",
   };
 
   // Map each section key to its title for CollapsibleSection
