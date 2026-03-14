@@ -138,7 +138,47 @@ export default function SettingsPage() {
                     </div>
                   </div>
                 </div>
-                <p className="text-xs text-muted-foreground font-body">Use hex colors (e.g. #1A2B3C). Leave blank to use platform defaults.</p>
+                <div className="flex items-center justify-between pt-2">
+                  <p className="text-xs text-muted-foreground font-body">Use hex colors (e.g. #1A2B3C). Leave blank to use platform defaults.</p>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="text-xs shrink-0">
+                        <RotateCcw className="h-3 w-3 mr-1" /> Reset to App Colors
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle className="font-display">Reset proposal colors to platform defaults?</AlertDialogTitle>
+                        <AlertDialogDescription className="font-body">
+                          This will replace your brand colors with the platform default colors set by the admin. Existing proposals will keep their current colors unless manually updated.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel className="font-body">Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          className="font-body"
+                          onClick={async () => {
+                            try {
+                              const colorUpdates = {
+                                primary_color: appSettings.primary_color,
+                                secondary_color: appSettings.secondary_color,
+                                accent_color: appSettings.accent_color,
+                              };
+                              await saveSettings(colorUpdates);
+                              setForm((prev) => ({ ...prev, ...colorUpdates }));
+                              setDirty(false);
+                              toast({ title: "Colors reset to platform defaults!" });
+                            } catch (e: any) {
+                              toast({ title: "Error resetting colors", description: e.message, variant: "destructive" });
+                            }
+                          }}
+                        >
+                          Reset Colors
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

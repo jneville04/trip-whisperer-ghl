@@ -214,8 +214,8 @@ export default function EditorPage() {
             <Button
               variant="travel-outline"
               size="sm"
-              onClick={() => saveProposal("draft")}
-              disabled={saving}
+              onClick={handleUnpublish}
+              disabled={saving || publishing}
             >
               <EyeOff className="h-3.5 w-3.5 mr-1" /> Unpublish
             </Button>
