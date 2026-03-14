@@ -622,39 +622,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                   <FieldLabel>Location</FieldLabel>
                                   <Input value={day.location} onChange={(e) => updateDay(dayIdx, { ...day, location: e.target.value })} placeholder="Lisbon" className="h-8 text-sm" />
                                 </div>
-                                <div>
-                                  <FieldLabel>Day Images</FieldLabel>
-                                  <div className="mt-1.5">
-                                    <SortableImageGrid
-                                      primaryImage={day.imageUrl}
-                                      galleryImages={day.imageUrls || []}
-                                      onReorder={(primary, gallery) => {
-                                        updateDay(dayIdx, { ...day, imageUrl: primary, imageUrls: gallery });
-                                      }}
-                                      aspectClass="aspect-[4/3]"
-                                      primaryAspectClass="aspect-[4/3]"
-                                      primaryLarge={false}
-                                      onUpload={async (files) => {
-                                        const urls = await uploadImages(files);
-                                        for (const url of urls) {
-                                          if (!day.imageUrl) { updateDay(dayIdx, { ...day, imageUrl: url }); }
-                                          else { updateDay(dayIdx, { ...day, imageUrls: [...(day.imageUrls || []), url] }); }
-                                        }
-                                      }}
-                                    />
-                                  </div>
-                                  <div className="flex gap-1.5 mt-1.5">
-                                    <Input placeholder="Paste image URL..." className="h-7 text-xs flex-1" onKeyDown={(e) => {
-                                      if (e.key === "Enter") {
-                                        const val = (e.target as HTMLInputElement).value.trim();
-                                        if (!val) return;
-                                        if (!day.imageUrl) { updateDay(dayIdx, { ...day, imageUrl: val }); }
-                                        else { updateDay(dayIdx, { ...day, imageUrls: [...(day.imageUrls || []), val] }); }
-                                        (e.target as HTMLInputElement).value = "";
-                                      }
-                                    }} />
-                                  </div>
-                                </div>
                               </div>
                               <div className="space-y-2">
                                 <FieldLabel>Activities</FieldLabel>

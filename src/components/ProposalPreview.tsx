@@ -360,75 +360,53 @@ export default function ProposalPreview({ data, shareId }: Props) {
                   </motion.div>
                   <div className="space-y-16">
                     {data.days.map((day, dayIdx) => {
-                      const dayImage = day.imageUrl || fallbackImages[dayIdx % fallbackImages.length];
-                      const allDayImages = [
-                        { src: dayImage, alt: day.title },
-                        ...(day.imageUrls || []).map((url, i) => ({ src: url, alt: `${day.title} ${i + 2}` })),
-                      ];
                       return (
-                        <motion.div key={day.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} custom={0} className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                          <div className={`lg:col-span-2 ${dayIdx % 2 === 1 ? "lg:order-2" : ""}`}>
-                            <div className="space-y-2">
-                              <div className="relative rounded-2xl overflow-hidden aspect-[4/3] shadow-lg cursor-pointer" onClick={() => openLightbox(allDayImages, 0)}>
-                                <img src={dayImage} alt={day.title} className="w-full h-full object-cover" />
-                                <div className="absolute top-4 left-4 bg-primary text-primary-foreground px-4 py-1.5 rounded-full text-sm font-body font-semibold">Day {dayIdx + 1}</div>
-                              </div>
-                              {/* Additional images grid */}
-                              {(day.imageUrls || []).length > 0 && (
-                                <div className="grid grid-cols-2 gap-2">
-                                  {(day.imageUrls || []).slice(0, 4).map((url, imgIdx) => (
-                                    <div key={imgIdx} className="rounded-xl overflow-hidden aspect-[4/3] shadow-md cursor-pointer" onClick={() => openLightbox(allDayImages, imgIdx + 1)}>
-                                      <img src={url} alt={`${day.title} ${imgIdx + 2}`} className="w-full h-full object-cover" />
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
+                        <motion.div key={day.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} custom={0}>
+                          <div className="mb-5 border-b border-border/40 pb-4">
+                            <div className="flex items-center gap-3 mb-1">
+                              <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-body font-semibold">Day {dayIdx + 1}</span>
+                              {day.date && <span className="text-sm text-muted-foreground font-body flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> {day.date}</span>}
+                              {day.location && <span className="text-sm text-muted-foreground font-body flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {day.location}</span>}
                             </div>
+                            <h3 className="font-display text-2xl sm:text-3xl font-bold text-foreground">{day.title}</h3>
                           </div>
-                          <div className={`lg:col-span-3 ${dayIdx % 2 === 1 ? "lg:order-1" : ""}`}>
-                            <div className="mb-5">
-                              <p className="text-sm text-muted-foreground font-body flex items-center gap-1.5">
-                                {day.date && <><Calendar className="h-3.5 w-3.5" /> {day.date}</>}
-                                {day.date && day.location && <span className="mx-2">·</span>}
-                                {day.location && <><MapPin className="h-3.5 w-3.5" /> {day.location}</>}
-                              </p>
-                              <h3 className="font-display text-2xl sm:text-3xl font-bold text-foreground mt-1">{day.title}</h3>
-                            </div>
-                            <div className="space-y-6">
-                              {day.activities.map((act, actIdx) => (
-                                <div key={act.id || actIdx} className="flex flex-col sm:flex-row gap-5">
-                                  <div className="flex-1 flex gap-3">
-                                    <div className="relative z-10 mt-1.5 w-[15px] h-[15px] shrink-0 rounded-full border-2 border-primary bg-background" />
-                                    <div className="flex-1">
-                                      {act.time && (
-                                        <div className="flex items-center gap-2 mb-1">
-                                          <span className="text-xs font-semibold text-primary font-body flex items-center gap-1"><Clock className="h-3 w-3" /> {act.time}</span>
-                                        </div>
-                                      )}
-                                      <p className="font-display text-lg font-bold text-foreground">{act.title || "Untitled Activity"}</p>
-                                      {act.description && <p className="text-sm text-muted-foreground font-body mt-1 leading-relaxed">{act.description}</p>}
+                          <div className="space-y-8">
+                            {day.activities.map((act, actIdx) => {
+                              const hasImages = act.imageUrls && act.imageUrls.length > 0;
+                              return (
+                                <div key={act.id || actIdx} className={`flex flex-col ${hasImages ? 'sm:flex-row' : ''} gap-6`}>
+                                  <div className="flex-1">
+                                    <div className="flex items-start gap-3">
+                                      <div className="relative z-10 mt-1.5 w-[13px] h-[13px] shrink-0 rounded-full border-2 border-primary bg-background" />
+                                      <div className="flex-1">
+                                        {act.time && (
+                                          <span className="text-xs font-semibold text-primary font-body flex items-center gap-1 mb-1"><Clock className="h-3 w-3" /> {act.time}</span>
+                                        )}
+                                        <p className="font-display text-lg font-bold text-foreground">{act.title || "Untitled Activity"}</p>
+                                        {act.description && <p className="text-sm text-muted-foreground font-body mt-1.5 leading-relaxed">{act.description}</p>}
+                                      </div>
                                     </div>
                                   </div>
-                                  {act.imageUrls && act.imageUrls.length > 0 && (
+                                  {hasImages && (
                                     <div
-                                      className="sm:w-[280px] h-[200px] shrink-0 rounded-xl overflow-hidden cursor-pointer group relative"
+                                      className="sm:w-[260px] md:w-[300px] h-[180px] sm:h-[200px] shrink-0 rounded-xl overflow-hidden cursor-pointer group relative"
                                       onClick={() => openLightbox(act.imageUrls!.map((u) => ({ src: u, alt: act.title })), 0)}
                                     >
                                       <img
-                                        src={act.imageUrls[0]}
+                                        src={act.imageUrls![0]}
                                         alt={act.title || "Activity photo"}
                                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                       />
-                                      {act.imageUrls.length > 1 && (
+                                      {act.imageUrls!.length > 1 && (
                                         <div className="absolute bottom-2 right-2 bg-foreground/60 text-background text-xs font-semibold px-2 py-1 rounded-full backdrop-blur-sm">
-                                          +{act.imageUrls.length - 1} more
+                                          +{act.imageUrls!.length - 1} more
                                         </div>
                                       )}
                                     </div>
                                   )}
                                 </div>
-                              ))}
-                            </div>
+                              );
+                            })}
                           </div>
                         </motion.div>
                       );
