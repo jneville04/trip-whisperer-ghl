@@ -277,26 +277,20 @@ export default function ProposalEditor({ data, onChange }: Props) {
         </CardHeader>
         <CardContent className="pt-0">
           <div className="flex items-center gap-3 text-xs font-body text-muted-foreground">
-            {(agentSettings.primary_color || brand.primaryColor) && (
+            {(resolvedPrimaryColor || brand.primaryColor) && (
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-full border border-border" style={{ backgroundColor: brand.primaryColor || agentSettings.primary_color || "#ccc" }} />
+                <span className="w-3 h-3 rounded-full border border-border" style={{ backgroundColor: brand.primaryColor || resolvedPrimaryColor || "#ccc" }} />
                 Primary
               </div>
             )}
-            {(agentSettings.secondary_color || brand.secondaryColor) && (
+            {(resolvedSecondaryColor || brand.secondaryColor) && (
               <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-full border border-border" style={{ backgroundColor: brand.secondaryColor || agentSettings.secondary_color || "#ccc" }} />
+                <span className="w-3 h-3 rounded-full border border-border" style={{ backgroundColor: brand.secondaryColor || resolvedSecondaryColor || "#ccc" }} />
                 Secondary
               </div>
             )}
-            {(agentSettings.accent_color || brand.accentColor) && (
-              <div className="flex items-center gap-1.5">
-                <span className="w-3 h-3 rounded-full border border-border" style={{ backgroundColor: brand.accentColor || agentSettings.accent_color || "#ccc" }} />
-                Accent
-              </div>
-            )}
             {agentSettings.logo_url && <span>✓ Logo set</span>}
-            {!agentSettings.primary_color && !brand.primaryColor && <span>Using platform defaults</span>}
+            {!resolvedPrimaryColor && !brand.primaryColor && <span>Using platform defaults</span>}
           </div>
           <div className="mt-3 space-y-2">
             <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
@@ -310,7 +304,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   if (!checked) {
                     update("brand", { ...brand, primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" });
                   } else {
-                    update("brand", { ...brand, primaryColor: agentSettings.primary_color, secondaryColor: agentSettings.secondary_color, accentColor: agentSettings.accent_color, logoUrl: agentSettings.logo_url });
+                    update("brand", { ...brand, primaryColor: resolvedPrimaryColor, secondaryColor: resolvedSecondaryColor, accentColor: resolvedSecondaryColor, logoUrl: agentSettings.logo_url });
                   }
                 }}
               />
