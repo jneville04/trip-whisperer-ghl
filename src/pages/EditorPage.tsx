@@ -233,7 +233,7 @@ export default function EditorPage() {
           >
             <Save className="h-3.5 w-3.5 mr-1" /> {saving ? "Saving..." : "Save Draft"}
           </Button>
-          {currentStatus === "sent" ? (
+          {currentStatus === "published" ? (
             <Button
               variant="travel-outline"
               size="sm"
@@ -242,15 +242,16 @@ export default function EditorPage() {
             >
               <EyeOff className="h-3.5 w-3.5 mr-1" /> Unpublish
             </Button>
-          ) : null}
-          <Button
-            variant="travel"
-            size="sm"
-            onClick={handlePublish}
-            disabled={publishing}
-          >
-            <Send className="h-3.5 w-3.5 mr-1" /> {publishing ? "Publishing..." : "Save & Publish"}
-          </Button>
+          ) : (
+            <Button
+              variant="travel"
+              size="sm"
+              onClick={handlePublish}
+              disabled={publishing}
+            >
+              <Send className="h-3.5 w-3.5 mr-1" /> {publishing ? "Publishing..." : "Save & Publish"}
+            </Button>
+          )}
         </div>
       </div>
 
