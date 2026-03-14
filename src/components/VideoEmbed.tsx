@@ -19,23 +19,25 @@ function isAudioUrl(url: string): boolean {
   return /\.(mp3|wav|m4a|ogg|aac)(\?|$)/i.test(url);
 }
 
-function getEmbedInfo(url: string): { type: "youtube" | "vimeo" | "unknown"; embedUrl: string; autoThumbnailUrl?: string } | null {
+function getEmbedInfo(url: string, autoplayMuted = false): { type: "youtube" | "vimeo" | "unknown"; embedUrl: string; autoThumbnailUrl?: string } | null {
   if (!url) return null;
 
   const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
   if (ytMatch) {
+    const params = autoplayMuted ? 'autoplay=1&mute=1&loop=1&rel=0' : 'autoplay=1&rel=0';
     return {
       type: "youtube",
-      embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0`,
+      embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?${params}`,
       autoThumbnailUrl: `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`,
     };
   }
 
   const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
   if (vimeoMatch) {
+    const params = autoplayMuted ? 'autoplay=1&muted=1&loop=1' : 'autoplay=1';
     return {
       type: "vimeo",
-      embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`,
+      embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?${params}`,
     };
   }
 
