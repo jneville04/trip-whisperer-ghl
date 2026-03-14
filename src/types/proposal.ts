@@ -46,6 +46,7 @@ export interface FlightLeg {
   departureTime: string;
   arrivalTime: string;
   date: string;
+  price?: string;
 }
 
 export interface Accommodation {
@@ -65,6 +66,7 @@ export interface Accommodation {
   videoUrl?: string;
   videoThumbnailUrl?: string;
   mediaType?: "photos" | "video";
+  price?: string;
 }
 
 export interface CruiseShip {
@@ -87,6 +89,7 @@ export interface CruiseShip {
   videoUrl?: string;
   videoThumbnailUrl?: string;
   mediaType?: "photos" | "video";
+  price?: string;
 }
 
 export interface BusTrip {
@@ -111,6 +114,7 @@ export interface BusTrip {
   videoThumbnailUrl?: string;
   mediaType?: "photos" | "video";
   stops: BusStop[];
+  price?: string;
 }
 
 export interface BusStop {
@@ -196,6 +200,7 @@ export interface ProposalData {
   heroVideoUrl?: string;
   heroVideoThumbnailUrl?: string;
   heroAutoplay?: boolean;
+  heroMuted?: boolean;
   travelDates: string;
   travelerCount: string;
   destinationCount: string;

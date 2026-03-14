@@ -419,15 +419,27 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   </div>
                 )}
                 {data.heroVideoUrl && (
-                  <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
-                    <div>
-                      <p className="text-sm font-body font-medium text-foreground">Autoplay (muted)</p>
-                      <p className="text-xs text-muted-foreground font-body">Video plays automatically on load, muted.</p>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
+                      <div>
+                        <p className="text-sm font-body font-medium text-foreground">Autoplay</p>
+                        <p className="text-xs text-muted-foreground font-body">Video plays automatically on load.</p>
+                      </div>
+                      <Switch
+                        checked={!!data.heroAutoplay}
+                        onCheckedChange={(checked) => update("heroAutoplay", checked)}
+                      />
                     </div>
-                    <Switch
-                      checked={!!data.heroAutoplay}
-                      onCheckedChange={(checked) => update("heroAutoplay", checked)}
-                    />
+                    <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
+                      <div>
+                        <p className="text-sm font-body font-medium text-foreground">Muted</p>
+                        <p className="text-xs text-muted-foreground font-body">Video starts muted (required for autoplay on most browsers).</p>
+                      </div>
+                      <Switch
+                        checked={!!data.heroMuted}
+                        onCheckedChange={(checked) => update("heroMuted" as any, checked)}
+                      />
+                    </div>
                   </div>
                 )}
               </div>
@@ -560,6 +572,15 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                   </div>
                                 </div>
                               </div>
+                              {(data as any).proposalType === "proposal" && (
+                                <div className="mt-2">
+                                  <FieldLabel>Price (Proposal Option)</FieldLabel>
+                                  <div className="relative w-32">
+                                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
+                                    <Input value={flight.price || ""} onChange={(e) => updateFlight(i, "price" as any, e.target.value)} placeholder="0.00" className="h-7 text-xs pl-5" />
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           ))}
                           <div className="flex gap-2">
@@ -641,6 +662,15 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                           <Input value={acc.nights} onChange={(e) => updateAccommodation(i, "nights", e.target.value)} placeholder="2" className="h-8 text-xs" />
                                         </div>
                                       </div>
+                                      {(data as any).proposalType === "proposal" && (
+                                        <div className="mt-2">
+                                          <FieldLabel>Price (Proposal Option)</FieldLabel>
+                                          <div className="relative w-32">
+                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
+                                            <Input value={acc.price || ""} onChange={(e) => updateAccField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
+                                          </div>
+                                        </div>
+                                      )}
                                       <div>
                                         <FieldLabel>Lodging Description</FieldLabel>
                                         <RichTextEditor content={acc.description} onChange={(html) => updateAccommodation(i, "description", html)} placeholder="Describe the hotel, its atmosphere, unique features..." minHeight="180px" />
@@ -851,6 +881,15 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                         <FieldLabel>Description</FieldLabel>
                                         <RichTextEditor content={ship.description} onChange={(html) => updateShipField("description", html)} placeholder="Describe the ship, cabin features, onboard experience..." minHeight="150px" />
                                       </div>
+                                      {(data as any).proposalType === "proposal" && (
+                                        <div className="mt-2">
+                                          <FieldLabel>Price (Proposal Option)</FieldLabel>
+                                          <div className="relative w-32">
+                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
+                                            <Input value={ship.price || ""} onChange={(e) => updateShipField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
+                                          </div>
+                                        </div>
+                                      )}
                                     </TabsContent>
                                     <TabsContent value="ports" className="p-3 space-y-2 mt-0">
                                       <div className="grid grid-cols-2 gap-2">
@@ -1064,6 +1103,15 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                         <FieldLabel>Description</FieldLabel>
                                         <RichTextEditor content={trip.description} onChange={(html) => updateTripField("description", html)} placeholder="Describe the bus journey, scenery, comfort..." minHeight="120px" />
                                       </div>
+                                      {(data as any).proposalType === "proposal" && (
+                                        <div className="mt-2">
+                                          <FieldLabel>Price (Proposal Option)</FieldLabel>
+                                          <div className="relative w-32">
+                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
+                                            <Input value={trip.price || ""} onChange={(e) => updateTripField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
+                                          </div>
+                                        </div>
+                                      )}
                                     </TabsContent>
                                     <TabsContent value="schedule" className="p-3 space-y-2 mt-0">
                                       <div className="grid grid-cols-2 gap-2">

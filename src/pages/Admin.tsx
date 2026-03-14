@@ -115,6 +115,12 @@ function BrandingTab() {
         ghl_form_approve: (form as any).ghl_form_approve || "",
         ghl_form_revision: (form as any).ghl_form_revision || "",
         admin_photo_url: (form as any).admin_photo_url || "",
+        login_hero_url: (form as any).login_hero_url || "",
+        login_hero_position: (form as any).login_hero_position || "none",
+        login_button_color: (form as any).login_button_color || "",
+        helpdesk_email: (form as any).helpdesk_email || "",
+        helpdesk_phone: (form as any).helpdesk_phone || "",
+        helpdesk_message: (form as any).helpdesk_message || "",
         updated_at: new Date().toISOString(),
       } as any)
       .eq("id", 1);
@@ -303,6 +309,114 @@ function BrandingTab() {
         />
       </div>
 
+      {/* Login Page Branding */}
+      <div className="border-t border-border/50 pt-6 mt-2">
+        <h3 className="font-display text-base font-semibold text-foreground mb-4">Login Page Branding</h3>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <Label>Login Button Color</Label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={(form as any).login_button_color || "#E07A2F"}
+                  onChange={(e) => setForm({ ...form, login_button_color: e.target.value.toUpperCase() } as any)}
+                  className="h-10 w-10 rounded border border-border cursor-pointer"
+                />
+                <Input
+                  value={(form as any).login_button_color || ""}
+                  onChange={(e) => setForm({ ...form, login_button_color: normalizeHexInput(e.target.value) } as any)}
+                  placeholder="#E07A2F"
+                  className="flex-1"
+                  maxLength={7}
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Hero Image Position</Label>
+              <div className="flex gap-2 mt-1">
+                {(["none", "top", "left", "right"] as const).map((pos) => (
+                  <Button
+                    key={pos}
+                    type="button"
+                    size="sm"
+                    variant={(form as any).login_hero_position === pos ? "travel" : "travel-outline"}
+                    className="text-xs h-8 capitalize"
+                    onClick={() => setForm({ ...form, login_hero_position: pos } as any)}
+                  >
+                    {pos === "none" ? "None" : pos}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          </div>
+          {(form as any).login_hero_position !== "none" && (
+            <div>
+              <Label>Hero Image</Label>
+              <div className="flex items-center gap-3">
+                {(form as any).login_hero_url && (
+                  <img src={(form as any).login_hero_url} alt="Hero" className="h-16 w-24 object-cover rounded" />
+                )}
+                <label className="cursor-pointer inline-flex items-center gap-1 text-sm text-primary hover:underline font-body">
+                  <Upload className="h-4 w-4" /> Upload
+                  <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const path = `login-hero-${Date.now()}.${file.name.split(".").pop()}`;
+                    const { error } = await supabase.storage.from("app-assets").upload(path, file, { upsert: true });
+                    if (error) { toast({ title: "Upload error", description: error.message, variant: "destructive" }); return; }
+                    const { data: urlData } = supabase.storage.from("app-assets").getPublicUrl(path);
+                    setForm({ ...form, login_hero_url: urlData.publicUrl } as any);
+                  }} />
+                </label>
+                <Input
+                  value={(form as any).login_hero_url || ""}
+                  onChange={(e) => setForm({ ...form, login_hero_url: e.target.value } as any)}
+                  placeholder="Or paste image URL..."
+                  className="flex-1"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Helpdesk / Support Contact */}
+      <div className="border-t border-border/50 pt-6 mt-2">
+        <h3 className="font-display text-base font-semibold text-foreground mb-4">Helpdesk / Support Contact</h3>
+        <p className="text-xs text-muted-foreground font-body mb-3">
+          This contact info is shown to travel agents in their dashboard for support.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div>
+            <Label>Support Email</Label>
+            <Input
+              value={(form as any).helpdesk_email || ""}
+              onChange={(e) => setForm({ ...form, helpdesk_email: e.target.value } as any)}
+              placeholder="support@youragency.com"
+            />
+          </div>
+          <div>
+            <Label>Support Phone</Label>
+            <Input
+              value={(form as any).helpdesk_phone || ""}
+              onChange={(e) => setForm({ ...form, helpdesk_phone: e.target.value } as any)}
+              placeholder="(555) 123-4567"
+            />
+          </div>
+        </div>
+        <div className="mt-3">
+          <Label>Support Message</Label>
+          <Textarea
+            value={(form as any).helpdesk_message || ""}
+            onChange={(e) => setForm({ ...form, helpdesk_message: e.target.value } as any)}
+            placeholder="Need help? Reach out to us..."
+            rows={2}
+          />
+        </div>
+      </div>
+
+      {/* GHL Integration */}
       <div className="border-t border-border/50 pt-6 mt-2">
         <h3 className="font-display text-base font-semibold text-foreground mb-4">GHL Integration</h3>
 

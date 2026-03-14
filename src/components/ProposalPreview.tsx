@@ -166,7 +166,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
         <section className="relative">
           {data.heroMediaType === "video" && data.heroVideoUrl ? (
             <div className={`${data.heroAutoplay ? '' : 'max-h-[500px]'} overflow-hidden`}>
-              <VideoEmbed url={data.heroVideoUrl} title={data.destination} thumbnailUrl={data.heroVideoThumbnailUrl} className="rounded-none aspect-[21/9]" autoplay={!!data.heroAutoplay} />
+              <VideoEmbed url={data.heroVideoUrl} title={data.destination} thumbnailUrl={data.heroVideoThumbnailUrl} className="rounded-none aspect-[21/9]" autoplay={!!data.heroAutoplay} muted={!!data.heroMuted} />
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-1 max-h-[500px] overflow-hidden">
@@ -939,7 +939,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                       <span className="font-body text-foreground font-medium">Flight</span>
                     </div>
                     <span className="font-body text-sm text-muted-foreground">
-                      {selectedFlight ? (flights.find(f => f.id === selectedFlight)?.airline || "Selected") + " — " + (flights.find(f => f.id === selectedFlight)?.departureAirport?.split("–")[0]?.trim() || "") + " → " + (flights.find(f => f.id === selectedFlight)?.arrivalAirport?.split("–")[0]?.trim() || "") : <span className="text-destructive text-xs">Not selected</span>}
+                      {selectedFlight ? (() => { const f = flights.find(f => f.id === selectedFlight); return <>{f?.airline} — {f?.departureAirport?.split("–")[0]?.trim()} → {f?.arrivalAirport?.split("–")[0]?.trim()}{f?.price ? <span className="ml-2 text-primary font-semibold">${f.price}</span> : null}</>; })() : <span className="text-destructive text-xs">Not selected</span>}
                     </span>
                   </div>
                 )}
@@ -950,7 +950,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                       <span className="font-body text-foreground font-medium">Accommodation</span>
                     </div>
                     <span className="font-body text-sm text-muted-foreground">
-                      {selectedAccommodation ? (accommodations.find(a => a.id === selectedAccommodation)?.hotelName || "Selected") : <span className="text-destructive text-xs">Not selected</span>}
+                      {selectedAccommodation ? (() => { const a = accommodations.find(a => a.id === selectedAccommodation); return <>{a?.hotelName || "Selected"}{a?.price ? <span className="ml-2 text-primary font-semibold">${a.price}</span> : null}</>; })() : <span className="text-destructive text-xs">Not selected</span>}
                     </span>
                   </div>
                 )}
@@ -961,7 +961,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                       <span className="font-body text-foreground font-medium">Cruise</span>
                     </div>
                     <span className="font-body text-sm text-muted-foreground">
-                      {selectedCruise ? (cruiseShips.find(s => s.id === selectedCruise)?.shipName || "Selected") : <span className="text-destructive text-xs">Not selected</span>}
+                      {selectedCruise ? (() => { const s = cruiseShips.find(s => s.id === selectedCruise); return <>{s?.shipName || "Selected"}{s?.price ? <span className="ml-2 text-primary font-semibold">${s.price}</span> : null}</>; })() : <span className="text-destructive text-xs">Not selected</span>}
                     </span>
                   </div>
                 )}
@@ -972,7 +972,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                       <span className="font-body text-foreground font-medium">Bus Trip</span>
                     </div>
                     <span className="font-body text-sm text-muted-foreground">
-                      {selectedBusTrip ? (busTrips.find(b => b.id === selectedBusTrip)?.routeName || "Selected") : <span className="text-destructive text-xs">Not selected</span>}
+                      {selectedBusTrip ? (() => { const b = busTrips.find(b => b.id === selectedBusTrip); return <>{b?.routeName || "Selected"}{b?.price ? <span className="ml-2 text-primary font-semibold">${b.price}</span> : null}</>; })() : <span className="text-destructive text-xs">Not selected</span>}
                     </span>
                   </div>
                 )}
