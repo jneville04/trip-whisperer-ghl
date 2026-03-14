@@ -35,6 +35,7 @@ function AppContent() {
           <Route path="/approve" element={<ApprovePage />} />
           <Route path="/revisions" element={<RevisionsPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import PendingApproval from "@/components/PendingApproval";
-import { Plus, Search, Copy, Trash2, ExternalLink, LogOut, MapPin, Calendar, FileText, Shield, Users, BookOpen, HelpCircle, Mail, Phone, Play } from "lucide-react";
+import { Plus, Search, Copy, Trash2, ExternalLink, LogOut, MapPin, Calendar, FileText, Shield, Users, BookOpen, HelpCircle, Mail, Phone, Play, Settings } from "lucide-react";
 import { defaultProposal, type ProposalData } from "@/types/proposal";
 
 interface ProposalRow {
