@@ -99,6 +99,7 @@ export interface CruiseShip {
   videoThumbnailUrl?: string;
   mediaType?: "photos" | "video";
   price?: string;
+  agentPricing?: AgentPricing;
 }
 
 export interface BusTrip {
