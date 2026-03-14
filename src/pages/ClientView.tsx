@@ -25,10 +25,15 @@ export default function ClientView() {
 
     if (err || !row) {
       setError("Proposal not found or link has expired.");
-    } else if ((row as any).status === "draft") {
-      setError("This proposal is not yet available. Please check back later or contact your travel advisor.");
     } else {
-      setData((row as any).data as ProposalData);
+      const status = (row as any).status;
+      const isPublic = status === "published" || status === "sent" || status === "approved";
+
+      if (!isPublic) {
+        setError("This proposal is not yet available. Please check back later or contact your travel advisor.");
+      } else {
+        setData((row as any).data as ProposalData);
+      }
     }
     setLoading(false);
   };

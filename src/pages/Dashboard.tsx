@@ -141,8 +141,10 @@ export default function Dashboard() {
 
   const statusConfig: Record<string, { bg: string; text: string; label: string }> = {
     draft: { bg: "bg-muted/80 backdrop-blur-sm", text: "text-muted-foreground", label: "Draft" },
-    sent: { bg: "bg-blue-600/90 backdrop-blur-sm", text: "text-white", label: "Sent" },
-    approved: { bg: "bg-green-600/90 backdrop-blur-sm", text: "text-white", label: "Approved" },
+    published: { bg: "bg-primary/90 backdrop-blur-sm", text: "text-primary-foreground", label: "Published" },
+    sent: { bg: "bg-primary/90 backdrop-blur-sm", text: "text-primary-foreground", label: "Published" },
+    unpublished: { bg: "bg-secondary/90 backdrop-blur-sm", text: "text-secondary-foreground", label: "Unpublished" },
+    approved: { bg: "bg-primary/90 backdrop-blur-sm", text: "text-primary-foreground", label: "Published" },
   };
 
   return (

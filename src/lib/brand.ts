@@ -53,7 +53,7 @@ export function buildBrandCssVars(brand?: BrandColors | null): Record<string, st
 
   const primaryHsl = brand.primaryColor ? hexToHsl(brand.primaryColor) : null;
   const secondaryHsl = brand.secondaryColor ? hexToHsl(brand.secondaryColor) : null;
-  const accentHsl = brand.accentColor ? hexToHsl(brand.accentColor) : null;
+  const accentHsl = (brand.accentColor ? hexToHsl(brand.accentColor) : null) || (secondaryHsl ? secondaryHsl : null);
 
   if (primaryHsl) {
     styles["--primary"] = primaryHsl;

@@ -14,7 +14,7 @@ import { useAgentSettings } from "@/hooks/useAgentSettings";
 export default function EditorPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { cssVars: appBrandVars } = useAppSettings();
+  const { settings: appSettings, cssVars: appBrandVars } = useAppSettings();
   const { settings: agentSettings } = useAgentSettings();
   const [data, setData] = useState<ProposalData>(defaultProposal);
   const [mode, setMode] = useState<"split" | "preview">("split");
@@ -25,6 +25,19 @@ export default function EditorPage() {
   const [shareId, setShareId] = useState("");
   const [dirty, setDirty] = useState(false);
   const [currentStatus, setCurrentStatus] = useState("draft");
+
+  const statusMeta: Record<string, { label: string; badgeClassName: string }> = {
+    draft: { label: "Draft", badgeClassName: "text-muted-foreground bg-muted/80" },
+    published: { label: "Published", badgeClassName: "text-primary-foreground bg-primary/90" },
+    sent: { label: "Published", badgeClassName: "text-primary-foreground bg-primary/90" },
+    unpublished: { label: "Unpublished", badgeClassName: "text-secondary-foreground bg-secondary/90" },
+  };
+
+  const normalizeProposalStatus = (status?: string | null) => {
+    if (!status) return "draft";
+    if (status === "sent") return "published";
+    return status;
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -80,7 +93,7 @@ export default function EditorPage() {
     };
     setData(merged);
     setShareId(r.share_id || "");
-    setCurrentStatus(r.status || "draft");
+    setCurrentStatus(normalizeProposalStatus(r.status));
     setLoading(false);
   };
 
@@ -92,8 +105,9 @@ export default function EditorPage() {
   const saveProposal = async (status?: string) => {
     if (!id) return;
     const targetStatus = status ?? currentStatus;
-    const isPublish = status === "sent";
-    const isUnpublish = status === "draft" && currentStatus === "sent";
+    const isPublish = status === "published";
+    const isUnpublish = status === "unpublished";
+
     if (isPublish) setPublishing(true);
     else setSaving(true);
 
@@ -113,17 +127,18 @@ export default function EditorPage() {
       toast({ title: "Save failed", description: error.message, variant: "destructive" });
     } else {
       setCurrentStatus(targetStatus);
-      const msg = isPublish ? "Published!" : isUnpublish ? "Unpublished — proposal is now a draft." : "Saved!";
+      const msg = isPublish ? "Published!" : isUnpublish ? "Unpublished!" : "Saved!";
       toast({ title: msg });
       setDirty(false);
     }
+
     setSaving(false);
     setPublishing(false);
   };
 
   const handleSave = () => saveProposal();
-  const handlePublish = () => saveProposal("sent");
-  const handleUnpublish = () => saveProposal("draft");
+  const handlePublish = () => saveProposal("published");
+  const handleUnpublish = () => saveProposal("unpublished");
 
   const copyShareLink = () => {
     const url = `${window.location.origin}/view/${shareId}`;
@@ -135,12 +150,16 @@ export default function EditorPage() {
   const previewData = useMemo<ProposalData>(() => {
     const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
     const agent = data.agent || { name: "", title: "", phone: "", email: "", website: "", agencyName: "", logoUrl: "", photoUrl: "" };
+
+    const fallbackPrimary = agentSettings.primary_color || appSettings.primary_color;
+    const fallbackSecondary = agentSettings.secondary_color || appSettings.secondary_color;
+
     return {
       ...data,
       brand: {
-        primaryColor: brand.primaryColor || agentSettings.primary_color,
-        secondaryColor: brand.secondaryColor || agentSettings.secondary_color,
-        accentColor: brand.accentColor || agentSettings.accent_color,
+        primaryColor: brand.primaryColor || fallbackPrimary,
+        secondaryColor: brand.secondaryColor || fallbackSecondary,
+        accentColor: brand.accentColor || agentSettings.accent_color || fallbackSecondary,
         logoUrl: brand.logoUrl || agentSettings.logo_url,
         showAgencyNameWithLogo: brand.showAgencyNameWithLogo ?? agentSettings.show_agency_name_with_logo,
       },
@@ -155,7 +174,7 @@ export default function EditorPage() {
         photoUrl: agent.photoUrl || agentSettings.agent_photo_url,
       },
     };
-  }, [data, agentSettings]);
+  }, [data, agentSettings, appSettings.primary_color, appSettings.secondary_color]);
 
   const builderBrandStyles = useMemo(() => buildBrandCssVars(previewData.brand), [previewData.brand]);
   if (loading) {
@@ -181,7 +200,11 @@ export default function EditorPage() {
           )}
           <span className="text-xs text-muted-foreground font-body hidden sm:inline">
             — {data.destination || "New Trip"} for {data.clientName || "Client"}
-            {currentStatus === "sent" && <span className="ml-2 text-[10px] uppercase tracking-wider text-primary font-semibold bg-primary/10 px-1.5 py-0.5 rounded-full">Published</span>}
+            <span className={`ml-2 text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded-full ${
+              (statusMeta[currentStatus] || statusMeta.draft).badgeClassName
+            }`}>
+              {(statusMeta[currentStatus] || statusMeta.draft).label}
+            </span>
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -210,7 +233,7 @@ export default function EditorPage() {
           >
             <Save className="h-3.5 w-3.5 mr-1" /> {saving ? "Saving..." : "Save Draft"}
           </Button>
-          {currentStatus === "sent" ? (
+          {currentStatus === "published" ? (
             <Button
               variant="travel-outline"
               size="sm"
@@ -219,15 +242,16 @@ export default function EditorPage() {
             >
               <EyeOff className="h-3.5 w-3.5 mr-1" /> Unpublish
             </Button>
-          ) : null}
-          <Button
-            variant="travel"
-            size="sm"
-            onClick={handlePublish}
-            disabled={publishing}
-          >
-            <Send className="h-3.5 w-3.5 mr-1" /> {publishing ? "Publishing..." : "Save & Publish"}
-          </Button>
+          ) : (
+            <Button
+              variant="travel"
+              size="sm"
+              onClick={handlePublish}
+              disabled={publishing}
+            >
+              <Send className="h-3.5 w-3.5 mr-1" /> {publishing ? "Publishing..." : "Save & Publish"}
+            </Button>
+          )}
         </div>
       </div>
 
