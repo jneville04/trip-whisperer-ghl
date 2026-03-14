@@ -48,19 +48,22 @@ export default function EditorPage() {
       ...defaultProposal,
       ...saved,
       sectionVisibility: { ...defaultProposal.sectionVisibility, ...(saved.sectionVisibility || {}) },
-      sectionOrder: saved.sectionOrder && !saved.sectionOrder.includes("cruiseShips")
-        ? (() => {
-            const order = [...saved.sectionOrder];
-            const accomIdx = order.indexOf("accommodations");
-            if (accomIdx >= 0) {
-              order.splice(accomIdx + 1, 0, "cruiseShips");
-            } else {
-              order.splice(order.length - 1, 0, "cruiseShips");
-            }
-            return order;
-          })()
-        : saved.sectionOrder || defaultProposal.sectionOrder,
+      sectionOrder: (() => {
+        let order = saved.sectionOrder || defaultProposal.sectionOrder;
+        if (!order.includes("cruiseShips")) {
+          order = [...order];
+          const accomIdx = order.indexOf("accommodations");
+          order.splice(accomIdx >= 0 ? accomIdx + 1 : order.length - 1, 0, "cruiseShips");
+        }
+        if (!order.includes("busTrips")) {
+          order = [...order];
+          const cruiseIdx = order.indexOf("cruiseShips");
+          order.splice(cruiseIdx >= 0 ? cruiseIdx + 1 : order.length - 1, 0, "busTrips");
+        }
+        return order;
+      })(),
       cruiseShips: saved.cruiseShips || [],
+      busTrips: saved.busTrips || [],
     };
     setData(merged);
     setShareId(r.share_id || "");

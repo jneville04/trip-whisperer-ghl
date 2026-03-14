@@ -323,6 +323,7 @@ export const createBusTrip = (): BusTrip => ({
 });
 
 export const defaultProposal: ProposalData = {
+  proposalType: "group_booking",
   destination: "Portugal",
   subtitle: "Lisbon · Nazaré · Fátima · Porto · Aveiro · Coimbra",
   heroImageUrl: "",
