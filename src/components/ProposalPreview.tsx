@@ -394,43 +394,38 @@ export default function ProposalPreview({ data, shareId }: Props) {
                               </p>
                               <h3 className="font-display text-2xl sm:text-3xl font-bold text-foreground mt-1">{day.title}</h3>
                             </div>
-                            <div className="space-y-0 relative">
-                              <div className="absolute left-[7px] top-2 bottom-2 w-px bg-border" />
+                            <div className="space-y-6">
                               {day.activities.map((act, actIdx) => (
-                                <div key={act.id || actIdx} className="flex gap-4 py-3 relative">
-                                  <div className="relative z-10 mt-1.5 w-[15px] h-[15px] shrink-0 rounded-full border-2 border-primary bg-background" />
-                                  <div className="flex-1 flex gap-4">
+                                <div key={act.id || actIdx} className="flex flex-col sm:flex-row gap-5">
+                                  <div className="flex-1 flex gap-3">
+                                    <div className="relative z-10 mt-1.5 w-[15px] h-[15px] shrink-0 rounded-full border-2 border-primary bg-background" />
                                     <div className="flex-1">
                                       {act.time && (
-                                        <div className="flex items-center gap-2 mb-0.5">
+                                        <div className="flex items-center gap-2 mb-1">
                                           <span className="text-xs font-semibold text-primary font-body flex items-center gap-1"><Clock className="h-3 w-3" /> {act.time}</span>
                                         </div>
                                       )}
-                                      <p className="font-body font-semibold text-foreground">{act.title || "Untitled Activity"}</p>
-                                      {act.description && <p className="text-sm text-muted-foreground font-body mt-0.5">{act.description}</p>}
+                                      <p className="font-display text-lg font-bold text-foreground">{act.title || "Untitled Activity"}</p>
+                                      {act.description && <p className="text-sm text-muted-foreground font-body mt-1 leading-relaxed">{act.description}</p>}
                                     </div>
-                                    {act.imageUrls && act.imageUrls.length > 0 && (
-                                      <div className="flex gap-2 shrink-0">
-                                        {act.imageUrls.slice(0, 2).map((url, imgIdx) => (
-                                          <img
-                                            key={imgIdx}
-                                            src={url}
-                                            alt={act.title || "Activity photo"}
-                                            className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg border border-border/30 cursor-pointer hover:opacity-90 transition-opacity"
-                                            onClick={() => openLightbox(act.imageUrls!.map((u) => ({ src: u, alt: act.title })), imgIdx)}
-                                          />
-                                        ))}
-                                        {act.imageUrls.length > 2 && (
-                                          <div
-                                            className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg border border-border/30 bg-muted flex items-center justify-center cursor-pointer hover:bg-muted/80 transition-colors"
-                                            onClick={() => openLightbox(act.imageUrls!.map((u) => ({ src: u, alt: act.title })), 2)}
-                                          >
-                                            <span className="text-sm font-semibold text-muted-foreground">+{act.imageUrls.length - 2}</span>
-                                          </div>
-                                        )}
-                                      </div>
-                                    )}
                                   </div>
+                                  {act.imageUrls && act.imageUrls.length > 0 && (
+                                    <div
+                                      className="sm:w-[280px] h-[200px] shrink-0 rounded-xl overflow-hidden cursor-pointer group relative"
+                                      onClick={() => openLightbox(act.imageUrls!.map((u) => ({ src: u, alt: act.title })), 0)}
+                                    >
+                                      <img
+                                        src={act.imageUrls[0]}
+                                        alt={act.title || "Activity photo"}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                      />
+                                      {act.imageUrls.length > 1 && (
+                                        <div className="absolute bottom-2 right-2 bg-foreground/60 text-background text-xs font-semibold px-2 py-1 rounded-full backdrop-blur-sm">
+                                          +{act.imageUrls.length - 1} more
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
                                 </div>
                               ))}
                             </div>
