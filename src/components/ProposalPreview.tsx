@@ -122,13 +122,18 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
   }, []);
 
   const goToApprove = useCallback(() => {
+    // If checkout is enabled, go to checkout. Otherwise use approve URL or built-in page.
+    if (checkoutEnabled) {
+      goToCheckout();
+      return;
+    }
     const url = approveUrl || bookingUrl;
     if (url) {
       openModal(url, "Approve Itinerary");
     } else {
       navigate(`/approve${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
     }
-  }, [navigate, shareId, brandData, returnTo, bookingUrl, approveUrl, openModal]);
+  }, [navigate, shareId, brandData, returnTo, bookingUrl, approveUrl, openModal, checkoutEnabled, goToCheckout]);
 
   const goToRevisions = useCallback(() => {
     if (revisionsUrl) {
