@@ -224,6 +224,25 @@ export const createAccommodation = (): Accommodation => ({
   highlights: [],
 });
 
+export const createCruiseShip = (): CruiseShip => ({
+  id: crypto.randomUUID(),
+  shipName: "",
+  cruiseLine: "",
+  cabinType: "",
+  cabinNumber: "",
+  deck: "",
+  embarkationPort: "",
+  disembarkationPort: "",
+  embarkationDate: "",
+  disembarkationDate: "",
+  nights: "",
+  imageUrl: "",
+  galleryUrls: [],
+  description: "",
+  amenities: [],
+  highlights: [],
+});
+
 export const defaultProposal: ProposalData = {
   destination: "Portugal",
   subtitle: "Lisbon · Nazaré · Fátima · Porto · Aveiro · Coimbra",
