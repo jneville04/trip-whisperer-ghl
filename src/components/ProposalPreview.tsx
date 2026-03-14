@@ -585,6 +585,22 @@ export default function ProposalPreview({ data, shareId }: Props) {
                               {ship.disembarkationDate && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {ship.disembarkationDate}</span>}
                               {ship.nights && <span className="text-primary font-semibold">{ship.nights} Nights</span>}
                             </div>
+                            {(ship.price || !isGroupBooking) && (
+                              <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
+                                {ship.price && <span className="font-display text-xl font-bold text-foreground">${ship.price}</span>}
+                                {!ship.price && <span />}
+                                {!isGroupBooking && (
+                                  <Button
+                                    variant={isSelected ? "travel" : "travel-outline"}
+                                    size="sm"
+                                    className="text-xs"
+                                    onClick={(e) => { e.stopPropagation(); setSelectedCruise(isSelected ? "" : ship.id); }}
+                                  >
+                                    {isSelected ? "✓ Selected" : "Select Option"}
+                                  </Button>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </motion.div>
                       );
