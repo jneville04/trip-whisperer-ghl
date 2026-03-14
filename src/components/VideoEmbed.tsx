@@ -7,8 +7,10 @@ interface VideoEmbedProps {
   className?: string;
   /** Custom thumbnail image URL — overrides default/auto thumbnail */
   thumbnailUrl?: string;
-  /** If true, video autoplays muted on load */
+  /** If true, video autoplays on load */
   autoplay?: boolean;
+  /** If true, video is muted */
+  muted?: boolean;
 }
 
 function isDirectVideoUrl(url: string): boolean {
