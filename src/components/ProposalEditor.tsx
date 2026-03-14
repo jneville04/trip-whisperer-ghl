@@ -779,9 +779,9 @@ export default function ProposalEditor({ data, onChange }: Props) {
                               <Input value={data.validUntil} onChange={(e) => update("validUntil", e.target.value)} className="h-8 text-sm" />
                             </div>
                             <div>
-                              <FieldLabel>Booking / Checkout URL</FieldLabel>
-                              <Input value={data.bookingUrl || ""} onChange={(e) => update("bookingUrl", e.target.value)} placeholder="https://your-ghl-checkout-or-form.com" className="h-8 text-sm" />
-                              <p className="text-[10px] text-muted-foreground mt-1">Opens in a modal when clients click "Book Now".</p>
+                              <FieldLabel>Form or Checkout Page URL</FieldLabel>
+                              <Input value={data.bookingUrl || ""} onChange={(e) => update("bookingUrl", e.target.value)} placeholder="https://your-ghl-form-or-checkout.com" className="h-8 text-sm" />
+                              <p className="text-[10px] text-muted-foreground mt-1">Paste your GHL form or checkout page URL. Opens in a seamless modal overlay when clients click "Book Now".</p>
                             </div>
                             <div>
                               <FieldLabel>Approve Itinerary URL</FieldLabel>

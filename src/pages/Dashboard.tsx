@@ -210,9 +210,14 @@ export default function Dashboard() {
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
                   <div className="absolute top-3 right-3">
-                    <span className={`text-[10px] font-medium uppercase tracking-wider px-2 py-1 rounded-full ${statusColors[proposal.status] || statusColors.draft}`}>
-                      {proposal.status}
-                    </span>
+                    {(() => {
+                      const sc = statusConfig[proposal.status] || statusConfig.draft;
+                      return (
+                        <span className={`text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm ${sc.bg} ${sc.text}`}>
+                          {sc.label}
+                        </span>
+                      );
+                    })()}
                   </div>
                   <h3 className="absolute bottom-3 left-4 right-4 font-display text-lg font-bold text-white leading-tight line-clamp-2 drop-shadow-md">
                     {proposal.title || "Untitled"}
