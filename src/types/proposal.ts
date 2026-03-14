@@ -63,6 +63,25 @@ export interface Accommodation {
   highlights: string[];
 }
 
+export interface CruiseShip {
+  id: string;
+  shipName: string;
+  cruiseLine: string;
+  cabinType: string;
+  cabinNumber: string;
+  deck: string;
+  embarkationPort: string;
+  disembarkationPort: string;
+  embarkationDate: string;
+  disembarkationDate: string;
+  nights: string;
+  imageUrl: string;
+  galleryUrls: string[];
+  description: string;
+  amenities: string[];
+  highlights: string[];
+}
+
 export interface BrandSettings {
   primaryColor: string;
   secondaryColor: string;
