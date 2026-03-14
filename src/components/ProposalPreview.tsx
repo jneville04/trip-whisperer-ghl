@@ -407,6 +407,19 @@ export default function ProposalPreview({ data, shareId }: Props) {
                                     )}
                                     <p className="font-body font-semibold text-foreground">{act.title || "Untitled Activity"}</p>
                                     {act.description && <p className="text-sm text-muted-foreground font-body mt-0.5">{act.description}</p>}
+                                    {act.imageUrls && act.imageUrls.length > 0 && (
+                                      <div className="flex flex-wrap gap-2 mt-2">
+                                        {act.imageUrls.map((url, imgIdx) => (
+                                          <img
+                                            key={imgIdx}
+                                            src={url}
+                                            alt={act.title || "Activity photo"}
+                                            className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg border border-border/30 cursor-pointer hover:opacity-90 transition-opacity"
+                                            onClick={() => openLightbox(act.imageUrls!.map((u) => ({ src: u, alt: act.title })), imgIdx)}
+                                          />
+                                        ))}
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               ))}

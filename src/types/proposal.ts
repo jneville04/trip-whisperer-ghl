@@ -4,6 +4,7 @@ export interface Activity {
   title: string;
   description: string;
   type: "transport" | "hotel" | "dining" | "activity" | "sightseeing";
+  imageUrls?: string[];
 }
 
 export interface ItineraryDay {

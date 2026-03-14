@@ -148,7 +148,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const addDay = () => update("days", [...data.days, createDay(data.days.length + 1)]);
   const removeDay = (index: number) => update("days", data.days.filter((_, i) => i !== index));
 
-  const updateActivity = (dayIndex: number, actIndex: number, field: keyof Activity, value: string) => {
+  const updateActivity = (dayIndex: number, actIndex: number, field: keyof Activity, value: any) => {
     const day = { ...data.days[dayIndex] };
     day.activities = [...day.activities];
     day.activities[actIndex] = { ...day.activities[actIndex], [field]: value };
@@ -715,6 +715,49 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     </div>
                                     <Input value={act.title} onChange={(e) => updateActivity(dayIdx, actIdx, "title", e.target.value)} placeholder="Activity name" className="h-8 text-sm font-medium" />
                                     <Textarea value={act.description} onChange={(e) => updateActivity(dayIdx, actIdx, "description", e.target.value)} placeholder="Describe this activity in detail..." className="text-sm min-h-[100px] resize-y" />
+                                    {/* Activity Images */}
+                                    <div className="space-y-1.5">
+                                      <div className="flex items-center gap-2">
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            const input = document.createElement("input");
+                                            input.type = "file";
+                                            input.accept = "image/*";
+                                            input.multiple = true;
+                                            input.onchange = async (ev) => {
+                                              const files = Array.from((ev.target as HTMLInputElement).files || []);
+                                              if (!files.length) return;
+                                              const urls = await uploadImages(files);
+                                              const existing = act.imageUrls || [];
+                                              updateActivity(dayIdx, actIdx, "imageUrls", [...existing, ...urls]);
+                                            };
+                                            input.click();
+                                          }}
+                                          className="text-[11px] text-primary hover:text-primary/80 font-medium flex items-center gap-1"
+                                        >
+                                          <ImagePlus className="h-3 w-3" /> Add Photos
+                                        </button>
+                                      </div>
+                                      {act.imageUrls && act.imageUrls.length > 0 && (
+                                        <div className="flex flex-wrap gap-1.5">
+                                          {act.imageUrls.map((url, imgIdx) => (
+                                            <div key={imgIdx} className="relative group/img w-14 h-14 rounded overflow-hidden border border-border/30">
+                                              <img src={url} alt="" className="w-full h-full object-cover" />
+                                              <button
+                                                onClick={() => {
+                                                  const newUrls = act.imageUrls!.filter((_, i) => i !== imgIdx);
+                                                  updateActivity(dayIdx, actIdx, "imageUrls", newUrls);
+                                                }}
+                                                className="absolute top-0.5 right-0.5 bg-foreground/70 text-background rounded-full p-0.5 opacity-0 group-hover/img:opacity-100 transition-opacity"
+                                              >
+                                                <X className="h-2.5 w-2.5" />
+                                              </button>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
                                 ))}
                                 <Button variant="travel-ghost" size="sm" onClick={() => addActivity(dayIdx)} className="text-primary text-xs h-7">
