@@ -63,6 +63,7 @@ export interface Accommodation {
   amenities: string[];
   highlights: string[];
   videoUrl?: string;
+  videoThumbnailUrl?: string;
   mediaType?: "photos" | "video";
 }
 
