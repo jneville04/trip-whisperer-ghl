@@ -91,7 +91,9 @@ export default function EditorPage() {
 
   const saveProposal = async (status?: string) => {
     if (!id) return;
+    const targetStatus = status ?? currentStatus;
     const isPublish = status === "sent";
+    const isUnpublish = status === "draft" && currentStatus === "sent";
     if (isPublish) setPublishing(true);
     else setSaving(true);
 
@@ -102,7 +104,7 @@ export default function EditorPage() {
         client_name: data.clientName || "",
         destination: data.destination || "",
         data: data as any,
-        status: status || currentStatus,
+        status: targetStatus,
         updated_at: new Date().toISOString(),
       })
       .eq("id", id);
@@ -110,8 +112,9 @@ export default function EditorPage() {
     if (error) {
       toast({ title: "Save failed", description: error.message, variant: "destructive" });
     } else {
-      if (status) setCurrentStatus(status);
-      toast({ title: isPublish ? "Published!" : "Saved!" });
+      setCurrentStatus(targetStatus);
+      const msg = isPublish ? "Published!" : isUnpublish ? "Unpublished — proposal is now a draft." : "Saved!";
+      toast({ title: msg });
       setDirty(false);
     }
     setSaving(false);
@@ -120,6 +123,7 @@ export default function EditorPage() {
 
   const handleSave = () => saveProposal();
   const handlePublish = () => saveProposal("sent");
+  const handleUnpublish = () => saveProposal("draft");
 
   const copyShareLink = () => {
     const url = `${window.location.origin}/view/${shareId}`;
@@ -210,8 +214,8 @@ export default function EditorPage() {
             <Button
               variant="travel-outline"
               size="sm"
-              onClick={() => saveProposal("draft")}
-              disabled={saving}
+              onClick={handleUnpublish}
+              disabled={saving || publishing}
             >
               <EyeOff className="h-3.5 w-3.5 mr-1" /> Unpublish
             </Button>
