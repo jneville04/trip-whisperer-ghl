@@ -237,6 +237,24 @@ export default function ProposalEditor({ data, onChange }: Props) {
       <div className="mb-6">
         <h2 className="font-display text-2xl font-bold text-foreground">Proposal Builder</h2>
         <p className="text-sm text-muted-foreground font-body mt-1">Fill in the details below — preview updates live. Drag sections to reorder.</p>
+        <div className="flex gap-2 mt-3">
+          <Button
+            size="sm"
+            variant={(data as any).proposalType !== "proposal" ? "travel" : "travel-outline"}
+            className="text-xs h-7"
+            onClick={() => update("proposalType" as any, "group_booking")}
+          >
+            📋 Group Booking
+          </Button>
+          <Button
+            size="sm"
+            variant={(data as any).proposalType === "proposal" ? "travel" : "travel-outline"}
+            className="text-xs h-7"
+            onClick={() => update("proposalType" as any, "proposal")}
+          >
+            📄 Proposal
+          </Button>
+        </div>
       </div>
 
       {/* Brand Settings */}
@@ -1437,21 +1455,27 @@ export default function ProposalEditor({ data, onChange }: Props) {
                               <FieldLabel>Valid Until</FieldLabel>
                               <Input value={data.validUntil} onChange={(e) => update("validUntil", e.target.value)} className="h-8 text-sm" />
                             </div>
-                            <div>
-                              <FieldLabel>Form or Checkout Page URL</FieldLabel>
-                              <Input value={data.bookingUrl || ""} onChange={(e) => update("bookingUrl", e.target.value)} placeholder="https://your-ghl-form-or-checkout.com" className="h-8 text-sm" />
-                              <p className="text-[10px] text-muted-foreground mt-1">Paste your GHL form or checkout page URL. Opens in a seamless modal overlay when clients click "Book Now".</p>
-                            </div>
-                            <div>
-                              <FieldLabel>Approve Itinerary URL</FieldLabel>
-                              <Input value={data.approveUrl || ""} onChange={(e) => update("approveUrl", e.target.value)} placeholder="https://your-ghl-approve-form.com" className="h-8 text-sm" />
-                              <p className="text-[10px] text-muted-foreground mt-1">Optional. If set, "Approve Itinerary" opens this in a modal instead of the built-in form.</p>
-                            </div>
-                            <div>
-                              <FieldLabel>Request Revisions URL</FieldLabel>
-                              <Input value={data.revisionsUrl || ""} onChange={(e) => update("revisionsUrl", e.target.value)} placeholder="https://your-ghl-revisions-form.com" className="h-8 text-sm" />
-                              <p className="text-[10px] text-muted-foreground mt-1">Optional. If set, "Request Revisions" opens this in a modal instead of the built-in form.</p>
-                            </div>
+                            {(data as any).proposalType !== "proposal" && (
+                              <div>
+                                <FieldLabel>Book Now URL (Form or Checkout Page)</FieldLabel>
+                                <Input value={data.bookingUrl || ""} onChange={(e) => update("bookingUrl", e.target.value)} placeholder="https://your-ghl-form-or-checkout.com" className="h-8 text-sm" />
+                                <p className="text-[10px] text-muted-foreground mt-1">Paste your sign-up form or checkout page URL. Opens in a modal when clients click "Book Now".</p>
+                              </div>
+                            )}
+                            {(data as any).proposalType === "proposal" && (
+                              <>
+                                <div>
+                                  <FieldLabel>Approve Itinerary URL</FieldLabel>
+                                  <Input value={data.approveUrl || ""} onChange={(e) => update("approveUrl", e.target.value)} placeholder="https://your-ghl-approve-form.com" className="h-8 text-sm" />
+                                  <p className="text-[10px] text-muted-foreground mt-1">Optional. If set, "Approve Itinerary" opens this in a modal instead of the built-in form.</p>
+                                </div>
+                                <div>
+                                  <FieldLabel>Request Revisions URL</FieldLabel>
+                                  <Input value={data.revisionsUrl || ""} onChange={(e) => update("revisionsUrl", e.target.value)} placeholder="https://your-ghl-revisions-form.com" className="h-8 text-sm" />
+                                  <p className="text-[10px] text-muted-foreground mt-1">Optional. If set, "Request Revisions" opens this in a modal instead of the built-in form.</p>
+                                </div>
+                              </>
+                            )}
                           </div>
                         </div>
                       </CollapsibleSection>

@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import PendingApproval from "@/components/PendingApproval";
-import { Plus, Search, Copy, Trash2, ExternalLink, LogOut, MapPin, Calendar, FileText, Shield } from "lucide-react";
+import { Plus, Search, Copy, Trash2, ExternalLink, LogOut, MapPin, Calendar, FileText, Shield, Users, BookOpen } from "lucide-react";
 import { defaultProposal, type ProposalData } from "@/types/proposal";
 
 interface ProposalRow {
@@ -57,18 +57,23 @@ export default function Dashboard() {
     setLoading(false);
   };
 
-  const createProposal = async () => {
+  const createProposal = async (type: "group_booking" | "proposal" = "group_booking") => {
     const user = (await supabase.auth.getUser()).data.user;
     if (!user) return;
+
+    const proposalData: ProposalData = {
+      ...defaultProposal,
+      proposalType: type,
+    };
 
     const { data, error } = await supabase
       .from("proposals")
       .insert({
         user_id: user.id,
-        title: "New Proposal",
+        title: type === "group_booking" ? "New Group Booking" : "New Proposal",
         client_name: defaultProposal.clientName,
         destination: defaultProposal.destination,
-        data: defaultProposal as any,
+        data: proposalData as any,
       })
       .select()
       .single();
@@ -152,8 +157,11 @@ export default function Dashboard() {
                 <Shield className="h-4 w-4 mr-1" /> Admin
               </Button>
             )}
-            <Button variant="travel" size="sm" onClick={createProposal}>
-              <Plus className="h-4 w-4 mr-1" /> New Proposal
+            <Button variant="travel" size="sm" onClick={() => createProposal("group_booking")}>
+              <Users className="h-4 w-4 mr-1" /> Group Booking
+            </Button>
+            <Button variant="travel-outline" size="sm" onClick={() => createProposal("proposal")}>
+              <BookOpen className="h-4 w-4 mr-1" /> Proposal
             </Button>
             <Button variant="travel-ghost" size="sm" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-1" /> Sign Out
@@ -187,15 +195,21 @@ export default function Dashboard() {
               {search ? "Try a different search term" : "Create your first travel proposal to get started."}
             </p>
             {!search && (
-              <Button variant="travel" onClick={createProposal}>
-                <Plus className="h-4 w-4 mr-1" /> Create First Proposal
-              </Button>
+              <div className="flex items-center justify-center gap-3">
+                <Button variant="travel" onClick={() => createProposal("group_booking")}>
+                  <Users className="h-4 w-4 mr-1" /> Create Group Booking
+                </Button>
+                <Button variant="travel-outline" onClick={() => createProposal("proposal")}>
+                  <BookOpen className="h-4 w-4 mr-1" /> Create Proposal
+                </Button>
+              </div>
             )}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {filtered.map((proposal) => {
               const heroImg = proposal.data?.heroImageUrl || (proposal.data?.heroImageUrls?.length ? proposal.data.heroImageUrls[0] : "");
+              const proposalType = (proposal.data as any)?.proposalType || "group_booking";
               return (
               <div
                 key={proposal.id}
@@ -209,11 +223,14 @@ export default function Dashboard() {
                     <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20" />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
-                  <div className="absolute top-3 right-3">
+                  <div className="absolute top-3 right-3 flex gap-1.5">
+                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm ${proposalType === "proposal" ? "bg-purple-600/90 text-white" : "bg-emerald-600/90 text-white"} backdrop-blur-sm`}>
+                      {proposalType === "proposal" ? "Proposal" : "Group"}
+                    </span>
                     {(() => {
                       const sc = statusConfig[proposal.status] || statusConfig.draft;
                       return (
-                        <span className={`text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm ${sc.bg} ${sc.text}`}>
+                        <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm ${sc.bg} ${sc.text}`}>
                           {sc.label}
                         </span>
                       );
