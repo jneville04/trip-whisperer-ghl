@@ -450,11 +450,6 @@ export default function ProposalPreview({ data, shareId }: Props) {
                                 </div>
                               </div>
                             )}
-                            {ship.videoUrl && (
-                              <div className="mt-4">
-                                <VideoEmbed url={ship.videoUrl} title={ship.shipName} className="max-w-md" />
-                              </div>
-                            )}
                             <div className="flex items-center gap-6 mt-5 pt-4 border-t border-border/30 text-sm text-muted-foreground font-body flex-wrap">
                               {ship.embarkationPort && <span className="flex items-center gap-1.5"><Anchor className="h-3.5 w-3.5" /> Embark: {ship.embarkationPort}</span>}
                               {ship.embarkationDate && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {ship.embarkationDate}</span>}
