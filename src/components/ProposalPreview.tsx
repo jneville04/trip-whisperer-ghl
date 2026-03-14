@@ -248,87 +248,87 @@ export default function ProposalPreview({ data, shareId }: Props) {
             );
 
           case "flights":
-            if (flights.length === 0) return null;
+            if (flightOptions.length === 0) return null;
             return (
               <section key="flights" id="flights" className="py-20 bg-card">
                 <div className="max-w-4xl mx-auto px-6">
                   <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
                     <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Flights</p>
                     <h2 className="font-display text-4xl font-bold text-foreground">Air Travel</h2>
+                    {!isGroupBooking && flightOptions.length > 1 && <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>}
                   </motion.div>
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {flights.map((flight) => {
-                      const isSelected = selectedFlight === flight.id;
+                  <div className="space-y-6">
+                    {flightOptions.map((opt, optIdx) => {
+                      const isSelected = selectedFlight === opt.id;
                       return (
-                      <div
-                        key={flight.id}
-                        className={`bg-background rounded-2xl border-2 shadow-sm p-6 relative overflow-hidden transition-all ${
-                          !isGroupBooking
-                            ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40"
-                            : "border-border/50"
-                        }`}
-                      >
-                        {!isGroupBooking && (
-                          <div className={`absolute top-4 right-4 w-5 h-5 rounded-full border-2 flex items-center justify-center cursor-pointer ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30"}`} onClick={() => setSelectedFlight(isSelected ? "" : flight.id)}>
-                            {isSelected && <Check className="h-3 w-3 text-primary-foreground" />}
+                        <motion.div
+                          key={opt.id}
+                          variants={fadeUp}
+                          initial="hidden"
+                          whileInView="visible"
+                          viewport={{ once: true }}
+                          custom={optIdx}
+                          className={`bg-background rounded-2xl border-2 shadow-sm p-6 relative overflow-hidden transition-all ${
+                            !isGroupBooking
+                              ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40 cursor-pointer"
+                              : "border-border/50"
+                          }`}
+                          onClick={() => !isGroupBooking && setSelectedFlight(isSelected ? "" : opt.id)}
+                        >
+                          <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
+                          {flightOptions.length > 1 && (
+                            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary font-body mb-4">Option {optIdx + 1}</p>
+                          )}
+                          <div className="space-y-4">
+                            {opt.legs.map((leg) => (
+                              <div key={leg.id}>
+                                <div className="flex items-center gap-2 mb-2">
+                                  {leg.type === "departure" ? <PlaneTakeoff className="h-5 w-5 text-primary" /> : <PlaneLanding className="h-5 w-5 text-primary" />}
+                                  <span className="font-body font-semibold text-foreground text-sm uppercase tracking-wide">{leg.type === "departure" ? "Departure" : "Return"}</span>
+                                </div>
+                                <p className="text-xs text-muted-foreground font-body mb-3">{leg.date}</p>
+                                <div className="flex items-center justify-between mb-3">
+                                  <div className="text-center">
+                                    <p className="font-display text-2xl font-bold text-foreground">{leg.departureAirport.split("–")[0]?.trim() || "—"}</p>
+                                    <p className="text-xs text-muted-foreground font-body">{leg.departureTime}</p>
+                                  </div>
+                                  <div className="flex-1 mx-4 flex items-center">
+                                    <div className="flex-1 border-t border-dashed border-border" />
+                                    <Plane className="h-4 w-4 text-primary mx-2" />
+                                    <div className="flex-1 border-t border-dashed border-border" />
+                                  </div>
+                                  <div className="text-center">
+                                    <p className="font-display text-2xl font-bold text-foreground">{leg.arrivalAirport.split("–")[0]?.trim() || "—"}</p>
+                                    <p className="text-xs text-muted-foreground font-body">{leg.arrivalTime}</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-4 text-xs text-muted-foreground font-body">
+                                  <span>{leg.airline}</span>
+                                  {leg.flightNumber && <span className="text-primary font-semibold">{leg.flightNumber}</span>}
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                        )}
-                        <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
-                        <div className="flex items-center gap-2 mb-4">
-                          {flight.type === "departure" ? <PlaneTakeoff className="h-5 w-5 text-primary" /> : <PlaneLanding className="h-5 w-5 text-primary" />}
-                          <span className="font-body font-semibold text-foreground text-sm uppercase tracking-wide">{flight.type === "departure" ? "Departure" : "Return"}</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground font-body mb-3">{flight.date}</p>
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="text-center">
-                            <p className="font-display text-2xl font-bold text-foreground">{flight.departureAirport.split("–")[0]?.trim() || "—"}</p>
-                            <p className="text-xs text-muted-foreground font-body">{flight.departureTime}</p>
-                          </div>
-                          <div className="flex-1 mx-4 flex items-center">
-                            <div className="flex-1 border-t border-dashed border-border" />
-                            <Plane className="h-4 w-4 text-primary mx-2" />
-                            <div className="flex-1 border-t border-dashed border-border" />
-                          </div>
-                          <div className="text-center">
-                            <p className="font-display text-2xl font-bold text-foreground">{flight.arrivalAirport.split("–")[0]?.trim() || "—"}</p>
-                            <p className="text-xs text-muted-foreground font-body">{flight.arrivalTime}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-4 text-xs text-muted-foreground font-body">
-                          <span>{flight.airline}</span>
-                          {flight.flightNumber && <span className="text-primary font-semibold">{flight.flightNumber}</span>}
-                        </div>
-                        {flight.price && (
-                          <div className="mt-4 pt-3 border-t border-border/30 flex items-center justify-between">
-                            <span className="font-display text-xl font-bold text-foreground">${flight.price}</span>
-                            {!isGroupBooking && (
-                              <Button
-                                variant={isSelected ? "travel" : "travel-outline"}
-                                size="sm"
-                                className="text-xs"
-                                onClick={(e) => { e.stopPropagation(); setSelectedFlight(isSelected ? "" : flight.id); }}
-                              >
-                                {isSelected ? "✓ Selected" : "Select"}
-                              </Button>
-                            )}
-                          </div>
-                        )}
-                        {!flight.price && !isGroupBooking && (
-                          <div className="mt-4 pt-3 border-t border-border/30 flex justify-end">
-                            <Button
-                              variant={isSelected ? "travel" : "travel-outline"}
-                              size="sm"
-                              className="text-xs"
-                              onClick={(e) => { e.stopPropagation(); setSelectedFlight(isSelected ? "" : flight.id); }}
-                            >
-                              {isSelected ? "✓ Selected" : "Select"}
-                            </Button>
-                          </div>
-                        )}
-                      </div>
+                          {(opt.price || !isGroupBooking) && (
+                            <div className="mt-4 pt-3 border-t border-border/30 flex items-center justify-between">
+                              {opt.price && <span className="font-display text-xl font-bold text-foreground">${opt.price}</span>}
+                              {!opt.price && <span />}
+                              {!isGroupBooking && (
+                                <Button
+                                  variant={isSelected ? "travel" : "travel-outline"}
+                                  size="sm"
+                                  className="text-xs"
+                                  onClick={(e) => { e.stopPropagation(); setSelectedFlight(isSelected ? "" : opt.id); }}
+                                >
+                                  {isSelected ? "✓ Selected" : "Select"}
+                                </Button>
+                              )}
+                            </div>
+                          )}
+                        </motion.div>
                       );
                     })}
-                  </motion.div>
+                  </div>
                 </div>
               </section>
             );
