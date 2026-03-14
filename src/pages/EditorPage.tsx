@@ -93,7 +93,7 @@ export default function EditorPage() {
     };
     setData(merged);
     setShareId(r.share_id || "");
-    setCurrentStatus(r.status || "draft");
+    setCurrentStatus(normalizeProposalStatus(r.status));
     setLoading(false);
   };
 
