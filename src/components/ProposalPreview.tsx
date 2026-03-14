@@ -48,6 +48,8 @@ export default function ProposalPreview({ data, shareId }: Props) {
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
+  const [bookingModalUrl, setBookingModalUrl] = useState("");
+  const [bookingModalTitle, setBookingModalTitle] = useState("");
 
   const openLightbox = (images: { src: string; alt?: string }[], index: number = 0) => {
     setLightboxImages(images);
@@ -85,18 +87,31 @@ export default function ProposalPreview({ data, shareId }: Props) {
   const returnTo = window.location.pathname;
 
   const bookingUrl = data.bookingUrl || "";
+  const approveUrl = data.approveUrl || "";
+  const revisionsUrl = data.revisionsUrl || "";
+
+  const openModal = useCallback((url: string, title: string) => {
+    setBookingModalUrl(url);
+    setBookingModalTitle(title);
+    setBookingOpen(true);
+  }, []);
 
   const goToApprove = useCallback(() => {
-    if (bookingUrl) {
-      setBookingOpen(true);
+    const url = approveUrl || bookingUrl;
+    if (url) {
+      openModal(url, "Approve Itinerary");
     } else {
       navigate(`/approve${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
     }
-  }, [navigate, shareId, brandData, returnTo, bookingUrl]);
+  }, [navigate, shareId, brandData, returnTo, bookingUrl, approveUrl, openModal]);
 
   const goToRevisions = useCallback(() => {
-    navigate(`/revisions${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
-  }, [navigate, shareId, brandData, returnTo]);
+    if (revisionsUrl) {
+      openModal(revisionsUrl, "Request Revisions");
+    } else {
+      navigate(`/revisions${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
+    }
+  }, [navigate, shareId, brandData, returnTo, revisionsUrl, openModal]);
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
@@ -543,9 +558,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
         }
       })}
       <Lightbox images={lightboxImages} initialIndex={lightboxIndex} open={lightboxOpen} onClose={() => setLightboxOpen(false)} />
-      {bookingUrl && (
-        <BookingModal open={bookingOpen} onClose={() => setBookingOpen(false)} url={bookingUrl} agencyName={agent.agencyName} />
-      )}
+      <BookingModal open={bookingOpen} onClose={() => setBookingOpen(false)} url={bookingModalUrl} agencyName={bookingModalTitle || agent.agencyName} />
     </div>
   );
 }

@@ -123,6 +123,8 @@ export interface ProposalData {
   destination: string;
   subtitle: string;
   bookingUrl?: string;
+  approveUrl?: string;
+  revisionsUrl?: string;
   heroImageUrl: string;
   heroImageUrls: string[];
   travelDates: string;
