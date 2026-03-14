@@ -54,6 +54,7 @@ export interface FlightLeg {
   arrivalTime: string;
   date: string;
   price?: string;
+  agentPricing?: AgentPricing;
 }
 
 export interface Accommodation {
