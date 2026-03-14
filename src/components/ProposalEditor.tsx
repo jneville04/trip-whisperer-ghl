@@ -868,6 +868,16 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                         </div>
                                       )}
                                     </div>
+                                    {/* Video URL */}
+                                    <div>
+                                      <FieldLabel>Video URL (YouTube/Vimeo)</FieldLabel>
+                                      <Input
+                                        value={act.videoUrl || ""}
+                                        onChange={(e) => updateActivity(dayIdx, actIdx, "videoUrl", e.target.value)}
+                                        placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
+                                        className="h-7 text-xs"
+                                      />
+                                    </div>
                                   </div>
                                 ))}
                                 <Button variant="travel-ghost" size="sm" onClick={() => addActivity(dayIdx)} className="text-primary text-xs h-7">
