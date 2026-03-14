@@ -1065,11 +1065,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                       </Button>
                     )
                   ) : (
-                    checkoutEnabled ? (
-                      <Button variant="travel" size="lg" className="text-base px-8" onClick={goToCheckout}>
-                        Proceed to Checkout <ArrowRight className="h-4 w-4 ml-2" />
-                      </Button>
-                    ) : (
+                    !isEditor && (
                       <Button variant="travel" size="lg" className="text-base px-8" onClick={goToApprove}>
                         Approve Itinerary <ArrowRight className="h-4 w-4 ml-2" />
                       </Button>
