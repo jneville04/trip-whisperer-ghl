@@ -988,7 +988,12 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                           <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>
                             <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
                           </Button>
-                          <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToRevisions}>
+                          {checkoutEnabled && (
+                            <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToCheckout}>
+                              <ShoppingCart className="h-5 w-5 mr-2" /> Proceed to Checkout
+                            </Button>
+                          )}
+                          <Button variant="travel-ghost" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToRevisions}>
                             <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
                           </Button>
                         </>
