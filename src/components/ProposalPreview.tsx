@@ -508,7 +508,17 @@ export default function ProposalPreview({ data, shareId }: Props) {
                                         )}
                                       </div>
                                     )}
+                                    {hasVideo && !hasImages && (
+                                      <div className="sm:w-[260px] md:w-[300px] shrink-0">
+                                        <VideoEmbed url={act.videoUrl!} title={act.title} className="rounded-xl" />
+                                      </div>
+                                    )}
                                   </div>
+                                  {hasVideo && hasImages && (
+                                    <div className="mt-4">
+                                      <VideoEmbed url={act.videoUrl!} title={act.title} className="max-w-md" />
+                                    </div>
+                                  )}
                                 </div>
                               );
                             })}
