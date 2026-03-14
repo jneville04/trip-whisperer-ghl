@@ -62,6 +62,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
   const flights = data.flights || [];
   const accommodations = data.accommodations || [];
+  const cruiseShips = data.cruiseShips || [];
   const agent = data.agent || { name: "", title: "", phone: "", email: "", website: "", agencyName: "", logoUrl: "", photoUrl: "" };
   const essentials = data.essentials || { visaRequirements: "", passportInfo: "", currency: "", language: "", timeZone: "", weatherInfo: "", packingTips: "", emergencyContacts: "" };
   const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
