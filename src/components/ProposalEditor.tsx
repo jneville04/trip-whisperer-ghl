@@ -237,6 +237,24 @@ export default function ProposalEditor({ data, onChange }: Props) {
       <div className="mb-6">
         <h2 className="font-display text-2xl font-bold text-foreground">Proposal Builder</h2>
         <p className="text-sm text-muted-foreground font-body mt-1">Fill in the details below — preview updates live. Drag sections to reorder.</p>
+        <div className="flex gap-2 mt-3">
+          <Button
+            size="sm"
+            variant={(data as any).proposalType !== "proposal" ? "travel" : "travel-outline"}
+            className="text-xs h-7"
+            onClick={() => update("proposalType" as any, "group_booking")}
+          >
+            📋 Group Booking
+          </Button>
+          <Button
+            size="sm"
+            variant={(data as any).proposalType === "proposal" ? "travel" : "travel-outline"}
+            className="text-xs h-7"
+            onClick={() => update("proposalType" as any, "proposal")}
+          >
+            📄 Proposal
+          </Button>
+        </div>
       </div>
 
       {/* Brand Settings */}
