@@ -200,7 +200,11 @@ export default function EditorPage() {
           )}
           <span className="text-xs text-muted-foreground font-body hidden sm:inline">
             — {data.destination || "New Trip"} for {data.clientName || "Client"}
-            {currentStatus === "sent" && <span className="ml-2 text-[10px] uppercase tracking-wider text-primary font-semibold bg-primary/10 px-1.5 py-0.5 rounded-full">Published</span>}
+            <span className={`ml-2 text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded-full ${
+              (statusMeta[currentStatus] || statusMeta.draft).badgeClassName
+            }`}>
+              {(statusMeta[currentStatus] || statusMeta.draft).label}
+            </span>
           </span>
         </div>
         <div className="flex items-center gap-2">
