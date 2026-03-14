@@ -195,9 +195,14 @@ export default function Dashboard() {
               {search ? "Try a different search term" : "Create your first travel proposal to get started."}
             </p>
             {!search && (
-              <Button variant="travel" onClick={createProposal}>
-                <Plus className="h-4 w-4 mr-1" /> Create First Proposal
-              </Button>
+              <div className="flex items-center justify-center gap-3">
+                <Button variant="travel" onClick={() => createProposal("group_booking")}>
+                  <Users className="h-4 w-4 mr-1" /> Create Group Booking
+                </Button>
+                <Button variant="travel-outline" onClick={() => createProposal("proposal")}>
+                  <BookOpen className="h-4 w-4 mr-1" /> Create Proposal
+                </Button>
+              </div>
             )}
           </div>
         ) : (
