@@ -438,27 +438,28 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                               </span>
                             </div>
                           )}
-                          {showAccPhotos ? (
-                            <div className="grid grid-cols-3 md:grid-cols-4 gap-1">
-                              {acc.imageUrl && (
-                                <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, 0)}>
-                                  <img src={acc.imageUrl} alt={acc.hotelName} className="w-full h-full object-cover" />
+                          {showAccPhotos && allAccImages.length > 0 ? (
+                            <div className={allAccImages.length === 1 ? "" : "grid grid-cols-3 md:grid-cols-4 gap-1"}>
+                              {allAccImages.length === 1 ? (
+                                <div className="aspect-[21/9] overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, 0)}>
+                                  <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover" />
                                 </div>
-                              )}
-                              {!acc.imageUrl && (
-                                <div className="col-span-2 row-span-2 aspect-[4/3] bg-muted flex items-center justify-center">
-                                  <BedDouble className="h-10 w-10 text-muted-foreground/30" />
-                                </div>
-                              )}
-                              {galleryUrls.slice(0, 6).map((url, gi) => (
-                                <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, gi + 1)}>
-                                  <img src={url} alt={`${acc.hotelName} ${gi + 2}`} className="w-full h-full object-cover" />
-                                </div>
-                              ))}
-                              {galleryUrls.length > 6 && (
-                                <div className="aspect-[4/3] bg-muted/60 flex items-center justify-center cursor-pointer rounded-sm" onClick={() => openLightbox(allAccImages, 7)}>
-                                  <span className="text-sm font-body font-semibold text-muted-foreground">+{galleryUrls.length - 6} more</span>
-                                </div>
+                              ) : (
+                                <>
+                                  <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, 0)}>
+                                    <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover" />
+                                  </div>
+                                  {galleryUrls.slice(0, 6).map((url, gi) => (
+                                    <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, gi + 1)}>
+                                      <img src={url} alt={`${acc.hotelName} ${gi + 2}`} className="w-full h-full object-cover" />
+                                    </div>
+                                  ))}
+                                  {galleryUrls.length > 6 && (
+                                    <div className="aspect-[4/3] bg-muted/60 flex items-center justify-center cursor-pointer rounded-sm" onClick={() => openLightbox(allAccImages, 7)}>
+                                      <span className="text-sm font-body font-semibold text-muted-foreground">+{galleryUrls.length - 6} more</span>
+                                    </div>
+                                  )}
+                                </>
                               )}
                             </div>
                           ) : (
