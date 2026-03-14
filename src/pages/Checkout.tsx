@@ -39,7 +39,6 @@ export default function CheckoutPage() {
   const brandData = proposalData?.brand || {} as any;
   const brandStyles = useMemo(() => buildBrandCssVars(brandData), [brandData]);
   const agent = proposalData?.agent || {} as any;
-  const enabledOptions = checkout.paymentOptions.filter((o) => o.enabled);
 
   const goBack = () => {
     if (shareId) navigate(`/view/${shareId}`);
@@ -55,41 +54,7 @@ export default function CheckoutPage() {
     }, 0);
   }, [proposalData]);
 
-  const getPaymentAmount = (option: PaymentOption) => {
-    if (tripTotal === 0) return null;
-    if (option.type === "full") return tripTotal;
-    if (option.type === "deposit" && option.depositPercent) return Math.round(tripTotal * (option.depositPercent / 100));
-    if (option.type === "installments" && option.installmentCount) return Math.round(tripTotal / option.installmentCount);
-    return null;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedPayment) {
-      toast({ title: "Please select a payment option", variant: "destructive" });
-      return;
-    }
-    setSubmitting(true);
-    try {
-      await supabase.functions.invoke("ghl-webhook", {
-        body: {
-          type: "checkout",
-          payload: {
-            ...form,
-            paymentOption: selectedPayment,
-            proposalId: shareId,
-            destination: proposalData?.destination,
-            tripTotal,
-            source: window.location.href,
-          },
-        },
-      });
-    } catch (err) {
-      console.error("Webhook error:", err);
-    }
-    setSubmitted(true);
-    setSubmitting(false);
-  };
+  const enabledOptions = checkout.paymentOptions.filter((o) => o.enabled);
 
   if (loading) {
     return (
@@ -98,25 +63,6 @@ export default function CheckoutPage() {
       </div>
     );
   }
-
-  if (submitted) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-6" style={brandStyles as React.CSSProperties}>
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md">
-          <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="h-10 w-10 text-primary" />
-          </div>
-          <h1 className="font-display text-3xl font-bold text-foreground mb-3">Booking Confirmed!</h1>
-          <p className="text-muted-foreground font-body mb-8">{checkout.confirmationMessage}</p>
-          <Button variant="travel-ghost" onClick={goBack} className="text-sm">
-            <ArrowLeft className="h-4 w-4 mr-1" /> Back to Proposal
-          </Button>
-        </motion.div>
-      </div>
-    );
-  }
-
-  const hasCustomForm = !!checkout.customFormUrl;
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
