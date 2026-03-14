@@ -1,31 +1,20 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle2, Loader2, Send, Plane, Hotel, Ship, Bus, CreditCard, Calendar, Banknote, MapPin, Users } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Loader2, Plane, Hotel, Ship, Bus, Calendar, Users, Phone, Mail, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
-import { buildBrandCssVars, type BrandColors } from "@/lib/brand";
-import type { ProposalData, CheckoutSettings, PaymentOption } from "@/types/proposal";
+import { buildBrandCssVars } from "@/lib/brand";
+import type { ProposalData, CheckoutSettings } from "@/types/proposal";
 import { createDefaultCheckout } from "@/types/proposal";
 
-const paymentIcons: Record<string, React.ReactNode> = {
-  full: <CreditCard className="h-5 w-5" />,
-  deposit: <Banknote className="h-5 w-5" />,
-  installments: <Calendar className="h-5 w-5" />,
-};
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const shareId = searchParams.get("share") || "";
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
   const [proposalData, setProposalData] = useState<ProposalData | null>(null);
-  const [selectedPayment, setSelectedPayment] = useState<string>("");
-  const [form, setForm] = useState({ name: "", email: "", phone: "", notes: "" });
 
   useEffect(() => {
     if (!shareId) return;
@@ -50,7 +39,6 @@ export default function CheckoutPage() {
   const brandData = proposalData?.brand || {} as any;
   const brandStyles = useMemo(() => buildBrandCssVars(brandData), [brandData]);
   const agent = proposalData?.agent || {} as any;
-  const enabledOptions = checkout.paymentOptions.filter((o) => o.enabled);
 
   const goBack = () => {
     if (shareId) navigate(`/view/${shareId}`);
@@ -66,41 +54,7 @@ export default function CheckoutPage() {
     }, 0);
   }, [proposalData]);
 
-  const getPaymentAmount = (option: PaymentOption) => {
-    if (tripTotal === 0) return null;
-    if (option.type === "full") return tripTotal;
-    if (option.type === "deposit" && option.depositPercent) return Math.round(tripTotal * (option.depositPercent / 100));
-    if (option.type === "installments" && option.installmentCount) return Math.round(tripTotal / option.installmentCount);
-    return null;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedPayment) {
-      toast({ title: "Please select a payment option", variant: "destructive" });
-      return;
-    }
-    setSubmitting(true);
-    try {
-      await supabase.functions.invoke("ghl-webhook", {
-        body: {
-          type: "checkout",
-          payload: {
-            ...form,
-            paymentOption: selectedPayment,
-            proposalId: shareId,
-            destination: proposalData?.destination,
-            tripTotal,
-            source: window.location.href,
-          },
-        },
-      });
-    } catch (err) {
-      console.error("Webhook error:", err);
-    }
-    setSubmitted(true);
-    setSubmitting(false);
-  };
+  const enabledOptions = checkout.paymentOptions.filter((o) => o.enabled);
 
   if (loading) {
     return (
@@ -109,25 +63,6 @@ export default function CheckoutPage() {
       </div>
     );
   }
-
-  if (submitted) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-6" style={brandStyles as React.CSSProperties}>
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md">
-          <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="h-10 w-10 text-primary" />
-          </div>
-          <h1 className="font-display text-3xl font-bold text-foreground mb-3">Booking Confirmed!</h1>
-          <p className="text-muted-foreground font-body mb-8">{checkout.confirmationMessage}</p>
-          <Button variant="travel-ghost" onClick={goBack} className="text-sm">
-            <ArrowLeft className="h-4 w-4 mr-1" /> Back to Proposal
-          </Button>
-        </motion.div>
-      </div>
-    );
-  }
-
-  const hasCustomForm = !!checkout.customFormUrl;
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
@@ -145,10 +80,10 @@ export default function CheckoutPage() {
           {checkout.message && <p className="text-muted-foreground font-body mt-2">{checkout.message}</p>}
         </div>
 
-        {/* Layout: Summary + Form */}
-        <div className={hasCustomForm ? "grid grid-cols-1 lg:grid-cols-5 gap-8" : "max-w-2xl mx-auto"}>
-          {/* Trip Summary — always visible */}
-          <div className={hasCustomForm ? "lg:col-span-2" : ""}>
+        {/* Layout: Summary + Embedded Form */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          {/* Trip Summary */}
+          <div className="lg:col-span-2">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-card border border-border/50 rounded-2xl p-6 sticky top-8">
               <h2 className="font-display text-lg font-semibold text-foreground mb-4">Trip Summary</h2>
               <div className="space-y-3">
@@ -230,21 +165,12 @@ export default function CheckoutPage() {
                 )}
               </div>
 
-              {/* Agent info */}
-              {agent.name && (
-                <div className="mt-6 pt-4 border-t border-border/30 text-center">
-                  <p className="text-xs text-muted-foreground font-body">Your Travel Advisor</p>
-                  <p className="text-sm font-semibold text-foreground font-body mt-1">{agent.name}</p>
-                  {agent.email && <p className="text-xs text-muted-foreground font-body">{agent.email}</p>}
-                  {agent.phone && <p className="text-xs text-muted-foreground font-body">{agent.phone}</p>}
-                </div>
-              )}
             </motion.div>
           </div>
 
-          {/* Right side: Embedded form OR built-in form */}
-          <div className={hasCustomForm ? "lg:col-span-3" : ""}>
-            {hasCustomForm ? (
+          {/* Right side: Embedded form */}
+          <div className="lg:col-span-3">
+            {checkout.customFormUrl ? (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                 <iframe
                   src={checkout.customFormUrl.includes("?")
@@ -257,99 +183,38 @@ export default function CheckoutPage() {
                 />
               </motion.div>
             ) : (
-              <>
-                {/* Payment Options */}
-                {enabledOptions.length > 0 && (
-                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-8">
-                    <h2 className="font-display text-lg font-semibold text-foreground mb-4">Payment Option</h2>
-                    <div className="grid gap-3">
-                      {enabledOptions.map((opt) => {
-                        const amount = getPaymentAmount(opt);
-                        const isActive = selectedPayment === opt.id;
-                        return (
-                          <button
-                            key={opt.id}
-                            type="button"
-                            onClick={() => setSelectedPayment(opt.id)}
-                            className={`relative flex items-start gap-4 p-5 rounded-xl border-2 text-left transition-all font-body ${
-                              isActive
-                                ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                                : "border-border/50 hover:border-primary/40 bg-background"
-                            }`}
-                          >
-                            <div className={`mt-0.5 h-10 w-10 rounded-full flex items-center justify-center shrink-0 ${isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
-                              {paymentIcons[opt.type]}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-semibold text-foreground text-sm">{opt.label}</p>
-                              <p className="text-xs text-muted-foreground mt-0.5">{opt.description}</p>
-                              {opt.type === "deposit" && opt.depositPercent && (
-                                <p className="text-xs text-muted-foreground mt-1">{opt.depositPercent}% deposit required</p>
-                              )}
-                              {opt.type === "installments" && opt.installmentCount && (
-                                <p className="text-xs text-muted-foreground mt-1">{opt.installmentCount} monthly payments</p>
-                              )}
-                            </div>
-                            {amount !== null && (
-                              <div className="text-right shrink-0">
-                                <p className="font-display text-lg font-bold text-foreground">${amount.toLocaleString()}</p>
-                                {opt.type === "deposit" && <p className="text-[10px] text-muted-foreground">due now</p>}
-                                {opt.type === "installments" && <p className="text-[10px] text-muted-foreground">/ month</p>}
-                              </div>
-                            )}
-                            <div className={`absolute top-4 right-4 h-5 w-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                              isActive ? "border-primary bg-primary" : "border-border"
-                            }`}>
-                              {isActive && <div className="h-2 w-2 rounded-full bg-primary-foreground" />}
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Contact Form */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                  <h2 className="font-display text-lg font-semibold text-foreground mb-4">Your Details</h2>
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Full Name *</label>
-                      <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="John & Jane Smith" required className="h-11" />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Email *</label>
-                      <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="john@email.com" required className="h-11" />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Phone</label>
-                      <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="(555) 123-4567" className="h-11" />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Notes</label>
-                      <textarea
-                        value={form.notes}
-                        onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                        rows={3}
-                        className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring font-body"
-                        placeholder="Any special requests or notes..."
-                      />
-                    </div>
-
-                    <div className="bg-accent/10 border border-accent/30 rounded-xl p-4 text-sm font-body text-muted-foreground">
-                      <p>By confirming, you agree to the terms outlined in the proposal. Your travel advisor will follow up with payment instructions and booking confirmation.</p>
-                    </div>
-
-                    <Button type="submit" variant="travel" size="lg" className="w-full text-base py-6 h-auto" disabled={submitting}>
-                      {submitting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
-                      {submitting ? "Submitting..." : "Confirm Booking"}
-                    </Button>
-                  </form>
-                </motion.div>
-              </>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-card border border-border/50 rounded-2xl p-8 text-center">
+                <p className="text-muted-foreground font-body">Your travel advisor will provide checkout instructions. Please contact them directly to complete your booking.</p>
+              </motion.div>
             )}
           </div>
         </div>
+
+        {/* Travel Advisor Footer */}
+        {agent.name && (
+          <footer className="mt-16 pt-12 border-t border-border/50 text-center">
+            <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Travel Advisor</p>
+            <div className="flex flex-col items-center gap-4 mb-6">
+              {agent.photoUrl && (
+                <img src={agent.photoUrl} alt={agent.name} className="w-20 h-20 rounded-full object-cover border-2 border-primary/20" />
+              )}
+              <div>
+                <h3 className="font-display text-2xl font-bold text-foreground">{agent.name}</h3>
+                {agent.title && <p className="text-muted-foreground font-body mt-0.5">{agent.title}</p>}
+                {agent.agencyName && <p className="text-sm text-muted-foreground font-body">{agent.agencyName}</p>}
+              </div>
+              {brandData.logoUrl && (
+                <img src={brandData.logoUrl} alt="Agency" className="h-12 max-w-[160px] object-contain" />
+              )}
+            </div>
+            <div className="flex items-center justify-center gap-6 text-sm font-body text-muted-foreground flex-wrap">
+              {agent.phone && <a href={`tel:${agent.phone}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Phone className="h-4 w-4" /> {agent.phone}</a>}
+              {agent.email && <a href={`mailto:${agent.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-4 w-4" /> {agent.email}</a>}
+              {agent.website && <a href="#" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Globe className="h-4 w-4" /> {agent.website}</a>}
+            </div>
+            <p className="text-xs text-muted-foreground/60 mt-10 font-body">© 2026 {agent.agencyName} · All prices in USD · Subject to availability</p>
+          </footer>
+        )}
       </div>
     </div>
   );
