@@ -105,8 +105,9 @@ export default function EditorPage() {
   const saveProposal = async (status?: string) => {
     if (!id) return;
     const targetStatus = status ?? currentStatus;
-    const isPublish = status === "sent";
-    const isUnpublish = status === "draft" && currentStatus === "sent";
+    const isPublish = status === "published";
+    const isUnpublish = status === "unpublished";
+
     if (isPublish) setPublishing(true);
     else setSaving(true);
 
@@ -126,17 +127,18 @@ export default function EditorPage() {
       toast({ title: "Save failed", description: error.message, variant: "destructive" });
     } else {
       setCurrentStatus(targetStatus);
-      const msg = isPublish ? "Published!" : isUnpublish ? "Unpublished — proposal is now a draft." : "Saved!";
+      const msg = isPublish ? "Published!" : isUnpublish ? "Unpublished!" : "Saved!";
       toast({ title: msg });
       setDirty(false);
     }
+
     setSaving(false);
     setPublishing(false);
   };
 
   const handleSave = () => saveProposal();
-  const handlePublish = () => saveProposal("sent");
-  const handleUnpublish = () => saveProposal("draft");
+  const handlePublish = () => saveProposal("published");
+  const handleUnpublish = () => saveProposal("unpublished");
 
   const copyShareLink = () => {
     const url = `${window.location.origin}/view/${shareId}`;
