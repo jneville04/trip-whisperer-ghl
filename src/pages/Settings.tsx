@@ -55,7 +55,15 @@ export default function SettingsPage() {
   const handleSave = async () => {
     try {
       const { id, user_id, ...updates } = form as AgentSettings;
-      await saveSettings(updates);
+      const normalizedUpdates = {
+        ...updates,
+        primary_color: updates.primary_color || appSettings.primary_color,
+        secondary_color: updates.secondary_color || appSettings.secondary_color,
+        accent_color: updates.secondary_color || appSettings.secondary_color,
+      };
+
+      await saveSettings(normalizedUpdates);
+      setForm((prev) => ({ ...prev, ...normalizedUpdates }));
       setDirty(false);
       toast({ title: "Settings saved!" });
     } catch (e: any) {
