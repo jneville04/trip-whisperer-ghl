@@ -138,6 +138,11 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
     }
   }, [navigate, shareId, brandData, returnTo, revisionsUrl, openModal]);
 
+  const checkoutEnabled = data.checkout?.enabled;
+  const goToCheckout = useCallback(() => {
+    navigate(`/checkout${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
+  }, [navigate, shareId, brandData, returnTo]);
+
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
       {/* STICKY HEADER NAV */}
