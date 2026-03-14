@@ -114,6 +114,7 @@ export interface BusTrip {
   videoThumbnailUrl?: string;
   mediaType?: "photos" | "video";
   stops: BusStop[];
+  price?: string;
 }
 
 export interface BusStop {
