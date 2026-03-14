@@ -25,6 +25,13 @@ export interface PricingLine {
   amount: string;
 }
 
+export interface AgentPricing {
+  cost: string;
+  commission: string;
+  markupType: "flat" | "percent";
+  markupValue: string;
+}
+
 export interface AgentInfo {
   name: string;
   title: string;
@@ -47,6 +54,7 @@ export interface FlightLeg {
   arrivalTime: string;
   date: string;
   price?: string;
+  agentPricing?: AgentPricing;
 }
 
 export interface Accommodation {
@@ -67,6 +75,7 @@ export interface Accommodation {
   videoThumbnailUrl?: string;
   mediaType?: "photos" | "video";
   price?: string;
+  agentPricing?: AgentPricing;
 }
 
 export interface CruiseShip {
@@ -90,6 +99,7 @@ export interface CruiseShip {
   videoThumbnailUrl?: string;
   mediaType?: "photos" | "video";
   price?: string;
+  agentPricing?: AgentPricing;
 }
 
 export interface BusTrip {
@@ -115,6 +125,7 @@ export interface BusTrip {
   mediaType?: "photos" | "video";
   stops: BusStop[];
   price?: string;
+  agentPricing?: AgentPricing;
 }
 
 export interface BusStop {

@@ -262,15 +262,14 @@ export default function ProposalPreview({ data, shareId }: Props) {
                       return (
                       <div
                         key={flight.id}
-                        className={`bg-background rounded-2xl border-2 shadow-sm p-6 relative overflow-hidden transition-all cursor-pointer ${
+                        className={`bg-background rounded-2xl border-2 shadow-sm p-6 relative overflow-hidden transition-all ${
                           !isGroupBooking
                             ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40"
                             : "border-border/50"
                         }`}
-                        onClick={() => !isGroupBooking && setSelectedFlight(flight.id)}
                       >
                         {!isGroupBooking && (
-                          <div className={`absolute top-4 right-4 w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30"}`}>
+                          <div className={`absolute top-4 right-4 w-5 h-5 rounded-full border-2 flex items-center justify-center cursor-pointer ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30"}`} onClick={() => setSelectedFlight(isSelected ? "" : flight.id)}>
                             {isSelected && <Check className="h-3 w-3 text-primary-foreground" />}
                           </div>
                         )}
@@ -299,6 +298,33 @@ export default function ProposalPreview({ data, shareId }: Props) {
                           <span>{flight.airline}</span>
                           {flight.flightNumber && <span className="text-primary font-semibold">{flight.flightNumber}</span>}
                         </div>
+                        {flight.price && (
+                          <div className="mt-4 pt-3 border-t border-border/30 flex items-center justify-between">
+                            <span className="font-display text-xl font-bold text-foreground">${flight.price}</span>
+                            {!isGroupBooking && (
+                              <Button
+                                variant={isSelected ? "travel" : "travel-outline"}
+                                size="sm"
+                                className="text-xs"
+                                onClick={(e) => { e.stopPropagation(); setSelectedFlight(isSelected ? "" : flight.id); }}
+                              >
+                                {isSelected ? "✓ Selected" : "Select"}
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                        {!flight.price && !isGroupBooking && (
+                          <div className="mt-4 pt-3 border-t border-border/30 flex justify-end">
+                            <Button
+                              variant={isSelected ? "travel" : "travel-outline"}
+                              size="sm"
+                              className="text-xs"
+                              onClick={(e) => { e.stopPropagation(); setSelectedFlight(isSelected ? "" : flight.id); }}
+                            >
+                              {isSelected ? "✓ Selected" : "Select"}
+                            </Button>
+                          </div>
+                        )}
                       </div>
                       );
                     })}
@@ -342,10 +368,10 @@ export default function ProposalPreview({ data, shareId }: Props) {
                               ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
-                          onClick={() => !isGroupBooking && setSelectedAccommodation(acc.id)}
+                          onClick={() => !isGroupBooking && setSelectedAccommodation(isSelected ? "" : acc.id)}
                         >
                           {!isGroupBooking && accommodations.length > 1 && (
-                            <div className={`absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30 bg-background"}`}>
+                            <div className={`absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30 bg-background"}`} onClick={(e) => { e.stopPropagation(); setSelectedAccommodation(isSelected ? "" : acc.id); }}>
                               {isSelected && <Check className="h-3.5 w-3.5 text-primary-foreground" />}
                             </div>
                           )}
@@ -417,6 +443,22 @@ export default function ProposalPreview({ data, shareId }: Props) {
                               {acc.checkOut && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Check-out: {acc.checkOut}</span>}
                               {acc.nights && <span className="text-primary font-semibold">{acc.nights}</span>}
                             </div>
+                            {(acc.price || !isGroupBooking) && (
+                              <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
+                                {acc.price && <span className="font-display text-xl font-bold text-foreground">${acc.price}</span>}
+                                {!acc.price && <span />}
+                                {!isGroupBooking && (
+                                  <Button
+                                    variant={isSelected ? "travel" : "travel-outline"}
+                                    size="sm"
+                                    className="text-xs"
+                                    onClick={(e) => { e.stopPropagation(); setSelectedAccommodation(isSelected ? "" : acc.id); }}
+                                  >
+                                    {isSelected ? "✓ Selected" : "Select Option"}
+                                  </Button>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </motion.div>
                       );
@@ -460,10 +502,10 @@ export default function ProposalPreview({ data, shareId }: Props) {
                               ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
-                          onClick={() => !isGroupBooking && setSelectedCruise(ship.id)}
+                          onClick={() => !isGroupBooking && setSelectedCruise(isSelected ? "" : ship.id)}
                         >
                           {!isGroupBooking && cruiseShips.length > 1 && (
-                            <div className={`absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30 bg-background"}`}>
+                            <div className={`absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30 bg-background"}`} onClick={(e) => { e.stopPropagation(); setSelectedCruise(isSelected ? "" : ship.id); }}>
                               {isSelected && <Check className="h-3.5 w-3.5 text-primary-foreground" />}
                             </div>
                           )}
@@ -543,6 +585,22 @@ export default function ProposalPreview({ data, shareId }: Props) {
                               {ship.disembarkationDate && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {ship.disembarkationDate}</span>}
                               {ship.nights && <span className="text-primary font-semibold">{ship.nights} Nights</span>}
                             </div>
+                            {(ship.price || !isGroupBooking) && (
+                              <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
+                                {ship.price && <span className="font-display text-xl font-bold text-foreground">${ship.price}</span>}
+                                {!ship.price && <span />}
+                                {!isGroupBooking && (
+                                  <Button
+                                    variant={isSelected ? "travel" : "travel-outline"}
+                                    size="sm"
+                                    className="text-xs"
+                                    onClick={(e) => { e.stopPropagation(); setSelectedCruise(isSelected ? "" : ship.id); }}
+                                  >
+                                    {isSelected ? "✓ Selected" : "Select Option"}
+                                  </Button>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </motion.div>
                       );
@@ -586,10 +644,10 @@ export default function ProposalPreview({ data, shareId }: Props) {
                               ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
-                          onClick={() => !isGroupBooking && setSelectedBusTrip(trip.id)}
+                          onClick={() => !isGroupBooking && setSelectedBusTrip(isSelected ? "" : trip.id)}
                         >
                           {!isGroupBooking && busTrips.length > 1 && (
-                            <div className={`absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30 bg-background"}`}>
+                            <div className={`absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30 bg-background"}`} onClick={(e) => { e.stopPropagation(); setSelectedBusTrip(isSelected ? "" : trip.id); }}>
                               {isSelected && <Check className="h-3.5 w-3.5 text-primary-foreground" />}
                             </div>
                           )}
@@ -684,6 +742,22 @@ export default function ProposalPreview({ data, shareId }: Props) {
                                 {trip.dropoffLocation && <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> Dropoff: {trip.dropoffLocation}</span>}
                                 {trip.dropoffDate && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {trip.dropoffDate}</span>}
                                 {trip.dropoffTime && <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> {trip.dropoffTime}</span>}
+                              </div>
+                            )}
+                            {(trip.price || !isGroupBooking) && (
+                              <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
+                                {trip.price && <span className="font-display text-xl font-bold text-foreground">${trip.price}</span>}
+                                {!trip.price && <span />}
+                                {!isGroupBooking && (
+                                  <Button
+                                    variant={isSelected ? "travel" : "travel-outline"}
+                                    size="sm"
+                                    className="text-xs"
+                                    onClick={(e) => { e.stopPropagation(); setSelectedBusTrip(isSelected ? "" : trip.id); }}
+                                  >
+                                    {isSelected ? "✓ Selected" : "Select Option"}
+                                  </Button>
+                                )}
                               </div>
                             )}
                           </div>
@@ -941,7 +1015,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
           <div className="max-w-3xl mx-auto px-6">
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-10">
               <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Selections</p>
-              <h2 className="font-display text-4xl font-bold text-foreground">Trip Summary</h2>
+              <h2 className="font-display text-4xl font-bold text-foreground">Trip Pricing</h2>
             </motion.div>
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="bg-background rounded-2xl border border-border/50 shadow-lg p-8">
               <div className="space-y-4 mb-6">
@@ -997,11 +1071,32 @@ export default function ProposalPreview({ data, shareId }: Props) {
                   {data.pricing.map((line) => (
                     <div key={line.id} className="flex justify-between items-center font-body">
                       <span className="text-muted-foreground">{line.label}</span>
-                      <span className="font-semibold text-foreground">{line.amount}</span>
+                      <span className="font-semibold text-foreground">${line.amount}</span>
                     </div>
                   ))}
                 </div>
               )}
+
+              {/* Dynamic Total */}
+              {(() => {
+                const selectedFlightPrice = selectedFlight ? parseFloat(flights.find(f => f.id === selectedFlight)?.price || "0") : 0;
+                const selectedAccPrice = selectedAccommodation ? parseFloat(accommodations.find(a => a.id === selectedAccommodation)?.price || "0") : 0;
+                const selectedCruisePrice = selectedCruise ? parseFloat(cruiseShips.find(s => s.id === selectedCruise)?.price || "0") : 0;
+                const selectedBusPrice = selectedBusTrip ? parseFloat(busTrips.find(b => b.id === selectedBusTrip)?.price || "0") : 0;
+                const pricingLinesTotal = data.pricing.reduce((sum, line) => sum + (parseFloat(line.amount) || 0), 0);
+                const total = selectedFlightPrice + selectedAccPrice + selectedCruisePrice + selectedBusPrice + pricingLinesTotal;
+                if (total > 0) {
+                  return (
+                    <div className="pt-4 border-t-2 border-primary/30 mb-6">
+                      <div className="flex justify-between items-center">
+                        <span className="font-display text-xl font-bold text-foreground">Estimated Total</span>
+                        <span className="font-display text-2xl font-bold text-primary">${total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              })()}
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                 <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>

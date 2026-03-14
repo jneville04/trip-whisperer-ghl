@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import RichTextEditor from "@/components/RichTextEditor";
+import AgentPricingFields from "@/components/AgentPricingFields";
 import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, Accommodation, CruiseShip, BusTrip, SectionKey } from "@/types/proposal";
 import { createActivity, createDay, createPricingLine, createFlightLeg, createAccommodation, createCruiseShip, createBusTrip, createBusStop, defaultSectionOrder } from "@/types/proposal";
 import { normalizeHexInput } from "@/lib/brand";
@@ -581,6 +582,10 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                   </div>
                                 </div>
                               )}
+                              <AgentPricingFields
+                                pricing={flight.agentPricing}
+                                onChange={(ap) => { const f = [...flights]; f[i] = { ...f[i], agentPricing: ap }; update("flights", f); }}
+                              />
                             </div>
                           ))}
                           <div className="flex gap-2">
@@ -671,6 +676,10 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                           </div>
                                         </div>
                                       )}
+                                      <AgentPricingFields
+                                        pricing={acc.agentPricing}
+                                        onChange={(ap) => { const a = [...accommodations]; a[i] = { ...a[i], agentPricing: ap }; update("accommodations", a); }}
+                                      />
                                       <div>
                                         <FieldLabel>Lodging Description</FieldLabel>
                                         <RichTextEditor content={acc.description} onChange={(html) => updateAccommodation(i, "description", html)} placeholder="Describe the hotel, its atmosphere, unique features..." minHeight="180px" />
@@ -890,6 +899,10 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                           </div>
                                         </div>
                                       )}
+                                      <AgentPricingFields
+                                        pricing={ship.agentPricing}
+                                        onChange={(ap) => { const s = [...cruiseShips]; s[i] = { ...s[i], agentPricing: ap }; update("cruiseShips", s); }}
+                                      />
                                     </TabsContent>
                                     <TabsContent value="ports" className="p-3 space-y-2 mt-0">
                                       <div className="grid grid-cols-2 gap-2">
@@ -1112,6 +1125,10 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                           </div>
                                         </div>
                                       )}
+                                      <AgentPricingFields
+                                        pricing={trip.agentPricing}
+                                        onChange={(ap) => { const t = [...busTrips]; t[i] = { ...t[i], agentPricing: ap }; update("busTrips", t); }}
+                                      />
                                     </TabsContent>
                                     <TabsContent value="schedule" className="p-3 space-y-2 mt-0">
                                       <div className="grid grid-cols-2 gap-2">
