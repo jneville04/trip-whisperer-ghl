@@ -1125,6 +1125,10 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                           </div>
                                         </div>
                                       )}
+                                      <AgentPricingFields
+                                        pricing={trip.agentPricing}
+                                        onChange={(ap) => { const t = [...busTrips]; t[i] = { ...t[i], agentPricing: ap }; update("busTrips", t); }}
+                                      />
                                     </TabsContent>
                                     <TabsContent value="schedule" className="p-3 space-y-2 mt-0">
                                       <div className="grid grid-cols-2 gap-2">
