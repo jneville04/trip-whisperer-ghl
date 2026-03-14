@@ -692,7 +692,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                             }}
                                             className="h-7 text-xs rounded-md border border-input bg-background px-1 font-body w-[46px]"
                                           >
-                                            {['00', '15', '30', '45'].map((m) => (
+                                            {Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0')).map((m) => (
                                               <option key={m} value={m}>{m}</option>
                                             ))}
                                           </select>
