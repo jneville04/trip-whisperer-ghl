@@ -42,7 +42,18 @@ export default function EditorPage() {
       return;
     }
     const r = row as any;
-    setData(r.data as ProposalData);
+    const saved = r.data as ProposalData;
+    // Merge with defaults so new fields are available on old proposals
+    const merged: ProposalData = {
+      ...defaultProposal,
+      ...saved,
+      sectionVisibility: { ...defaultProposal.sectionVisibility, ...(saved.sectionVisibility || {}) },
+      sectionOrder: saved.sectionOrder && !saved.sectionOrder.includes("cruiseShips")
+        ? [...saved.sectionOrder.filter((k: string) => k !== "agent"), "cruiseShips", ...saved.sectionOrder.filter((k: string) => k === "agent")]
+        : saved.sectionOrder || defaultProposal.sectionOrder,
+      cruiseShips: saved.cruiseShips || [],
+    };
+    setData(merged);
     setShareId(r.share_id || "");
     setCurrentStatus(r.status || "draft");
     setLoading(false);
