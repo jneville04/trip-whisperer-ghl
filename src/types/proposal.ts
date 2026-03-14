@@ -262,6 +262,7 @@ export interface ProposalData {
   brand: BrandSettings;
   sectionVisibility: SectionVisibility;
   sectionOrder: SectionKey[];
+  checkout?: CheckoutSettings;
 }
 
 export const createActivity = (type: Activity["type"] = "activity"): Activity => ({
