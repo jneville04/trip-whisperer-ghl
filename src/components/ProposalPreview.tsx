@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, type Easing } from "framer-motion";
 import { MapPin, Calendar, Users, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe, PlaneTakeoff, PlaneLanding, BedDouble, MessageSquare, CheckCircle2, Sparkles } from "lucide-react";
 import Lightbox from "@/components/Lightbox";
+import BookingModal from "@/components/BookingModal";
 import { Button } from "@/components/ui/button";
 import type { ProposalData, Activity, SectionKey } from "@/types/proposal";
 import { defaultSectionOrder } from "@/types/proposal";

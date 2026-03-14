@@ -778,6 +778,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                               <FieldLabel>Valid Until</FieldLabel>
                               <Input value={data.validUntil} onChange={(e) => update("validUntil", e.target.value)} className="h-8 text-sm" />
                             </div>
+                            <div>
+                              <FieldLabel>Booking / Checkout URL</FieldLabel>
+                              <Input value={data.bookingUrl || ""} onChange={(e) => update("bookingUrl", e.target.value)} placeholder="https://your-ghl-form-or-checkout-url.com" className="h-8 text-sm" />
+                              <p className="text-[10px] text-muted-foreground mt-1">GHL form or checkout page URL. Opens in a modal when clients click "Book Now".</p>
+                            </div>
                           </div>
                         </div>
                       </CollapsibleSection>
