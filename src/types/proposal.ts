@@ -61,6 +61,7 @@ export interface Accommodation {
   starRating: string;
   amenities: string[];
   highlights: string[];
+  videoUrl?: string;
 }
 
 export interface CruiseShip {
