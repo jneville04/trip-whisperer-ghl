@@ -72,17 +72,13 @@ export default function AuthPage() {
     }
   };
 
-  const heroUrl = (settings as any).login_hero_url || "";
-  const heroPosition = (settings as any).login_hero_position || "none";
-  const buttonColor = (settings as any).login_button_color || "";
+  const { cssVars } = useAppSettings();
+  const heroUrl = settings.login_hero_url || "";
+  const heroPosition = settings.login_hero_position || "none";
+  const buttonColor = settings.login_button_color || "";
   const hasHero = heroUrl && heroPosition !== "none";
 
-  const defaultVars: React.CSSProperties = {
-    ["--primary" as any]: "25 75% 47%",
-    ["--ring" as any]: "25 75% 47%",
-    ["--secondary" as any]: "195 45% 40%",
-    ["--accent" as any]: "45 80% 55%",
-  };
+  const brandVars: React.CSSProperties = cssVars as React.CSSProperties;
 
   const buttonStyle: React.CSSProperties = buttonColor
     ? { backgroundColor: buttonColor, borderColor: buttonColor }
