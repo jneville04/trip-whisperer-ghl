@@ -526,7 +526,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                                     )}
                                     {hasVideo && !hasImages && (
                                       <div className="sm:w-[260px] md:w-[300px] shrink-0">
-                                        <VideoEmbed url={act.videoUrl!} title={act.title} className="rounded-xl" />
+                                        <VideoEmbed url={act.videoUrl!} title={act.title} thumbnailUrl={act.videoThumbnailUrl} className="rounded-xl" />
                                       </div>
                                     )}
                                   </div>
