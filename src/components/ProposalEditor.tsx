@@ -21,6 +21,7 @@ import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg
 import { createActivity, createDay, createPricingLine, createFlightLeg, createFlightOption, createAccommodation, createCruiseShip, createBusTrip, createBusStop, defaultSectionOrder, createDefaultCheckout } from "@/types/proposal";
 import { normalizeHexInput } from "@/lib/brand";
 import { useAgentSettings } from "@/hooks/useAgentSettings";
+import { useAppSettings } from "@/hooks/useAppSettings";
 
 interface Props {
   data: ProposalData;

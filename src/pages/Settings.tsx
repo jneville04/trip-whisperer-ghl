@@ -38,9 +38,14 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (settings) {
-      setForm({ ...settings });
+      setForm({
+        ...settings,
+        primary_color: settings.primary_color || appSettings.primary_color,
+        secondary_color: settings.secondary_color || appSettings.secondary_color,
+        accent_color: settings.accent_color || settings.secondary_color || appSettings.secondary_color,
+      });
     }
-  }, [settings]);
+  }, [settings, appSettings.primary_color, appSettings.secondary_color]);
 
   const updateField = <K extends keyof AgentSettings>(key: K, value: AgentSettings[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
