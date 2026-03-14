@@ -11,6 +11,7 @@ import EditorPage from "./pages/EditorPage.tsx";
 import ClientView from "./pages/ClientView.tsx";
 import ApprovePage from "./pages/Approve.tsx";
 import RevisionsPage from "./pages/Revisions.tsx";
+import CheckoutPage from "./pages/Checkout.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
