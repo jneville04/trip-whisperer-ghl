@@ -180,8 +180,8 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
       {vis.hero && (
         <section className="relative">
           {data.heroMediaType === "video" && data.heroVideoUrl ? (
-            <div className="max-h-[500px] overflow-hidden">
-              <VideoEmbed url={data.heroVideoUrl} title={data.destination} thumbnailUrl={data.heroVideoThumbnailUrl} className="rounded-none" autoplay={!!data.heroAutoplay} muted={!!data.heroMuted} />
+            <div className="h-[500px] overflow-hidden">
+              <VideoEmbed url={data.heroVideoUrl} title={data.destination} thumbnailUrl={data.heroVideoThumbnailUrl} className="rounded-none !aspect-auto h-full" autoplay={!!data.heroAutoplay} muted={!!data.heroMuted} />
             </div>
           ) : (() => {
             // Collect all real hero images (skip fallbacks)
