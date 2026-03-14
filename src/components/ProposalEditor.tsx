@@ -323,34 +323,83 @@ export default function ProposalEditor({ data, onChange }: Props) {
             </div>
           </div>
           <div>
-            <FieldLabel>Hero Images</FieldLabel>
-            <div className="mt-1.5">
-              <SortableImageGrid
-                primaryImage={data.heroImageUrl}
-                galleryImages={data.heroImageUrls || []}
-                onReorder={(primary, gallery) => {
-                  onChange({ ...data, heroImageUrl: primary, heroImageUrls: gallery });
-                }}
-                onUpload={async (files) => {
-                  const urls = await uploadImages(files);
-                  urls.forEach((url) => {
-                    if (!data.heroImageUrl) { update("heroImageUrl", url); }
-                    else { update("heroImageUrls", [...(data.heroImageUrls || []), url]); }
-                  });
-                }}
-              />
+            <FieldLabel>Hero Media</FieldLabel>
+            <div className="flex gap-2 mt-1 mb-2">
+              <Button type="button" size="sm" variant={(!data.heroMediaType || data.heroMediaType === "photos") ? "default" : "outline"} className="text-xs h-7" onClick={() => update("heroMediaType", "photos")}>
+                📷 Photos
+              </Button>
+              <Button type="button" size="sm" variant={data.heroMediaType === "video" ? "default" : "outline"} className="text-xs h-7" onClick={() => update("heroMediaType", "video")}>
+                🎬 Video
+              </Button>
             </div>
-            <div className="flex gap-1.5 mt-1.5">
-              <Input placeholder="Paste image URL..." className="h-7 text-xs flex-1" onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  const val = (e.target as HTMLInputElement).value.trim();
-                  if (!val) return;
-                  if (!data.heroImageUrl) { update("heroImageUrl", val); }
-                  else { update("heroImageUrls", [...(data.heroImageUrls || []), val]); }
-                  (e.target as HTMLInputElement).value = "";
-                }
-              }} />
-            </div>
+            {(!data.heroMediaType || data.heroMediaType === "photos") ? (
+              <>
+                <div className="mt-1.5">
+                  <SortableImageGrid
+                    primaryImage={data.heroImageUrl}
+                    galleryImages={data.heroImageUrls || []}
+                    onReorder={(primary, gallery) => {
+                      onChange({ ...data, heroImageUrl: primary, heroImageUrls: gallery });
+                    }}
+                    onUpload={async (files) => {
+                      const urls = await uploadImages(files);
+                      urls.forEach((url) => {
+                        if (!data.heroImageUrl) { update("heroImageUrl", url); }
+                        else { update("heroImageUrls", [...(data.heroImageUrls || []), url]); }
+                      });
+                    }}
+                  />
+                </div>
+                <div className="flex gap-1.5 mt-1.5">
+                  <Input placeholder="Paste image URL..." className="h-7 text-xs flex-1" onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      const val = (e.target as HTMLInputElement).value.trim();
+                      if (!val) return;
+                      if (!data.heroImageUrl) { update("heroImageUrl", val); }
+                      else { update("heroImageUrls", [...(data.heroImageUrls || []), val]); }
+                      (e.target as HTMLInputElement).value = "";
+                    }
+                  }} />
+                </div>
+              </>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex gap-1.5">
+                  <Input placeholder="YouTube, Vimeo, or direct video URL..." className="h-7 text-xs flex-1" value={data.heroVideoUrl || ""} onChange={(e) => update("heroVideoUrl", e.target.value)} />
+                  <label className="cursor-pointer">
+                    <input type="file" accept="video/*,audio/*" className="hidden" onChange={async (e) => {
+                      const f = e.target.files?.[0];
+                      if (!f) return;
+                      const url = await uploadImage(f);
+                      update("heroVideoUrl", url);
+                    }} />
+                    <Button type="button" size="sm" variant="outline" className="text-xs h-7" asChild><span>Upload</span></Button>
+                  </label>
+                </div>
+                {data.heroVideoUrl && (
+                  <div>
+                    <FieldLabel>Custom Thumbnail</FieldLabel>
+                    <div className="flex gap-1.5 items-center mt-1">
+                      <label className="cursor-pointer">
+                        <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                          const f = e.target.files?.[0];
+                          if (!f) return;
+                          const url = await uploadImage(f);
+                          update("heroVideoThumbnailUrl", url);
+                        }} />
+                        <Button type="button" size="sm" variant="outline" className="text-xs h-7" asChild><span>Upload Thumbnail</span></Button>
+                      </label>
+                      {data.heroVideoThumbnailUrl && (
+                        <div className="relative h-10 w-16 rounded overflow-hidden border">
+                          <img src={data.heroVideoThumbnailUrl} alt="Thumbnail" className="w-full h-full object-cover" />
+                          <button type="button" className="absolute top-0 right-0 bg-destructive text-destructive-foreground rounded-bl p-0.5" onClick={() => update("heroVideoThumbnailUrl", "")}>✕</button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           <div className="grid grid-cols-3 gap-3">
             <div>

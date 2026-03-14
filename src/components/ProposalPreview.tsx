@@ -149,32 +149,35 @@ export default function ProposalPreview({ data, shareId }: Props) {
       {/* HERO */}
       {vis.hero && (
         <section className="relative">
-          {/* Image Grid - Tern-style layout */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-1 max-h-[500px] overflow-hidden">
-            {/* Main large image */}
-            <div className="md:col-span-2 aspect-[16/9] md:aspect-auto md:h-[500px] overflow-hidden cursor-pointer relative group" onClick={() => {
-              const allHeroImgs = [{ src: heroImage, alt: data.destination }, ...heroImages.map((u, i) => ({ src: u, alt: `${data.destination} ${i + 2}` }))];
-              openLightbox(allHeroImgs, 0);
-            }}>
-              <img src={heroImage} alt={data.destination} className="w-full h-full object-cover" />
+          {data.heroMediaType === "video" && data.heroVideoUrl ? (
+            <div className="max-h-[500px] overflow-hidden">
+              <VideoEmbed url={data.heroVideoUrl} title={data.destination} thumbnailUrl={data.heroVideoThumbnailUrl} className="rounded-none aspect-[21/9]" />
             </div>
-            {/* Side images */}
-            <div className="hidden md:grid grid-rows-2 gap-1 h-[500px]">
-              {heroImages.length > 0 ? heroImages.slice(0, 2).map((url, i) => (
-                <div key={i} className="overflow-hidden cursor-pointer relative group" onClick={() => {
-                  const allHeroImgs = [{ src: heroImage, alt: data.destination }, ...heroImages.map((u, j) => ({ src: u, alt: `${data.destination} ${j + 2}` }))];
-                  openLightbox(allHeroImgs, i + 1);
-                }}>
-                  <img src={url} alt={`${data.destination} ${i + 2}`} className="w-full h-full object-cover" />
-                </div>
-              )) : (
-                <>
-                  <div className="bg-muted flex items-center justify-center"><Camera className="h-10 w-10 text-muted-foreground/20" /></div>
-                  <div className="bg-muted flex items-center justify-center"><Camera className="h-10 w-10 text-muted-foreground/20" /></div>
-                </>
-              )}
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-1 max-h-[500px] overflow-hidden">
+              <div className="md:col-span-2 aspect-[16/9] md:aspect-auto md:h-[500px] overflow-hidden cursor-pointer relative group" onClick={() => {
+                const allHeroImgs = [{ src: heroImage, alt: data.destination }, ...heroImages.map((u, i) => ({ src: u, alt: `${data.destination} ${i + 2}` }))];
+                openLightbox(allHeroImgs, 0);
+              }}>
+                <img src={heroImage} alt={data.destination} className="w-full h-full object-cover" />
+              </div>
+              <div className="hidden md:grid grid-rows-2 gap-1 h-[500px]">
+                {heroImages.length > 0 ? heroImages.slice(0, 2).map((url, i) => (
+                  <div key={i} className="overflow-hidden cursor-pointer relative group" onClick={() => {
+                    const allHeroImgs = [{ src: heroImage, alt: data.destination }, ...heroImages.map((u, j) => ({ src: u, alt: `${data.destination} ${j + 2}` }))];
+                    openLightbox(allHeroImgs, i + 1);
+                  }}>
+                    <img src={url} alt={`${data.destination} ${i + 2}`} className="w-full h-full object-cover" />
+                  </div>
+                )) : (
+                  <>
+                    <div className="bg-muted flex items-center justify-center"><Camera className="h-10 w-10 text-muted-foreground/20" /></div>
+                    <div className="bg-muted flex items-center justify-center"><Camera className="h-10 w-10 text-muted-foreground/20" /></div>
+                  </>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Title section below images */}
           <div className="max-w-5xl mx-auto px-6 py-10 text-center">
