@@ -831,8 +831,24 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                         </div>
                                       </div>
                                       <div>
-                                        <FieldLabel>Video URL (YouTube/Vimeo)</FieldLabel>
-                                        <Input value={ship.videoUrl || ""} onChange={(e) => updateShipField("videoUrl", e.target.value)} placeholder="https://youtube.com/watch?v=..." className="h-8 text-xs" />
+                                        <FieldLabel>Video (Upload or paste URL)</FieldLabel>
+                                        <div className="flex gap-1.5">
+                                          <Input value={ship.videoUrl || ""} onChange={(e) => updateShipField("videoUrl", e.target.value)} placeholder="https://youtube.com/... or upload" className="h-8 text-xs flex-1" />
+                                          <Button variant="travel-outline" size="sm" className="h-8 text-xs" onClick={() => {
+                                            const input = document.createElement("input");
+                                            input.type = "file";
+                                            input.accept = "video/*,audio/*";
+                                            input.onchange = async (ev) => {
+                                              const file = (ev.target as HTMLInputElement).files?.[0];
+                                              if (!file) return;
+                                              const url = await uploadImage(file);
+                                              updateShipField("videoUrl", url);
+                                            };
+                                            input.click();
+                                          }}>
+                                            <Upload className="h-3 w-3 mr-1" /> Upload
+                                          </Button>
+                                        </div>
                                       </div>
                                     </TabsContent>
                                     <TabsContent value="details" className="p-3 space-y-2 mt-0">
