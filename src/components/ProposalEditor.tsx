@@ -1103,6 +1103,15 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                         <FieldLabel>Description</FieldLabel>
                                         <RichTextEditor content={trip.description} onChange={(html) => updateTripField("description", html)} placeholder="Describe the bus journey, scenery, comfort..." minHeight="120px" />
                                       </div>
+                                      {(data as any).proposalType === "proposal" && (
+                                        <div className="mt-2">
+                                          <FieldLabel>Price (Proposal Option)</FieldLabel>
+                                          <div className="relative w-32">
+                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
+                                            <Input value={trip.price || ""} onChange={(e) => updateTripField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
+                                          </div>
+                                        </div>
+                                      )}
                                     </TabsContent>
                                     <TabsContent value="schedule" className="p-3 space-y-2 mt-0">
                                       <div className="grid grid-cols-2 gap-2">
