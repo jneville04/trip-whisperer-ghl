@@ -57,12 +57,13 @@ export default function ProposalPreview({ data, shareId }: Props) {
     setLightboxIndex(index);
     setLightboxOpen(true);
   };
-  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, cruiseShips: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
+  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, cruiseShips: true, busTrips: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
   const brandData = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "", showAgencyNameWithLogo: true };
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
   const flights = data.flights || [];
   const accommodations = data.accommodations || [];
   const cruiseShips = data.cruiseShips || [];
+  const busTrips = data.busTrips || [];
   const agent = data.agent || { name: "", title: "", phone: "", email: "", website: "", agencyName: "", logoUrl: "", photoUrl: "" };
   const essentials = data.essentials || { visaRequirements: "", passportInfo: "", currency: "", language: "", timeZone: "", weatherInfo: "", packingTips: "", emergencyContacts: "" };
   const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
