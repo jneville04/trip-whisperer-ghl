@@ -115,6 +115,12 @@ function BrandingTab() {
         ghl_form_approve: (form as any).ghl_form_approve || "",
         ghl_form_revision: (form as any).ghl_form_revision || "",
         admin_photo_url: (form as any).admin_photo_url || "",
+        login_hero_url: (form as any).login_hero_url || "",
+        login_hero_position: (form as any).login_hero_position || "none",
+        login_button_color: (form as any).login_button_color || "",
+        helpdesk_email: (form as any).helpdesk_email || "",
+        helpdesk_phone: (form as any).helpdesk_phone || "",
+        helpdesk_message: (form as any).helpdesk_message || "",
         updated_at: new Date().toISOString(),
       } as any)
       .eq("id", 1);
