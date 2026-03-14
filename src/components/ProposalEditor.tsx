@@ -345,7 +345,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
           </div>
         </CardContent>
       </Card>
-      </CollapsibleSection>
 
       <CollapsibleSection title="🌍 Trip Overview" sectionKey="hero" visible={vis.hero} onToggleVisible={() => toggleSection("hero")}>
         <div className="space-y-3">
