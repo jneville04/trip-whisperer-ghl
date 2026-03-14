@@ -51,7 +51,7 @@ export default function VideoEmbed({ url, title, className = "", thumbnailUrl, a
 
   const isDirect = isDirectVideoUrl(url);
   const isAudio = isAudioUrl(url);
-  const info = !isDirect && !isAudio ? getEmbedInfo(url) : null;
+  const info = !isDirect && !isAudio ? getEmbedInfo(url, autoplay) : null;
 
   useEffect(() => {
     const el = ref.current;
