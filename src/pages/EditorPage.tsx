@@ -111,9 +111,18 @@ export default function EditorPage() {
     if (isPublish) setPublishing(true);
     else setSaving(true);
 
-    // Sync agent info from settings into proposal data on every save
+    // Sync agent info AND resolved brand colors into proposal data on every save
+    const currentBrand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
+    const resolvedBrand = {
+      primaryColor: currentBrand.primaryColor || agentSettings.primary_color || appSettings.primary_color,
+      secondaryColor: currentBrand.secondaryColor || agentSettings.secondary_color || appSettings.secondary_color,
+      accentColor: currentBrand.accentColor || agentSettings.accent_color || agentSettings.secondary_color || appSettings.accent_color,
+      logoUrl: agentSettings.logo_url || "",
+      showAgencyNameWithLogo: currentBrand.showAgencyNameWithLogo ?? agentSettings.show_agency_name_with_logo,
+    };
     const dataToSave = {
       ...data,
+      brand: resolvedBrand,
       agent: {
         name: agentSettings.agent_name || "",
         title: agentSettings.agent_title || "",
