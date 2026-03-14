@@ -766,8 +766,6 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                               )}
                             </div>
                           ) : null}
-                            </div>
-                          )}
                           <div className="p-6 sm:p-8">
                             <div className="flex items-start justify-between mb-3">
                               <div>
