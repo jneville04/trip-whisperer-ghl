@@ -156,6 +156,9 @@ export interface ProposalData {
   revisionsUrl?: string;
   heroImageUrl: string;
   heroImageUrls: string[];
+  heroMediaType?: "photos" | "video";
+  heroVideoUrl?: string;
+  heroVideoThumbnailUrl?: string;
   travelDates: string;
   travelerCount: string;
   destinationCount: string;
