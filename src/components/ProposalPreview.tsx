@@ -58,6 +58,12 @@ export default function ProposalPreview({ data, shareId }: Props) {
     setLightboxIndex(index);
     setLightboxOpen(true);
   };
+
+  // Proposal-type selection state (radio per category)
+  const [selectedFlight, setSelectedFlight] = useState<string>("");
+  const [selectedAccommodation, setSelectedAccommodation] = useState<string>("");
+  const [selectedCruise, setSelectedCruise] = useState<string>("");
+  const [selectedBusTrip, setSelectedBusTrip] = useState<string>("");
   const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, cruiseShips: true, busTrips: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
   const brandData = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "", showAgencyNameWithLogo: true };
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
@@ -159,8 +165,8 @@ export default function ProposalPreview({ data, shareId }: Props) {
       {vis.hero && (
         <section className="relative">
           {data.heroMediaType === "video" && data.heroVideoUrl ? (
-            <div className="max-h-[500px] overflow-hidden">
-              <VideoEmbed url={data.heroVideoUrl} title={data.destination} thumbnailUrl={data.heroVideoThumbnailUrl} className="rounded-none aspect-[21/9]" />
+            <div className={`${data.heroAutoplay ? '' : 'max-h-[500px]'} overflow-hidden`}>
+              <VideoEmbed url={data.heroVideoUrl} title={data.destination} thumbnailUrl={data.heroVideoThumbnailUrl} className="rounded-none aspect-[21/9]" autoplay={!!data.heroAutoplay} />
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-1 max-h-[500px] overflow-hidden">
@@ -238,8 +244,23 @@ export default function ProposalPreview({ data, shareId }: Props) {
                     <h2 className="font-display text-4xl font-bold text-foreground">Air Travel</h2>
                   </motion.div>
                   <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {flights.map((flight) => (
-                      <div key={flight.id} className="bg-background rounded-2xl border border-border/50 shadow-sm p-6 relative overflow-hidden">
+                    {flights.map((flight) => {
+                      const isSelected = selectedFlight === flight.id;
+                      return (
+                      <div
+                        key={flight.id}
+                        className={`bg-background rounded-2xl border-2 shadow-sm p-6 relative overflow-hidden transition-all cursor-pointer ${
+                          !isGroupBooking
+                            ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40"
+                            : "border-border/50"
+                        }`}
+                        onClick={() => !isGroupBooking && setSelectedFlight(flight.id)}
+                      >
+                        {!isGroupBooking && (
+                          <div className={`absolute top-4 right-4 w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30"}`}>
+                            {isSelected && <Check className="h-3 w-3 text-primary-foreground" />}
+                          </div>
+                        )}
                         <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
                         <div className="flex items-center gap-2 mb-4">
                           {flight.type === "departure" ? <PlaneTakeoff className="h-5 w-5 text-primary" /> : <PlaneLanding className="h-5 w-5 text-primary" />}
@@ -266,7 +287,8 @@ export default function ProposalPreview({ data, shareId }: Props) {
                           {flight.flightNumber && <span className="text-primary font-semibold">{flight.flightNumber}</span>}
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                   </motion.div>
                 </div>
               </section>
@@ -280,9 +302,11 @@ export default function ProposalPreview({ data, shareId }: Props) {
                   <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
                     <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Where You'll Stay</p>
                     <h2 className="font-display text-4xl font-bold text-foreground">Accommodations</h2>
+                    {!isGroupBooking && accommodations.length > 1 && <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>}
                   </motion.div>
                   <div className="space-y-10">
                     {accommodations.map((acc) => {
+                      const isSelected = selectedAccommodation === acc.id;
                       const amenities = (acc.amenities || []).filter(Boolean);
                       const highlights = (acc.highlights || []).filter(Boolean);
                       const galleryUrls = acc.galleryUrls || [];
@@ -293,7 +317,25 @@ export default function ProposalPreview({ data, shareId }: Props) {
                       const showAccVideo = (acc.mediaType || "photos") === "video" && !!acc.videoUrl;
                       const showAccPhotos = !showAccVideo;
                       return (
-                        <motion.div key={acc.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
+                        <motion.div
+                          key={acc.id}
+                          variants={fadeUp}
+                          initial="hidden"
+                          whileInView="visible"
+                          viewport={{ once: true }}
+                          custom={0}
+                          className={`bg-card rounded-2xl border-2 shadow-lg overflow-hidden transition-all ${
+                            !isGroupBooking
+                              ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40 cursor-pointer"
+                              : "border-border/50"
+                          }`}
+                          onClick={() => !isGroupBooking && setSelectedAccommodation(acc.id)}
+                        >
+                          {!isGroupBooking && accommodations.length > 1 && (
+                            <div className={`absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30 bg-background"}`}>
+                              {isSelected && <Check className="h-3.5 w-3.5 text-primary-foreground" />}
+                            </div>
+                          )}
                           {showAccPhotos ? (
                             <div className="grid grid-cols-3 md:grid-cols-4 gap-1">
                               {acc.imageUrl && (
@@ -382,6 +424,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                   </motion.div>
                   <div className="space-y-10">
                     {cruiseShips.map((ship) => {
+                      const isSelected = selectedCruise === ship.id;
                       const amenities = (ship.amenities || []).filter(Boolean);
                       const highlights = (ship.highlights || []).filter(Boolean);
                       const galleryUrls = ship.galleryUrls || [];
@@ -392,7 +435,25 @@ export default function ProposalPreview({ data, shareId }: Props) {
                       const showShipVideo = (ship.mediaType || "photos") === "video" && !!ship.videoUrl;
                       const showShipPhotos = !showShipVideo;
                       return (
-                        <motion.div key={ship.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
+                        <motion.div
+                          key={ship.id}
+                          variants={fadeUp}
+                          initial="hidden"
+                          whileInView="visible"
+                          viewport={{ once: true }}
+                          custom={0}
+                          className={`bg-card rounded-2xl border-2 shadow-lg overflow-hidden relative transition-all ${
+                            !isGroupBooking
+                              ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40 cursor-pointer"
+                              : "border-border/50"
+                          }`}
+                          onClick={() => !isGroupBooking && setSelectedCruise(ship.id)}
+                        >
+                          {!isGroupBooking && cruiseShips.length > 1 && (
+                            <div className={`absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30 bg-background"}`}>
+                              {isSelected && <Check className="h-3.5 w-3.5 text-primary-foreground" />}
+                            </div>
+                          )}
                           {showShipPhotos ? (
                             <div className="grid grid-cols-3 md:grid-cols-4 gap-1">
                               {ship.imageUrl && (
@@ -489,6 +550,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                   </motion.div>
                   <div className="space-y-10">
                     {busTrips.map((trip) => {
+                      const isSelected = selectedBusTrip === trip.id;
                       const amenities = (trip.amenities || []).filter(Boolean);
                       const highlights = (trip.highlights || []).filter(Boolean);
                       const galleryUrls = trip.galleryUrls || [];
@@ -499,7 +561,25 @@ export default function ProposalPreview({ data, shareId }: Props) {
                       ];
                       const showVideo = (trip.mediaType || "photos") === "video" && !!trip.videoUrl;
                       return (
-                        <motion.div key={trip.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
+                        <motion.div
+                          key={trip.id}
+                          variants={fadeUp}
+                          initial="hidden"
+                          whileInView="visible"
+                          viewport={{ once: true }}
+                          custom={0}
+                          className={`bg-card rounded-2xl border-2 shadow-lg overflow-hidden relative transition-all ${
+                            !isGroupBooking
+                              ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40 cursor-pointer"
+                              : "border-border/50"
+                          }`}
+                          onClick={() => !isGroupBooking && setSelectedBusTrip(trip.id)}
+                        >
+                          {!isGroupBooking && busTrips.length > 1 && (
+                            <div className={`absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30 bg-background"}`}>
+                              {isSelected && <Check className="h-3.5 w-3.5 text-primary-foreground" />}
+                            </div>
+                          )}
                           {showVideo ? (
                             <div className="p-4 sm:p-6 border-b border-border/30">
                               <VideoEmbed url={trip.videoUrl!} title={trip.routeName} thumbnailUrl={trip.videoThumbnailUrl} className="w-full" />
@@ -841,6 +921,89 @@ export default function ProposalPreview({ data, shareId }: Props) {
             return null;
         }
       })}
+
+      {/* PROPOSAL SELECTION SUMMARY — only for Proposal type */}
+      {!isGroupBooking && (
+        <section id="selection-summary" className="py-20 bg-card border-t border-border/50">
+          <div className="max-w-3xl mx-auto px-6">
+            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-10">
+              <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Selections</p>
+              <h2 className="font-display text-4xl font-bold text-foreground">Trip Summary</h2>
+            </motion.div>
+            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="bg-background rounded-2xl border border-border/50 shadow-lg p-8">
+              <div className="space-y-4 mb-6">
+                {flights.length > 0 && (
+                  <div className="flex justify-between items-center py-3 border-b border-border/30">
+                    <div className="flex items-center gap-2">
+                      <Plane className="h-4 w-4 text-primary" />
+                      <span className="font-body text-foreground font-medium">Flight</span>
+                    </div>
+                    <span className="font-body text-sm text-muted-foreground">
+                      {selectedFlight ? (flights.find(f => f.id === selectedFlight)?.airline || "Selected") + " — " + (flights.find(f => f.id === selectedFlight)?.departureAirport?.split("–")[0]?.trim() || "") + " → " + (flights.find(f => f.id === selectedFlight)?.arrivalAirport?.split("–")[0]?.trim() || "") : <span className="text-destructive text-xs">Not selected</span>}
+                    </span>
+                  </div>
+                )}
+                {accommodations.length > 0 && (
+                  <div className="flex justify-between items-center py-3 border-b border-border/30">
+                    <div className="flex items-center gap-2">
+                      <BedDouble className="h-4 w-4 text-primary" />
+                      <span className="font-body text-foreground font-medium">Accommodation</span>
+                    </div>
+                    <span className="font-body text-sm text-muted-foreground">
+                      {selectedAccommodation ? (accommodations.find(a => a.id === selectedAccommodation)?.hotelName || "Selected") : <span className="text-destructive text-xs">Not selected</span>}
+                    </span>
+                  </div>
+                )}
+                {cruiseShips.length > 0 && (
+                  <div className="flex justify-between items-center py-3 border-b border-border/30">
+                    <div className="flex items-center gap-2">
+                      <Ship className="h-4 w-4 text-primary" />
+                      <span className="font-body text-foreground font-medium">Cruise</span>
+                    </div>
+                    <span className="font-body text-sm text-muted-foreground">
+                      {selectedCruise ? (cruiseShips.find(s => s.id === selectedCruise)?.shipName || "Selected") : <span className="text-destructive text-xs">Not selected</span>}
+                    </span>
+                  </div>
+                )}
+                {busTrips.length > 0 && (
+                  <div className="flex justify-between items-center py-3 border-b border-border/30">
+                    <div className="flex items-center gap-2">
+                      <Bus className="h-4 w-4 text-primary" />
+                      <span className="font-body text-foreground font-medium">Bus Trip</span>
+                    </div>
+                    <span className="font-body text-sm text-muted-foreground">
+                      {selectedBusTrip ? (busTrips.find(b => b.id === selectedBusTrip)?.routeName || "Selected") : <span className="text-destructive text-xs">Not selected</span>}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Pricing lines if available */}
+              {data.pricing.length > 0 && (
+                <div className="space-y-3 mb-6 pt-4 border-t border-border/30">
+                  {data.pricing.map((line) => (
+                    <div key={line.id} className="flex justify-between items-center font-body">
+                      <span className="text-muted-foreground">{line.label}</span>
+                      <span className="font-semibold text-foreground">{line.amount}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>
+                  <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
+                </Button>
+                <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToRevisions}>
+                  <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
+                </Button>
+              </div>
+              {data.validUntil && <p className="text-sm text-muted-foreground mt-4 text-center font-body">This proposal is valid until {data.validUntil}</p>}
+            </motion.div>
+          </div>
+        </section>
+      )}
+
       <Lightbox images={lightboxImages} initialIndex={lightboxIndex} open={lightboxOpen} onClose={() => setLightboxOpen(false)} />
       <BookingModal open={bookingOpen} onClose={() => setBookingOpen(false)} url={bookingModalUrl} agencyName={bookingModalTitle || agent.agencyName} />
     </div>

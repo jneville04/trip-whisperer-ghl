@@ -195,6 +195,7 @@ export interface ProposalData {
   heroMediaType?: "photos" | "video";
   heroVideoUrl?: string;
   heroVideoThumbnailUrl?: string;
+  heroAutoplay?: boolean;
   travelDates: string;
   travelerCount: string;
   destinationCount: string;
