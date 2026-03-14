@@ -62,6 +62,7 @@ export interface Accommodation {
   amenities: string[];
   highlights: string[];
   videoUrl?: string;
+  mediaType?: "photos" | "video";
 }
 
 export interface CruiseShip {
