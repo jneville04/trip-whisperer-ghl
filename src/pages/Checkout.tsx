@@ -3,11 +3,9 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, CheckCircle2, Loader2, Plane, Hotel, Ship, Bus, Calendar, Users, Phone, Mail, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/hooks/use-toast";
-import { buildBrandCssVars, type BrandColors } from "@/lib/brand";
-import type { ProposalData, CheckoutSettings, PaymentOption } from "@/types/proposal";
+import { buildBrandCssVars } from "@/lib/brand";
+import type { ProposalData, CheckoutSettings } from "@/types/proposal";
 import { createDefaultCheckout } from "@/types/proposal";
 
 
