@@ -263,77 +263,88 @@ export default function ProposalEditor({ data, onChange }: Props) {
         </div>
       </div>
 
-      {/* Brand Settings */}
-      <CollapsibleSection title="🎨 Brand & Colors" defaultOpen={false}>
-        <div className="space-y-3">
-          <div>
-            <FieldLabel>Logo</FieldLabel>
-            <ImageUploadField value={brand.logoUrl} onChange={(url) => update("brand", { ...brand, logoUrl: url })} placeholder="Paste logo URL" />
+      {/* Brand Settings — pulled from global Settings */}
+      <Card className="border-border/50">
+        <CardHeader className="py-4">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base font-display">🎨 Brand & Colors</CardTitle>
+            <a href="/settings" target="_blank" className="text-xs text-primary hover:underline font-body">Edit in Settings →</a>
           </div>
-          <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
-            <div>
-              <p className="text-sm font-body font-medium text-foreground">Show agency name with logo</p>
-              <p className="text-xs text-muted-foreground font-body">Keeps both logo and agency name visible in top navigation.</p>
-            </div>
-            <Switch
-              checked={brand.showAgencyNameWithLogo ?? true}
-              onCheckedChange={(checked) => update("brand", { ...brand, showAgencyNameWithLogo: checked })}
-            />
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="flex items-center gap-3 text-xs font-body text-muted-foreground">
+            {(agentSettings.primary_color || brand.primaryColor) && (
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-full border border-border" style={{ backgroundColor: brand.primaryColor || agentSettings.primary_color || "#ccc" }} />
+                Primary
+              </div>
+            )}
+            {(agentSettings.secondary_color || brand.secondaryColor) && (
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-full border border-border" style={{ backgroundColor: brand.secondaryColor || agentSettings.secondary_color || "#ccc" }} />
+                Secondary
+              </div>
+            )}
+            {(agentSettings.accent_color || brand.accentColor) && (
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-full border border-border" style={{ backgroundColor: brand.accentColor || agentSettings.accent_color || "#ccc" }} />
+                Accent
+              </div>
+            )}
+            {agentSettings.logo_url && <span>✓ Logo set</span>}
+            {!agentSettings.primary_color && !brand.primaryColor && <span>Using platform defaults</span>}
           </div>
-          <div className="grid grid-cols-3 gap-3">
-            <div>
-              <FieldLabel>Primary Color</FieldLabel>
-              <div className="flex gap-2 items-center">
-                <input type="color" value={brand.primaryColor || "#C2631A"} onChange={(e) => update("brand", { ...brand, primaryColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                <Input
-                  value={brand.primaryColor}
-                  onChange={(e) => update("brand", { ...brand, primaryColor: normalizeHexInput(e.target.value) })}
-                  placeholder="#C2631A"
-                  className="h-8 text-sm flex-1"
-                  inputMode="text"
-                  maxLength={7}
-                />
+          <div className="mt-3 space-y-2">
+            <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
+              <div>
+                <p className="text-sm font-body font-medium text-foreground">Override brand for this proposal</p>
+                <p className="text-xs text-muted-foreground font-body">Set custom colors for this proposal only.</p>
               </div>
+              <Switch
+                checked={!!(brand.primaryColor || brand.secondaryColor || brand.accentColor || brand.logoUrl)}
+                onCheckedChange={(checked) => {
+                  if (!checked) {
+                    update("brand", { ...brand, primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" });
+                  } else {
+                    update("brand", { ...brand, primaryColor: agentSettings.primary_color, secondaryColor: agentSettings.secondary_color, accentColor: agentSettings.accent_color, logoUrl: agentSettings.logo_url });
+                  }
+                }}
+              />
             </div>
-            <div>
-              <FieldLabel>Secondary Color</FieldLabel>
-              <div className="flex gap-2 items-center">
-                <input type="color" value={brand.secondaryColor || "#337A8A"} onChange={(e) => update("brand", { ...brand, secondaryColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                <Input
-                  value={brand.secondaryColor}
-                  onChange={(e) => update("brand", { ...brand, secondaryColor: normalizeHexInput(e.target.value) })}
-                  placeholder="#337A8A"
-                  className="h-8 text-sm flex-1"
-                  inputMode="text"
-                  maxLength={7}
-                />
+            {(brand.primaryColor || brand.secondaryColor || brand.accentColor || brand.logoUrl) && (
+              <div className="space-y-2 pt-2">
+                <div>
+                  <FieldLabel>Logo Override</FieldLabel>
+                  <ImageUploadField value={brand.logoUrl} onChange={(url) => update("brand", { ...brand, logoUrl: url })} placeholder="Paste logo URL" />
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <FieldLabel>Primary</FieldLabel>
+                    <div className="flex gap-2 items-center">
+                      <input type="color" value={brand.primaryColor || "#C2631A"} onChange={(e) => update("brand", { ...brand, primaryColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                      <Input value={brand.primaryColor} onChange={(e) => update("brand", { ...brand, primaryColor: normalizeHexInput(e.target.value) })} placeholder="#C2631A" className="h-8 text-sm flex-1" maxLength={7} />
+                    </div>
+                  </div>
+                  <div>
+                    <FieldLabel>Secondary</FieldLabel>
+                    <div className="flex gap-2 items-center">
+                      <input type="color" value={brand.secondaryColor || "#337A8A"} onChange={(e) => update("brand", { ...brand, secondaryColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                      <Input value={brand.secondaryColor} onChange={(e) => update("brand", { ...brand, secondaryColor: normalizeHexInput(e.target.value) })} placeholder="#337A8A" className="h-8 text-sm flex-1" maxLength={7} />
+                    </div>
+                  </div>
+                  <div>
+                    <FieldLabel>Accent</FieldLabel>
+                    <div className="flex gap-2 items-center">
+                      <input type="color" value={brand.accentColor || "#D4A824"} onChange={(e) => update("brand", { ...brand, accentColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                      <Input value={brand.accentColor} onChange={(e) => update("brand", { ...brand, accentColor: normalizeHexInput(e.target.value) })} placeholder="#D4A824" className="h-8 text-sm flex-1" maxLength={7} />
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div>
-              <FieldLabel>Accent Color</FieldLabel>
-              <div className="flex gap-2 items-center">
-                <input type="color" value={brand.accentColor || "#D4A824"} onChange={(e) => update("brand", { ...brand, accentColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                <Input
-                  value={brand.accentColor}
-                  onChange={(e) => update("brand", { ...brand, accentColor: normalizeHexInput(e.target.value) })}
-                  placeholder="#D4A824"
-                  className="h-8 text-sm flex-1"
-                  inputMode="text"
-                  maxLength={7}
-                />
-              </div>
-            </div>
+            )}
           </div>
-          <Button
-            variant="travel-ghost"
-            size="sm"
-            className="text-xs text-muted-foreground mt-1"
-            onClick={() => update("brand", { ...brand, primaryColor: "", secondaryColor: "", accentColor: "" })}
-          >
-            Reset to app defaults
-          </Button>
-          <p className="text-xs text-muted-foreground">Use hex colors only (example: #1A2B3C). Leave blank to use defaults.</p>
-        </div>
+        </CardContent>
+      </Card>
       </CollapsibleSection>
 
       <CollapsibleSection title="🌍 Trip Overview" sectionKey="hero" visible={vis.hero} onToggleVisible={() => toggleSection("hero")}>
