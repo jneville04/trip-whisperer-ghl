@@ -302,24 +302,55 @@ function BrandingTab() {
       </div>
 
       <div className="border-t border-border/50 pt-6 mt-2">
-        <h3 className="font-display text-base font-semibold text-foreground mb-4">GHL Webhook Integration</h3>
-        <p className="text-xs text-muted-foreground font-body mb-4">Paste your GoHighLevel webhook URLs below. When a client approves or requests revisions, the data will be sent to these webhooks to trigger your GHL workflows.</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <h3 className="font-display text-base font-semibold text-foreground mb-4">GHL Integration</h3>
+
+        <div className="space-y-6">
           <div>
-            <Label>Approve Webhook URL</Label>
-            <Input
-              value={(form as any).ghl_webhook_approve || ""}
-              onChange={(e) => setForm({ ...form, ghl_webhook_approve: e.target.value } as any)}
-              placeholder="https://services.leadconnectorhq.com/hooks/..."
-            />
+            <p className="text-xs text-muted-foreground font-body mb-3">
+              <strong>Form Embeds:</strong> Paste your GHL form/survey embed URLs below. These will replace the built-in approve & revision forms with your GHL forms.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <Label>Approve Form URL</Label>
+                <Input
+                  value={(form as any).ghl_form_approve || ""}
+                  onChange={(e) => setForm({ ...form, ghl_form_approve: e.target.value } as any)}
+                  placeholder="https://link.yourdomain.com/widget/form/..."
+                />
+              </div>
+              <div>
+                <Label>Revision Form URL</Label>
+                <Input
+                  value={(form as any).ghl_form_revision || ""}
+                  onChange={(e) => setForm({ ...form, ghl_form_revision: e.target.value } as any)}
+                  placeholder="https://link.yourdomain.com/widget/form/..."
+                />
+              </div>
+            </div>
           </div>
+
           <div>
-            <Label>Revision Webhook URL</Label>
-            <Input
-              value={(form as any).ghl_webhook_revision || ""}
-              onChange={(e) => setForm({ ...form, ghl_webhook_revision: e.target.value } as any)}
-              placeholder="https://services.leadconnectorhq.com/hooks/..."
-            />
+            <p className="text-xs text-muted-foreground font-body mb-3">
+              <strong>Webhook URLs (optional):</strong> If you also want webhook notifications when the built-in forms are used.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <Label>Approve Webhook URL</Label>
+                <Input
+                  value={(form as any).ghl_webhook_approve || ""}
+                  onChange={(e) => setForm({ ...form, ghl_webhook_approve: e.target.value } as any)}
+                  placeholder="https://services.leadconnectorhq.com/hooks/..."
+                />
+              </div>
+              <div>
+                <Label>Revision Webhook URL</Label>
+                <Input
+                  value={(form as any).ghl_webhook_revision || ""}
+                  onChange={(e) => setForm({ ...form, ghl_webhook_revision: e.target.value } as any)}
+                  placeholder="https://services.leadconnectorhq.com/hooks/..."
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
