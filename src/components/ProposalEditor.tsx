@@ -299,12 +299,12 @@ export default function ProposalEditor({ data, onChange }: Props) {
                 <p className="text-xs text-muted-foreground font-body">Set custom colors for this proposal only.</p>
               </div>
               <Switch
-                checked={!!(brand.primaryColor || brand.secondaryColor || brand.accentColor || brand.logoUrl)}
+                checked={!!(brand.primaryColor || brand.secondaryColor || brand.accentColor)}
                 onCheckedChange={(checked) => {
                   if (!checked) {
-                    update("brand", { ...brand, primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" });
+                    update("brand", { ...brand, primaryColor: "", secondaryColor: "", accentColor: "" });
                   } else {
-                    update("brand", { ...brand, primaryColor: resolvedPrimaryColor, secondaryColor: resolvedSecondaryColor, accentColor: resolvedSecondaryColor, logoUrl: agentSettings.logo_url });
+                    update("brand", { ...brand, primaryColor: resolvedPrimaryColor, secondaryColor: resolvedSecondaryColor, accentColor: resolvedSecondaryColor });
                   }
                 }}
               />
