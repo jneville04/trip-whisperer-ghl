@@ -89,6 +89,38 @@ export interface CruiseShip {
   mediaType?: "photos" | "video";
 }
 
+export interface BusTrip {
+  id: string;
+  busCompany: string;
+  routeName: string;
+  pickupLocation: string;
+  pickupTime: string;
+  pickupDate: string;
+  dropoffLocation: string;
+  dropoffTime: string;
+  dropoffDate: string;
+  duration: string;
+  seatType: string;
+  busType: string;
+  description: string;
+  amenities: string[];
+  highlights: string[];
+  imageUrl: string;
+  galleryUrls: string[];
+  videoUrl?: string;
+  videoThumbnailUrl?: string;
+  mediaType?: "photos" | "video";
+  stops: BusStop[];
+}
+
+export interface BusStop {
+  id: string;
+  location: string;
+  arrivalTime: string;
+  departureTime: string;
+  notes: string;
+}
+
 export interface BrandSettings {
   primaryColor: string;
   secondaryColor: string;
@@ -128,7 +160,7 @@ export interface TermsAndConditions {
   showLiability: boolean;
 }
 
-export type SectionKey = "overview" | "flights" | "accommodations" | "cruiseShips" | "itinerary" | "inclusions" | "pricing" | "essentials" | "terms" | "agent";
+export type SectionKey = "overview" | "flights" | "accommodations" | "cruiseShips" | "busTrips" | "itinerary" | "inclusions" | "pricing" | "essentials" | "terms" | "agent";
 
 export interface SectionVisibility {
   hero: boolean;
@@ -136,6 +168,7 @@ export interface SectionVisibility {
   flights: boolean;
   accommodations: boolean;
   cruiseShips: boolean;
+  busTrips: boolean;
   itinerary: boolean;
   inclusions: boolean;
   pricing: boolean;
@@ -145,7 +178,7 @@ export interface SectionVisibility {
 }
 
 export const defaultSectionOrder: SectionKey[] = [
-  "overview", "flights", "accommodations", "cruiseShips", "itinerary", "inclusions", "essentials", "terms", "pricing", "agent",
+  "overview", "flights", "accommodations", "cruiseShips", "busTrips", "itinerary", "inclusions", "essentials", "terms", "pricing", "agent",
 ];
 
 export interface ProposalData {
@@ -168,6 +201,7 @@ export interface ProposalData {
   flights: FlightLeg[];
   accommodations: Accommodation[];
   cruiseShips: CruiseShip[];
+  busTrips: BusTrip[];
   inclusions: string[];
   pricing: PricingLine[];
   paymentTerms: string;
@@ -252,6 +286,36 @@ export const createCruiseShip = (): CruiseShip => ({
   description: "",
   amenities: [],
   highlights: [],
+  mediaType: "photos",
+});
+
+export const createBusStop = (): BusStop => ({
+  id: crypto.randomUUID(),
+  location: "",
+  arrivalTime: "",
+  departureTime: "",
+  notes: "",
+});
+
+export const createBusTrip = (): BusTrip => ({
+  id: crypto.randomUUID(),
+  busCompany: "",
+  routeName: "",
+  pickupLocation: "",
+  pickupTime: "",
+  pickupDate: "",
+  dropoffLocation: "",
+  dropoffTime: "",
+  dropoffDate: "",
+  duration: "",
+  seatType: "",
+  busType: "",
+  description: "",
+  amenities: [],
+  highlights: [],
+  imageUrl: "",
+  galleryUrls: [],
+  stops: [],
   mediaType: "photos",
 });
 
@@ -485,12 +549,14 @@ export const defaultProposal: ProposalData = {
     showAgencyNameWithLogo: true,
   },
   cruiseShips: [],
+  busTrips: [],
   sectionVisibility: {
     hero: true,
     overview: true,
     flights: true,
     accommodations: true,
     cruiseShips: true,
+    busTrips: true,
     itinerary: true,
     inclusions: true,
     pricing: true,

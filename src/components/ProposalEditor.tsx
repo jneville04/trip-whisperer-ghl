@@ -16,8 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import RichTextEditor from "@/components/RichTextEditor";
-import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, Accommodation, CruiseShip, SectionKey } from "@/types/proposal";
-import { createActivity, createDay, createPricingLine, createFlightLeg, createAccommodation, createCruiseShip, defaultSectionOrder } from "@/types/proposal";
+import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, Accommodation, CruiseShip, BusTrip, SectionKey } from "@/types/proposal";
+import { createActivity, createDay, createPricingLine, createFlightLeg, createAccommodation, createCruiseShip, createBusTrip, createBusStop, defaultSectionOrder } from "@/types/proposal";
 import { normalizeHexInput } from "@/lib/brand";
 
 interface Props {
@@ -188,10 +188,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
   };
 
   const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "", showAgencyNameWithLogo: true };
-  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, cruiseShips: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
+  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, cruiseShips: true, busTrips: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
   const flights = data.flights || [];
   const accommodations = data.accommodations || [];
   const cruiseShips = data.cruiseShips || [];
+  const busTrips = data.busTrips || [];
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
   const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
 
@@ -211,7 +212,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
   const sectionLabels: Record<SectionKey, string> = {
     overview: "🌍 Overview", flights: "✈️ Flights", accommodations: "🏨 Hotels",
-    cruiseShips: "🚢 Cruise Ships",
+    cruiseShips: "🚢 Cruise Ships", busTrips: "🚌 Bus Trips",
     itinerary: "📋 Itinerary", inclusions: "✅ Included", pricing: "💰 Pricing",
     essentials: "🧳 Essentials", terms: "📄 Terms", agent: "💼 Agent",
   };
@@ -222,6 +223,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
     flights: "✈️ Flights",
     accommodations: "🏨 Accommodations",
     cruiseShips: "🚢 Cruise Ship & Cabin",
+    busTrips: "🚌 Bus Trips",
     itinerary: "📅 Itinerary Days",
     inclusions: "✅ What's Included",
     pricing: "💰 Pricing",
@@ -971,6 +973,224 @@ export default function ProposalEditor({ data, onChange }: Props) {
                           })}
                           <Button variant="travel-ghost" size="sm" onClick={() => update("cruiseShips", [...cruiseShips, createCruiseShip()])} className="text-primary text-xs h-7">
                             <Plus className="h-3 w-3 mr-1" /> Add Ship
+                          </Button>
+                        </div>
+                      </CollapsibleSection>
+                    );
+
+
+                  case "busTrips":
+                    return (
+                      <CollapsibleSection title={sectionTitles.busTrips} sectionKey="busTrips" visible={vis.busTrips} onToggleVisible={() => toggleSection("busTrips")} defaultOpen={false} dragHandleProps={dragHandleProps}>
+                        <div className="space-y-4">
+                          {busTrips.map((trip, i) => {
+                            const tripAmenities = trip.amenities || [];
+                            const tripHighlights = trip.highlights || [];
+                            const tripGallery = trip.galleryUrls || [];
+                            const tripStops = trip.stops || [];
+                            const updateTripField = (field: string, value: any) => {
+                              const t = [...(data.busTrips || [])];
+                              t[i] = { ...t[i], [field]: value };
+                              update("busTrips", t);
+                            };
+
+                            return (
+                              <CollapsibleHotel key={trip.id} defaultOpen={i === 0} hotelName={trip.routeName || `Bus Trip ${i + 1}`} location={trip.busCompany} onDelete={() => update("busTrips", busTrips.filter((_, idx) => idx !== i))}>
+                                <div className="border-t border-border/30">
+                                  <Tabs defaultValue="general" className="w-full">
+                                    <TabsList className="w-full justify-start rounded-none border-b border-border/30 bg-transparent h-9 px-3">
+                                      <TabsTrigger value="general" className="text-xs data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">Route Info</TabsTrigger>
+                                      <TabsTrigger value="schedule" className="text-xs data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">Schedule</TabsTrigger>
+                                      <TabsTrigger value="stops" className="text-xs data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">Stops</TabsTrigger>
+                                      <TabsTrigger value="media" className="text-xs data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">Media</TabsTrigger>
+                                      <TabsTrigger value="details" className="text-xs data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none">Details</TabsTrigger>
+                                    </TabsList>
+                                    <TabsContent value="general" className="p-3 space-y-2 mt-0">
+                                      <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                          <FieldLabel>Route Name</FieldLabel>
+                                          <Input value={trip.routeName} onChange={(e) => updateTripField("routeName", e.target.value)} placeholder="Lisbon → Porto Express" className="h-8 text-xs" />
+                                        </div>
+                                        <div>
+                                          <FieldLabel>Bus Company</FieldLabel>
+                                          <Input value={trip.busCompany} onChange={(e) => updateTripField("busCompany", e.target.value)} placeholder="FlixBus" className="h-8 text-xs" />
+                                        </div>
+                                      </div>
+                                      <div className="grid grid-cols-3 gap-2">
+                                        <div>
+                                          <FieldLabel>Bus Type</FieldLabel>
+                                          <Input value={trip.busType} onChange={(e) => updateTripField("busType", e.target.value)} placeholder="Coach / Mini Bus" className="h-8 text-xs" />
+                                        </div>
+                                        <div>
+                                          <FieldLabel>Seat Type</FieldLabel>
+                                          <Input value={trip.seatType} onChange={(e) => updateTripField("seatType", e.target.value)} placeholder="Reclining / Standard" className="h-8 text-xs" />
+                                        </div>
+                                        <div>
+                                          <FieldLabel>Duration</FieldLabel>
+                                          <Input value={trip.duration} onChange={(e) => updateTripField("duration", e.target.value)} placeholder="3h 30m" className="h-8 text-xs" />
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <FieldLabel>Description</FieldLabel>
+                                        <RichTextEditor content={trip.description} onChange={(html) => updateTripField("description", html)} placeholder="Describe the bus journey, scenery, comfort..." minHeight="120px" />
+                                      </div>
+                                    </TabsContent>
+                                    <TabsContent value="schedule" className="p-3 space-y-2 mt-0">
+                                      <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                          <FieldLabel>Pickup Location</FieldLabel>
+                                          <Input value={trip.pickupLocation} onChange={(e) => updateTripField("pickupLocation", e.target.value)} placeholder="Lisbon Central Bus Station" className="h-8 text-xs" />
+                                        </div>
+                                        <div>
+                                          <FieldLabel>Dropoff Location</FieldLabel>
+                                          <Input value={trip.dropoffLocation} onChange={(e) => updateTripField("dropoffLocation", e.target.value)} placeholder="Porto Bus Terminal" className="h-8 text-xs" />
+                                        </div>
+                                      </div>
+                                      <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                          <FieldLabel>Pickup Date</FieldLabel>
+                                          <DatePickerField value={trip.pickupDate} onChange={(val) => updateTripField("pickupDate", val)} placeholder="Pickup date" />
+                                        </div>
+                                        <div>
+                                          <FieldLabel>Dropoff Date</FieldLabel>
+                                          <DatePickerField value={trip.dropoffDate} onChange={(val) => updateTripField("dropoffDate", val)} placeholder="Dropoff date" />
+                                        </div>
+                                      </div>
+                                      <div className="grid grid-cols-2 gap-2">
+                                        <div>
+                                          <FieldLabel>Pickup Time</FieldLabel>
+                                          <Input value={trip.pickupTime} onChange={(e) => updateTripField("pickupTime", e.target.value)} placeholder="8:00 AM" className="h-8 text-xs" />
+                                        </div>
+                                        <div>
+                                          <FieldLabel>Dropoff Time</FieldLabel>
+                                          <Input value={trip.dropoffTime} onChange={(e) => updateTripField("dropoffTime", e.target.value)} placeholder="11:30 AM" className="h-8 text-xs" />
+                                        </div>
+                                      </div>
+                                    </TabsContent>
+                                    <TabsContent value="stops" className="p-3 space-y-2 mt-0">
+                                      {tripStops.map((stop, si) => (
+                                        <div key={stop.id} className="p-2 border border-border/30 rounded-lg space-y-1.5 relative">
+                                          <button type="button" className="absolute top-1 right-1 text-destructive" onClick={() => {
+                                            const s = tripStops.filter((_, idx) => idx !== si);
+                                            updateTripField("stops", s);
+                                          }}><X className="h-3 w-3" /></button>
+                                          <div className="grid grid-cols-3 gap-2">
+                                            <div className="col-span-3">
+                                              <FieldLabel>Stop Location</FieldLabel>
+                                              <Input value={stop.location} onChange={(e) => {
+                                                const s = [...tripStops]; s[si] = { ...s[si], location: e.target.value }; updateTripField("stops", s);
+                                              }} placeholder="Coimbra Bus Station" className="h-7 text-xs" />
+                                            </div>
+                                          </div>
+                                          <div className="grid grid-cols-3 gap-2">
+                                            <div>
+                                              <FieldLabel>Arrival</FieldLabel>
+                                              <Input value={stop.arrivalTime} onChange={(e) => {
+                                                const s = [...tripStops]; s[si] = { ...s[si], arrivalTime: e.target.value }; updateTripField("stops", s);
+                                              }} placeholder="9:30 AM" className="h-7 text-xs" />
+                                            </div>
+                                            <div>
+                                              <FieldLabel>Departure</FieldLabel>
+                                              <Input value={stop.departureTime} onChange={(e) => {
+                                                const s = [...tripStops]; s[si] = { ...s[si], departureTime: e.target.value }; updateTripField("stops", s);
+                                              }} placeholder="9:45 AM" className="h-7 text-xs" />
+                                            </div>
+                                            <div>
+                                              <FieldLabel>Notes</FieldLabel>
+                                              <Input value={stop.notes} onChange={(e) => {
+                                                const s = [...tripStops]; s[si] = { ...s[si], notes: e.target.value }; updateTripField("stops", s);
+                                              }} placeholder="15 min rest stop" className="h-7 text-xs" />
+                                            </div>
+                                          </div>
+                                        </div>
+                                      ))}
+                                      <Button variant="travel-ghost" size="sm" onClick={() => updateTripField("stops", [...tripStops, createBusStop()])} className="text-primary text-xs h-7">
+                                        <Plus className="h-3 w-3 mr-1" /> Add Stop
+                                      </Button>
+                                    </TabsContent>
+                                    <TabsContent value="media" className="p-3 space-y-3 mt-0">
+                                      <div>
+                                        <FieldLabel>Show in Proposal</FieldLabel>
+                                        <div className="mt-1.5 flex gap-1.5">
+                                          <Button type="button" size="sm" variant={(trip.mediaType || "photos") === "photos" ? "travel" : "travel-outline"} className="h-7 text-xs" onClick={() => updateTripField("mediaType", "photos")}>Photos</Button>
+                                          <Button type="button" size="sm" variant={(trip.mediaType || "photos") === "video" ? "travel" : "travel-outline"} className="h-7 text-xs" onClick={() => updateTripField("mediaType", "video")}>Video</Button>
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <FieldLabel>Photos</FieldLabel>
+                                        <div className="mt-1.5">
+                                          <SortableImageGrid
+                                            primaryImage={trip.imageUrl}
+                                            galleryImages={tripGallery}
+                                            onReorder={(primary, gallery) => {
+                                              const t = [...(data.busTrips || [])];
+                                              t[i] = { ...t[i], imageUrl: primary, galleryUrls: gallery };
+                                              update("busTrips", t);
+                                            }}
+                                            primaryAspectClass="aspect-[4/3]"
+                                            onUpload={async (files) => {
+                                              const urls = await uploadImages(files);
+                                              urls.forEach((url) => {
+                                                if (!trip.imageUrl) { updateTripField("imageUrl", url); }
+                                                else { updateTripField("galleryUrls", [...tripGallery, url]); }
+                                              });
+                                            }}
+                                          />
+                                        </div>
+                                      </div>
+                                      <div>
+                                        <FieldLabel>Video (Upload or paste URL)</FieldLabel>
+                                        <div className="flex gap-1.5">
+                                          <Input value={trip.videoUrl || ""} onChange={(e) => updateTripField("videoUrl", e.target.value)} placeholder="https://youtube.com/... or upload" className="h-8 text-xs flex-1" />
+                                          <Button variant="travel-outline" size="sm" className="h-8 text-xs" onClick={() => {
+                                            const input = document.createElement("input");
+                                            input.type = "file"; input.accept = "video/*,audio/*";
+                                            input.onchange = async (ev) => {
+                                              const file = (ev.target as HTMLInputElement).files?.[0]; if (!file) return;
+                                              const url = await uploadImage(file); updateTripField("videoUrl", url);
+                                            }; input.click();
+                                          }}><Upload className="h-3 w-3 mr-1" /> Upload</Button>
+                                        </div>
+                                      </div>
+                                      {trip.videoUrl && (
+                                        <div>
+                                          <FieldLabel>Video Thumbnail</FieldLabel>
+                                          <div className="flex gap-1.5 items-center">
+                                            {trip.videoThumbnailUrl && (
+                                              <div className="relative w-16 h-10 rounded overflow-hidden border border-border/40 shrink-0">
+                                                <img src={trip.videoThumbnailUrl} alt="Thumbnail" className="w-full h-full object-cover" />
+                                                <button onClick={() => updateTripField("videoThumbnailUrl", "")} className="absolute top-0 right-0 bg-foreground/70 text-background rounded-full p-0.5"><X className="h-2.5 w-2.5" /></button>
+                                              </div>
+                                            )}
+                                            <Button variant="travel-outline" size="sm" className="h-8 text-xs" onClick={() => {
+                                              const input = document.createElement("input");
+                                              input.type = "file"; input.accept = "image/*";
+                                              input.onchange = async (ev) => {
+                                                const file = (ev.target as HTMLInputElement).files?.[0]; if (!file) return;
+                                                const url = await uploadImage(file); updateTripField("videoThumbnailUrl", url);
+                                              }; input.click();
+                                            }}><ImagePlus className="h-3 w-3 mr-1" /> {trip.videoThumbnailUrl ? "Replace" : "Upload Thumbnail"}</Button>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </TabsContent>
+                                    <TabsContent value="details" className="p-3 space-y-2 mt-0">
+                                      <div>
+                                        <FieldLabel>Highlights</FieldLabel>
+                                        <Textarea value={tripHighlights.join("\n")} onChange={(e) => updateTripField("highlights", e.target.value.split("\n"))} placeholder="One highlight per line&#10;e.g. Scenic coastal route&#10;Rest stop at historic town" className="text-xs min-h-[120px] resize-y" />
+                                      </div>
+                                      <div>
+                                        <FieldLabel>Bus Amenities</FieldLabel>
+                                        <Textarea value={tripAmenities.join("\n")} onChange={(e) => updateTripField("amenities", e.target.value.split("\n"))} placeholder="One amenity per line&#10;e.g. WiFi&#10;Air Conditioning&#10;USB Charging&#10;Restroom" className="text-xs min-h-[120px] resize-y" />
+                                      </div>
+                                    </TabsContent>
+                                  </Tabs>
+                                </div>
+                              </CollapsibleHotel>
+                            );
+                          })}
+                          <Button variant="travel-ghost" size="sm" onClick={() => update("busTrips", [...busTrips, createBusTrip()])} className="text-primary text-xs h-7">
+                            <Plus className="h-3 w-3 mr-1" /> Add Bus Trip
                           </Button>
                         </div>
                       </CollapsibleSection>

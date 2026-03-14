@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, type Easing } from "framer-motion";
-import { MapPin, Calendar, Users, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe, PlaneTakeoff, PlaneLanding, BedDouble, MessageSquare, CheckCircle2, Sparkles, Ship, Anchor } from "lucide-react";
+import { MapPin, Calendar, Users, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe, PlaneTakeoff, PlaneLanding, BedDouble, MessageSquare, CheckCircle2, Sparkles, Ship, Anchor, Bus } from "lucide-react";
 import Lightbox from "@/components/Lightbox";
 import BookingModal from "@/components/BookingModal";
 import VideoEmbed from "@/components/VideoEmbed";
@@ -57,12 +57,13 @@ export default function ProposalPreview({ data, shareId }: Props) {
     setLightboxIndex(index);
     setLightboxOpen(true);
   };
-  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, cruiseShips: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
+  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, cruiseShips: true, busTrips: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
   const brandData = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "", showAgencyNameWithLogo: true };
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
   const flights = data.flights || [];
   const accommodations = data.accommodations || [];
   const cruiseShips = data.cruiseShips || [];
+  const busTrips = data.busTrips || [];
   const agent = data.agent || { name: "", title: "", phone: "", email: "", website: "", agencyName: "", logoUrl: "", photoUrl: "" };
   const essentials = data.essentials || { visaRequirements: "", passportInfo: "", currency: "", language: "", timeZone: "", weatherInfo: "", packingTips: "", emergencyContacts: "" };
   const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
@@ -72,7 +73,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
 
   const sectionLabels: Record<SectionKey, string> = {
     overview: "Overview", flights: "Flights", accommodations: "Hotels",
-    cruiseShips: "Cruise",
+    cruiseShips: "Cruise", busTrips: "Bus",
     itinerary: "Itinerary", inclusions: "Included", pricing: "Pricing",
     essentials: "Essentials", terms: "Terms", agent: "Advisor",
   };
@@ -460,6 +461,130 @@ export default function ProposalPreview({ data, shareId }: Props) {
                               {ship.disembarkationDate && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {ship.disembarkationDate}</span>}
                               {ship.nights && <span className="text-primary font-semibold">{ship.nights} Nights</span>}
                             </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </section>
+            );
+
+          case "busTrips":
+            if (busTrips.length === 0) return null;
+            return (
+              <section key="busTrips" id="busTrips" className="py-20">
+                <div className="max-w-5xl mx-auto px-6">
+                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
+                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Ground Transport</p>
+                    <h2 className="font-display text-4xl font-bold text-foreground">Bus Trips</h2>
+                  </motion.div>
+                  <div className="space-y-10">
+                    {busTrips.map((trip) => {
+                      const amenities = (trip.amenities || []).filter(Boolean);
+                      const highlights = (trip.highlights || []).filter(Boolean);
+                      const galleryUrls = trip.galleryUrls || [];
+                      const stops = trip.stops || [];
+                      const allTripImages = [
+                        ...(trip.imageUrl ? [{ src: trip.imageUrl, alt: trip.routeName }] : []),
+                        ...galleryUrls.map((url, gi) => ({ src: url, alt: `${trip.routeName} ${gi + 2}` })),
+                      ];
+                      const showVideo = (trip.mediaType || "photos") === "video" && !!trip.videoUrl;
+                      return (
+                        <motion.div key={trip.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
+                          {showVideo ? (
+                            <div className="p-4 sm:p-6 border-b border-border/30">
+                              <VideoEmbed url={trip.videoUrl!} title={trip.routeName} thumbnailUrl={trip.videoThumbnailUrl} className="w-full" />
+                            </div>
+                          ) : (
+                            <div className="grid grid-cols-3 md:grid-cols-4 gap-1">
+                              {trip.imageUrl ? (
+                                <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allTripImages, 0)}>
+                                  <img src={trip.imageUrl} alt={trip.routeName} className="w-full h-full object-cover" />
+                                </div>
+                              ) : (
+                                <div className="col-span-2 row-span-2 aspect-[4/3] bg-muted flex items-center justify-center">
+                                  <Bus className="h-10 w-10 text-muted-foreground/30" />
+                                </div>
+                              )}
+                              {galleryUrls.slice(0, 6).map((url, gi) => (
+                                <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allTripImages, gi + 1)}>
+                                  <img src={url} alt={`${trip.routeName} ${gi + 2}`} className="w-full h-full object-cover" />
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          <div className="p-6 sm:p-8">
+                            <div className="flex items-start justify-between mb-3">
+                              <div>
+                                <h3 className="font-display text-2xl font-bold text-foreground mb-1">{trip.routeName || "Bus Trip"}</h3>
+                                {trip.busCompany && <p className="text-sm text-muted-foreground font-body flex items-center gap-1"><Bus className="h-3.5 w-3.5" /> {trip.busCompany}</p>}
+                              </div>
+                              <Bus className="h-6 w-6 text-primary mt-1 shrink-0" />
+                            </div>
+                            <div className="flex flex-wrap gap-3 mt-4">
+                              {trip.busType && <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-body font-semibold px-3 py-1.5 rounded-full">{trip.busType}</span>}
+                              {trip.seatType && <span className="inline-flex items-center gap-1.5 bg-muted text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full">{trip.seatType}</span>}
+                              {trip.duration && <span className="inline-flex items-center gap-1.5 bg-muted text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full"><Clock className="h-3 w-3" /> {trip.duration}</span>}
+                            </div>
+                            {trip.description && <div className="text-sm text-muted-foreground font-body mt-4 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: trip.description }} />}
+                            {/* Stops timeline */}
+                            {stops.length > 0 && (
+                              <div className="mt-5">
+                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Route Stops</p>
+                                <div className="space-y-0 relative ml-3">
+                                  <div className="absolute left-[5px] top-2 bottom-2 w-0.5 bg-border" />
+                                  {stops.map((stop, si) => (
+                                    <div key={stop.id || si} className="relative pl-6 py-2">
+                                      <div className="absolute left-0 top-3 w-3 h-3 rounded-full bg-primary border-2 border-background" />
+                                      <p className="text-sm font-body font-semibold text-foreground">{stop.location}</p>
+                                      <div className="flex gap-3 text-xs text-muted-foreground font-body mt-0.5">
+                                        {stop.arrivalTime && <span>Arrive: {stop.arrivalTime}</span>}
+                                        {stop.departureTime && <span>Depart: {stop.departureTime}</span>}
+                                      </div>
+                                      {stop.notes && <p className="text-xs text-muted-foreground/80 font-body mt-0.5 italic">{stop.notes}</p>}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            {highlights.length > 0 && (
+                              <div className="mt-4">
+                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">Highlights</p>
+                                <div className="space-y-1.5">
+                                  {highlights.map((h, hi) => (
+                                    <div key={hi} className="flex items-center gap-2 text-sm font-body text-foreground">
+                                      <Sparkles className="h-3.5 w-3.5 text-accent shrink-0" />
+                                      <span>{h}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            {amenities.length > 0 && (
+                              <div className="mt-4 pt-4 border-t border-border/30">
+                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Bus Amenities</p>
+                                <div className="flex flex-wrap gap-2">
+                                  {amenities.map((a, ai) => (
+                                    <span key={ai} className="inline-flex items-center gap-1.5 bg-muted/50 text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full border border-border/30">
+                                      <Check className="h-3 w-3 text-primary" /> {a}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-6 mt-5 pt-4 border-t border-border/30 text-sm text-muted-foreground font-body flex-wrap">
+                              {trip.pickupLocation && <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> Pickup: {trip.pickupLocation}</span>}
+                              {trip.pickupDate && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {trip.pickupDate}</span>}
+                              {trip.pickupTime && <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> {trip.pickupTime}</span>}
+                            </div>
+                            {(trip.dropoffLocation || trip.dropoffDate || trip.dropoffTime) && (
+                              <div className="flex items-center gap-6 mt-2 text-sm text-muted-foreground font-body flex-wrap">
+                                {trip.dropoffLocation && <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> Dropoff: {trip.dropoffLocation}</span>}
+                                {trip.dropoffDate && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {trip.dropoffDate}</span>}
+                                {trip.dropoffTime && <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> {trip.dropoffTime}</span>}
+                              </div>
+                            )}
                           </div>
                         </motion.div>
                       );
