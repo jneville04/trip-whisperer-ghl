@@ -88,7 +88,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
   const navItems = useMemo(() => {
     const hasContent: Record<string, boolean> = {
       overview: !!(data.introText),
-      flights: flights.length > 0,
+      flights: flightOptions.length > 0,
       accommodations: accommodations.length > 0,
       cruiseShips: cruiseShips.length > 0,
       busTrips: busTrips.length > 0,
@@ -102,7 +102,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
     return sectionOrder
       .filter((key) => key !== "agent" && vis[key] && hasContent[key])
       .map((key) => ({ label: sectionLabels[key], id: key }));
-  }, [vis, sectionOrder, data, flights, accommodations, cruiseShips, busTrips, essentials, terms, agent]);
+  }, [vis, sectionOrder, data, flightOptions, accommodations, cruiseShips, busTrips, essentials, terms, agent]);
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
