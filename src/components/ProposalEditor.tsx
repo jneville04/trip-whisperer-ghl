@@ -676,6 +676,10 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                           </div>
                                         </div>
                                       )}
+                                      <AgentPricingFields
+                                        pricing={acc.agentPricing}
+                                        onChange={(ap) => { const a = [...accommodations]; a[i] = { ...a[i], agentPricing: ap }; update("accommodations", a); }}
+                                      />
                                       <div>
                                         <FieldLabel>Lodging Description</FieldLabel>
                                         <RichTextEditor content={acc.description} onChange={(html) => updateAccommodation(i, "description", html)} placeholder="Describe the hotel, its atmosphere, unique features..." minHeight="180px" />
