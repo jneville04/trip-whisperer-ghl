@@ -176,10 +176,12 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const addInclusion = () => update("inclusions", [...data.inclusions, ""]);
   const removeInclusion = (index: number) => update("inclusions", data.inclusions.filter((_, i) => i !== index));
 
-  const updateFlight = (index: number, field: keyof FlightLeg, value: string) => {
-    const f = [...(data.flights || [])];
-    f[index] = { ...f[index], [field]: value };
-    update("flights", f);
+  const updateFlightLeg = (optIndex: number, legIndex: number, field: keyof FlightLeg, value: string) => {
+    const opts = [...(data.flightOptions || [])];
+    const legs = [...opts[optIndex].legs];
+    legs[legIndex] = { ...legs[legIndex], [field]: value };
+    opts[optIndex] = { ...opts[optIndex], legs };
+    update("flightOptions", opts);
   };
 
   const updateAccommodation = (index: number, field: keyof Accommodation, value: string) => {
