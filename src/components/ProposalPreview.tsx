@@ -502,7 +502,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                               ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
-                          onClick={() => !isGroupBooking && setSelectedCruise(ship.id)}
+                          onClick={() => !isGroupBooking && setSelectedCruise(isSelected ? "" : ship.id)}
                         >
                           {!isGroupBooking && cruiseShips.length > 1 && (
                             <div className={`absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30 bg-background"}`}>
