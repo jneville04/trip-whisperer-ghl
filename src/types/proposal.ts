@@ -246,6 +246,7 @@ export const createCruiseShip = (): CruiseShip => ({
   description: "",
   amenities: [],
   highlights: [],
+  mediaType: "photos",
 });
 
 export const defaultProposal: ProposalData = {
