@@ -998,15 +998,31 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                         </div>
                                       )}
                                     </div>
-                                    {/* Video URL */}
+                                    {/* Video */}
                                     <div>
-                                      <FieldLabel>Video URL (YouTube/Vimeo)</FieldLabel>
-                                      <Input
-                                        value={act.videoUrl || ""}
-                                        onChange={(e) => updateActivity(dayIdx, actIdx, "videoUrl", e.target.value)}
-                                        placeholder="https://youtube.com/watch?v=... or https://vimeo.com/..."
-                                        className="h-7 text-xs"
-                                      />
+                                      <FieldLabel>Video (Upload or paste URL)</FieldLabel>
+                                      <div className="flex gap-1.5">
+                                        <Input
+                                          value={act.videoUrl || ""}
+                                          onChange={(e) => updateActivity(dayIdx, actIdx, "videoUrl", e.target.value)}
+                                          placeholder="https://youtube.com/... or upload"
+                                          className="h-7 text-xs flex-1"
+                                        />
+                                        <Button variant="travel-outline" size="sm" className="h-7 text-xs" onClick={() => {
+                                          const input = document.createElement("input");
+                                          input.type = "file";
+                                          input.accept = "video/*,audio/*";
+                                          input.onchange = async (ev) => {
+                                            const file = (ev.target as HTMLInputElement).files?.[0];
+                                            if (!file) return;
+                                            const url = await uploadImage(file);
+                                            updateActivity(dayIdx, actIdx, "videoUrl", url);
+                                          };
+                                          input.click();
+                                        }}>
+                                          <Upload className="h-3 w-3 mr-1" /> Upload
+                                        </Button>
+                                      </div>
                                     </div>
                                   </div>
                                 ))}
