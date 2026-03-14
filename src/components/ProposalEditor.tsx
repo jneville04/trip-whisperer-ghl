@@ -724,6 +724,10 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                           }} />
                                         </div>
                                       </div>
+                                      <div>
+                                        <FieldLabel>Video URL (YouTube/Vimeo)</FieldLabel>
+                                        <Input value={ship.videoUrl || ""} onChange={(e) => updateShipField("videoUrl", e.target.value)} placeholder="https://youtube.com/watch?v=..." className="h-8 text-xs" />
+                                      </div>
                                     </TabsContent>
                                     <TabsContent value="details" className="p-3 space-y-2 mt-0">
                                       <div>
@@ -733,10 +737,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                       <div>
                                         <FieldLabel>Ship Amenities</FieldLabel>
                                         <Textarea value={shipAmenities.join("\n")} onChange={(e) => updateShipField("amenities", e.target.value.split("\n"))} placeholder="One amenity per line&#10;e.g. Main Pool & Water Slides&#10;Broadway Shows&#10;Specialty Restaurants" className="text-xs min-h-[120px] resize-y" />
-                                      </div>
-                                      <div>
-                                        <FieldLabel>Video URL (YouTube/Vimeo)</FieldLabel>
-                                        <Input value={ship.videoUrl || ""} onChange={(e) => updateShipField("videoUrl", e.target.value)} placeholder="https://youtube.com/watch?v=..." className="h-8 text-xs" />
                                       </div>
                                     </TabsContent>
                                   </Tabs>
