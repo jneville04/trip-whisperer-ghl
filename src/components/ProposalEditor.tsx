@@ -523,7 +523,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     </TabsContent>
                                     <TabsContent value="media" className="p-3 space-y-3 mt-0">
                                       <div>
-                                        <FieldLabel>Displayed Photos</FieldLabel>
+                                        <FieldLabel>Photos & Video</FieldLabel>
                                         <div className="mt-1.5">
                                           <SortableImageGrid
                                             primaryImage={acc.imageUrl}
