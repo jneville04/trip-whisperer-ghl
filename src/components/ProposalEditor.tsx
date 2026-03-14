@@ -574,10 +574,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                         <FieldLabel>Amenities</FieldLabel>
                                         <Textarea value={accAmenities.join("\n")} onChange={(e) => updateAccField("amenities", e.target.value.split("\n"))} placeholder="One amenity per line&#10;e.g. Spa & Wellness Center&#10;Rooftop Pool&#10;24h Room Service" className="text-xs min-h-[120px] resize-y" />
                                       </div>
-                                      <div>
-                                        <FieldLabel>Video URL (YouTube/Vimeo)</FieldLabel>
-                                        <Input value={acc.videoUrl || ""} onChange={(e) => updateAccField("videoUrl", e.target.value)} placeholder="https://youtube.com/watch?v=..." className="h-8 text-xs" />
-                                      </div>
                                     </TabsContent>
                                   </Tabs>
                                 </div>
