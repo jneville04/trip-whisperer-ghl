@@ -201,6 +201,7 @@ export interface ProposalData {
   flights: FlightLeg[];
   accommodations: Accommodation[];
   cruiseShips: CruiseShip[];
+  busTrips: BusTrip[];
   inclusions: string[];
   pricing: PricingLine[];
   paymentTerms: string;
