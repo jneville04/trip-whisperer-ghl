@@ -669,29 +669,41 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                         </select>
                                         <div className="flex gap-0.5">
                                           <select
-                                            value={act.time ? act.time.replace(/\s*(AM|PM)$/i, '') : ''}
+                                            value={(() => { const m = act.time?.match(/^(\d{1,2})/); return m ? m[1] : ''; })()}
                                             onChange={(e) => {
-                                              const hour = e.target.value;
-                                              const currentPeriod = act.time?.match(/(AM|PM)$/i)?.[1] || 'AM';
-                                              updateActivity(dayIdx, actIdx, "time", hour ? `${hour} ${currentPeriod}` : '');
+                                              const hr = e.target.value;
+                                              const min = act.time?.match(/:(\d{2})/)?.[1] || '00';
+                                              const period = act.time?.match(/(AM|PM)$/i)?.[1] || 'AM';
+                                              updateActivity(dayIdx, actIdx, "time", hr ? `${hr}:${min} ${period}` : '');
                                             }}
-                                            className="h-7 text-xs rounded-md border border-input bg-background px-1 font-body w-[70px]"
+                                            className="h-7 text-xs rounded-md border border-input bg-background px-1 font-body w-[50px]"
                                           >
-                                            <option value="">Time</option>
+                                            <option value="">Hr</option>
                                             {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
-                                              <option key={h} value={`${h}:00`}>{h}:00</option>
+                                              <option key={h} value={String(h).padStart(2, '0')}>{String(h).padStart(2, '0')}</option>
                                             ))}
-                                            {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
-                                              <option key={`${h}:30`} value={`${h}:30`}>{h}:30</option>
+                                          </select>
+                                          <select
+                                            value={act.time?.match(/:(\d{2})/)?.[1] || '00'}
+                                            onChange={(e) => {
+                                              const hr = act.time?.match(/^(\d{1,2})/)?.[1] || '12';
+                                              const period = act.time?.match(/(AM|PM)$/i)?.[1] || 'AM';
+                                              updateActivity(dayIdx, actIdx, "time", `${hr}:${e.target.value} ${period}`);
+                                            }}
+                                            className="h-7 text-xs rounded-md border border-input bg-background px-1 font-body w-[46px]"
+                                          >
+                                            {['00', '15', '30', '45'].map((m) => (
+                                              <option key={m} value={m}>{m}</option>
                                             ))}
                                           </select>
                                           <select
                                             value={act.time?.match(/(AM|PM)$/i)?.[1]?.toUpperCase() || 'AM'}
                                             onChange={(e) => {
-                                              const hourPart = act.time?.replace(/\s*(AM|PM)$/i, '') || '';
-                                              updateActivity(dayIdx, actIdx, "time", hourPart ? `${hourPart} ${e.target.value}` : '');
+                                              const hr = act.time?.match(/^(\d{1,2})/)?.[1] || '12';
+                                              const min = act.time?.match(/:(\d{2})/)?.[1] || '00';
+                                              updateActivity(dayIdx, actIdx, "time", `${hr}:${min} ${e.target.value}`);
                                             }}
-                                            className="h-7 text-xs rounded-md border border-input bg-background px-1 font-body w-[52px]"
+                                            className="h-7 text-xs rounded-md border border-input bg-background px-1 font-body w-[46px]"
                                           >
                                             <option value="AM">AM</option>
                                             <option value="PM">PM</option>
