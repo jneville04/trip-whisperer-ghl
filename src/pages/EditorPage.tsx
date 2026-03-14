@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Eye, PenLine, ArrowLeft, Save, ExternalLink, PanelLeftClose, PanelLeft, Send } from "lucide-react";
+import { Eye, EyeOff, PenLine, ArrowLeft, Save, ExternalLink, PanelLeftClose, PanelLeft, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProposalEditor from "@/components/ProposalEditor";
 import ProposalPreview from "@/components/ProposalPreview";

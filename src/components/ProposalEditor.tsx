@@ -295,6 +295,14 @@ export default function ProposalEditor({ data, onChange }: Props) {
               </div>
             </div>
           </div>
+          <Button
+            variant="travel-ghost"
+            size="sm"
+            className="text-xs text-muted-foreground mt-1"
+            onClick={() => update("brand", { ...brand, primaryColor: "", secondaryColor: "", accentColor: "" })}
+          >
+            Reset to app defaults
+          </Button>
           <p className="text-xs text-muted-foreground">Use hex colors only (example: #1A2B3C). Leave blank to use defaults.</p>
         </div>
       </CollapsibleSection>
