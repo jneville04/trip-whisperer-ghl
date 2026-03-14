@@ -42,6 +42,7 @@ interface Props {
 }
 
 export default function ProposalPreview({ data, shareId }: Props) {
+  const isGroupBooking = (data as any).proposalType !== "proposal";
   const navigate = useNavigate();
   const heroImage = data.heroImageUrl || heroFallback;
   const heroImages = data.heroImageUrls || [];
