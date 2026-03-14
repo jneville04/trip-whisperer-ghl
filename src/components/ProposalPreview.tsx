@@ -195,7 +195,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
 
             if (count === 1) {
               return (
-                <div className="max-h-[500px] overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
+                <div className="h-[500px] overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
                   <img src={allReal[0]} alt={data.destination} className="w-full h-full object-cover" />
                 </div>
               );
