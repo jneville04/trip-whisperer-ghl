@@ -1695,6 +1695,9 @@ export default function ProposalEditor({ data, onChange }: Props) {
         </SortableContext>
       </DndContext>
 
+      {/* Checkout Settings */}
+      <CheckoutEditorSection data={data} onChange={onChange} />
+
       {/* Agent Financial Summary */}
       <AgentFinancialSummary data={data} />
     </div>
