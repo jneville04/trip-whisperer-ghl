@@ -21,32 +21,38 @@ function isAudioUrl(url: string): boolean {
   return /\.(mp3|wav|m4a|ogg|aac)(\?|$)/i.test(url);
 }
 
-function getEmbedInfo(url: string, autoplayMuted = false): { type: "youtube" | "vimeo" | "unknown"; embedUrl: string; autoThumbnailUrl?: string } | null {
+function getEmbedInfo(url: string, autoplay = false, muted = false): { type: "youtube" | "vimeo" | "unknown"; embedUrl: string; autoThumbnailUrl?: string } | null {
   if (!url) return null;
 
   const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
   if (ytMatch) {
-    const params = autoplayMuted ? 'autoplay=1&mute=1&loop=1&rel=0' : 'autoplay=1&rel=0';
+    const params = [`rel=0`];
+    if (autoplay) params.push('autoplay=1');
+    if (muted) params.push('mute=1');
+    if (autoplay) params.push('loop=1');
     return {
       type: "youtube",
-      embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?${params}`,
+      embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?${params.join('&')}`,
       autoThumbnailUrl: `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`,
     };
   }
 
   const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
   if (vimeoMatch) {
-    const params = autoplayMuted ? 'autoplay=1&muted=1&loop=1' : 'autoplay=1';
+    const params = [];
+    if (autoplay) params.push('autoplay=1');
+    if (muted) params.push('muted=1');
+    if (autoplay) params.push('loop=1');
     return {
       type: "vimeo",
-      embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?${params}`,
+      embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}${params.length ? '?' + params.join('&') : ''}`,
     };
   }
 
   return null;
 }
 
-export default function VideoEmbed({ url, title, className = "", thumbnailUrl, autoplay = false }: VideoEmbedProps) {
+export default function VideoEmbed({ url, title, className = "", thumbnailUrl, autoplay = false, muted = false }: VideoEmbedProps) {
   const [playing, setPlaying] = useState(autoplay);
   const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
