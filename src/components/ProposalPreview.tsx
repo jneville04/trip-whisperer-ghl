@@ -39,6 +39,7 @@ function getActivityIcon(type: Activity["type"]) {
 interface Props {
   data: ProposalData;
   shareId?: string;
+  isEditor?: boolean;
 }
 
 export default function ProposalPreview({ data, shareId }: Props) {
