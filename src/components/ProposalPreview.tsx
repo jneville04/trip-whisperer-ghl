@@ -180,8 +180,8 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
       {vis.hero && (
         <section className="relative">
           {data.heroMediaType === "video" && data.heroVideoUrl ? (
-            <div className="h-[500px] overflow-hidden">
-              <VideoEmbed url={data.heroVideoUrl} title={data.destination} thumbnailUrl={data.heroVideoThumbnailUrl} className="rounded-none !aspect-auto h-full" autoplay={!!data.heroAutoplay} muted={!!data.heroMuted} />
+            <div className="aspect-[21/9] overflow-hidden">
+              <VideoEmbed url={data.heroVideoUrl} title={data.destination} thumbnailUrl={data.heroVideoThumbnailUrl} className="rounded-none !aspect-auto h-full w-full" autoplay={!!data.heroAutoplay} muted={!!data.heroMuted} />
             </div>
           ) : (() => {
             // Collect all real hero images (skip fallbacks)
@@ -195,7 +195,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
 
             if (count === 1) {
               return (
-                <div className="h-[500px] overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
+                <div className="aspect-[21/9] overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
                   <img src={allReal[0]} alt={data.destination} className="w-full h-full object-cover" />
                 </div>
               );
@@ -203,7 +203,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
 
             if (count === 2) {
               return (
-                <div className="grid grid-cols-2 gap-1 h-[500px] overflow-hidden">
+                <div className="grid grid-cols-2 gap-1 aspect-[21/9] overflow-hidden">
                   {allReal.map((url, i) => (
                     <div key={i} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i)}>
                       <img src={url} alt={`${data.destination} ${i + 1}`} className="w-full h-full object-cover" />
@@ -215,7 +215,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
 
             // 3+ images: 1 large + 2 stacked
             return (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-1 h-[500px] overflow-hidden">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-1 aspect-[21/9] overflow-hidden">
                 <div className="md:col-span-2 overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
                   <img src={allReal[0]} alt={data.destination} className="w-full h-full object-cover" />
                 </div>
