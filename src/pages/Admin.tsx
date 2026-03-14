@@ -77,6 +77,7 @@ export default function AdminPage() {
 }
 
 function BrandingTab() {
+  const queryClient = useQueryClient();
   const { settings } = useAppSettings();
   const [form, setForm] = useState(settings);
   const [saving, setSaving] = useState(false);
