@@ -597,13 +597,15 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                                   <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, 0)}>
                                     <img src={ship.imageUrl} alt={ship.shipName} className="w-full h-full object-cover" />
                                   </div>
-                              {galleryUrls.slice(0, 6).map((url, gi) => (
-                                <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, gi + 1)}>
-                                  <img src={url} alt={`${ship.shipName} ${gi + 2}`} className="w-full h-full object-cover" />
-                                </div>
-                              ))}
+                                  {galleryUrls.slice(0, 6).map((url, gi) => (
+                                    <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, gi + 1)}>
+                                      <img src={url} alt={`${ship.shipName} ${gi + 2}`} className="w-full h-full object-cover" />
+                                    </div>
+                                  ))}
+                                </>
+                              )}
                             </div>
-                          ) : (
+                          ) : showShipPhotos ? null : (
                             <div className="p-4 sm:p-6 border-b border-border/30">
                               <VideoEmbed url={ship.videoUrl!} title={ship.shipName} thumbnailUrl={ship.videoThumbnailUrl} className="w-full" />
                             </div>
