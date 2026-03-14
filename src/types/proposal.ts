@@ -181,7 +181,10 @@ export const defaultSectionOrder: SectionKey[] = [
   "overview", "flights", "accommodations", "cruiseShips", "busTrips", "itinerary", "inclusions", "essentials", "terms", "pricing", "agent",
 ];
 
+export type ProposalType = "group_booking" | "proposal";
+
 export interface ProposalData {
+  proposalType: ProposalType;
   destination: string;
   subtitle: string;
   bookingUrl?: string;
