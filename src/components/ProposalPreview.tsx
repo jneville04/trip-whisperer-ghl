@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, type Easing } from "framer-motion";
 import { MapPin, Calendar, Users, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe, PlaneTakeoff, PlaneLanding, BedDouble, MessageSquare, CheckCircle2, Sparkles } from "lucide-react";
 import Lightbox from "@/components/Lightbox";
+import BookingModal from "@/components/BookingModal";
 import { Button } from "@/components/ui/button";
 import type { ProposalData, Activity, SectionKey } from "@/types/proposal";
 import { defaultSectionOrder } from "@/types/proposal";
@@ -46,6 +47,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
   const [lightboxImages, setLightboxImages] = useState<{ src: string; alt?: string }[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [bookingOpen, setBookingOpen] = useState(false);
 
   const openLightbox = (images: { src: string; alt?: string }[], index: number = 0) => {
     setLightboxImages(images);
@@ -82,9 +84,15 @@ export default function ProposalPreview({ data, shareId }: Props) {
 
   const returnTo = window.location.pathname;
 
+  const bookingUrl = data.bookingUrl || "";
+
   const goToApprove = useCallback(() => {
-    navigate(`/approve${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
-  }, [navigate, shareId, brandData, returnTo]);
+    if (bookingUrl) {
+      setBookingOpen(true);
+    } else {
+      navigate(`/approve${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
+    }
+  }, [navigate, shareId, brandData, returnTo, bookingUrl]);
 
   const goToRevisions = useCallback(() => {
     navigate(`/revisions${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
@@ -535,6 +543,9 @@ export default function ProposalPreview({ data, shareId }: Props) {
         }
       })}
       <Lightbox images={lightboxImages} initialIndex={lightboxIndex} open={lightboxOpen} onClose={() => setLightboxOpen(false)} />
+      {bookingUrl && (
+        <BookingModal open={bookingOpen} onClose={() => setBookingOpen(false)} url={bookingUrl} agencyName={agent.agencyName} />
+      )}
     </div>
   );
 }
