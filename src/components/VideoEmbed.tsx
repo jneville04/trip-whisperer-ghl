@@ -42,8 +42,8 @@ function getEmbedInfo(url: string): { type: "youtube" | "vimeo" | "unknown"; emb
   return null;
 }
 
-export default function VideoEmbed({ url, title, className = "", thumbnailUrl }: VideoEmbedProps) {
-  const [playing, setPlaying] = useState(false);
+export default function VideoEmbed({ url, title, className = "", thumbnailUrl, autoplay = false }: VideoEmbedProps) {
+  const [playing, setPlaying] = useState(autoplay);
   const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
