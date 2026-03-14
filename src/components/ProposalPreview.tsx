@@ -166,7 +166,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
         <section className="relative">
           {data.heroMediaType === "video" && data.heroVideoUrl ? (
             <div className={`${data.heroAutoplay ? '' : 'max-h-[500px]'} overflow-hidden`}>
-              <VideoEmbed url={data.heroVideoUrl} title={data.destination} thumbnailUrl={data.heroVideoThumbnailUrl} className="rounded-none aspect-[21/9]" autoplay={!!data.heroAutoplay} />
+              <VideoEmbed url={data.heroVideoUrl} title={data.destination} thumbnailUrl={data.heroVideoThumbnailUrl} className="rounded-none aspect-[21/9]" autoplay={!!data.heroAutoplay} muted={!!data.heroMuted} />
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-1 max-h-[500px] overflow-hidden">
