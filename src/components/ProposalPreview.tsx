@@ -86,10 +86,23 @@ export default function ProposalPreview({ data, shareId }: Props) {
   };
 
   const navItems = useMemo(() => {
+    const hasContent: Record<string, boolean> = {
+      overview: !!(data.introText),
+      flights: flights.length > 0,
+      accommodations: accommodations.length > 0,
+      cruiseShips: cruiseShips.length > 0,
+      busTrips: busTrips.length > 0,
+      itinerary: (data.days || []).length > 0,
+      inclusions: (data.inclusions || []).length > 0,
+      pricing: (data.pricing || []).length > 0,
+      essentials: !!(essentials.passportInfo || essentials.currency || essentials.weatherInfo || essentials.packingTips),
+      terms: !!(terms.cancellationPolicy || terms.travelInsurance || terms.bookingTerms || terms.liability),
+      agent: !!(agent.name),
+    };
     return sectionOrder
-      .filter((key) => key !== "agent" && vis[key])
+      .filter((key) => key !== "agent" && vis[key] && hasContent[key])
       .map((key) => ({ label: sectionLabels[key], id: key }));
-  }, [vis, sectionOrder]);
+  }, [vis, sectionOrder, data, flights, accommodations, cruiseShips, busTrips, essentials, terms, agent]);
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
