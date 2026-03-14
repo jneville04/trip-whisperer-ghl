@@ -401,7 +401,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                             </div>
                           ) : (
                             <div className="p-4 sm:p-6 border-b border-border/30">
-                              <VideoEmbed url={ship.videoUrl!} title={ship.shipName} className="w-full" />
+                              <VideoEmbed url={ship.videoUrl!} title={ship.shipName} thumbnailUrl={ship.videoThumbnailUrl} className="w-full" />
                             </div>
                           )}
                           <div className="p-6 sm:p-8">
