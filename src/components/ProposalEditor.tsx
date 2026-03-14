@@ -16,8 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import RichTextEditor from "@/components/RichTextEditor";
-import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, Accommodation, SectionKey } from "@/types/proposal";
-import { createActivity, createDay, createPricingLine, createFlightLeg, createAccommodation, defaultSectionOrder } from "@/types/proposal";
+import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, Accommodation, CruiseShip, SectionKey } from "@/types/proposal";
+import { createActivity, createDay, createPricingLine, createFlightLeg, createAccommodation, createCruiseShip, defaultSectionOrder } from "@/types/proposal";
 import { normalizeHexInput } from "@/lib/brand";
 
 interface Props {
