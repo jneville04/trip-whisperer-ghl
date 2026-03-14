@@ -157,8 +157,11 @@ export default function Dashboard() {
                 <Shield className="h-4 w-4 mr-1" /> Admin
               </Button>
             )}
-            <Button variant="travel" size="sm" onClick={createProposal}>
-              <Plus className="h-4 w-4 mr-1" /> New Proposal
+            <Button variant="travel" size="sm" onClick={() => createProposal("group_booking")}>
+              <Users className="h-4 w-4 mr-1" /> Group Booking
+            </Button>
+            <Button variant="travel-outline" size="sm" onClick={() => createProposal("proposal")}>
+              <BookOpen className="h-4 w-4 mr-1" /> Proposal
             </Button>
             <Button variant="travel-ghost" size="sm" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-1" /> Sign Out
