@@ -204,3 +204,32 @@ export default function EditorPage() {
     </div>
   );
 }
+
+function HelpdeskFooter() {
+  const { settings } = useAppSettings();
+  if (!settings.helpdesk_email && !settings.helpdesk_phone) return null;
+
+  return (
+    <div className="border-t border-border/50 px-6 py-5 mt-4">
+      <div className="flex items-center gap-2 mb-2">
+        <HelpCircle className="h-4 w-4 text-primary" />
+        <span className="font-display text-sm font-semibold text-foreground">Need Help?</span>
+      </div>
+      {settings.helpdesk_message && (
+        <p className="text-xs text-muted-foreground font-body mb-2">{settings.helpdesk_message}</p>
+      )}
+      <div className="flex flex-col gap-1 text-xs text-muted-foreground font-body">
+        {settings.helpdesk_email && (
+          <a href={`mailto:${settings.helpdesk_email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors">
+            <Mail className="h-3 w-3" /> {settings.helpdesk_email}
+          </a>
+        )}
+        {settings.helpdesk_phone && (
+          <a href={`tel:${settings.helpdesk_phone}`} className="flex items-center gap-1.5 hover:text-primary transition-colors">
+            <Phone className="h-3 w-3" /> {settings.helpdesk_phone}
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
