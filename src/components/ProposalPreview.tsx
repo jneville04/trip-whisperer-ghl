@@ -746,22 +746,26 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                             <div className="p-4 sm:p-6 border-b border-border/30">
                               <VideoEmbed url={trip.videoUrl!} title={trip.routeName} thumbnailUrl={trip.videoThumbnailUrl} className="w-full" />
                             </div>
-                          ) : (
-                            <div className="grid grid-cols-3 md:grid-cols-4 gap-1">
-                              {trip.imageUrl ? (
-                                <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allTripImages, 0)}>
-                                  <img src={trip.imageUrl} alt={trip.routeName} className="w-full h-full object-cover" />
+                          ) : allTripImages.length > 0 ? (
+                            <div className={allTripImages.length === 1 ? "" : "grid grid-cols-3 md:grid-cols-4 gap-1"}>
+                              {allTripImages.length === 1 ? (
+                                <div className="aspect-[21/9] overflow-hidden cursor-pointer" onClick={() => openLightbox(allTripImages, 0)}>
+                                  <img src={allTripImages[0].src} alt={trip.routeName} className="w-full h-full object-cover" />
                                 </div>
                               ) : (
-                                <div className="col-span-2 row-span-2 aspect-[4/3] bg-muted flex items-center justify-center">
-                                  <Bus className="h-10 w-10 text-muted-foreground/30" />
-                                </div>
+                                <>
+                                  <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allTripImages, 0)}>
+                                    <img src={allTripImages[0].src} alt={trip.routeName} className="w-full h-full object-cover" />
+                                  </div>
+                                  {galleryUrls.slice(0, 6).map((url, gi) => (
+                                    <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allTripImages, gi + 1)}>
+                                      <img src={url} alt={`${trip.routeName} ${gi + 2}`} className="w-full h-full object-cover" />
+                                    </div>
+                                  ))}
+                                </>
                               )}
-                              {galleryUrls.slice(0, 6).map((url, gi) => (
-                                <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allTripImages, gi + 1)}>
-                                  <img src={url} alt={`${trip.routeName} ${gi + 2}`} className="w-full h-full object-cover" />
-                                </div>
-                              ))}
+                            </div>
+                          ) : null}
                             </div>
                           )}
                           <div className="p-6 sm:p-8">
