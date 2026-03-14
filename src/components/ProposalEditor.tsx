@@ -564,11 +564,15 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     <TabsContent value="details" className="p-3 space-y-2 mt-0">
                                       <div>
                                         <FieldLabel>Highlights</FieldLabel>
-                                        <Textarea value={accHighlights.join("\n")} onChange={(e) => updateAccField("highlights", e.target.value.split("\n").filter(Boolean))} placeholder="One highlight per line&#10;e.g. Tagus River panoramic views&#10;Walking distance to historic Alfama" className="text-xs min-h-[120px] resize-y" />
+                                        <Textarea value={accHighlights.join("\n")} onChange={(e) => updateAccField("highlights", e.target.value.split("\n"))} placeholder="One highlight per line&#10;e.g. Tagus River panoramic views&#10;Walking distance to historic Alfama" className="text-xs min-h-[120px] resize-y" />
                                       </div>
                                       <div>
                                         <FieldLabel>Amenities</FieldLabel>
-                                        <Textarea value={accAmenities.join("\n")} onChange={(e) => updateAccField("amenities", e.target.value.split("\n").filter(Boolean))} placeholder="One amenity per line&#10;e.g. Spa & Wellness Center&#10;Rooftop Pool&#10;24h Room Service" className="text-xs min-h-[120px] resize-y" />
+                                        <Textarea value={accAmenities.join("\n")} onChange={(e) => updateAccField("amenities", e.target.value.split("\n"))} placeholder="One amenity per line&#10;e.g. Spa & Wellness Center&#10;Rooftop Pool&#10;24h Room Service" className="text-xs min-h-[120px] resize-y" />
+                                      </div>
+                                      <div>
+                                        <FieldLabel>Video URL (YouTube/Vimeo)</FieldLabel>
+                                        <Input value={acc.videoUrl || ""} onChange={(e) => updateAccField("videoUrl", e.target.value)} placeholder="https://youtube.com/watch?v=..." className="h-8 text-xs" />
                                       </div>
                                     </TabsContent>
                                   </Tabs>
@@ -724,11 +728,15 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     <TabsContent value="details" className="p-3 space-y-2 mt-0">
                                       <div>
                                         <FieldLabel>Highlights</FieldLabel>
-                                        <Textarea value={shipHighlights.join("\n")} onChange={(e) => updateShipField("highlights", e.target.value.split("\n").filter(Boolean))} placeholder="One highlight per line&#10;e.g. Private balcony with ocean views&#10;Specialty dining included" className="text-xs min-h-[120px] resize-y" />
+                                        <Textarea value={shipHighlights.join("\n")} onChange={(e) => updateShipField("highlights", e.target.value.split("\n"))} placeholder="One highlight per line&#10;e.g. Private balcony with ocean views&#10;Specialty dining included" className="text-xs min-h-[120px] resize-y" />
                                       </div>
                                       <div>
                                         <FieldLabel>Ship Amenities</FieldLabel>
-                                        <Textarea value={shipAmenities.join("\n")} onChange={(e) => updateShipField("amenities", e.target.value.split("\n").filter(Boolean))} placeholder="One amenity per line&#10;e.g. Main Pool & Water Slides&#10;Broadway Shows&#10;Specialty Restaurants" className="text-xs min-h-[120px] resize-y" />
+                                        <Textarea value={shipAmenities.join("\n")} onChange={(e) => updateShipField("amenities", e.target.value.split("\n"))} placeholder="One amenity per line&#10;e.g. Main Pool & Water Slides&#10;Broadway Shows&#10;Specialty Restaurants" className="text-xs min-h-[120px] resize-y" />
+                                      </div>
+                                      <div>
+                                        <FieldLabel>Video URL (YouTube/Vimeo)</FieldLabel>
+                                        <Input value={ship.videoUrl || ""} onChange={(e) => updateShipField("videoUrl", e.target.value)} placeholder="https://youtube.com/watch?v=..." className="h-8 text-xs" />
                                       </div>
                                     </TabsContent>
                                   </Tabs>

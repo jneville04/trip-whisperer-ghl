@@ -271,8 +271,8 @@ export default function ProposalPreview({ data, shareId }: Props) {
                   </motion.div>
                   <div className="space-y-10">
                     {accommodations.map((acc) => {
-                      const amenities = acc.amenities || [];
-                      const highlights = acc.highlights || [];
+                      const amenities = (acc.amenities || []).filter(Boolean);
+                      const highlights = (acc.highlights || []).filter(Boolean);
                       const galleryUrls = acc.galleryUrls || [];
                       const allAccImages = [
                         ...(acc.imageUrl ? [{ src: acc.imageUrl, alt: acc.hotelName }] : []),
@@ -338,6 +338,11 @@ export default function ProposalPreview({ data, shareId }: Props) {
                                 </div>
                               </div>
                             )}
+                            {acc.videoUrl && (
+                              <div className="mt-4">
+                                <VideoEmbed url={acc.videoUrl} title={acc.hotelName} className="max-w-md" />
+                              </div>
+                            )}
                             <div className="flex items-center gap-6 mt-5 pt-4 border-t border-border/30 text-sm text-muted-foreground font-body">
                               {acc.checkIn && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Check-in: {acc.checkIn}</span>}
                               {acc.checkOut && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Check-out: {acc.checkOut}</span>}
@@ -363,8 +368,8 @@ export default function ProposalPreview({ data, shareId }: Props) {
                   </motion.div>
                   <div className="space-y-10">
                     {cruiseShips.map((ship) => {
-                      const amenities = ship.amenities || [];
-                      const highlights = ship.highlights || [];
+                      const amenities = (ship.amenities || []).filter(Boolean);
+                      const highlights = (ship.highlights || []).filter(Boolean);
                       const galleryUrls = ship.galleryUrls || [];
                       const allShipImages = [
                         ...(ship.imageUrl ? [{ src: ship.imageUrl, alt: ship.shipName }] : []),
@@ -435,10 +440,16 @@ export default function ProposalPreview({ data, shareId }: Props) {
                                 </div>
                               </div>
                             )}
+                            {ship.videoUrl && (
+                              <div className="mt-4">
+                                <VideoEmbed url={ship.videoUrl} title={ship.shipName} className="max-w-md" />
+                              </div>
+                            )}
                             <div className="flex items-center gap-6 mt-5 pt-4 border-t border-border/30 text-sm text-muted-foreground font-body flex-wrap">
                               {ship.embarkationPort && <span className="flex items-center gap-1.5"><Anchor className="h-3.5 w-3.5" /> Embark: {ship.embarkationPort}</span>}
                               {ship.embarkationDate && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {ship.embarkationDate}</span>}
                               {ship.disembarkationPort && <span className="flex items-center gap-1.5"><Anchor className="h-3.5 w-3.5" /> Disembark: {ship.disembarkationPort}</span>}
+                              {ship.disembarkationDate && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {ship.disembarkationDate}</span>}
                               {ship.nights && <span className="text-primary font-semibold">{ship.nights} Nights</span>}
                             </div>
                           </div>
