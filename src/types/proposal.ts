@@ -46,6 +46,7 @@ export interface FlightLeg {
   departureTime: string;
   arrivalTime: string;
   date: string;
+  price?: string;
 }
 
 export interface Accommodation {
