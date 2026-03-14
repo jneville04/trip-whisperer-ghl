@@ -163,6 +163,9 @@ export default function Dashboard() {
             <Button variant="travel-outline" size="sm" onClick={() => createProposal("proposal")}>
               <BookOpen className="h-4 w-4 mr-1" /> Proposal
             </Button>
+            <Button variant="travel-ghost" size="sm" onClick={() => navigate("/settings")}>
+              <Settings className="h-4 w-4 mr-1" /> Settings
+            </Button>
             <Button variant="travel-ghost" size="sm" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-1" /> Sign Out
             </Button>
