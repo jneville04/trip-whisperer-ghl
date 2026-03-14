@@ -100,24 +100,9 @@ export default function VideoEmbed({ url, title, className = "" }: VideoEmbedPro
     <div ref={ref} className={`relative aspect-video rounded-xl overflow-hidden bg-muted ${className}`}>
       {!visible ? (
         <div className="w-full h-full bg-muted animate-pulse" />
-      ) : !playing ? (
-        <button onClick={() => setPlaying(true)} className="w-full h-full relative group cursor-pointer">
-          {info.thumbnailUrl ? (
-            <img src={info.thumbnailUrl} alt={title || "Video"} className="w-full h-full object-cover" loading="lazy" />
-          ) : (
-            <div className="w-full h-full bg-muted flex items-center justify-center">
-              <span className="text-sm text-muted-foreground font-body">{info.type === "vimeo" ? "Vimeo Video" : "Video"}</span>
-            </div>
-          )}
-          <div className="absolute inset-0 bg-foreground/20 group-hover:bg-foreground/30 transition-colors flex items-center justify-center">
-            <div className="w-16 h-16 rounded-full bg-primary/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-              <Play className="h-7 w-7 text-primary-foreground ml-1" />
-            </div>
-          </div>
-        </button>
       ) : (
         <iframe
-          src={info.embedUrl}
+          src={`${info.embedUrl.replace('autoplay=1', 'autoplay=0')}`}
           title={title || "Video"}
           className="w-full h-full border-0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
