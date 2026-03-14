@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Palette, User, Link2, CreditCard, Globe, Save, Check, ExternalLink } from "lucide-react";
+import { ArrowLeft, Palette, User, Link2, CreditCard, Globe, Save, Check, ExternalLink, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -12,6 +12,17 @@ import { useAgentSettings, type AgentSettings } from "@/hooks/useAgentSettings";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import ImageUploadField from "@/components/ImageUploadField";
 import { normalizeHexInput } from "@/lib/brand";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1 block font-body">{children}</label>;
