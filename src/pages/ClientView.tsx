@@ -19,12 +19,14 @@ export default function ClientView() {
   const loadProposal = async () => {
     const { data: row, error: err } = await supabase
       .from("proposals")
-      .select("data")
+      .select("data, status")
       .eq("share_id", shareId)
       .single();
 
     if (err || !row) {
       setError("Proposal not found or link has expired.");
+    } else if ((row as any).status === "draft") {
+      setError("This proposal is not yet available. Please check back later or contact your travel advisor.");
     } else {
       setData((row as any).data as ProposalData);
     }
