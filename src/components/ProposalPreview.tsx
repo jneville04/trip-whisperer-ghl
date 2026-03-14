@@ -1204,6 +1204,34 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
         </section>
       )}
 
+      {/* Travel Advisor Footer — for proposal mode, rendered after pricing summary */}
+      {!isGroupBooking && agent.name && (
+        <footer className="py-16 px-6 border-t border-border/50 bg-card">
+          <div className="max-w-3xl mx-auto text-center">
+            <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Travel Advisor</p>
+            <div className="flex flex-col items-center gap-4 mb-6">
+              {agent.photoUrl && (
+                <img src={agent.photoUrl} alt={agent.name} className="w-20 h-20 rounded-full object-cover border-2 border-primary/20" />
+              )}
+              <div>
+                <h3 className="font-display text-2xl font-bold text-foreground">{agent.name}</h3>
+                <p className="text-muted-foreground font-body mt-0.5">{agent.title}</p>
+                <p className="text-sm text-muted-foreground font-body">{agent.agencyName}</p>
+              </div>
+              {agent.logoUrl && (
+                <img src={agent.logoUrl} alt={agent.agencyName} className="h-12 max-w-[160px] object-contain" />
+              )}
+            </div>
+            <div className="flex items-center justify-center gap-6 text-sm font-body text-muted-foreground flex-wrap">
+              {agent.phone && <a href={`tel:${agent.phone}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Phone className="h-4 w-4" /> {agent.phone}</a>}
+              {agent.email && <a href={`mailto:${agent.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-4 w-4" /> {agent.email}</a>}
+              {agent.website && <a href="#" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Globe className="h-4 w-4" /> {agent.website}</a>}
+            </div>
+            <p className="text-xs text-muted-foreground/60 mt-10 font-body">© 2026 {agent.agencyName} · All prices in USD · Subject to availability</p>
+          </div>
+        </footer>
+      )}
+
       <Lightbox images={lightboxImages} initialIndex={lightboxIndex} open={lightboxOpen} onClose={() => setLightboxOpen(false)} />
       <BookingModal open={bookingOpen} onClose={() => setBookingOpen(false)} url={bookingModalUrl} agencyName={bookingModalTitle || agent.agencyName} />
     </div>
