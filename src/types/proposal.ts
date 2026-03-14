@@ -89,6 +89,38 @@ export interface CruiseShip {
   mediaType?: "photos" | "video";
 }
 
+export interface BusTrip {
+  id: string;
+  busCompany: string;
+  routeName: string;
+  pickupLocation: string;
+  pickupTime: string;
+  pickupDate: string;
+  dropoffLocation: string;
+  dropoffTime: string;
+  dropoffDate: string;
+  duration: string;
+  seatType: string;
+  busType: string;
+  description: string;
+  amenities: string[];
+  highlights: string[];
+  imageUrl: string;
+  galleryUrls: string[];
+  videoUrl?: string;
+  videoThumbnailUrl?: string;
+  mediaType?: "photos" | "video";
+  stops: BusStop[];
+}
+
+export interface BusStop {
+  id: string;
+  location: string;
+  arrivalTime: string;
+  departureTime: string;
+  notes: string;
+}
+
 export interface BrandSettings {
   primaryColor: string;
   secondaryColor: string;
