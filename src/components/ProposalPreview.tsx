@@ -439,6 +439,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                               {ship.embarkationPort && <span className="flex items-center gap-1.5"><Anchor className="h-3.5 w-3.5" /> Embark: {ship.embarkationPort}</span>}
                               {ship.embarkationDate && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {ship.embarkationDate}</span>}
                               {ship.disembarkationPort && <span className="flex items-center gap-1.5"><Anchor className="h-3.5 w-3.5" /> Disembark: {ship.disembarkationPort}</span>}
+                              {ship.disembarkationDate && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {ship.disembarkationDate}</span>}
                               {ship.nights && <span className="text-primary font-semibold">{ship.nights} Nights</span>}
                             </div>
                           </div>
