@@ -215,11 +215,11 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
 
             // 3+ images: 1 large + 2 stacked
             return (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-1 max-h-[500px] overflow-hidden">
-                <div className="md:col-span-2 aspect-[16/9] md:aspect-auto md:h-[500px] overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-1 h-[500px] overflow-hidden">
+                <div className="md:col-span-2 overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
                   <img src={allReal[0]} alt={data.destination} className="w-full h-full object-cover" />
                 </div>
-                <div className="hidden md:grid grid-rows-2 gap-1 h-[500px]">
+                <div className="hidden md:grid grid-rows-2 gap-1">
                   {allReal.slice(1, 3).map((url, i) => (
                     <div key={i} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i + 1)}>
                       <img src={url} alt={`${data.destination} ${i + 2}`} className="w-full h-full object-cover" />
