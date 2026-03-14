@@ -59,7 +59,7 @@ export default function SettingsPage() {
         ...updates,
         primary_color: updates.primary_color || appSettings.primary_color,
         secondary_color: updates.secondary_color || appSettings.secondary_color,
-        accent_color: updates.secondary_color || appSettings.secondary_color,
+        accent_color: updates.accent_color || updates.secondary_color || appSettings.accent_color,
       };
 
       await saveSettings(normalizedUpdates);
@@ -128,7 +128,7 @@ export default function SettingsPage() {
                     onCheckedChange={(v) => updateField("show_agency_name_with_logo", v)}
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <div>
                     <FieldLabel>Primary Color</FieldLabel>
                     <div className="flex gap-2 items-center">
@@ -141,6 +141,13 @@ export default function SettingsPage() {
                     <div className="flex gap-2 items-center">
                       <input type="color" value={form.secondary_color || appSettings.secondary_color} onChange={(e) => updateField("secondary_color", e.target.value.toUpperCase())} className="w-8 h-8 rounded border border-input cursor-pointer" />
                       <Input value={form.secondary_color || ""} onChange={(e) => updateField("secondary_color", normalizeHexInput(e.target.value))} placeholder={appSettings.secondary_color} className="h-8 text-sm flex-1" maxLength={7} />
+                    </div>
+                  </div>
+                  <div>
+                    <FieldLabel>Accent Color</FieldLabel>
+                    <div className="flex gap-2 items-center">
+                      <input type="color" value={form.accent_color || appSettings.accent_color} onChange={(e) => updateField("accent_color", e.target.value.toUpperCase())} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                      <Input value={form.accent_color || ""} onChange={(e) => updateField("accent_color", normalizeHexInput(e.target.value))} placeholder={appSettings.accent_color} className="h-8 text-sm flex-1" maxLength={7} />
                     </div>
                   </div>
                 </div>
