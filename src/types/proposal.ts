@@ -25,6 +25,13 @@ export interface PricingLine {
   amount: string;
 }
 
+export interface AgentPricing {
+  cost: string;
+  commission: string;
+  markupType: "flat" | "percent";
+  markupValue: string;
+}
+
 export interface AgentInfo {
   name: string;
   title: string;
