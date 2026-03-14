@@ -505,7 +505,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                           onClick={() => !isGroupBooking && setSelectedCruise(isSelected ? "" : ship.id)}
                         >
                           {!isGroupBooking && cruiseShips.length > 1 && (
-                            <div className={`absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30 bg-background"}`}>
+                            <div className={`absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30 bg-background"}`} onClick={(e) => { e.stopPropagation(); setSelectedCruise(isSelected ? "" : ship.id); }}>
                               {isSelected && <Check className="h-3.5 w-3.5 text-primary-foreground" />}
                             </div>
                           )}
