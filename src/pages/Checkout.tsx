@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft, CheckCircle2, Loader2, Send, Plane, Hotel, Ship, Bus, CreditCard, Calendar, Banknote, MapPin, Users } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Loader2, Plane, Hotel, Ship, Bus, Calendar, Users, Phone, Mail, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
