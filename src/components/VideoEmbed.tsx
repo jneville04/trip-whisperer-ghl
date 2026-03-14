@@ -38,7 +38,6 @@ export default function VideoEmbed({ url, title, className = "" }: VideoEmbedPro
   const ref = useRef<HTMLDivElement>(null);
 
   const info = getEmbedInfo(url);
-  if (!info) return null;
 
   // Lazy load with IntersectionObserver
   useEffect(() => {
