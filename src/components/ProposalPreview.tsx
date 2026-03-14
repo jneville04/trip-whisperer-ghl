@@ -172,11 +172,6 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
               Book Now
             </Button>
           )}
-          {!isGroupBooking && !isEditor && (
-            <Button variant="travel" size="sm" className="text-xs" onClick={goToApprove}>
-              Approve
-            </Button>
-          )}
         </div>
       </nav>
 
