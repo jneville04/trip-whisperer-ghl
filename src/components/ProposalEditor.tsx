@@ -560,6 +560,10 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                           }}>Add</Button>
                                         </div>
                                       </div>
+                                      <div>
+                                        <FieldLabel>Video URL (YouTube/Vimeo)</FieldLabel>
+                                        <Input value={acc.videoUrl || ""} onChange={(e) => updateAccField("videoUrl", e.target.value)} placeholder="https://youtube.com/watch?v=..." className="h-8 text-xs" />
+                                      </div>
                                     </TabsContent>
                                     <TabsContent value="details" className="p-3 space-y-2 mt-0">
                                       <div>
