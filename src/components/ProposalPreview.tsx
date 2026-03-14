@@ -203,7 +203,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
 
             if (count === 2) {
               return (
-                <div className="grid grid-cols-2 gap-1 aspect-[21/9] overflow-hidden">
+                <div className="grid grid-cols-2 gap-1 h-[500px] overflow-hidden">
                   {allReal.map((url, i) => (
                     <div key={i} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i)}>
                       <img src={url} alt={`${data.destination} ${i + 1}`} className="w-full h-full object-cover" />
