@@ -196,8 +196,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
   };
 
   const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "", showAgencyNameWithLogo: true };
-  const resolvedPrimaryColor = agentSettings.primary_color || appSettings.primary_color;
-  const resolvedSecondaryColor = agentSettings.secondary_color || appSettings.secondary_color;
+  const resolvedPrimaryColor = appSettings.primary_color;
+  const resolvedSecondaryColor = appSettings.secondary_color;
   const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, cruiseShips: true, busTrips: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
   const flightOptions = data.flightOptions || [];
   const accommodations = data.accommodations || [];
