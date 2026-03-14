@@ -1079,9 +1079,15 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                       </Button>
                     )
                   ) : (
-                    <Button variant="travel" size="lg" className="text-base px-8" onClick={goToApprove}>
-                      Approve Itinerary <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
+                    checkoutEnabled ? (
+                      <Button variant="travel" size="lg" className="text-base px-8" onClick={goToCheckout}>
+                        Proceed to Checkout <ArrowRight className="h-4 w-4 ml-2" />
+                      </Button>
+                    ) : (
+                      <Button variant="travel" size="lg" className="text-base px-8" onClick={goToApprove}>
+                        Approve Itinerary <ArrowRight className="h-4 w-4 ml-2" />
+                      </Button>
+                    )
                   )}
                   <p className="text-xs text-muted-foreground/60 mt-10 font-body">© 2026 {agent.agencyName} · All prices in USD · Subject to availability</p>
                 </div>
