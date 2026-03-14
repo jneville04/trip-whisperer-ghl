@@ -788,14 +788,25 @@ export default function ProposalPreview({ data, shareId }: Props) {
                                 {trip.price && <span className="font-display text-xl font-bold text-foreground">${trip.price}</span>}
                                 {!trip.price && <span />}
                                 {!isGroupBooking && (
-                                  <Button
-                                    variant={isSelected ? "travel" : "travel-outline"}
-                                    size="sm"
-                                    className="text-xs"
-                                    onClick={(e) => { e.stopPropagation(); setSelectedBusTrip(isSelected ? "" : trip.id); }}
-                                  >
-                                    {isSelected ? "✓ Selected" : "Select Option"}
-                                  </Button>
+                                  <div className="flex items-center gap-2">
+                                    {busTrips.length > 1 && (
+                                      <span className="text-[10px] text-muted-foreground font-body">Option {busTrips.indexOf(trip) + 1} of {busTrips.length}</span>
+                                    )}
+                                    {isSelected ? (
+                                      <div className="flex items-center gap-1.5">
+                                        <Button variant="travel" size="sm" className="text-xs" onClick={(e) => e.stopPropagation()}>
+                                          <Check className="h-3 w-3 mr-1" /> Option selected
+                                        </Button>
+                                        <Button variant="travel-ghost" size="sm" className="text-xs text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); setSelectedBusTrip(""); }}>
+                                          Cancel ✕
+                                        </Button>
+                                      </div>
+                                    ) : (
+                                      <Button variant="travel-outline" size="sm" className="text-xs" onClick={(e) => { e.stopPropagation(); setSelectedBusTrip(trip.id); }}>
+                                        Select option
+                                      </Button>
+                                    )}
+                                  </div>
                                 )}
                               </div>
                             )}
