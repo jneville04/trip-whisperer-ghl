@@ -89,6 +89,7 @@ export interface CruiseShip {
   videoUrl?: string;
   videoThumbnailUrl?: string;
   mediaType?: "photos" | "video";
+  price?: string;
 }
 
 export interface BusTrip {
