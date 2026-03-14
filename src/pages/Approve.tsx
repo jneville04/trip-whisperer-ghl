@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { buildBrandCssVars, type BrandColors } from "@/lib/brand";
+import { useAppSettings } from "@/hooks/useAppSettings";
 
 export default function ApprovePage() {
   const navigate = useNavigate();
@@ -15,6 +16,9 @@ export default function ApprovePage() {
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", notes: "" });
+
+  const { settings } = useAppSettings();
+  const ghlFormUrl = settings.ghl_form_approve;
 
   const shareId = searchParams.get("share") || "";
   const proposalId = searchParams.get("proposal") || "";
@@ -90,6 +94,30 @@ export default function ApprovePage() {
       <div className="min-h-screen bg-background flex items-center justify-center" style={brandStyles as React.CSSProperties}>
         <div className="flex items-center gap-2 text-muted-foreground font-body">
           <Loader2 className="h-4 w-4 animate-spin" /> Loading proposal...
+        </div>
+      </div>
+    );
+  }
+
+  // If GHL form URL is configured, show embedded form
+  if (ghlFormUrl) {
+    const iframeSrc = ghlFormUrl.includes("?")
+      ? `${ghlFormUrl}&proposal_id=${proposalId || shareId}`
+      : `${ghlFormUrl}?proposal_id=${proposalId || shareId}`;
+
+    return (
+      <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
+        <div className="max-w-3xl mx-auto px-6 py-8">
+          <button onClick={goBack} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors font-body mb-6">
+            <ArrowLeft className="h-4 w-4" /> Back to Proposal
+          </button>
+          <iframe
+            src={iframeSrc}
+            className="w-full border-0 rounded-xl"
+            style={{ minHeight: "600px", height: "80vh" }}
+            title="Approve Trip"
+            allow="camera; microphone"
+          />
         </div>
       </div>
     );
