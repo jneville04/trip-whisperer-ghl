@@ -1,9 +1,10 @@
 import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, type Easing } from "framer-motion";
-import { MapPin, Calendar, Users, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe, PlaneTakeoff, PlaneLanding, BedDouble, MessageSquare, CheckCircle2, Sparkles } from "lucide-react";
+import { MapPin, Calendar, Users, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe, PlaneTakeoff, PlaneLanding, BedDouble, MessageSquare, CheckCircle2, Sparkles, Ship, Anchor } from "lucide-react";
 import Lightbox from "@/components/Lightbox";
 import BookingModal from "@/components/BookingModal";
+import VideoEmbed from "@/components/VideoEmbed";
 import { Button } from "@/components/ui/button";
 import type { ProposalData, Activity, SectionKey } from "@/types/proposal";
 import { defaultSectionOrder } from "@/types/proposal";
@@ -56,11 +57,12 @@ export default function ProposalPreview({ data, shareId }: Props) {
     setLightboxIndex(index);
     setLightboxOpen(true);
   };
-  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
+  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, cruiseShips: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
   const brandData = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "", showAgencyNameWithLogo: true };
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
   const flights = data.flights || [];
   const accommodations = data.accommodations || [];
+  const cruiseShips = data.cruiseShips || [];
   const agent = data.agent || { name: "", title: "", phone: "", email: "", website: "", agencyName: "", logoUrl: "", photoUrl: "" };
   const essentials = data.essentials || { visaRequirements: "", passportInfo: "", currency: "", language: "", timeZone: "", weatherInfo: "", packingTips: "", emergencyContacts: "" };
   const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
@@ -70,6 +72,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
 
   const sectionLabels: Record<SectionKey, string> = {
     overview: "Overview", flights: "Flights", accommodations: "Hotels",
+    cruiseShips: "Cruise",
     itinerary: "Itinerary", inclusions: "Included", pricing: "Pricing",
     essentials: "Essentials", terms: "Terms", agent: "Advisor",
   };
@@ -349,6 +352,104 @@ export default function ProposalPreview({ data, shareId }: Props) {
               </section>
             );
 
+          case "cruiseShips":
+            if (cruiseShips.length === 0) return null;
+            return (
+              <section key="cruiseShips" id="cruiseShips" className="py-20">
+                <div className="max-w-5xl mx-auto px-6">
+                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
+                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Vessel</p>
+                    <h2 className="font-display text-4xl font-bold text-foreground">Cruise Ship & Cabin</h2>
+                  </motion.div>
+                  <div className="space-y-10">
+                    {cruiseShips.map((ship) => {
+                      const amenities = ship.amenities || [];
+                      const highlights = ship.highlights || [];
+                      const galleryUrls = ship.galleryUrls || [];
+                      const allShipImages = [
+                        ...(ship.imageUrl ? [{ src: ship.imageUrl, alt: ship.shipName }] : []),
+                        ...galleryUrls.map((url, gi) => ({ src: url, alt: `${ship.shipName} ${gi + 2}` })),
+                      ];
+                      return (
+                        <motion.div key={ship.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
+                          <div className="grid grid-cols-3 md:grid-cols-4 gap-1">
+                            {ship.imageUrl && (
+                              <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, 0)}>
+                                <img src={ship.imageUrl} alt={ship.shipName} className="w-full h-full object-cover" />
+                              </div>
+                            )}
+                            {!ship.imageUrl && (
+                              <div className="col-span-2 row-span-2 aspect-[4/3] bg-muted flex items-center justify-center">
+                                <Ship className="h-10 w-10 text-muted-foreground/30" />
+                              </div>
+                            )}
+                            {galleryUrls.slice(0, 6).map((url, gi) => (
+                              <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, gi + 1)}>
+                                <img src={url} alt={`${ship.shipName} ${gi + 2}`} className="w-full h-full object-cover" />
+                              </div>
+                            ))}
+                          </div>
+                          <div className="p-6 sm:p-8">
+                            <div className="flex items-start justify-between mb-3">
+                              <div>
+                                <h3 className="font-display text-2xl font-bold text-foreground mb-1">{ship.shipName || "Cruise Ship"}</h3>
+                                <p className="text-sm text-muted-foreground font-body flex items-center gap-1"><Ship className="h-3.5 w-3.5" /> {ship.cruiseLine}</p>
+                              </div>
+                              <Anchor className="h-6 w-6 text-primary mt-1 shrink-0" />
+                            </div>
+                            {/* Cabin details */}
+                            <div className="flex flex-wrap gap-3 mt-4">
+                              {ship.cabinType && (
+                                <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-body font-semibold px-3 py-1.5 rounded-full">{ship.cabinType}</span>
+                              )}
+                              {ship.cabinNumber && (
+                                <span className="inline-flex items-center gap-1.5 bg-muted text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full">Cabin {ship.cabinNumber}</span>
+                              )}
+                              {ship.deck && (
+                                <span className="inline-flex items-center gap-1.5 bg-muted text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full">{ship.deck}</span>
+                              )}
+                            </div>
+                            {ship.description && <div className="text-sm text-muted-foreground font-body mt-4 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: ship.description }} />}
+                            {highlights.length > 0 && (
+                              <div className="mt-4">
+                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">Highlights</p>
+                                <div className="space-y-1.5">
+                                  {highlights.map((h, hi) => (
+                                    <div key={hi} className="flex items-center gap-2 text-sm font-body text-foreground">
+                                      <Sparkles className="h-3.5 w-3.5 text-accent shrink-0" />
+                                      <span>{h}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            {amenities.length > 0 && (
+                              <div className="mt-4 pt-4 border-t border-border/30">
+                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Ship Amenities</p>
+                                <div className="flex flex-wrap gap-2">
+                                  {amenities.map((a, ai) => (
+                                    <span key={ai} className="inline-flex items-center gap-1.5 bg-muted/50 text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full border border-border/30">
+                                      <Check className="h-3 w-3 text-primary" /> {a}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-6 mt-5 pt-4 border-t border-border/30 text-sm text-muted-foreground font-body flex-wrap">
+                              {ship.embarkationPort && <span className="flex items-center gap-1.5"><Anchor className="h-3.5 w-3.5" /> Embark: {ship.embarkationPort}</span>}
+                              {ship.embarkationDate && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {ship.embarkationDate}</span>}
+                              {ship.disembarkationPort && <span className="flex items-center gap-1.5"><Anchor className="h-3.5 w-3.5" /> Disembark: {ship.disembarkationPort}</span>}
+                              {ship.nights && <span className="text-primary font-semibold">{ship.nights} Nights</span>}
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </section>
+            );
+
           case "itinerary":
             if (data.days.length === 0) return null;
             return (
@@ -374,9 +475,10 @@ export default function ProposalPreview({ data, shareId }: Props) {
                           <div className="space-y-8">
                             {day.activities.map((act, actIdx) => {
                               const hasImages = act.imageUrls && act.imageUrls.length > 0;
+                              const hasVideo = !!act.videoUrl;
                               return (
                                 <div key={act.id || actIdx}>
-                                  <div className={`flex flex-col ${hasImages ? 'sm:flex-row' : ''} gap-6`}>
+                                  <div className={`flex flex-col ${hasImages || hasVideo ? 'sm:flex-row' : ''} gap-6`}>
                                     <div className="flex-1">
                                       <div className="flex items-start gap-3">
                                         <div className="relative z-10 mt-1.5 w-[13px] h-[13px] shrink-0 rounded-full border-2 border-primary bg-background" />
@@ -406,7 +508,17 @@ export default function ProposalPreview({ data, shareId }: Props) {
                                         )}
                                       </div>
                                     )}
+                                    {hasVideo && !hasImages && (
+                                      <div className="sm:w-[260px] md:w-[300px] shrink-0">
+                                        <VideoEmbed url={act.videoUrl!} title={act.title} className="rounded-xl" />
+                                      </div>
+                                    )}
                                   </div>
+                                  {hasVideo && hasImages && (
+                                    <div className="mt-4">
+                                      <VideoEmbed url={act.videoUrl!} title={act.title} className="max-w-md" />
+                                    </div>
+                                  )}
                                 </div>
                               );
                             })}

@@ -5,6 +5,7 @@ export interface Activity {
   description: string;
   type: "transport" | "hotel" | "dining" | "activity" | "sightseeing";
   imageUrls?: string[];
+  videoUrl?: string;
 }
 
 export interface ItineraryDay {
@@ -62,6 +63,25 @@ export interface Accommodation {
   highlights: string[];
 }
 
+export interface CruiseShip {
+  id: string;
+  shipName: string;
+  cruiseLine: string;
+  cabinType: string;
+  cabinNumber: string;
+  deck: string;
+  embarkationPort: string;
+  disembarkationPort: string;
+  embarkationDate: string;
+  disembarkationDate: string;
+  nights: string;
+  imageUrl: string;
+  galleryUrls: string[];
+  description: string;
+  amenities: string[];
+  highlights: string[];
+}
+
 export interface BrandSettings {
   primaryColor: string;
   secondaryColor: string;
@@ -101,13 +121,14 @@ export interface TermsAndConditions {
   showLiability: boolean;
 }
 
-export type SectionKey = "overview" | "flights" | "accommodations" | "itinerary" | "inclusions" | "pricing" | "essentials" | "terms" | "agent";
+export type SectionKey = "overview" | "flights" | "accommodations" | "cruiseShips" | "itinerary" | "inclusions" | "pricing" | "essentials" | "terms" | "agent";
 
 export interface SectionVisibility {
   hero: boolean;
   overview: boolean;
   flights: boolean;
   accommodations: boolean;
+  cruiseShips: boolean;
   itinerary: boolean;
   inclusions: boolean;
   pricing: boolean;
@@ -117,7 +138,7 @@ export interface SectionVisibility {
 }
 
 export const defaultSectionOrder: SectionKey[] = [
-  "overview", "flights", "accommodations", "itinerary", "inclusions", "essentials", "terms", "pricing", "agent",
+  "overview", "flights", "accommodations", "cruiseShips", "itinerary", "inclusions", "essentials", "terms", "pricing", "agent",
 ];
 
 export interface ProposalData {
@@ -136,6 +157,7 @@ export interface ProposalData {
   days: ItineraryDay[];
   flights: FlightLeg[];
   accommodations: Accommodation[];
+  cruiseShips: CruiseShip[];
   inclusions: string[];
   pricing: PricingLine[];
   paymentTerms: string;
@@ -198,6 +220,25 @@ export const createAccommodation = (): Accommodation => ({
   galleryUrls: [],
   description: "",
   starRating: "",
+  amenities: [],
+  highlights: [],
+});
+
+export const createCruiseShip = (): CruiseShip => ({
+  id: crypto.randomUUID(),
+  shipName: "",
+  cruiseLine: "",
+  cabinType: "",
+  cabinNumber: "",
+  deck: "",
+  embarkationPort: "",
+  disembarkationPort: "",
+  embarkationDate: "",
+  disembarkationDate: "",
+  nights: "",
+  imageUrl: "",
+  galleryUrls: [],
+  description: "",
   amenities: [],
   highlights: [],
 });
@@ -431,11 +472,13 @@ export const defaultProposal: ProposalData = {
     logoUrl: "",
     showAgencyNameWithLogo: true,
   },
+  cruiseShips: [],
   sectionVisibility: {
     hero: true,
     overview: true,
     flights: true,
     accommodations: true,
+    cruiseShips: true,
     itinerary: true,
     inclusions: true,
     pricing: true,
