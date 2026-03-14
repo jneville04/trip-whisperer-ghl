@@ -33,6 +33,7 @@ function AppContent() {
           <Route path="/view/:shareId" element={<ClientView />} />
           <Route path="/approve" element={<ApprovePage />} />
           <Route path="/revisions" element={<RevisionsPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
