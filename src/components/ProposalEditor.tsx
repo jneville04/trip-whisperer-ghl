@@ -572,6 +572,15 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                   </div>
                                 </div>
                               </div>
+                              {(data as any).proposalType === "proposal" && (
+                                <div className="mt-2">
+                                  <FieldLabel>Price (Proposal Option)</FieldLabel>
+                                  <div className="relative w-32">
+                                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
+                                    <Input value={flight.price || ""} onChange={(e) => updateFlight(i, "price" as any, e.target.value)} placeholder="0.00" className="h-7 text-xs pl-5" />
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           ))}
                           <div className="flex gap-2">
