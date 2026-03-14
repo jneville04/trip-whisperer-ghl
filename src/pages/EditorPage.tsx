@@ -127,8 +127,33 @@ export default function EditorPage() {
     toast({ title: "Client link copied!", description: url });
   };
 
-  const builderBrandStyles = useMemo(() => buildBrandCssVars(data.brand), [data.brand]);
+  // Merge agent settings as fallbacks for brand and agent info
+  const previewData = useMemo<ProposalData>(() => {
+    const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
+    const agent = data.agent || { name: "", title: "", phone: "", email: "", website: "", agencyName: "", logoUrl: "", photoUrl: "" };
+    return {
+      ...data,
+      brand: {
+        primaryColor: brand.primaryColor || agentSettings.primary_color,
+        secondaryColor: brand.secondaryColor || agentSettings.secondary_color,
+        accentColor: brand.accentColor || agentSettings.accent_color,
+        logoUrl: brand.logoUrl || agentSettings.logo_url,
+        showAgencyNameWithLogo: brand.showAgencyNameWithLogo ?? agentSettings.show_agency_name_with_logo,
+      },
+      agent: {
+        name: agent.name || agentSettings.agent_name,
+        title: agent.title || agentSettings.agent_title,
+        phone: agent.phone || agentSettings.agent_phone,
+        email: agent.email || agentSettings.agent_email,
+        website: agent.website || agentSettings.agent_website,
+        agencyName: agent.agencyName || agentSettings.agency_name,
+        logoUrl: agent.logoUrl || agentSettings.agency_logo_url,
+        photoUrl: agent.photoUrl || agentSettings.agent_photo_url,
+      },
+    };
+  }, [data, agentSettings]);
 
+  const builderBrandStyles = useMemo(() => buildBrandCssVars(previewData.brand), [previewData.brand]);
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center text-muted-foreground font-body">
