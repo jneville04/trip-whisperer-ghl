@@ -368,8 +368,8 @@ export default function ProposalPreview({ data, shareId }: Props) {
                   </motion.div>
                   <div className="space-y-10">
                     {cruiseShips.map((ship) => {
-                      const amenities = ship.amenities || [];
-                      const highlights = ship.highlights || [];
+                      const amenities = (ship.amenities || []).filter(Boolean);
+                      const highlights = (ship.highlights || []).filter(Boolean);
                       const galleryUrls = ship.galleryUrls || [];
                       const allShipImages = [
                         ...(ship.imageUrl ? [{ src: ship.imageUrl, alt: ship.shipName }] : []),
