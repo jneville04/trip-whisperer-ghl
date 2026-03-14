@@ -550,6 +550,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                   </motion.div>
                   <div className="space-y-10">
                     {busTrips.map((trip) => {
+                      const isSelected = selectedBusTrip === trip.id;
                       const amenities = (trip.amenities || []).filter(Boolean);
                       const highlights = (trip.highlights || []).filter(Boolean);
                       const galleryUrls = trip.galleryUrls || [];
@@ -560,7 +561,25 @@ export default function ProposalPreview({ data, shareId }: Props) {
                       ];
                       const showVideo = (trip.mediaType || "photos") === "video" && !!trip.videoUrl;
                       return (
-                        <motion.div key={trip.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
+                        <motion.div
+                          key={trip.id}
+                          variants={fadeUp}
+                          initial="hidden"
+                          whileInView="visible"
+                          viewport={{ once: true }}
+                          custom={0}
+                          className={`bg-card rounded-2xl border-2 shadow-lg overflow-hidden relative transition-all ${
+                            !isGroupBooking
+                              ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40 cursor-pointer"
+                              : "border-border/50"
+                          }`}
+                          onClick={() => !isGroupBooking && setSelectedBusTrip(trip.id)}
+                        >
+                          {!isGroupBooking && busTrips.length > 1 && (
+                            <div className={`absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30 bg-background"}`}>
+                              {isSelected && <Check className="h-3.5 w-3.5 text-primary-foreground" />}
+                            </div>
+                          )}
                           {showVideo ? (
                             <div className="p-4 sm:p-6 border-b border-border/30">
                               <VideoEmbed url={trip.videoUrl!} title={trip.routeName} thumbnailUrl={trip.videoThumbnailUrl} className="w-full" />
