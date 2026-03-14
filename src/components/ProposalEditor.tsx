@@ -877,6 +877,33 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                           </Button>
                                         </div>
                                       </div>
+                                      {ship.videoUrl && (
+                                        <div>
+                                          <FieldLabel>Video Thumbnail</FieldLabel>
+                                          <div className="flex gap-1.5 items-center">
+                                            {ship.videoThumbnailUrl && (
+                                              <div className="relative w-16 h-10 rounded overflow-hidden border border-border/40 shrink-0">
+                                                <img src={ship.videoThumbnailUrl} alt="Thumbnail" className="w-full h-full object-cover" />
+                                                <button onClick={() => updateShipField("videoThumbnailUrl", "")} className="absolute top-0 right-0 bg-foreground/70 text-background rounded-full p-0.5"><X className="h-2.5 w-2.5" /></button>
+                                              </div>
+                                            )}
+                                            <Button variant="travel-outline" size="sm" className="h-8 text-xs" onClick={() => {
+                                              const input = document.createElement("input");
+                                              input.type = "file";
+                                              input.accept = "image/*";
+                                              input.onchange = async (ev) => {
+                                                const file = (ev.target as HTMLInputElement).files?.[0];
+                                                if (!file) return;
+                                                const url = await uploadImage(file);
+                                                updateShipField("videoThumbnailUrl", url);
+                                              };
+                                              input.click();
+                                            }}>
+                                              <ImagePlus className="h-3 w-3 mr-1" /> {ship.videoThumbnailUrl ? "Replace" : "Upload Thumbnail"}
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      )}
                                     </TabsContent>
                                     <TabsContent value="details" className="p-3 space-y-2 mt-0">
                                       <div>
