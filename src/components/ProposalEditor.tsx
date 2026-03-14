@@ -192,7 +192,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
   const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "", showAgencyNameWithLogo: true };
   const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, cruiseShips: true, busTrips: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
-  const flights = data.flights || [];
+  const flightOptions = data.flightOptions || [];
   const accommodations = data.accommodations || [];
   const cruiseShips = data.cruiseShips || [];
   const busTrips = data.busTrips || [];
