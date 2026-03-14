@@ -668,7 +668,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                           <Input value={ship.disembarkationPort} onChange={(e) => updateShipField("disembarkationPort", e.target.value)} placeholder="Miami, FL" className="h-8 text-xs" />
                                         </div>
                                       </div>
-                                      <div className="grid grid-cols-3 gap-2">
+                                      <div className="grid grid-cols-2 gap-2">
                                         <div>
                                           <FieldLabel>Embark Date</FieldLabel>
                                           <DatePickerField value={ship.embarkationDate} onChange={(val) => updateShipField("embarkationDate", val)} placeholder="Embark date" />
@@ -677,10 +677,10 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                           <FieldLabel>Disembark Date</FieldLabel>
                                           <DatePickerField value={ship.disembarkationDate} onChange={(val) => updateShipField("disembarkationDate", val)} placeholder="Disembark date" />
                                         </div>
-                                        <div>
-                                          <FieldLabel>Nights</FieldLabel>
-                                          <Input value={ship.nights} onChange={(e) => updateShipField("nights", e.target.value)} placeholder="7" className="h-8 text-xs" />
-                                        </div>
+                                      </div>
+                                      <div className="w-1/3">
+                                        <FieldLabel>Nights</FieldLabel>
+                                        <Input value={ship.nights} onChange={(e) => updateShipField("nights", e.target.value)} placeholder="7" className="h-8 text-xs" />
                                       </div>
                                     </TabsContent>
                                     <TabsContent value="media" className="p-3 space-y-3 mt-0">
