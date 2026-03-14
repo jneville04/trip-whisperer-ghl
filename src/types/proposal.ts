@@ -125,6 +125,7 @@ export interface BusTrip {
   mediaType?: "photos" | "video";
   stops: BusStop[];
   price?: string;
+  agentPricing?: AgentPricing;
 }
 
 export interface BusStop {
