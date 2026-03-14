@@ -307,7 +307,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                             </div>
                           ) : (
                             <div className="p-4 sm:p-6 border-b border-border/30">
-                              <VideoEmbed url={acc.videoUrl!} title={acc.hotelName} className="w-full" />
+                              <VideoEmbed url={acc.videoUrl!} title={acc.hotelName} thumbnailUrl={acc.videoThumbnailUrl} className="w-full" />
                             </div>
                           )}
                           <div className="p-6 sm:p-8">
@@ -401,7 +401,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                             </div>
                           ) : (
                             <div className="p-4 sm:p-6 border-b border-border/30">
-                              <VideoEmbed url={ship.videoUrl!} title={ship.shipName} className="w-full" />
+                              <VideoEmbed url={ship.videoUrl!} title={ship.shipName} thumbnailUrl={ship.videoThumbnailUrl} className="w-full" />
                             </div>
                           )}
                           <div className="p-6 sm:p-8">
@@ -526,13 +526,13 @@ export default function ProposalPreview({ data, shareId }: Props) {
                                     )}
                                     {hasVideo && !hasImages && (
                                       <div className="sm:w-[260px] md:w-[300px] shrink-0">
-                                        <VideoEmbed url={act.videoUrl!} title={act.title} className="rounded-xl" />
+                                        <VideoEmbed url={act.videoUrl!} title={act.title} thumbnailUrl={act.videoThumbnailUrl} className="rounded-xl" />
                                       </div>
                                     )}
                                   </div>
                                   {hasVideo && hasImages && (
                                     <div className="mt-4">
-                                      <VideoEmbed url={act.videoUrl!} title={act.title} className="max-w-md" />
+                                      <VideoEmbed url={act.videoUrl!} title={act.title} thumbnailUrl={act.videoThumbnailUrl} className="max-w-md" />
                                     </div>
                                   )}
                                 </div>

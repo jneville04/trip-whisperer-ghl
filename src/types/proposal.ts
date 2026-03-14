@@ -6,6 +6,7 @@ export interface Activity {
   type: "transport" | "hotel" | "dining" | "activity" | "sightseeing";
   imageUrls?: string[];
   videoUrl?: string;
+  videoThumbnailUrl?: string;
 }
 
 export interface ItineraryDay {
@@ -62,6 +63,7 @@ export interface Accommodation {
   amenities: string[];
   highlights: string[];
   videoUrl?: string;
+  videoThumbnailUrl?: string;
   mediaType?: "photos" | "video";
 }
 
@@ -83,6 +85,7 @@ export interface CruiseShip {
   amenities: string[];
   highlights: string[];
   videoUrl?: string;
+  videoThumbnailUrl?: string;
   mediaType?: "photos" | "video";
 }
 
