@@ -424,6 +424,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                   </motion.div>
                   <div className="space-y-10">
                     {cruiseShips.map((ship) => {
+                      const isSelected = selectedCruise === ship.id;
                       const amenities = (ship.amenities || []).filter(Boolean);
                       const highlights = (ship.highlights || []).filter(Boolean);
                       const galleryUrls = ship.galleryUrls || [];
@@ -434,7 +435,25 @@ export default function ProposalPreview({ data, shareId }: Props) {
                       const showShipVideo = (ship.mediaType || "photos") === "video" && !!ship.videoUrl;
                       const showShipPhotos = !showShipVideo;
                       return (
-                        <motion.div key={ship.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
+                        <motion.div
+                          key={ship.id}
+                          variants={fadeUp}
+                          initial="hidden"
+                          whileInView="visible"
+                          viewport={{ once: true }}
+                          custom={0}
+                          className={`bg-card rounded-2xl border-2 shadow-lg overflow-hidden relative transition-all ${
+                            !isGroupBooking
+                              ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40 cursor-pointer"
+                              : "border-border/50"
+                          }`}
+                          onClick={() => !isGroupBooking && setSelectedCruise(ship.id)}
+                        >
+                          {!isGroupBooking && cruiseShips.length > 1 && (
+                            <div className={`absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30 bg-background"}`}>
+                              {isSelected && <Check className="h-3.5 w-3.5 text-primary-foreground" />}
+                            </div>
+                          )}
                           {showShipPhotos ? (
                             <div className="grid grid-cols-3 md:grid-cols-4 gap-1">
                               {ship.imageUrl && (
