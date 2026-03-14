@@ -507,8 +507,10 @@ export default function ProposalPreview({ data, shareId }: Props) {
                           onClick={() => !isGroupBooking && setSelectedCruise(isSelected ? "" : ship.id)}
                         >
                           {!isGroupBooking && cruiseShips.length > 1 && (
-                            <div className={`absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30 bg-background"}`} onClick={(e) => { e.stopPropagation(); setSelectedCruise(isSelected ? "" : ship.id); }}>
-                              {isSelected && <Check className="h-3.5 w-3.5 text-primary-foreground" />}
+                            <div className="absolute top-4 right-4 z-10">
+                              <span className="inline-block bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-[0.15em] font-body px-2.5 py-1 rounded-full">
+                                Option {cruiseShips.indexOf(ship) + 1}
+                              </span>
                             </div>
                           )}
                           {showShipPhotos ? (
