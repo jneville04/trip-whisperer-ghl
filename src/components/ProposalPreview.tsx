@@ -478,7 +478,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                               const hasVideo = !!act.videoUrl;
                               return (
                                 <div key={act.id || actIdx}>
-                                  <div className={`flex flex-col ${hasImages ? 'sm:flex-row' : ''} gap-6`}>
+                                  <div className={`flex flex-col ${hasImages || hasVideo ? 'sm:flex-row' : ''} gap-6`}>
                                     <div className="flex-1">
                                       <div className="flex items-start gap-3">
                                         <div className="relative z-10 mt-1.5 w-[13px] h-[13px] shrink-0 rounded-full border-2 border-primary bg-background" />
