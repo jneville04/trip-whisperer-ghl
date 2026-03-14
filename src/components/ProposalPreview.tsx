@@ -307,7 +307,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                             </div>
                           ) : (
                             <div className="p-4 sm:p-6 border-b border-border/30">
-                              <VideoEmbed url={acc.videoUrl!} title={acc.hotelName} className="w-full" />
+                              <VideoEmbed url={acc.videoUrl!} title={acc.hotelName} thumbnailUrl={acc.videoThumbnailUrl} className="w-full" />
                             </div>
                           )}
                           <div className="p-6 sm:p-8">
