@@ -203,7 +203,7 @@ export default function AuthPage() {
 
   if (hasHero && heroPosition === "top") {
     return (
-      <div className="min-h-screen bg-background flex flex-col" style={defaultVars}>
+      <div className="min-h-screen bg-background flex flex-col" style={brandVars}>
         <div className="h-56 sm:h-72 overflow-hidden relative">
           <img src={heroUrl} alt="" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background" />
