@@ -32,7 +32,7 @@ export default function SettingsPage() {
   useAuth(true);
   const navigate = useNavigate();
   const { settings, isLoading, saveSettings, isSaving } = useAgentSettings();
-  const { cssVars } = useAppSettings();
+  const { settings: appSettings, cssVars } = useAppSettings();
   const [form, setForm] = useState<Partial<AgentSettings>>({});
   const [dirty, setDirty] = useState(false);
 
