@@ -128,6 +128,7 @@ export interface SectionVisibility {
   overview: boolean;
   flights: boolean;
   accommodations: boolean;
+  cruiseShips: boolean;
   itinerary: boolean;
   inclusions: boolean;
   pricing: boolean;
@@ -137,7 +138,7 @@ export interface SectionVisibility {
 }
 
 export const defaultSectionOrder: SectionKey[] = [
-  "overview", "flights", "accommodations", "itinerary", "inclusions", "essentials", "terms", "pricing", "agent",
+  "overview", "flights", "accommodations", "cruiseShips", "itinerary", "inclusions", "essentials", "terms", "pricing", "agent",
 ];
 
 export interface ProposalData {
