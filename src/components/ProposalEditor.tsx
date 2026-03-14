@@ -582,6 +582,10 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                   </div>
                                 </div>
                               )}
+                              <AgentPricingFields
+                                pricing={flight.agentPricing}
+                                onChange={(ap) => { const f = [...flights]; f[i] = { ...f[i], agentPricing: ap }; update("flights", f); }}
+                              />
                             </div>
                           ))}
                           <div className="flex gap-2">
