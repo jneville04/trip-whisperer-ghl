@@ -128,31 +128,24 @@ export default function SettingsPage() {
                     onCheckedChange={(v) => updateField("show_agency_name_with_logo", v)}
                   />
                 </div>
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <FieldLabel>Primary Color</FieldLabel>
                     <div className="flex gap-2 items-center">
-                      <input type="color" value={form.primary_color || "#C2631A"} onChange={(e) => updateField("primary_color", e.target.value.toUpperCase())} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                      <Input value={form.primary_color || ""} onChange={(e) => updateField("primary_color", normalizeHexInput(e.target.value))} placeholder="#C2631A" className="h-8 text-sm flex-1" maxLength={7} />
+                      <input type="color" value={form.primary_color || appSettings.primary_color} onChange={(e) => updateField("primary_color", e.target.value.toUpperCase())} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                      <Input value={form.primary_color || ""} onChange={(e) => updateField("primary_color", normalizeHexInput(e.target.value))} placeholder={appSettings.primary_color} className="h-8 text-sm flex-1" maxLength={7} />
                     </div>
                   </div>
                   <div>
                     <FieldLabel>Secondary Color</FieldLabel>
                     <div className="flex gap-2 items-center">
-                      <input type="color" value={form.secondary_color || "#337A8A"} onChange={(e) => updateField("secondary_color", e.target.value.toUpperCase())} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                      <Input value={form.secondary_color || ""} onChange={(e) => updateField("secondary_color", normalizeHexInput(e.target.value))} placeholder="#337A8A" className="h-8 text-sm flex-1" maxLength={7} />
-                    </div>
-                  </div>
-                  <div>
-                    <FieldLabel>Accent Color</FieldLabel>
-                    <div className="flex gap-2 items-center">
-                      <input type="color" value={form.accent_color || "#D4A824"} onChange={(e) => updateField("accent_color", e.target.value.toUpperCase())} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                      <Input value={form.accent_color || ""} onChange={(e) => updateField("accent_color", normalizeHexInput(e.target.value))} placeholder="#D4A824" className="h-8 text-sm flex-1" maxLength={7} />
+                      <input type="color" value={form.secondary_color || appSettings.secondary_color} onChange={(e) => updateField("secondary_color", e.target.value.toUpperCase())} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                      <Input value={form.secondary_color || ""} onChange={(e) => updateField("secondary_color", normalizeHexInput(e.target.value))} placeholder={appSettings.secondary_color} className="h-8 text-sm flex-1" maxLength={7} />
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center justify-between pt-2">
-                  <p className="text-xs text-muted-foreground font-body">Use hex colors (e.g. #1A2B3C). Leave blank to use platform defaults.</p>
+                  <p className="text-xs text-muted-foreground font-body">Use hex colors (e.g. #1A2B3C). Defaults come from admin branding unless you set custom colors.</p>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant="outline" size="sm" className="text-xs shrink-0">
