@@ -1025,14 +1025,14 @@ export default function ProposalPreview({ data, shareId }: Props) {
             </motion.div>
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="bg-background rounded-2xl border border-border/50 shadow-lg p-8">
               <div className="space-y-4 mb-6">
-                {flights.length > 0 && (
+                {flightOptions.length > 0 && (
                   <div className="flex justify-between items-center py-3 border-b border-border/30">
                     <div className="flex items-center gap-2">
                       <Plane className="h-4 w-4 text-primary" />
                       <span className="font-body text-foreground font-medium">Flight</span>
                     </div>
                     <span className="font-body text-sm text-muted-foreground">
-                      {selectedFlight ? (() => { const f = flights.find(f => f.id === selectedFlight); return <>{f?.airline} — {f?.departureAirport?.split("–")[0]?.trim()} → {f?.arrivalAirport?.split("–")[0]?.trim()}{f?.price ? <span className="ml-2 text-primary font-semibold">${f.price}</span> : null}</>; })() : <span className="text-destructive text-xs">Not selected</span>}
+                      {selectedFlight ? (() => { const opt = flightOptions.find(o => o.id === selectedFlight); const dep = opt?.legs.find(l => l.type === "departure"); return <>{dep?.airline || "Selected"} — {dep?.departureAirport?.split("–")[0]?.trim()} → {dep?.arrivalAirport?.split("–")[0]?.trim()}{opt?.price ? <span className="ml-2 text-primary font-semibold">${opt.price}</span> : null}</>; })() : <span className="text-destructive text-xs">Not selected</span>}
                     </span>
                   </div>
                 )}
