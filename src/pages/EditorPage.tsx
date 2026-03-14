@@ -49,7 +49,16 @@ export default function EditorPage() {
       ...saved,
       sectionVisibility: { ...defaultProposal.sectionVisibility, ...(saved.sectionVisibility || {}) },
       sectionOrder: saved.sectionOrder && !saved.sectionOrder.includes("cruiseShips")
-        ? [...saved.sectionOrder.filter((k: string) => k !== "agent"), "cruiseShips", ...saved.sectionOrder.filter((k: string) => k === "agent")]
+        ? (() => {
+            const order = [...saved.sectionOrder];
+            const accomIdx = order.indexOf("accommodations");
+            if (accomIdx >= 0) {
+              order.splice(accomIdx + 1, 0, "cruiseShips");
+            } else {
+              order.splice(order.length - 1, 0, "cruiseShips");
+            }
+            return order;
+          })()
         : saved.sectionOrder || defaultProposal.sectionOrder,
       cruiseShips: saved.cruiseShips || [],
     };
