@@ -315,26 +315,22 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   <FieldLabel>Logo Override</FieldLabel>
                   <ImageUploadField value={brand.logoUrl} onChange={(url) => update("brand", { ...brand, logoUrl: url })} placeholder="Paste logo URL" />
                 </div>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 gap-3">
                   <div>
                     <FieldLabel>Primary</FieldLabel>
                     <div className="flex gap-2 items-center">
-                      <input type="color" value={brand.primaryColor || "#C2631A"} onChange={(e) => update("brand", { ...brand, primaryColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                      <Input value={brand.primaryColor} onChange={(e) => update("brand", { ...brand, primaryColor: normalizeHexInput(e.target.value) })} placeholder="#C2631A" className="h-8 text-sm flex-1" maxLength={7} />
+                      <input type="color" value={brand.primaryColor || resolvedPrimaryColor || "#C2631A"} onChange={(e) => update("brand", { ...brand, primaryColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                      <Input value={brand.primaryColor} onChange={(e) => update("brand", { ...brand, primaryColor: normalizeHexInput(e.target.value) })} placeholder={resolvedPrimaryColor || "#C2631A"} className="h-8 text-sm flex-1" maxLength={7} />
                     </div>
                   </div>
                   <div>
                     <FieldLabel>Secondary</FieldLabel>
                     <div className="flex gap-2 items-center">
-                      <input type="color" value={brand.secondaryColor || "#337A8A"} onChange={(e) => update("brand", { ...brand, secondaryColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                      <Input value={brand.secondaryColor} onChange={(e) => update("brand", { ...brand, secondaryColor: normalizeHexInput(e.target.value) })} placeholder="#337A8A" className="h-8 text-sm flex-1" maxLength={7} />
-                    </div>
-                  </div>
-                  <div>
-                    <FieldLabel>Accent</FieldLabel>
-                    <div className="flex gap-2 items-center">
-                      <input type="color" value={brand.accentColor || "#D4A824"} onChange={(e) => update("brand", { ...brand, accentColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                      <Input value={brand.accentColor} onChange={(e) => update("brand", { ...brand, accentColor: normalizeHexInput(e.target.value) })} placeholder="#D4A824" className="h-8 text-sm flex-1" maxLength={7} />
+                      <input type="color" value={brand.secondaryColor || resolvedSecondaryColor || "#337A8A"} onChange={(e) => update("brand", { ...brand, secondaryColor: e.target.value.toUpperCase(), accentColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                      <Input value={brand.secondaryColor} onChange={(e) => {
+                        const next = normalizeHexInput(e.target.value);
+                        update("brand", { ...brand, secondaryColor: next, accentColor: next || brand.accentColor });
+                      }} placeholder={resolvedSecondaryColor || "#337A8A"} className="h-8 text-sm flex-1" maxLength={7} />
                     </div>
                   </div>
                 </div>

@@ -168,7 +168,7 @@ export default function SettingsPage() {
                               const colorUpdates = {
                                 primary_color: appSettings.primary_color,
                                 secondary_color: appSettings.secondary_color,
-                                accent_color: appSettings.accent_color,
+                                accent_color: appSettings.secondary_color,
                               };
                               await saveSettings(colorUpdates);
                               setForm((prev) => ({ ...prev, ...colorUpdates }));
