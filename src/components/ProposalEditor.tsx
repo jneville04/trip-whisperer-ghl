@@ -299,22 +299,18 @@ export default function ProposalEditor({ data, onChange }: Props) {
                 <p className="text-xs text-muted-foreground font-body">Set custom colors for this proposal only.</p>
               </div>
               <Switch
-                checked={!!(brand.primaryColor || brand.secondaryColor || brand.accentColor || brand.logoUrl)}
+                checked={!!(brand.primaryColor || brand.secondaryColor || brand.accentColor)}
                 onCheckedChange={(checked) => {
                   if (!checked) {
-                    update("brand", { ...brand, primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" });
+                    update("brand", { ...brand, primaryColor: "", secondaryColor: "", accentColor: "" });
                   } else {
-                    update("brand", { ...brand, primaryColor: resolvedPrimaryColor, secondaryColor: resolvedSecondaryColor, accentColor: resolvedSecondaryColor, logoUrl: agentSettings.logo_url });
+                    update("brand", { ...brand, primaryColor: resolvedPrimaryColor, secondaryColor: resolvedSecondaryColor, accentColor: resolvedSecondaryColor });
                   }
                 }}
               />
             </div>
-            {(brand.primaryColor || brand.secondaryColor || brand.accentColor || brand.logoUrl) && (
+            {(brand.primaryColor || brand.secondaryColor || brand.accentColor) && (
               <div className="space-y-2 pt-2">
-                <div>
-                  <FieldLabel>Logo Override</FieldLabel>
-                  <ImageUploadField value={brand.logoUrl} onChange={(url) => update("brand", { ...brand, logoUrl: url })} placeholder="Paste logo URL" />
-                </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <FieldLabel>Primary</FieldLabel>
