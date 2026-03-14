@@ -220,6 +220,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
     overview: "✍️ Introduction",
     flights: "✈️ Flights",
     accommodations: "🏨 Accommodations",
+    cruiseShips: "🚢 Cruise Ship & Cabin",
     itinerary: "📅 Itinerary Days",
     inclusions: "✅ What's Included",
     pricing: "💰 Pricing",

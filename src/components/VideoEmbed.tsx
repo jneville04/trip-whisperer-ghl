@@ -51,6 +51,8 @@ export default function VideoEmbed({ url, title, className = "" }: VideoEmbedPro
     return () => observer.disconnect();
   }, []);
 
+  if (!info) return null;
+
   return (
     <div ref={ref} className={`relative aspect-video rounded-xl overflow-hidden bg-muted ${className}`}>
       {!visible ? (
