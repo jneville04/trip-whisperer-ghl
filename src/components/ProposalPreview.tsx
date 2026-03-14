@@ -1087,10 +1087,10 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
 
       {/* PROPOSAL SELECTION SUMMARY — only for Proposal type */}
       {!isGroupBooking && (
-        <section id="selection-summary" className="py-20 bg-card border-t border-border/50">
+        <section id="pricing" className="py-20 bg-card border-t border-border/50">
           <div className="max-w-3xl mx-auto px-6">
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-10">
-              <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Selections</p>
+              <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Investment</p>
               <h2 className="font-display text-4xl font-bold text-foreground">Trip Pricing</h2>
             </motion.div>
             <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="bg-background rounded-2xl border border-border/50 shadow-lg p-8">
@@ -1101,8 +1101,8 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                       <Plane className="h-4 w-4 text-primary" />
                       <span className="font-body text-foreground font-medium">Flight</span>
                     </div>
-                    <span className="font-body text-sm text-muted-foreground">
-                      {selectedFlight ? (() => { const opt = flightOptions.find(o => o.id === selectedFlight); const dep = opt?.legs.find(l => l.type === "departure"); return <>{dep?.airline || "Selected"} — {dep?.departureAirport?.split("–")[0]?.trim()} → {dep?.arrivalAirport?.split("–")[0]?.trim()}{opt?.price ? <span className="ml-2 text-primary font-semibold">${opt.price}</span> : null}</>; })() : <span className="text-destructive text-xs">Not selected</span>}
+                    <span className="font-body text-sm">
+                      {selectedFlight ? (() => { const opt = flightOptions.find(o => o.id === selectedFlight); const dep = opt?.legs.find(l => l.type === "departure"); return <span className="text-foreground">{dep?.airline || "Selected"} — {dep?.departureAirport?.split("–")[0]?.trim()} → {dep?.arrivalAirport?.split("–")[0]?.trim()}{opt?.price ? <span className="ml-2 text-primary font-semibold">${opt.price}</span> : null}</span>; })() : <span className="text-muted-foreground italic text-xs">Not selected</span>}
                     </span>
                   </div>
                 )}
@@ -1112,8 +1112,8 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                       <BedDouble className="h-4 w-4 text-primary" />
                       <span className="font-body text-foreground font-medium">Accommodation</span>
                     </div>
-                    <span className="font-body text-sm text-muted-foreground">
-                      {selectedAccommodation ? (() => { const a = accommodations.find(a => a.id === selectedAccommodation); return <>{a?.hotelName || "Selected"}{a?.price ? <span className="ml-2 text-primary font-semibold">${a.price}</span> : null}</>; })() : <span className="text-destructive text-xs">Not selected</span>}
+                    <span className="font-body text-sm">
+                      {selectedAccommodation ? (() => { const a = accommodations.find(a => a.id === selectedAccommodation); return <span className="text-foreground">{a?.hotelName || "Selected"}{a?.price ? <span className="ml-2 text-primary font-semibold">${a.price}</span> : null}</span>; })() : <span className="text-muted-foreground italic text-xs">Not selected</span>}
                     </span>
                   </div>
                 )}
@@ -1123,8 +1123,8 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                       <Ship className="h-4 w-4 text-primary" />
                       <span className="font-body text-foreground font-medium">Cruise</span>
                     </div>
-                    <span className="font-body text-sm text-muted-foreground">
-                      {selectedCruise ? (() => { const s = cruiseShips.find(s => s.id === selectedCruise); return <>{s?.shipName || "Selected"}{s?.price ? <span className="ml-2 text-primary font-semibold">${s.price}</span> : null}</>; })() : <span className="text-destructive text-xs">Not selected</span>}
+                    <span className="font-body text-sm">
+                      {selectedCruise ? (() => { const s = cruiseShips.find(s => s.id === selectedCruise); return <span className="text-foreground">{s?.shipName || "Selected"}{s?.price ? <span className="ml-2 text-primary font-semibold">${s.price}</span> : null}</span>; })() : <span className="text-muted-foreground italic text-xs">Not selected</span>}
                     </span>
                   </div>
                 )}
@@ -1134,20 +1134,20 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                       <Bus className="h-4 w-4 text-primary" />
                       <span className="font-body text-foreground font-medium">Bus Trip</span>
                     </div>
-                    <span className="font-body text-sm text-muted-foreground">
-                      {selectedBusTrip ? (() => { const b = busTrips.find(b => b.id === selectedBusTrip); return <>{b?.routeName || "Selected"}{b?.price ? <span className="ml-2 text-primary font-semibold">${b.price}</span> : null}</>; })() : <span className="text-destructive text-xs">Not selected</span>}
+                    <span className="font-body text-sm">
+                      {selectedBusTrip ? (() => { const b = busTrips.find(b => b.id === selectedBusTrip); return <span className="text-foreground">{b?.routeName || "Selected"}{b?.price ? <span className="ml-2 text-primary font-semibold">${b.price}</span> : null}</span>; })() : <span className="text-muted-foreground italic text-xs">Not selected</span>}
                     </span>
                   </div>
                 )}
               </div>
 
-              {/* Pricing lines if available */}
+              {/* Additional pricing lines */}
               {data.pricing.length > 0 && (
                 <div className="space-y-3 mb-6 pt-4 border-t border-border/30">
                   {data.pricing.map((line) => (
                     <div key={line.id} className="flex justify-between items-center font-body">
                       <span className="text-muted-foreground">{line.label}</span>
-                      <span className="font-semibold text-foreground">${line.amount}</span>
+                      <span className="font-semibold text-foreground">{line.amount}</span>
                     </div>
                   ))}
                 </div>
@@ -1159,7 +1159,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                 const selectedAccPrice = selectedAccommodation ? parseFloat(accommodations.find(a => a.id === selectedAccommodation)?.price || "0") : 0;
                 const selectedCruisePrice = selectedCruise ? parseFloat(cruiseShips.find(s => s.id === selectedCruise)?.price || "0") : 0;
                 const selectedBusPrice = selectedBusTrip ? parseFloat(busTrips.find(b => b.id === selectedBusTrip)?.price || "0") : 0;
-                const pricingLinesTotal = data.pricing.reduce((sum, line) => sum + (parseFloat(line.amount) || 0), 0);
+                const pricingLinesTotal = data.pricing.reduce((sum, line) => sum + (parseFloat(line.amount.replace(/[^0-9.-]/g, "")) || 0), 0);
                 const total = selectedFlightPrice + selectedAccPrice + selectedCruisePrice + selectedBusPrice + pricingLinesTotal;
                 if (total > 0) {
                   return (
@@ -1174,6 +1174,8 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                 return null;
               })()}
 
+              {data.paymentTerms && <p className="text-xs text-muted-foreground mb-6 font-body">{data.paymentTerms}</p>}
+
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                 <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>
                   <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
@@ -1183,7 +1185,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                     <ShoppingCart className="h-5 w-5 mr-2" /> Proceed to Checkout
                   </Button>
                 )}
-                <Button variant="travel-ghost" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToRevisions}>
+                <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToRevisions}>
                   <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
                 </Button>
               </div>
