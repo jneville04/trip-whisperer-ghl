@@ -91,7 +91,7 @@ export default function VideoEmbed({ url, title, className = "", thumbnailUrl, a
   // If custom thumbnail is set, always use click-to-play pattern
   if (thumbnailUrl || isDirect) {
     return (
-      <div ref={ref} className={`relative aspect-video rounded-xl overflow-hidden bg-muted ${className}`}>
+        <div ref={ref} className={`relative aspect-video rounded-xl overflow-hidden bg-muted ${className}`} style={className.includes('aspect-auto') ? { aspectRatio: 'unset' } : undefined}>
         {!visible ? (
           <div className="w-full h-full bg-muted animate-pulse" />
         ) : !playing ? (
