@@ -475,6 +475,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                           <div className="space-y-8">
                             {day.activities.map((act, actIdx) => {
                               const hasImages = act.imageUrls && act.imageUrls.length > 0;
+                              const hasVideo = !!act.videoUrl;
                               return (
                                 <div key={act.id || actIdx}>
                                   <div className={`flex flex-col ${hasImages ? 'sm:flex-row' : ''} gap-6`}>
