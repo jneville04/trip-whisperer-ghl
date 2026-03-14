@@ -10,11 +10,6 @@ import { buildBrandCssVars, type BrandColors } from "@/lib/brand";
 import type { ProposalData, CheckoutSettings, PaymentOption } from "@/types/proposal";
 import { createDefaultCheckout } from "@/types/proposal";
 
-const paymentIcons: Record<string, React.ReactNode> = {
-  full: <CreditCard className="h-5 w-5" />,
-  deposit: <Banknote className="h-5 w-5" />,
-  installments: <Calendar className="h-5 w-5" />,
-};
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
