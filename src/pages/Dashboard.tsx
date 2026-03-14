@@ -296,6 +296,35 @@ export default function Dashboard() {
             })}
           </div>
         )}
+
+        {/* Helpdesk */}
+        {((settings as any).helpdesk_email || (settings as any).helpdesk_phone) && (
+          <div className="mt-12 border-t border-border/50 pt-8">
+            <div className="flex items-start gap-3 max-w-md mx-auto text-center">
+              <div className="w-full">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <HelpCircle className="h-4 w-4 text-primary" />
+                  <span className="font-display text-sm font-semibold text-foreground">Need Help?</span>
+                </div>
+                {(settings as any).helpdesk_message && (
+                  <p className="text-xs text-muted-foreground font-body mb-3">{(settings as any).helpdesk_message}</p>
+                )}
+                <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground font-body">
+                  {(settings as any).helpdesk_email && (
+                    <a href={`mailto:${(settings as any).helpdesk_email}`} className="flex items-center gap-1 hover:text-primary transition-colors">
+                      <Mail className="h-3 w-3" /> {(settings as any).helpdesk_email}
+                    </a>
+                  )}
+                  {(settings as any).helpdesk_phone && (
+                    <a href={`tel:${(settings as any).helpdesk_phone}`} className="flex items-center gap-1 hover:text-primary transition-colors">
+                      <Phone className="h-3 w-3" /> {(settings as any).helpdesk_phone}
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
