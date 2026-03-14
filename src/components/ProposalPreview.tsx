@@ -142,9 +142,16 @@ export default function ProposalPreview({ data, shareId }: Props) {
               </button>
             ))}
           </div>
-          <Button variant="travel" size="sm" className="text-xs" onClick={goToApprove}>
-            Book Now
-          </Button>
+          {isGroupBooking && bookingUrl && (
+            <Button variant="travel" size="sm" className="text-xs" onClick={() => openModal(bookingUrl, "Book Now")}>
+              Book Now
+            </Button>
+          )}
+          {!isGroupBooking && (
+            <Button variant="travel" size="sm" className="text-xs" onClick={goToApprove}>
+              Approve
+            </Button>
+          )}
         </div>
       </nav>
 
