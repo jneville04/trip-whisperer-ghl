@@ -112,6 +112,8 @@ function BrandingTab() {
         login_message: form.login_message,
         ghl_webhook_approve: (form as any).ghl_webhook_approve || "",
         ghl_webhook_revision: (form as any).ghl_webhook_revision || "",
+        ghl_form_approve: (form as any).ghl_form_approve || "",
+        ghl_form_revision: (form as any).ghl_form_revision || "",
         admin_photo_url: (form as any).admin_photo_url || "",
         updated_at: new Date().toISOString(),
       } as any)

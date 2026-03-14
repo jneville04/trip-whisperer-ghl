@@ -33,6 +33,8 @@ const defaults: AppSettings = {
   login_message: null,
   ghl_webhook_approve: "",
   ghl_webhook_revision: "",
+  ghl_form_approve: "",
+  ghl_form_revision: "",
   admin_photo_url: null,
 };
 
