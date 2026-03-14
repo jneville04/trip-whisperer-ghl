@@ -209,6 +209,7 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {filtered.map((proposal) => {
               const heroImg = proposal.data?.heroImageUrl || (proposal.data?.heroImageUrls?.length ? proposal.data.heroImageUrls[0] : "");
+              const proposalType = (proposal.data as any)?.proposalType || "group_booking";
               return (
               <div
                 key={proposal.id}
