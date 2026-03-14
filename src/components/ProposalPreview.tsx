@@ -302,9 +302,11 @@ export default function ProposalPreview({ data, shareId }: Props) {
                   <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
                     <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Where You'll Stay</p>
                     <h2 className="font-display text-4xl font-bold text-foreground">Accommodations</h2>
+                    {!isGroupBooking && accommodations.length > 1 && <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>}
                   </motion.div>
                   <div className="space-y-10">
                     {accommodations.map((acc) => {
+                      const isSelected = selectedAccommodation === acc.id;
                       const amenities = (acc.amenities || []).filter(Boolean);
                       const highlights = (acc.highlights || []).filter(Boolean);
                       const galleryUrls = acc.galleryUrls || [];
