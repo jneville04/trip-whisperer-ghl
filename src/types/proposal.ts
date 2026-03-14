@@ -6,6 +6,7 @@ export interface Activity {
   type: "transport" | "hotel" | "dining" | "activity" | "sightseeing";
   imageUrls?: string[];
   videoUrl?: string;
+  videoThumbnailUrl?: string;
 }
 
 export interface ItineraryDay {
