@@ -939,7 +939,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                       <span className="font-body text-foreground font-medium">Flight</span>
                     </div>
                     <span className="font-body text-sm text-muted-foreground">
-                      {selectedFlight ? (flights.find(f => f.id === selectedFlight)?.airline || "Selected") + " — " + (flights.find(f => f.id === selectedFlight)?.departureAirport?.split("–")[0]?.trim() || "") + " → " + (flights.find(f => f.id === selectedFlight)?.arrivalAirport?.split("–")[0]?.trim() || "") : <span className="text-destructive text-xs">Not selected</span>}
+                      {selectedFlight ? (() => { const f = flights.find(f => f.id === selectedFlight); return <>{f?.airline} — {f?.departureAirport?.split("–")[0]?.trim()} → {f?.arrivalAirport?.split("–")[0]?.trim()}{f?.price ? <span className="ml-2 text-primary font-semibold">${f.price}</span> : null}</>; })() : <span className="text-destructive text-xs">Not selected</span>}
                     </span>
                   </div>
                 )}
