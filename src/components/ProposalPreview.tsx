@@ -271,8 +271,8 @@ export default function ProposalPreview({ data, shareId }: Props) {
                   </motion.div>
                   <div className="space-y-10">
                     {accommodations.map((acc) => {
-                      const amenities = acc.amenities || [];
-                      const highlights = acc.highlights || [];
+                      const amenities = (acc.amenities || []).filter(Boolean);
+                      const highlights = (acc.highlights || []).filter(Boolean);
                       const galleryUrls = acc.galleryUrls || [];
                       const allAccImages = [
                         ...(acc.imageUrl ? [{ src: acc.imageUrl, alt: acc.hotelName }] : []),
