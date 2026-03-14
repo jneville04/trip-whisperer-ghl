@@ -77,6 +77,7 @@ export type Database = {
       profiles: {
         Row: {
           agency_name: string | null
+          booking_url: string
           created_at: string | null
           email: string | null
           full_name: string | null
@@ -85,6 +86,7 @@ export type Database = {
         }
         Insert: {
           agency_name?: string | null
+          booking_url?: string
           created_at?: string | null
           email?: string | null
           full_name?: string | null
@@ -93,6 +95,7 @@ export type Database = {
         }
         Update: {
           agency_name?: string | null
+          booking_url?: string
           created_at?: string | null
           email?: string | null
           full_name?: string | null
