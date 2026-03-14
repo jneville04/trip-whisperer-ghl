@@ -145,10 +145,10 @@ export default function CheckoutPage() {
           {checkout.message && <p className="text-muted-foreground font-body mt-2">{checkout.message}</p>}
         </div>
 
-        {/* Layout: Summary + Form */}
-        <div className={hasCustomForm ? "grid grid-cols-1 lg:grid-cols-5 gap-8" : "max-w-2xl mx-auto"}>
-          {/* Trip Summary — always visible */}
-          <div className={hasCustomForm ? "lg:col-span-2" : ""}>
+        {/* Layout: Summary + Embedded Form */}
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+          {/* Trip Summary */}
+          <div className="lg:col-span-2">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-card border border-border/50 rounded-2xl p-6 sticky top-8">
               <h2 className="font-display text-lg font-semibold text-foreground mb-4">Trip Summary</h2>
               <div className="space-y-3">
