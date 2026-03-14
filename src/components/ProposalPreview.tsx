@@ -338,6 +338,11 @@ export default function ProposalPreview({ data, shareId }: Props) {
                                 </div>
                               </div>
                             )}
+                            {acc.videoUrl && (
+                              <div className="mt-4">
+                                <VideoEmbed url={acc.videoUrl} title={acc.hotelName} className="max-w-md" />
+                              </div>
+                            )}
                             <div className="flex items-center gap-6 mt-5 pt-4 border-t border-border/30 text-sm text-muted-foreground font-body">
                               {acc.checkIn && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Check-in: {acc.checkIn}</span>}
                               {acc.checkOut && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Check-out: {acc.checkOut}</span>}
