@@ -111,13 +111,28 @@ export default function EditorPage() {
     if (isPublish) setPublishing(true);
     else setSaving(true);
 
+    // Sync agent info from settings into proposal data on every save
+    const dataToSave = {
+      ...data,
+      agent: {
+        name: agentSettings.agent_name || "",
+        title: agentSettings.agent_title || "",
+        phone: agentSettings.agent_phone || "",
+        email: agentSettings.agent_email || "",
+        website: agentSettings.agent_website || "",
+        agencyName: agentSettings.agency_name || "",
+        logoUrl: agentSettings.agency_logo_url || "",
+        photoUrl: agentSettings.agent_photo_url || "",
+      },
+    };
+
     const { error } = await supabase
       .from("proposals")
       .update({
         title: data.destination ? `${data.destination} — ${data.clientName}` : "Untitled",
         client_name: data.clientName || "",
         destination: data.destination || "",
-        data: data as any,
+        data: dataToSave as any,
         status: targetStatus,
         updated_at: new Date().toISOString(),
       })
@@ -146,10 +161,10 @@ export default function EditorPage() {
     toast({ title: "Client link copied!", description: url });
   };
 
-  // Merge agent settings as fallbacks for brand and agent info
+  // Agent settings is the PRIMARY source for agent info; proposal-level data is ignored
+  // Brand colors: proposal overrides take priority, then agent settings, then app defaults
   const previewData = useMemo<ProposalData>(() => {
     const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
-    const agent = data.agent || { name: "", title: "", phone: "", email: "", website: "", agencyName: "", logoUrl: "", photoUrl: "" };
 
     const fallbackPrimary = agentSettings.primary_color || appSettings.primary_color;
     const fallbackSecondary = agentSettings.secondary_color || appSettings.secondary_color;
@@ -164,14 +179,14 @@ export default function EditorPage() {
         showAgencyNameWithLogo: brand.showAgencyNameWithLogo ?? agentSettings.show_agency_name_with_logo,
       },
       agent: {
-        name: agent.name || agentSettings.agent_name,
-        title: agent.title || agentSettings.agent_title,
-        phone: agent.phone || agentSettings.agent_phone,
-        email: agent.email || agentSettings.agent_email,
-        website: agent.website || agentSettings.agent_website,
-        agencyName: agent.agencyName || agentSettings.agency_name,
-        logoUrl: agent.logoUrl || agentSettings.agency_logo_url,
-        photoUrl: agent.photoUrl || agentSettings.agent_photo_url,
+        name: agentSettings.agent_name || "",
+        title: agentSettings.agent_title || "",
+        phone: agentSettings.agent_phone || "",
+        email: agentSettings.agent_email || "",
+        website: agentSettings.agent_website || "",
+        agencyName: agentSettings.agency_name || "",
+        logoUrl: agentSettings.agency_logo_url || "",
+        photoUrl: agentSettings.agent_photo_url || "",
       },
     };
   }, [data, agentSettings, appSettings.primary_color, appSettings.secondary_color]);
