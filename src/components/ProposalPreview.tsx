@@ -121,8 +121,12 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
     setBookingOpen(true);
   }, []);
 
+  const checkoutEnabled = data.checkout?.enabled;
+  const goToCheckout = useCallback(() => {
+    navigate(`/checkout${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
+  }, [navigate, shareId, brandData, returnTo]);
+
   const goToApprove = useCallback(() => {
-    // If checkout is enabled, go to checkout. Otherwise use approve URL or built-in page.
     if (checkoutEnabled) {
       goToCheckout();
       return;
@@ -143,10 +147,6 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
     }
   }, [navigate, shareId, brandData, returnTo, revisionsUrl, openModal]);
 
-  const checkoutEnabled = data.checkout?.enabled;
-  const goToCheckout = useCallback(() => {
-    navigate(`/checkout${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
-  }, [navigate, shareId, brandData, returnTo]);
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
