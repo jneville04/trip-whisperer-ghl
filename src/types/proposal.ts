@@ -289,7 +289,36 @@ export const createCruiseShip = (): CruiseShip => ({
   mediaType: "photos",
 });
 
-export const defaultProposal: ProposalData = {
+export const createBusStop = (): BusStop => ({
+  id: crypto.randomUUID(),
+  location: "",
+  arrivalTime: "",
+  departureTime: "",
+  notes: "",
+});
+
+export const createBusTrip = (): BusTrip => ({
+  id: crypto.randomUUID(),
+  busCompany: "",
+  routeName: "",
+  pickupLocation: "",
+  pickupTime: "",
+  pickupDate: "",
+  dropoffLocation: "",
+  dropoffTime: "",
+  dropoffDate: "",
+  duration: "",
+  seatType: "",
+  busType: "",
+  description: "",
+  amenities: [],
+  highlights: [],
+  imageUrl: "",
+  galleryUrls: [],
+  stops: [],
+  mediaType: "photos",
+});
+
   destination: "Portugal",
   subtitle: "Lisbon · Nazaré · Fátima · Porto · Aveiro · Coimbra",
   heroImageUrl: "",
