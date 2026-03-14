@@ -191,6 +191,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, cruiseShips: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
   const flights = data.flights || [];
   const accommodations = data.accommodations || [];
+  const cruiseShips = data.cruiseShips || [];
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
   const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
 
