@@ -443,6 +443,22 @@ export default function ProposalPreview({ data, shareId }: Props) {
                               {acc.checkOut && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Check-out: {acc.checkOut}</span>}
                               {acc.nights && <span className="text-primary font-semibold">{acc.nights}</span>}
                             </div>
+                            {(acc.price || !isGroupBooking) && (
+                              <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
+                                {acc.price && <span className="font-display text-xl font-bold text-foreground">${acc.price}</span>}
+                                {!acc.price && <span />}
+                                {!isGroupBooking && (
+                                  <Button
+                                    variant={isSelected ? "travel" : "travel-outline"}
+                                    size="sm"
+                                    className="text-xs"
+                                    onClick={(e) => { e.stopPropagation(); setSelectedAccommodation(isSelected ? "" : acc.id); }}
+                                  >
+                                    {isSelected ? "✓ Selected" : "Select Option"}
+                                  </Button>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </motion.div>
                       );
