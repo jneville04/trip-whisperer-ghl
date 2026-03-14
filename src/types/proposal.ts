@@ -226,6 +226,7 @@ export interface ProposalData {
   introText: string;
   days: ItineraryDay[];
   flights: FlightLeg[];
+  flightOptions: FlightOption[];
   accommodations: Accommodation[];
   cruiseShips: CruiseShip[];
   busTrips: BusTrip[];
