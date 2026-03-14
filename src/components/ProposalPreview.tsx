@@ -215,7 +215,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
 
             // 3+ images: 1 large + 2 stacked
             return (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-1 aspect-[21/9] overflow-hidden">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-1 h-[500px] overflow-hidden">
                 <div className="md:col-span-2 overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
                   <img src={allReal[0]} alt={data.destination} className="w-full h-full object-cover" />
                 </div>
