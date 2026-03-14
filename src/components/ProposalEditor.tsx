@@ -659,7 +659,36 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                             <option key={t.value} value={t.value}>{t.label}</option>
                                           ))}
                                         </select>
-                                        <Input value={act.time} onChange={(e) => updateActivity(dayIdx, actIdx, "time", e.target.value)} placeholder="2:00 PM" className="h-7 text-xs w-24" />
+                                        <div className="flex gap-0.5">
+                                          <select
+                                            value={act.time ? act.time.replace(/\s*(AM|PM)$/i, '') : ''}
+                                            onChange={(e) => {
+                                              const hour = e.target.value;
+                                              const currentPeriod = act.time?.match(/(AM|PM)$/i)?.[1] || 'AM';
+                                              updateActivity(dayIdx, actIdx, "time", hour ? `${hour} ${currentPeriod}` : '');
+                                            }}
+                                            className="h-7 text-xs rounded-md border border-input bg-background px-1 font-body w-[70px]"
+                                          >
+                                            <option value="">Time</option>
+                                            {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
+                                              <option key={h} value={`${h}:00`}>{h}:00</option>
+                                            ))}
+                                            {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
+                                              <option key={`${h}:30`} value={`${h}:30`}>{h}:30</option>
+                                            ))}
+                                          </select>
+                                          <select
+                                            value={act.time?.match(/(AM|PM)$/i)?.[1]?.toUpperCase() || 'AM'}
+                                            onChange={(e) => {
+                                              const hourPart = act.time?.replace(/\s*(AM|PM)$/i, '') || '';
+                                              updateActivity(dayIdx, actIdx, "time", hourPart ? `${hourPart} ${e.target.value}` : '');
+                                            }}
+                                            className="h-7 text-xs rounded-md border border-input bg-background px-1 font-body w-[52px]"
+                                          >
+                                            <option value="AM">AM</option>
+                                            <option value="PM">PM</option>
+                                          </select>
+                                        </div>
                                       </div>
                                       <div className="flex items-center gap-0.5">
                                         <button onClick={() => {
