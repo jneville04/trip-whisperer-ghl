@@ -87,18 +87,31 @@ export default function ProposalPreview({ data, shareId }: Props) {
   const returnTo = window.location.pathname;
 
   const bookingUrl = data.bookingUrl || "";
+  const approveUrl = data.approveUrl || "";
+  const revisionsUrl = data.revisionsUrl || "";
+
+  const openModal = useCallback((url: string, title: string) => {
+    setBookingModalUrl(url);
+    setBookingModalTitle(title);
+    setBookingOpen(true);
+  }, []);
 
   const goToApprove = useCallback(() => {
-    if (bookingUrl) {
-      setBookingOpen(true);
+    const url = approveUrl || bookingUrl;
+    if (url) {
+      openModal(url, "Approve Itinerary");
     } else {
       navigate(`/approve${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
     }
-  }, [navigate, shareId, brandData, returnTo, bookingUrl]);
+  }, [navigate, shareId, brandData, returnTo, bookingUrl, approveUrl, openModal]);
 
   const goToRevisions = useCallback(() => {
-    navigate(`/revisions${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
-  }, [navigate, shareId, brandData, returnTo]);
+    if (revisionsUrl) {
+      openModal(revisionsUrl, "Request Revisions");
+    } else {
+      navigate(`/revisions${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
+    }
+  }, [navigate, shareId, brandData, returnTo, revisionsUrl, openModal]);
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
