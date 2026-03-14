@@ -211,12 +211,12 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const sectionLabels: Record<SectionKey, string> = {
     overview: "🌍 Overview", flights: "✈️ Flights", accommodations: "🏨 Hotels",
     itinerary: "📋 Itinerary", inclusions: "✅ Included", pricing: "💰 Pricing",
-    essentials: "🧳 Essentials", terms: "📄 Terms", agent: "🧑‍💼 Agent",
+    essentials: "🧳 Essentials", terms: "📄 Terms", agent: "💼 Agent",
   };
 
   // Map each section key to its title for CollapsibleSection
   const sectionTitles: Record<SectionKey, string> = {
-    overview: "👤 Client Details",
+    overview: "✍️ Introduction",
     flights: "✈️ Flights",
     accommodations: "🏨 Accommodations",
     itinerary: "📅 Itinerary Days",
@@ -224,7 +224,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
     pricing: "💰 Pricing",
     essentials: "🧳 Travel Essentials",
     terms: "📄 Terms & Conditions",
-    agent: "🧑‍💼 Agent Info",
+    agent: "💼 Agent Info",
   };
 
   return (
@@ -295,6 +295,14 @@ export default function ProposalEditor({ data, onChange }: Props) {
               </div>
             </div>
           </div>
+          <Button
+            variant="travel-ghost"
+            size="sm"
+            className="text-xs text-muted-foreground mt-1"
+            onClick={() => update("brand", { ...brand, primaryColor: "", secondaryColor: "", accentColor: "" })}
+          >
+            Reset to app defaults
+          </Button>
           <p className="text-xs text-muted-foreground">Use hex colors only (example: #1A2B3C). Leave blank to use defaults.</p>
         </div>
       </CollapsibleSection>
@@ -659,7 +667,36 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                             <option key={t.value} value={t.value}>{t.label}</option>
                                           ))}
                                         </select>
-                                        <Input value={act.time} onChange={(e) => updateActivity(dayIdx, actIdx, "time", e.target.value)} placeholder="2:00 PM" className="h-7 text-xs w-24" />
+                                        <div className="flex gap-0.5">
+                                          <select
+                                            value={act.time ? act.time.replace(/\s*(AM|PM)$/i, '') : ''}
+                                            onChange={(e) => {
+                                              const hour = e.target.value;
+                                              const currentPeriod = act.time?.match(/(AM|PM)$/i)?.[1] || 'AM';
+                                              updateActivity(dayIdx, actIdx, "time", hour ? `${hour} ${currentPeriod}` : '');
+                                            }}
+                                            className="h-7 text-xs rounded-md border border-input bg-background px-1 font-body w-[70px]"
+                                          >
+                                            <option value="">Time</option>
+                                            {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
+                                              <option key={h} value={`${h}:00`}>{h}:00</option>
+                                            ))}
+                                            {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
+                                              <option key={`${h}:30`} value={`${h}:30`}>{h}:30</option>
+                                            ))}
+                                          </select>
+                                          <select
+                                            value={act.time?.match(/(AM|PM)$/i)?.[1]?.toUpperCase() || 'AM'}
+                                            onChange={(e) => {
+                                              const hourPart = act.time?.replace(/\s*(AM|PM)$/i, '') || '';
+                                              updateActivity(dayIdx, actIdx, "time", hourPart ? `${hourPart} ${e.target.value}` : '');
+                                            }}
+                                            className="h-7 text-xs rounded-md border border-input bg-background px-1 font-body w-[52px]"
+                                          >
+                                            <option value="AM">AM</option>
+                                            <option value="PM">PM</option>
+                                          </select>
+                                        </div>
                                       </div>
                                       <div className="flex items-center gap-0.5">
                                         <button onClick={() => {
@@ -727,7 +764,10 @@ export default function ProposalEditor({ data, onChange }: Props) {
                           {data.pricing.map((line, i) => (
                             <div key={line.id} className="flex gap-2">
                               <Input value={line.label} onChange={(e) => { const p = [...data.pricing]; p[i] = { ...p[i], label: e.target.value }; update("pricing", p); }} placeholder="Line item" className="h-8 text-sm flex-1" />
-                              <Input value={line.amount} onChange={(e) => { const p = [...data.pricing]; p[i] = { ...p[i], amount: e.target.value }; update("pricing", p); }} placeholder="$0" className="h-8 text-sm w-28" />
+                              <div className="relative w-28">
+                                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">$</span>
+                                <Input value={line.amount} onChange={(e) => { const p = [...data.pricing]; p[i] = { ...p[i], amount: e.target.value }; update("pricing", p); }} placeholder="0.00" className="h-8 text-sm pl-5" />
+                              </div>
                               <Button variant="travel-ghost" size="icon" onClick={() => update("pricing", data.pricing.filter((_, idx) => idx !== i))} className="h-8 w-8 text-muted-foreground/40 hover:text-destructive shrink-0">
                                 <Trash2 className="h-3 w-3" />
                               </Button>

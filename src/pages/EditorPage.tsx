@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Eye, PenLine, ArrowLeft, Save, ExternalLink, PanelLeftClose, PanelLeft, Send } from "lucide-react";
+import { Eye, EyeOff, PenLine, ArrowLeft, Save, ExternalLink, PanelLeftClose, PanelLeft, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProposalEditor from "@/components/ProposalEditor";
 import ProposalPreview from "@/components/ProposalPreview";
@@ -145,6 +145,16 @@ export default function EditorPage() {
           >
             <Save className="h-3.5 w-3.5 mr-1" /> {saving ? "Saving..." : "Save Draft"}
           </Button>
+          {currentStatus === "sent" ? (
+            <Button
+              variant="travel-outline"
+              size="sm"
+              onClick={() => saveProposal("draft")}
+              disabled={saving}
+            >
+              <EyeOff className="h-3.5 w-3.5 mr-1" /> Unpublish
+            </Button>
+          ) : null}
           <Button
             variant="travel"
             size="sm"
