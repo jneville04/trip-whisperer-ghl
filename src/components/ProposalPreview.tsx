@@ -586,18 +586,17 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                               </span>
                             </div>
                           )}
-                          {showShipPhotos ? (
-                            <div className="grid grid-cols-3 md:grid-cols-4 gap-1">
-                              {ship.imageUrl && (
-                                <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, 0)}>
-                                  <img src={ship.imageUrl} alt={ship.shipName} className="w-full h-full object-cover" />
+                          {showShipPhotos && allShipImages.length > 0 ? (
+                            <div className={allShipImages.length === 1 ? "" : "grid grid-cols-3 md:grid-cols-4 gap-1"}>
+                              {allShipImages.length === 1 ? (
+                                <div className="aspect-[21/9] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, 0)}>
+                                  <img src={allShipImages[0].src} alt={ship.shipName} className="w-full h-full object-cover" />
                                 </div>
-                              )}
-                              {!ship.imageUrl && (
-                                <div className="col-span-2 row-span-2 aspect-[4/3] bg-muted flex items-center justify-center">
-                                  <Ship className="h-10 w-10 text-muted-foreground/30" />
-                                </div>
-                              )}
+                              ) : (
+                                <>
+                                  <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, 0)}>
+                                    <img src={ship.imageUrl} alt={ship.shipName} className="w-full h-full object-cover" />
+                                  </div>
                               {galleryUrls.slice(0, 6).map((url, gi) => (
                                 <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, gi + 1)}>
                                   <img src={url} alt={`${ship.shipName} ${gi + 2}`} className="w-full h-full object-cover" />
