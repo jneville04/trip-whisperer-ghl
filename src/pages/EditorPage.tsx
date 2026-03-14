@@ -14,7 +14,7 @@ import { useAgentSettings } from "@/hooks/useAgentSettings";
 export default function EditorPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { cssVars: appBrandVars } = useAppSettings();
+  const { settings: appSettings, cssVars: appBrandVars } = useAppSettings();
   const { settings: agentSettings } = useAgentSettings();
   const [data, setData] = useState<ProposalData>(defaultProposal);
   const [mode, setMode] = useState<"split" | "preview">("split");
@@ -25,6 +25,19 @@ export default function EditorPage() {
   const [shareId, setShareId] = useState("");
   const [dirty, setDirty] = useState(false);
   const [currentStatus, setCurrentStatus] = useState("draft");
+
+  const statusMeta: Record<string, { label: string; badgeClassName: string }> = {
+    draft: { label: "Draft", badgeClassName: "text-muted-foreground bg-muted/80" },
+    published: { label: "Published", badgeClassName: "text-primary-foreground bg-primary/90" },
+    sent: { label: "Published", badgeClassName: "text-primary-foreground bg-primary/90" },
+    unpublished: { label: "Unpublished", badgeClassName: "text-secondary-foreground bg-secondary/90" },
+  };
+
+  const normalizeProposalStatus = (status?: string | null) => {
+    if (!status) return "draft";
+    if (status === "sent") return "published";
+    return status;
+  };
 
   useEffect(() => {
     if (!id) return;
