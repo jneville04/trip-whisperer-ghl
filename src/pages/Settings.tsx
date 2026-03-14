@@ -59,7 +59,7 @@ export default function SettingsPage() {
         ...updates,
         primary_color: updates.primary_color || appSettings.primary_color,
         secondary_color: updates.secondary_color || appSettings.secondary_color,
-        accent_color: updates.secondary_color || appSettings.secondary_color,
+        accent_color: updates.accent_color || updates.secondary_color || appSettings.accent_color,
       };
 
       await saveSettings(normalizedUpdates);
