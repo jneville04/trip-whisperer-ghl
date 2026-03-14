@@ -9,12 +9,8 @@ import { Button } from "@/components/ui/button";
 import type { ProposalData, Activity, SectionKey } from "@/types/proposal";
 import { defaultSectionOrder } from "@/types/proposal";
 import { buildBrandCssVars } from "@/lib/brand";
-import heroFallback from "@/assets/portugal-hero.jpg";
-import sintraFallback from "@/assets/portugal-sintra.jpg";
-import portoFallback from "@/assets/portugal-porto.jpg";
-import algarveFallback from "@/assets/portugal-algarve.jpg";
 
-const fallbackImages = [heroFallback, sintraFallback, portoFallback, algarveFallback];
+const fallbackImages: string[] = [];
 
 const easeOut: Easing = [0.25, 0.46, 0.45, 0.94];
 const fadeUp = {
