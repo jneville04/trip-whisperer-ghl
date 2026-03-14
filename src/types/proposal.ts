@@ -57,6 +57,13 @@ export interface FlightLeg {
   agentPricing?: AgentPricing;
 }
 
+export interface FlightOption {
+  id: string;
+  legs: FlightLeg[];
+  price?: string;
+  agentPricing?: AgentPricing;
+}
+
 export interface Accommodation {
   id: string;
   hotelName: string;
