@@ -231,7 +231,7 @@ export default function AuthPage() {
 
   // Default: no hero
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-6" style={defaultVars}>
+    <div className="min-h-screen bg-background flex items-center justify-center px-6" style={brandVars}>
       {formContent}
     </div>
   );
