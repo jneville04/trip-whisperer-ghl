@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, type Easing } from "framer-motion";
-import { MapPin, Calendar, Users, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe, PlaneTakeoff, PlaneLanding, BedDouble, MessageSquare, CheckCircle2, Sparkles, Ship, Anchor, Bus } from "lucide-react";
+import { MapPin, Calendar, Users, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe, PlaneTakeoff, PlaneLanding, BedDouble, MessageSquare, CheckCircle2, Sparkles, Ship, Anchor, Bus, ShoppingCart } from "lucide-react";
 import Lightbox from "@/components/Lightbox";
 import BookingModal from "@/components/BookingModal";
 import VideoEmbed from "@/components/VideoEmbed";
@@ -39,9 +39,10 @@ function getActivityIcon(type: Activity["type"]) {
 interface Props {
   data: ProposalData;
   shareId?: string;
+  isEditor?: boolean;
 }
 
-export default function ProposalPreview({ data, shareId }: Props) {
+export default function ProposalPreview({ data, shareId, isEditor }: Props) {
   const isGroupBooking = (data as any).proposalType !== "proposal";
   const navigate = useNavigate();
   const heroImage = data.heroImageUrl || heroFallback;
@@ -137,6 +138,11 @@ export default function ProposalPreview({ data, shareId }: Props) {
     }
   }, [navigate, shareId, brandData, returnTo, revisionsUrl, openModal]);
 
+  const checkoutEnabled = data.checkout?.enabled;
+  const goToCheckout = useCallback(() => {
+    navigate(`/checkout${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
+  }, [navigate, shareId, brandData, returnTo]);
+
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
       {/* STICKY HEADER NAV */}
@@ -166,7 +172,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
               Book Now
             </Button>
           )}
-          {!isGroupBooking && (
+          {!isGroupBooking && !isEditor && (
             <Button variant="travel" size="sm" className="text-xs" onClick={goToApprove}>
               Approve
             </Button>
@@ -982,7 +988,12 @@ export default function ProposalPreview({ data, shareId }: Props) {
                           <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>
                             <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
                           </Button>
-                          <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToRevisions}>
+                          {checkoutEnabled && (
+                            <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToCheckout}>
+                              <ShoppingCart className="h-5 w-5 mr-2" /> Proceed to Checkout
+                            </Button>
+                          )}
+                          <Button variant="travel-ghost" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToRevisions}>
                             <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
                           </Button>
                         </>
@@ -1068,9 +1079,15 @@ export default function ProposalPreview({ data, shareId }: Props) {
                       </Button>
                     )
                   ) : (
-                    <Button variant="travel" size="lg" className="text-base px-8" onClick={goToApprove}>
-                      Approve Itinerary <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
+                    checkoutEnabled ? (
+                      <Button variant="travel" size="lg" className="text-base px-8" onClick={goToCheckout}>
+                        Proceed to Checkout <ArrowRight className="h-4 w-4 ml-2" />
+                      </Button>
+                    ) : (
+                      <Button variant="travel" size="lg" className="text-base px-8" onClick={goToApprove}>
+                        Approve Itinerary <ArrowRight className="h-4 w-4 ml-2" />
+                      </Button>
+                    )
                   )}
                   <p className="text-xs text-muted-foreground/60 mt-10 font-body">© 2026 {agent.agencyName} · All prices in USD · Subject to availability</p>
                 </div>
@@ -1175,7 +1192,12 @@ export default function ProposalPreview({ data, shareId }: Props) {
                 <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>
                   <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
                 </Button>
-                <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToRevisions}>
+                {checkoutEnabled && (
+                  <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToCheckout}>
+                    <ShoppingCart className="h-5 w-5 mr-2" /> Proceed to Checkout
+                  </Button>
+                )}
+                <Button variant="travel-ghost" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToRevisions}>
                   <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
                 </Button>
               </div>

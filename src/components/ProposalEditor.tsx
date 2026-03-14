@@ -17,8 +17,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import RichTextEditor from "@/components/RichTextEditor";
 import AgentPricingFields from "@/components/AgentPricingFields";
-import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, SectionKey } from "@/types/proposal";
-import { createActivity, createDay, createPricingLine, createFlightLeg, createFlightOption, createAccommodation, createCruiseShip, createBusTrip, createBusStop, defaultSectionOrder } from "@/types/proposal";
+import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, SectionKey, CheckoutSettings, PaymentOption } from "@/types/proposal";
+import { createActivity, createDay, createPricingLine, createFlightLeg, createFlightOption, createAccommodation, createCruiseShip, createBusTrip, createBusStop, defaultSectionOrder, createDefaultCheckout } from "@/types/proposal";
 import { normalizeHexInput } from "@/lib/brand";
 
 interface Props {
@@ -1695,6 +1695,9 @@ export default function ProposalEditor({ data, onChange }: Props) {
         </SortableContext>
       </DndContext>
 
+      {/* Checkout Settings */}
+      <CheckoutEditorSection data={data} onChange={onChange} />
+
       {/* Agent Financial Summary */}
       <AgentFinancialSummary data={data} />
     </div>
@@ -1837,6 +1840,100 @@ function AgentFinancialSummary({ data }: { data: ProposalData }) {
               </div>
             </div>
           </div>
+        </CardContent>
+      )}
+    </Card>
+  );
+}
+
+function CheckoutEditorSection({ data, onChange }: { data: ProposalData; onChange: (d: ProposalData) => void }) {
+  const [open, setOpen] = useState(false);
+  const checkout = data.checkout || createDefaultCheckout();
+
+  const updateCheckout = (partial: Partial<CheckoutSettings>) => {
+    onChange({ ...data, checkout: { ...checkout, ...partial } });
+  };
+
+  const updatePaymentOption = (id: string, partial: Partial<PaymentOption>) => {
+    const updated = checkout.paymentOptions.map((o) => o.id === id ? { ...o, ...partial } : o);
+    updateCheckout({ paymentOptions: updated });
+  };
+
+  return (
+    <Card className="border-border/50">
+      <CardHeader className="py-4">
+        <div className="flex items-center justify-between cursor-pointer" onClick={() => setOpen(!open)}>
+          <CardTitle className="text-sm font-display flex items-center gap-2">
+            💳 Checkout & Booking
+          </CardTitle>
+          {open ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
+        </div>
+      </CardHeader>
+      {open && (
+        <CardContent className="pt-0 space-y-4">
+          <div className="flex items-center justify-between">
+            <label className="text-xs font-medium text-muted-foreground font-body">Enable Checkout Page</label>
+            <Switch checked={checkout.enabled} onCheckedChange={(v) => updateCheckout({ enabled: v })} />
+          </div>
+
+          {checkout.enabled && (
+            <>
+              <div>
+                <FieldLabel>Headline</FieldLabel>
+                <Input value={checkout.headline} onChange={(e) => updateCheckout({ headline: e.target.value })} className="h-8 text-sm" />
+              </div>
+              <div>
+                <FieldLabel>Message</FieldLabel>
+                <Textarea value={checkout.message} onChange={(e) => updateCheckout({ message: e.target.value })} rows={2} className="text-sm" />
+              </div>
+
+              <div className="space-y-3">
+                <FieldLabel>Payment Options</FieldLabel>
+                {checkout.paymentOptions.map((opt) => (
+                  <div key={opt.id} className={`border rounded-lg p-3 space-y-2 ${opt.enabled ? "border-primary/30 bg-primary/5" : "border-border/50 opacity-60"}`}>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold font-body">{opt.type === "full" ? "💳 Pay in Full" : opt.type === "deposit" ? "💰 Deposit" : "📅 Installments"}</span>
+                      <Switch checked={opt.enabled} onCheckedChange={(v) => updatePaymentOption(opt.id, { enabled: v })} />
+                    </div>
+                    {opt.enabled && (
+                      <>
+                        <Input value={opt.label} onChange={(e) => updatePaymentOption(opt.id, { label: e.target.value })} placeholder="Label" className="h-7 text-xs" />
+                        <Input value={opt.description} onChange={(e) => updatePaymentOption(opt.id, { description: e.target.value })} placeholder="Description" className="h-7 text-xs" />
+                        {opt.type === "deposit" && (
+                          <div className="flex items-center gap-2">
+                            <Input type="number" value={opt.depositPercent || ""} onChange={(e) => updatePaymentOption(opt.id, { depositPercent: parseInt(e.target.value) || 0 })} placeholder="30" className="h-7 text-xs w-20" />
+                            <span className="text-xs text-muted-foreground">% deposit</span>
+                          </div>
+                        )}
+                        {opt.type === "installments" && (
+                          <div className="flex items-center gap-2">
+                            <Input type="number" value={opt.installmentCount || ""} onChange={(e) => updatePaymentOption(opt.id, { installmentCount: parseInt(e.target.value) || 0 })} placeholder="3" className="h-7 text-xs w-20" />
+                            <span className="text-xs text-muted-foreground">payments</span>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div>
+                <FieldLabel>Custom Checkout Form URL (optional)</FieldLabel>
+                <Input value={checkout.customFormUrl} onChange={(e) => updateCheckout({ customFormUrl: e.target.value })} placeholder="https://your-checkout-form.com" className="h-8 text-sm" />
+                <p className="text-[10px] text-muted-foreground mt-1">If set, embeds this form instead of the built-in checkout.</p>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-medium text-muted-foreground font-body">Show Trip Summary</label>
+                <Switch checked={checkout.showTripSummary} onCheckedChange={(v) => updateCheckout({ showTripSummary: v })} />
+              </div>
+
+              <div>
+                <FieldLabel>Confirmation Message</FieldLabel>
+                <Textarea value={checkout.confirmationMessage} onChange={(e) => updateCheckout({ confirmationMessage: e.target.value })} rows={2} className="text-sm" />
+              </div>
+            </>
+          )}
         </CardContent>
       )}
     </Card>

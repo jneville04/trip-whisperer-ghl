@@ -182,6 +182,26 @@ export interface TermsAndConditions {
   showLiability: boolean;
 }
 
+export interface PaymentOption {
+  id: string;
+  type: "full" | "deposit" | "installments";
+  label: string;
+  description: string;
+  depositPercent?: number;
+  installmentCount?: number;
+  enabled: boolean;
+}
+
+export interface CheckoutSettings {
+  enabled: boolean;
+  headline: string;
+  message: string;
+  paymentOptions: PaymentOption[];
+  customFormUrl: string;
+  showTripSummary: boolean;
+  confirmationMessage: string;
+}
+
 export type SectionKey = "overview" | "flights" | "accommodations" | "cruiseShips" | "busTrips" | "itinerary" | "inclusions" | "pricing" | "essentials" | "terms" | "agent";
 
 export interface SectionVisibility {
@@ -242,6 +262,7 @@ export interface ProposalData {
   brand: BrandSettings;
   sectionVisibility: SectionVisibility;
   sectionOrder: SectionKey[];
+  checkout?: CheckoutSettings;
 }
 
 export const createActivity = (type: Activity["type"] = "activity"): Activity => ({
@@ -627,4 +648,21 @@ export const defaultProposal: ProposalData = {
   },
   notes: "",
   sectionOrder: [...defaultSectionOrder],
+  checkout: createDefaultCheckout(),
 };
+
+export function createDefaultCheckout(): CheckoutSettings {
+  return {
+    enabled: false,
+    headline: "Ready to Book Your Trip?",
+    message: "Select your preferred payment option below and confirm your booking.",
+    paymentOptions: [
+      { id: crypto.randomUUID(), type: "full", label: "Pay in Full", description: "One-time payment for the full trip amount", enabled: true },
+      { id: crypto.randomUUID(), type: "deposit", label: "Pay Deposit", description: "Secure your booking with a deposit", depositPercent: 30, enabled: false },
+      { id: crypto.randomUUID(), type: "installments", label: "Payment Plan", description: "Split your payment into installments", installmentCount: 3, enabled: false },
+    ],
+    customFormUrl: "",
+    showTripSummary: true,
+    confirmationMessage: "Thank you for booking! Your travel advisor will send you a confirmation email with next steps shortly.",
+  };
+}

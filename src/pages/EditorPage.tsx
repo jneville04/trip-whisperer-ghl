@@ -74,6 +74,7 @@ export default function EditorPage() {
       flights: [],
       cruiseShips: saved.cruiseShips || [],
       busTrips: saved.busTrips || [],
+      checkout: saved.checkout || undefined,
     };
     setData(merged);
     setShareId(r.share_id || "");
@@ -208,7 +209,7 @@ export default function EditorPage() {
           </div>
         )}
         <div className="flex-1 overflow-y-auto" style={builderBrandStyles as React.CSSProperties}>
-          <ProposalPreview data={data} shareId={shareId} />
+          <ProposalPreview data={data} shareId={shareId} isEditor />
         </div>
       </div>
     </div>
