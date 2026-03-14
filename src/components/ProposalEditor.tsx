@@ -662,6 +662,15 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                           <Input value={acc.nights} onChange={(e) => updateAccommodation(i, "nights", e.target.value)} placeholder="2" className="h-8 text-xs" />
                                         </div>
                                       </div>
+                                      {(data as any).proposalType === "proposal" && (
+                                        <div className="mt-2">
+                                          <FieldLabel>Price (Proposal Option)</FieldLabel>
+                                          <div className="relative w-32">
+                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
+                                            <Input value={acc.price || ""} onChange={(e) => updateAccField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
+                                          </div>
+                                        </div>
+                                      )}
                                       <div>
                                         <FieldLabel>Lodging Description</FieldLabel>
                                         <RichTextEditor content={acc.description} onChange={(html) => updateAccommodation(i, "description", html)} placeholder="Describe the hotel, its atmosphere, unique features..." minHeight="180px" />
