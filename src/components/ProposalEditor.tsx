@@ -1694,6 +1694,151 @@ export default function ProposalEditor({ data, onChange }: Props) {
           ))}
         </SortableContext>
       </DndContext>
+
+      {/* Agent Financial Summary */}
+      <AgentFinancialSummary data={data} />
     </div>
+  );
+}
+
+function AgentFinancialSummary({ data }: { data: ProposalData }) {
+  const [open, setOpen] = useState(false);
+  const flightOptions = data.flightOptions || [];
+  const accommodations = data.accommodations || [];
+  const cruiseShips = data.cruiseShips || [];
+  const busTrips = data.busTrips || [];
+
+  // Collect all items with agent pricing
+  const items: { label: string; category: string; cost: number; commission: number; markup: number; price: number }[] = [];
+
+  const calcMarkup = (ap: { markupType: string; markupValue: string; cost: string }) => {
+    const cost = parseFloat(ap.cost) || 0;
+    const val = parseFloat(ap.markupValue) || 0;
+    return ap.markupType === "percent" ? cost * (val / 100) : val;
+  };
+
+  flightOptions.forEach((opt, i) => {
+    const ap = opt.agentPricing;
+    const cost = parseFloat(ap?.cost || "0") || 0;
+    const commission = parseFloat(ap?.commission || "0") || 0;
+    const markup = ap ? calcMarkup(ap) : 0;
+    const price = parseFloat(opt.price || "0") || 0;
+    if (cost || commission || markup || price) {
+      const depLeg = opt.legs.find(l => l.type === "departure");
+      items.push({ label: depLeg?.airline || `Flight Option ${i + 1}`, category: "Flight", cost, commission, markup, price });
+    }
+  });
+
+  accommodations.forEach((acc) => {
+    const ap = acc.agentPricing;
+    const cost = parseFloat(ap?.cost || "0") || 0;
+    const commission = parseFloat(ap?.commission || "0") || 0;
+    const markup = ap ? calcMarkup(ap) : 0;
+    const price = parseFloat(acc.price || "0") || 0;
+    if (cost || commission || markup || price) {
+      items.push({ label: acc.hotelName || "Hotel", category: "Hotel", cost, commission, markup, price });
+    }
+  });
+
+  cruiseShips.forEach((ship) => {
+    const ap = ship.agentPricing;
+    const cost = parseFloat(ap?.cost || "0") || 0;
+    const commission = parseFloat(ap?.commission || "0") || 0;
+    const markup = ap ? calcMarkup(ap) : 0;
+    const price = parseFloat(ship.price || "0") || 0;
+    if (cost || commission || markup || price) {
+      items.push({ label: ship.shipName || "Cruise", category: "Cruise", cost, commission, markup, price });
+    }
+  });
+
+  busTrips.forEach((trip) => {
+    const ap = trip.agentPricing;
+    const cost = parseFloat(ap?.cost || "0") || 0;
+    const commission = parseFloat(ap?.commission || "0") || 0;
+    const markup = ap ? calcMarkup(ap) : 0;
+    const price = parseFloat(trip.price || "0") || 0;
+    if (cost || commission || markup || price) {
+      items.push({ label: trip.routeName || "Bus Trip", category: "Bus", cost, commission, markup, price });
+    }
+  });
+
+  const totalCost = items.reduce((s, i) => s + i.cost, 0);
+  const totalCommission = items.reduce((s, i) => s + i.commission, 0);
+  const totalMarkup = items.reduce((s, i) => s + i.markup, 0);
+  const totalPrice = items.reduce((s, i) => s + i.price, 0);
+  const totalProfit = totalCommission + totalMarkup;
+  const profitMargin = totalPrice > 0 ? (totalProfit / totalPrice) * 100 : 0;
+
+  if (items.length === 0) return null;
+
+  const fmt = (n: number) => n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  return (
+    <Card className="border-accent/40 border-dashed bg-accent/5">
+      <CardHeader className="py-3 cursor-pointer" onClick={() => setOpen(!open)}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="text-sm">🔒</span>
+            <CardTitle className="text-sm font-display">Agent Financials</CardTitle>
+            <span className="text-[10px] uppercase tracking-wider text-accent font-body font-semibold bg-accent/10 px-1.5 py-0.5 rounded">Agent Only</span>
+          </div>
+          {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+        </div>
+      </CardHeader>
+      {open && (
+        <CardContent className="pt-0">
+          <div className="space-y-1.5">
+            {items.map((item, idx) => (
+              <div key={idx} className="grid grid-cols-5 gap-1 text-xs font-body py-1.5 border-b border-border/20 last:border-0">
+                <div className="col-span-2">
+                  <span className="text-foreground font-medium">{item.label}</span>
+                  <span className="text-muted-foreground/60 ml-1">({item.category})</span>
+                </div>
+                <div className="text-muted-foreground text-right">
+                  {item.cost > 0 && <span>Cost ${fmt(item.cost)}</span>}
+                </div>
+                <div className="text-muted-foreground text-right">
+                  {item.commission > 0 && <span>Comm ${fmt(item.commission)}</span>}
+                </div>
+                <div className="text-right">
+                  {item.markup > 0 && <span className="text-accent">+${fmt(item.markup)}</span>}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 pt-3 border-t-2 border-accent/30 space-y-2">
+            <div className="grid grid-cols-2 gap-2 text-xs font-body">
+              <div className="bg-muted/30 rounded-md px-3 py-2">
+                <p className="text-muted-foreground text-[10px] uppercase tracking-wider mb-0.5">Total Cost</p>
+                <p className="font-semibold text-foreground">${fmt(totalCost)}</p>
+              </div>
+              <div className="bg-muted/30 rounded-md px-3 py-2">
+                <p className="text-muted-foreground text-[10px] uppercase tracking-wider mb-0.5">Client Price</p>
+                <p className="font-semibold text-foreground">${fmt(totalPrice)}</p>
+              </div>
+              <div className="bg-muted/30 rounded-md px-3 py-2">
+                <p className="text-muted-foreground text-[10px] uppercase tracking-wider mb-0.5">Commission</p>
+                <p className="font-semibold text-accent">${fmt(totalCommission)}</p>
+              </div>
+              <div className="bg-muted/30 rounded-md px-3 py-2">
+                <p className="text-muted-foreground text-[10px] uppercase tracking-wider mb-0.5">Markup</p>
+                <p className="font-semibold text-accent">${fmt(totalMarkup)}</p>
+              </div>
+            </div>
+            <div className="bg-accent/10 rounded-md px-3 py-2.5 flex items-center justify-between">
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-accent font-semibold font-body">Total Profit</p>
+                <p className="text-lg font-display font-bold text-accent">${fmt(totalProfit)}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-body">Margin</p>
+                <p className="text-lg font-display font-bold text-foreground">{profitMargin.toFixed(1)}%</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      )}
+    </Card>
   );
 }
