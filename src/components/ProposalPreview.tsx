@@ -244,8 +244,23 @@ export default function ProposalPreview({ data, shareId }: Props) {
                     <h2 className="font-display text-4xl font-bold text-foreground">Air Travel</h2>
                   </motion.div>
                   <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {flights.map((flight) => (
-                      <div key={flight.id} className="bg-background rounded-2xl border border-border/50 shadow-sm p-6 relative overflow-hidden">
+                    {flights.map((flight) => {
+                      const isSelected = selectedFlight === flight.id;
+                      return (
+                      <div
+                        key={flight.id}
+                        className={`bg-background rounded-2xl border-2 shadow-sm p-6 relative overflow-hidden transition-all cursor-pointer ${
+                          !isGroupBooking
+                            ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40"
+                            : "border-border/50"
+                        }`}
+                        onClick={() => !isGroupBooking && setSelectedFlight(flight.id)}
+                      >
+                        {!isGroupBooking && (
+                          <div className={`absolute top-4 right-4 w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30"}`}>
+                            {isSelected && <Check className="h-3 w-3 text-primary-foreground" />}
+                          </div>
+                        )}
                         <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
                         <div className="flex items-center gap-2 mb-4">
                           {flight.type === "departure" ? <PlaneTakeoff className="h-5 w-5 text-primary" /> : <PlaneLanding className="h-5 w-5 text-primary" />}
@@ -272,7 +287,8 @@ export default function ProposalPreview({ data, shareId }: Props) {
                           {flight.flightNumber && <span className="text-primary font-semibold">{flight.flightNumber}</span>}
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                   </motion.div>
                 </div>
               </section>
