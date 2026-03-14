@@ -731,12 +731,22 @@ export default function ProposalPreview({ data, shareId }: Props) {
                   </motion.div>
                   <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2} className="mt-10">
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                      <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>
-                        <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
-                      </Button>
-                      <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToRevisions}>
-                        <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
-                      </Button>
+                      {isGroupBooking ? (
+                        bookingUrl && (
+                          <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={() => openModal(bookingUrl, "Book Now")}>
+                            <CheckCircle2 className="h-5 w-5 mr-2" /> Book Now
+                          </Button>
+                        )
+                      ) : (
+                        <>
+                          <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>
+                            <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
+                          </Button>
+                          <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToRevisions}>
+                            <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
+                          </Button>
+                        </>
+                      )}
                     </div>
                     {data.validUntil && <p className="text-sm text-muted-foreground mt-4 font-body">This proposal is valid until {data.validUntil}</p>}
                   </motion.div>
