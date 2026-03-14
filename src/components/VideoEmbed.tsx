@@ -5,6 +5,8 @@ interface VideoEmbedProps {
   url: string;
   title?: string;
   className?: string;
+  /** Custom thumbnail image URL — overrides default/auto thumbnail */
+  thumbnailUrl?: string;
 }
 
 function isDirectVideoUrl(url: string): boolean {
@@ -15,20 +17,18 @@ function isAudioUrl(url: string): boolean {
   return /\.(mp3|wav|m4a|ogg|aac)(\?|$)/i.test(url);
 }
 
-function getEmbedInfo(url: string): { type: "youtube" | "vimeo" | "unknown"; embedUrl: string; thumbnailUrl?: string } | null {
+function getEmbedInfo(url: string): { type: "youtube" | "vimeo" | "unknown"; embedUrl: string; autoThumbnailUrl?: string } | null {
   if (!url) return null;
 
-  // YouTube
   const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
   if (ytMatch) {
     return {
       type: "youtube",
       embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0`,
-      thumbnailUrl: `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`,
+      autoThumbnailUrl: `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`,
     };
   }
 
-  // Vimeo
   const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
   if (vimeoMatch) {
     return {
@@ -40,7 +40,7 @@ function getEmbedInfo(url: string): { type: "youtube" | "vimeo" | "unknown"; emb
   return null;
 }
 
-export default function VideoEmbed({ url, title, className = "" }: VideoEmbedProps) {
+export default function VideoEmbed({ url, title, className = "", thumbnailUrl }: VideoEmbedProps) {
   const [playing, setPlaying] = useState(false);
   const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -49,7 +49,6 @@ export default function VideoEmbed({ url, title, className = "" }: VideoEmbedPro
   const isAudio = isAudioUrl(url);
   const info = !isDirect && !isAudio ? getEmbedInfo(url) : null;
 
-  // Lazy load with IntersectionObserver
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
@@ -61,26 +60,7 @@ export default function VideoEmbed({ url, title, className = "" }: VideoEmbedPro
     return () => observer.disconnect();
   }, []);
 
-  // Direct video file
-  if (isDirect) {
-    return (
-      <div ref={ref} className={`relative aspect-video rounded-xl overflow-hidden bg-muted ${className}`}>
-        {visible ? (
-          <video
-            src={url}
-            controls
-            className="w-full h-full object-contain bg-black"
-            preload="metadata"
-            title={title || "Video"}
-          />
-        ) : (
-          <div className="w-full h-full bg-muted animate-pulse" />
-        )}
-      </div>
-    );
-  }
-
-  // Audio file
+  // Audio file — no thumbnail needed
   if (isAudio) {
     return (
       <div ref={ref} className={`rounded-xl overflow-hidden bg-muted p-4 ${className}`}>
@@ -93,7 +73,53 @@ export default function VideoEmbed({ url, title, className = "" }: VideoEmbedPro
     );
   }
 
-  // YouTube / Vimeo embed
+  // Determine the thumbnail to show
+  const thumb = thumbnailUrl || (info?.autoThumbnailUrl);
+
+  // If custom thumbnail is set, always use click-to-play pattern
+  if (thumbnailUrl || isDirect) {
+    return (
+      <div ref={ref} className={`relative aspect-video rounded-xl overflow-hidden bg-muted ${className}`}>
+        {!visible ? (
+          <div className="w-full h-full bg-muted animate-pulse" />
+        ) : !playing ? (
+          <button onClick={() => setPlaying(true)} className="w-full h-full relative group cursor-pointer">
+            {thumb ? (
+              <img src={thumb} alt={title || "Video"} className="w-full h-full object-cover" loading="lazy" />
+            ) : (
+              <div className="w-full h-full bg-black/80 flex items-center justify-center">
+                <span className="text-sm text-white/60 font-body">Video</span>
+              </div>
+            )}
+            <div className="absolute inset-0 bg-foreground/10 group-hover:bg-foreground/25 transition-colors flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-primary/90 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <Play className="h-7 w-7 text-primary-foreground ml-1" />
+              </div>
+            </div>
+          </button>
+        ) : isDirect ? (
+          <video
+            src={url}
+            controls
+            autoPlay
+            className="w-full h-full object-contain bg-black"
+            title={title || "Video"}
+          />
+        ) : info ? (
+          <iframe
+            src={info.embedUrl}
+            title={title || "Video"}
+            className="w-full h-full border-0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            loading="lazy"
+          />
+        ) : null}
+      </div>
+    );
+  }
+
+  // YouTube/Vimeo without custom thumbnail — show native embed with controls
   if (!info) return null;
 
   return (
