@@ -257,7 +257,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                     <h2 className="font-display text-4xl font-bold text-foreground">Air Travel</h2>
                     {!isGroupBooking && flightOptions.length > 1 && <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>}
                   </motion.div>
-                  <div className="space-y-6">
+                  <div className="space-y-8">
                     {flightOptions.map((opt, optIdx) => {
                       const isSelected = selectedFlight === opt.id;
                       return (
@@ -268,56 +268,79 @@ export default function ProposalPreview({ data, shareId }: Props) {
                           whileInView="visible"
                           viewport={{ once: true }}
                           custom={optIdx}
-                          className={`bg-background rounded-2xl border-2 shadow-sm p-6 relative overflow-hidden transition-all ${
+                          className={`bg-background rounded-2xl border-2 shadow-sm relative overflow-hidden transition-all ${
                             !isGroupBooking
                               ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
                           onClick={() => !isGroupBooking && setSelectedFlight(isSelected ? "" : opt.id)}
                         >
-                          <div className="absolute top-0 left-0 w-full h-1 bg-primary" />
+                          {/* Option header bar */}
                           {flightOptions.length > 1 && (
-                            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary font-body mb-4">Option {optIdx + 1}</p>
+                            <div className="bg-primary/5 border-b border-border/30 px-6 py-3 flex items-center justify-between">
+                              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary font-body">Option {optIdx + 1} of {flightOptions.length}</span>
+                              {opt.price && <span className="font-display text-lg font-bold text-foreground">${opt.price}<span className="text-xs text-muted-foreground font-body ml-1">/ person</span></span>}
+                            </div>
                           )}
-                          <div className="space-y-4">
+
+                          {/* Flight legs */}
+                          <div className="divide-y divide-border/30">
                             {opt.legs.map((leg) => (
-                              <div key={leg.id}>
-                                <div className="flex items-center gap-2 mb-2">
-                                  {leg.type === "departure" ? <PlaneTakeoff className="h-5 w-5 text-primary" /> : <PlaneLanding className="h-5 w-5 text-primary" />}
-                                  <span className="font-body font-semibold text-foreground text-sm uppercase tracking-wide">{leg.type === "departure" ? "Departure" : "Return"}</span>
+                              <div key={leg.id} className="px-6 py-5">
+                                {/* Leg label + date row */}
+                                <div className="flex items-center justify-between mb-4">
+                                  <div className="flex items-center gap-2">
+                                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                      {leg.type === "departure" ? <PlaneTakeoff className="h-4 w-4 text-primary" /> : <PlaneLanding className="h-4 w-4 text-primary" />}
+                                    </div>
+                                    <span className="font-body font-semibold text-foreground text-sm">{leg.type === "departure" ? "Departure" : "Return"}</span>
+                                  </div>
+                                  {leg.date && <span className="text-xs text-muted-foreground font-body bg-muted/50 px-2.5 py-1 rounded-full">{leg.date}</span>}
                                 </div>
-                                <p className="text-xs text-muted-foreground font-body mb-3">{leg.date}</p>
-                                <div className="flex items-center justify-between mb-3">
-                                  <div className="text-center">
-                                    <p className="font-display text-2xl font-bold text-foreground">{leg.departureAirport.split("–")[0]?.trim() || "—"}</p>
-                                    <p className="text-xs text-muted-foreground font-body">{leg.departureTime}</p>
+
+                                {/* Airport codes + flight path */}
+                                <div className="flex items-center gap-4">
+                                  {/* Origin */}
+                                  <div className="flex-1">
+                                    <p className="font-display text-3xl font-bold text-foreground leading-none">{leg.departureAirport.split("–")[0]?.split("(")[0]?.trim().slice(0, 3).toUpperCase() || "—"}</p>
+                                    <p className="text-xs text-muted-foreground font-body mt-1 truncate">{leg.departureAirport}</p>
+                                    {leg.departureTime && <p className="text-sm font-semibold text-foreground font-body mt-1">{leg.departureTime}</p>}
                                   </div>
-                                  <div className="flex-1 mx-4 flex items-center">
-                                    <div className="flex-1 border-t border-dashed border-border" />
-                                    <Plane className="h-4 w-4 text-primary mx-2" />
-                                    <div className="flex-1 border-t border-dashed border-border" />
+
+                                  {/* Flight path visual */}
+                                  <div className="flex-1 flex flex-col items-center gap-1 min-w-[120px]">
+                                    <div className="flex items-center w-full">
+                                      <div className="h-2 w-2 rounded-full bg-primary shrink-0" />
+                                      <div className="flex-1 border-t-2 border-dashed border-primary/30 mx-1" />
+                                      <Plane className="h-4 w-4 text-primary shrink-0 -rotate-0" />
+                                      <div className="flex-1 border-t-2 border-dashed border-primary/30 mx-1" />
+                                      <div className="h-2 w-2 rounded-full bg-primary shrink-0" />
+                                    </div>
+                                    {(leg.airline || leg.flightNumber) && (
+                                      <p className="text-[10px] text-muted-foreground font-body whitespace-nowrap">
+                                        {leg.airline}{leg.flightNumber ? ` · ${leg.flightNumber}` : ""}
+                                      </p>
+                                    )}
                                   </div>
-                                  <div className="text-center">
-                                    <p className="font-display text-2xl font-bold text-foreground">{leg.arrivalAirport.split("–")[0]?.trim() || "—"}</p>
-                                    <p className="text-xs text-muted-foreground font-body">{leg.arrivalTime}</p>
+
+                                  {/* Destination */}
+                                  <div className="flex-1 text-right">
+                                    <p className="font-display text-3xl font-bold text-foreground leading-none">{leg.arrivalAirport.split("–")[0]?.split("(")[0]?.trim().slice(0, 3).toUpperCase() || "—"}</p>
+                                    <p className="text-xs text-muted-foreground font-body mt-1 truncate">{leg.arrivalAirport}</p>
+                                    {leg.arrivalTime && <p className="text-sm font-semibold text-foreground font-body mt-1">{leg.arrivalTime}</p>}
                                   </div>
-                                </div>
-                                <div className="flex items-center gap-4 text-xs text-muted-foreground font-body">
-                                  <span>{leg.airline}</span>
-                                  {leg.flightNumber && <span className="text-primary font-semibold">{leg.flightNumber}</span>}
                                 </div>
                               </div>
                             ))}
                           </div>
+
+                          {/* Footer: price (if single option) + selection */}
                           {(opt.price || !isGroupBooking) && (
-                            <div className="mt-4 pt-3 border-t border-border/30 flex items-center justify-between">
-                              {opt.price && <span className="font-display text-xl font-bold text-foreground">${opt.price}</span>}
-                              {!opt.price && <span />}
+                            <div className="bg-muted/30 border-t border-border/30 px-6 py-4 flex items-center justify-between">
+                              {opt.price && flightOptions.length <= 1 && <span className="font-display text-xl font-bold text-foreground">${opt.price}<span className="text-xs text-muted-foreground font-body ml-1">/ person</span></span>}
+                              {(!opt.price || flightOptions.length > 1) && <span />}
                               {!isGroupBooking && (
                                 <div className="flex items-center gap-2">
-                                  {flightOptions.length > 1 && (
-                                    <span className="text-[10px] text-muted-foreground font-body">Option {optIdx + 1} of {flightOptions.length}</span>
-                                  )}
                                   {isSelected ? (
                                     <div className="flex items-center gap-1.5">
                                       <Button variant="travel" size="sm" className="text-xs" onClick={(e) => e.stopPropagation()}>
