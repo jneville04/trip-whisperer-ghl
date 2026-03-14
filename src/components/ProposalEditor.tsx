@@ -667,48 +667,29 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                             <option key={t.value} value={t.value}>{t.label}</option>
                                           ))}
                                         </select>
-                                        <div className="flex gap-0.5">
-                                          <select
-                                            value={(() => { const m = act.time?.match(/^(\d{1,2})/); return m ? m[1] : ''; })()}
-                                            onChange={(e) => {
-                                              const hr = e.target.value;
-                                              const min = act.time?.match(/:(\d{2})/)?.[1] || '00';
-                                              const period = act.time?.match(/(AM|PM)$/i)?.[1] || 'AM';
-                                              updateActivity(dayIdx, actIdx, "time", hr ? `${hr}:${min} ${period}` : '');
-                                            }}
-                                            className="h-7 text-xs rounded-md border border-input bg-background px-1 font-body w-[50px]"
-                                          >
-                                            <option value="">Hr</option>
-                                            {Array.from({ length: 12 }, (_, i) => i + 1).map((h) => (
-                                              <option key={h} value={String(h).padStart(2, '0')}>{String(h).padStart(2, '0')}</option>
-                                            ))}
-                                          </select>
-                                          <select
-                                            value={act.time?.match(/:(\d{2})/)?.[1] || '00'}
-                                            onChange={(e) => {
-                                              const hr = act.time?.match(/^(\d{1,2})/)?.[1] || '12';
-                                              const period = act.time?.match(/(AM|PM)$/i)?.[1] || 'AM';
-                                              updateActivity(dayIdx, actIdx, "time", `${hr}:${e.target.value} ${period}`);
-                                            }}
-                                            className="h-7 text-xs rounded-md border border-input bg-background px-1 font-body w-[46px]"
-                                          >
-                                            {Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0')).map((m) => (
-                                              <option key={m} value={m}>{m}</option>
-                                            ))}
-                                          </select>
-                                          <select
-                                            value={act.time?.match(/(AM|PM)$/i)?.[1]?.toUpperCase() || 'AM'}
-                                            onChange={(e) => {
-                                              const hr = act.time?.match(/^(\d{1,2})/)?.[1] || '12';
-                                              const min = act.time?.match(/:(\d{2})/)?.[1] || '00';
-                                              updateActivity(dayIdx, actIdx, "time", `${hr}:${min} ${e.target.value}`);
-                                            }}
-                                            className="h-7 text-xs rounded-md border border-input bg-background px-1 font-body w-[46px]"
-                                          >
-                                            <option value="AM">AM</option>
-                                            <option value="PM">PM</option>
-                                          </select>
-                                        </div>
+                                        <input
+                                          type="time"
+                                          value={(() => {
+                                            const m = act.time?.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+                                            if (!m) return '';
+                                            let h = parseInt(m[1]);
+                                            const period = m[3].toUpperCase();
+                                            if (period === 'AM' && h === 12) h = 0;
+                                            else if (period === 'PM' && h !== 12) h += 12;
+                                            return `${String(h).padStart(2, '0')}:${m[2]}`;
+                                          })()}
+                                          onChange={(e) => {
+                                            const val = e.target.value;
+                                            if (!val) { updateActivity(dayIdx, actIdx, "time", ""); return; }
+                                            const [hStr, mStr] = val.split(':');
+                                            let h = parseInt(hStr);
+                                            const period = h >= 12 ? 'PM' : 'AM';
+                                            if (h === 0) h = 12;
+                                            else if (h > 12) h -= 12;
+                                            updateActivity(dayIdx, actIdx, "time", `${h}:${mStr} ${period}`);
+                                          }}
+                                          className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body w-[90px]"
+                                        />
                                       </div>
                                       <div className="flex items-center gap-0.5">
                                         <button onClick={() => {
