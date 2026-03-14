@@ -1085,7 +1085,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
 
               {/* Dynamic Total */}
               {(() => {
-                const selectedFlightPrice = selectedFlight ? parseFloat(flights.find(f => f.id === selectedFlight)?.price || "0") : 0;
+                const selectedFlightPrice = selectedFlight ? parseFloat(flightOptions.find(o => o.id === selectedFlight)?.price || "0") : 0;
                 const selectedAccPrice = selectedAccommodation ? parseFloat(accommodations.find(a => a.id === selectedAccommodation)?.price || "0") : 0;
                 const selectedCruisePrice = selectedCruise ? parseFloat(cruiseShips.find(s => s.id === selectedCruise)?.price || "0") : 0;
                 const selectedBusPrice = selectedBusTrip ? parseFloat(busTrips.find(b => b.id === selectedBusTrip)?.price || "0") : 0;
