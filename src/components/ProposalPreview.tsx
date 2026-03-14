@@ -317,7 +317,25 @@ export default function ProposalPreview({ data, shareId }: Props) {
                       const showAccVideo = (acc.mediaType || "photos") === "video" && !!acc.videoUrl;
                       const showAccPhotos = !showAccVideo;
                       return (
-                        <motion.div key={acc.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
+                        <motion.div
+                          key={acc.id}
+                          variants={fadeUp}
+                          initial="hidden"
+                          whileInView="visible"
+                          viewport={{ once: true }}
+                          custom={0}
+                          className={`bg-card rounded-2xl border-2 shadow-lg overflow-hidden transition-all ${
+                            !isGroupBooking
+                              ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40 cursor-pointer"
+                              : "border-border/50"
+                          }`}
+                          onClick={() => !isGroupBooking && setSelectedAccommodation(acc.id)}
+                        >
+                          {!isGroupBooking && accommodations.length > 1 && (
+                            <div className={`absolute top-4 right-4 z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center ${isSelected ? "border-primary bg-primary" : "border-muted-foreground/30 bg-background"}`}>
+                              {isSelected && <Check className="h-3.5 w-3.5 text-primary-foreground" />}
+                            </div>
+                          )}
                           {showAccPhotos ? (
                             <div className="grid grid-cols-3 md:grid-cols-4 gap-1">
                               {acc.imageUrl && (
