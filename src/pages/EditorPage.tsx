@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { buildBrandCssVars } from "@/lib/brand";
 import { useAppSettings } from "@/hooks/useAppSettings";
+import { useAgentSettings } from "@/hooks/useAgentSettings";
 
 export default function EditorPage() {
   const { id } = useParams<{ id: string }>();
