@@ -418,6 +418,18 @@ export default function ProposalEditor({ data, onChange }: Props) {
                     </div>
                   </div>
                 )}
+                {data.heroVideoUrl && (
+                  <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
+                    <div>
+                      <p className="text-sm font-body font-medium text-foreground">Autoplay (muted)</p>
+                      <p className="text-xs text-muted-foreground font-body">Video plays automatically on load, muted.</p>
+                    </div>
+                    <Switch
+                      checked={!!data.heroAutoplay}
+                      onCheckedChange={(checked) => update("heroAutoplay", checked)}
+                    />
+                  </div>
+                )}
               </div>
             )}
           </div>
