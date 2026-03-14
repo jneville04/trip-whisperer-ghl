@@ -399,17 +399,19 @@ export default function ProposalPreview({ data, shareId }: Props) {
                               {day.activities.map((act, actIdx) => (
                                 <div key={act.id || actIdx} className="flex gap-4 py-3 relative">
                                   <div className="relative z-10 mt-1.5 w-[15px] h-[15px] shrink-0 rounded-full border-2 border-primary bg-background" />
-                                  <div className="flex-1">
-                                    {act.time && (
-                                      <div className="flex items-center gap-2 mb-0.5">
-                                        <span className="text-xs font-semibold text-primary font-body flex items-center gap-1"><Clock className="h-3 w-3" /> {act.time}</span>
-                                      </div>
-                                    )}
-                                    <p className="font-body font-semibold text-foreground">{act.title || "Untitled Activity"}</p>
-                                    {act.description && <p className="text-sm text-muted-foreground font-body mt-0.5">{act.description}</p>}
+                                  <div className="flex-1 flex gap-4">
+                                    <div className="flex-1">
+                                      {act.time && (
+                                        <div className="flex items-center gap-2 mb-0.5">
+                                          <span className="text-xs font-semibold text-primary font-body flex items-center gap-1"><Clock className="h-3 w-3" /> {act.time}</span>
+                                        </div>
+                                      )}
+                                      <p className="font-body font-semibold text-foreground">{act.title || "Untitled Activity"}</p>
+                                      {act.description && <p className="text-sm text-muted-foreground font-body mt-0.5">{act.description}</p>}
+                                    </div>
                                     {act.imageUrls && act.imageUrls.length > 0 && (
-                                      <div className="flex flex-wrap gap-2 mt-2">
-                                        {act.imageUrls.map((url, imgIdx) => (
+                                      <div className="flex gap-2 shrink-0">
+                                        {act.imageUrls.slice(0, 2).map((url, imgIdx) => (
                                           <img
                                             key={imgIdx}
                                             src={url}
@@ -418,6 +420,14 @@ export default function ProposalPreview({ data, shareId }: Props) {
                                             onClick={() => openLightbox(act.imageUrls!.map((u) => ({ src: u, alt: act.title })), imgIdx)}
                                           />
                                         ))}
+                                        {act.imageUrls.length > 2 && (
+                                          <div
+                                            className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg border border-border/30 bg-muted flex items-center justify-center cursor-pointer hover:bg-muted/80 transition-colors"
+                                            onClick={() => openLightbox(act.imageUrls!.map((u) => ({ src: u, alt: act.title })), 2)}
+                                          >
+                                            <span className="text-sm font-semibold text-muted-foreground">+{act.imageUrls.length - 2}</span>
+                                          </div>
+                                        )}
                                       </div>
                                     )}
                                   </div>
