@@ -280,6 +280,11 @@ export const createFlightLeg = (type: FlightLeg["type"] = "departure"): FlightLe
   date: "",
 });
 
+export const createFlightOption = (): FlightOption => ({
+  id: crypto.randomUUID(),
+  legs: [createFlightLeg("departure"), createFlightLeg("return")],
+});
+
 export const createAccommodation = (): Accommodation => ({
   id: crypto.randomUUID(),
   hotelName: "",
