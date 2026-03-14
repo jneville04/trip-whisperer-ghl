@@ -14,6 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_settings: {
+        Row: {
+          accent_color: string
+          agency_logo_url: string
+          agency_name: string
+          agent_email: string
+          agent_name: string
+          agent_phone: string
+          agent_photo_url: string
+          agent_title: string
+          agent_website: string
+          created_at: string
+          default_booking_behavior: string
+          default_booking_form_url: string
+          default_checkout_url: string
+          default_payment_link: string
+          ghl_access_token: string
+          ghl_connected: boolean
+          ghl_location_id: string
+          id: string
+          logo_url: string
+          primary_color: string
+          secondary_color: string
+          show_agency_name_with_logo: boolean
+          stripe_account_id: string
+          stripe_connected: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accent_color?: string
+          agency_logo_url?: string
+          agency_name?: string
+          agent_email?: string
+          agent_name?: string
+          agent_phone?: string
+          agent_photo_url?: string
+          agent_title?: string
+          agent_website?: string
+          created_at?: string
+          default_booking_behavior?: string
+          default_booking_form_url?: string
+          default_checkout_url?: string
+          default_payment_link?: string
+          ghl_access_token?: string
+          ghl_connected?: boolean
+          ghl_location_id?: string
+          id?: string
+          logo_url?: string
+          primary_color?: string
+          secondary_color?: string
+          show_agency_name_with_logo?: boolean
+          stripe_account_id?: string
+          stripe_connected?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accent_color?: string
+          agency_logo_url?: string
+          agency_name?: string
+          agent_email?: string
+          agent_name?: string
+          agent_phone?: string
+          agent_photo_url?: string
+          agent_title?: string
+          agent_website?: string
+          created_at?: string
+          default_booking_behavior?: string
+          default_booking_form_url?: string
+          default_checkout_url?: string
+          default_payment_link?: string
+          ghl_access_token?: string
+          ghl_connected?: boolean
+          ghl_location_id?: string
+          id?: string
+          logo_url?: string
+          primary_color?: string
+          secondary_color?: string
+          show_agency_name_with_logo?: boolean
+          stripe_account_id?: string
+          stripe_connected?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       app_settings: {
         Row: {
           accent_color: string

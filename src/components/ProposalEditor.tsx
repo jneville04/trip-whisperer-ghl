@@ -20,6 +20,7 @@ import AgentPricingFields from "@/components/AgentPricingFields";
 import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, SectionKey, CheckoutSettings, PaymentOption } from "@/types/proposal";
 import { createActivity, createDay, createPricingLine, createFlightLeg, createFlightOption, createAccommodation, createCruiseShip, createBusTrip, createBusStop, defaultSectionOrder, createDefaultCheckout } from "@/types/proposal";
 import { normalizeHexInput } from "@/lib/brand";
+import { useAgentSettings } from "@/hooks/useAgentSettings";
 
 interface Props {
   data: ProposalData;
@@ -132,6 +133,8 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 }
 
 export default function ProposalEditor({ data, onChange }: Props) {
+  const { settings: agentSettings } = useAgentSettings();
+  
   const update = <K extends keyof ProposalData>(key: K, value: ProposalData[K]) => {
     onChange({ ...data, [key]: value });
   };
@@ -260,78 +263,88 @@ export default function ProposalEditor({ data, onChange }: Props) {
         </div>
       </div>
 
-      {/* Brand Settings */}
-      <CollapsibleSection title="🎨 Brand & Colors" defaultOpen={false}>
-        <div className="space-y-3">
-          <div>
-            <FieldLabel>Logo</FieldLabel>
-            <ImageUploadField value={brand.logoUrl} onChange={(url) => update("brand", { ...brand, logoUrl: url })} placeholder="Paste logo URL" />
+      {/* Brand Settings — pulled from global Settings */}
+      <Card className="border-border/50">
+        <CardHeader className="py-4">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base font-display">🎨 Brand & Colors</CardTitle>
+            <a href="/settings" target="_blank" className="text-xs text-primary hover:underline font-body">Edit in Settings →</a>
           </div>
-          <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
-            <div>
-              <p className="text-sm font-body font-medium text-foreground">Show agency name with logo</p>
-              <p className="text-xs text-muted-foreground font-body">Keeps both logo and agency name visible in top navigation.</p>
-            </div>
-            <Switch
-              checked={brand.showAgencyNameWithLogo ?? true}
-              onCheckedChange={(checked) => update("brand", { ...brand, showAgencyNameWithLogo: checked })}
-            />
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="flex items-center gap-3 text-xs font-body text-muted-foreground">
+            {(agentSettings.primary_color || brand.primaryColor) && (
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-full border border-border" style={{ backgroundColor: brand.primaryColor || agentSettings.primary_color || "#ccc" }} />
+                Primary
+              </div>
+            )}
+            {(agentSettings.secondary_color || brand.secondaryColor) && (
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-full border border-border" style={{ backgroundColor: brand.secondaryColor || agentSettings.secondary_color || "#ccc" }} />
+                Secondary
+              </div>
+            )}
+            {(agentSettings.accent_color || brand.accentColor) && (
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-full border border-border" style={{ backgroundColor: brand.accentColor || agentSettings.accent_color || "#ccc" }} />
+                Accent
+              </div>
+            )}
+            {agentSettings.logo_url && <span>✓ Logo set</span>}
+            {!agentSettings.primary_color && !brand.primaryColor && <span>Using platform defaults</span>}
           </div>
-          <div className="grid grid-cols-3 gap-3">
-            <div>
-              <FieldLabel>Primary Color</FieldLabel>
-              <div className="flex gap-2 items-center">
-                <input type="color" value={brand.primaryColor || "#C2631A"} onChange={(e) => update("brand", { ...brand, primaryColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                <Input
-                  value={brand.primaryColor}
-                  onChange={(e) => update("brand", { ...brand, primaryColor: normalizeHexInput(e.target.value) })}
-                  placeholder="#C2631A"
-                  className="h-8 text-sm flex-1"
-                  inputMode="text"
-                  maxLength={7}
-                />
+          <div className="mt-3 space-y-2">
+            <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
+              <div>
+                <p className="text-sm font-body font-medium text-foreground">Override brand for this proposal</p>
+                <p className="text-xs text-muted-foreground font-body">Set custom colors for this proposal only.</p>
               </div>
+              <Switch
+                checked={!!(brand.primaryColor || brand.secondaryColor || brand.accentColor || brand.logoUrl)}
+                onCheckedChange={(checked) => {
+                  if (!checked) {
+                    update("brand", { ...brand, primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" });
+                  } else {
+                    update("brand", { ...brand, primaryColor: agentSettings.primary_color, secondaryColor: agentSettings.secondary_color, accentColor: agentSettings.accent_color, logoUrl: agentSettings.logo_url });
+                  }
+                }}
+              />
             </div>
-            <div>
-              <FieldLabel>Secondary Color</FieldLabel>
-              <div className="flex gap-2 items-center">
-                <input type="color" value={brand.secondaryColor || "#337A8A"} onChange={(e) => update("brand", { ...brand, secondaryColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                <Input
-                  value={brand.secondaryColor}
-                  onChange={(e) => update("brand", { ...brand, secondaryColor: normalizeHexInput(e.target.value) })}
-                  placeholder="#337A8A"
-                  className="h-8 text-sm flex-1"
-                  inputMode="text"
-                  maxLength={7}
-                />
+            {(brand.primaryColor || brand.secondaryColor || brand.accentColor || brand.logoUrl) && (
+              <div className="space-y-2 pt-2">
+                <div>
+                  <FieldLabel>Logo Override</FieldLabel>
+                  <ImageUploadField value={brand.logoUrl} onChange={(url) => update("brand", { ...brand, logoUrl: url })} placeholder="Paste logo URL" />
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div>
+                    <FieldLabel>Primary</FieldLabel>
+                    <div className="flex gap-2 items-center">
+                      <input type="color" value={brand.primaryColor || "#C2631A"} onChange={(e) => update("brand", { ...brand, primaryColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                      <Input value={brand.primaryColor} onChange={(e) => update("brand", { ...brand, primaryColor: normalizeHexInput(e.target.value) })} placeholder="#C2631A" className="h-8 text-sm flex-1" maxLength={7} />
+                    </div>
+                  </div>
+                  <div>
+                    <FieldLabel>Secondary</FieldLabel>
+                    <div className="flex gap-2 items-center">
+                      <input type="color" value={brand.secondaryColor || "#337A8A"} onChange={(e) => update("brand", { ...brand, secondaryColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                      <Input value={brand.secondaryColor} onChange={(e) => update("brand", { ...brand, secondaryColor: normalizeHexInput(e.target.value) })} placeholder="#337A8A" className="h-8 text-sm flex-1" maxLength={7} />
+                    </div>
+                  </div>
+                  <div>
+                    <FieldLabel>Accent</FieldLabel>
+                    <div className="flex gap-2 items-center">
+                      <input type="color" value={brand.accentColor || "#D4A824"} onChange={(e) => update("brand", { ...brand, accentColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
+                      <Input value={brand.accentColor} onChange={(e) => update("brand", { ...brand, accentColor: normalizeHexInput(e.target.value) })} placeholder="#D4A824" className="h-8 text-sm flex-1" maxLength={7} />
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div>
-              <FieldLabel>Accent Color</FieldLabel>
-              <div className="flex gap-2 items-center">
-                <input type="color" value={brand.accentColor || "#D4A824"} onChange={(e) => update("brand", { ...brand, accentColor: e.target.value.toUpperCase() })} className="w-8 h-8 rounded border border-input cursor-pointer" />
-                <Input
-                  value={brand.accentColor}
-                  onChange={(e) => update("brand", { ...brand, accentColor: normalizeHexInput(e.target.value) })}
-                  placeholder="#D4A824"
-                  className="h-8 text-sm flex-1"
-                  inputMode="text"
-                  maxLength={7}
-                />
-              </div>
-            </div>
+            )}
           </div>
-          <Button
-            variant="travel-ghost"
-            size="sm"
-            className="text-xs text-muted-foreground mt-1"
-            onClick={() => update("brand", { ...brand, primaryColor: "", secondaryColor: "", accentColor: "" })}
-          >
-            Reset to app defaults
-          </Button>
-          <p className="text-xs text-muted-foreground">Use hex colors only (example: #1A2B3C). Leave blank to use defaults.</p>
-        </div>
-      </CollapsibleSection>
+        </CardContent>
+      </Card>
 
       <CollapsibleSection title="🌍 Trip Overview" sectionKey="hero" visible={vis.hero} onToggleVisible={() => toggleSection("hero")}>
         <div className="space-y-3">
@@ -1643,45 +1656,83 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   case "agent":
                     return (
                       <CollapsibleSection title={sectionTitles.agent} defaultOpen={false} sectionKey="agent" visible={vis.agent} onToggleVisible={() => toggleSection("agent")} dragHandleProps={dragHandleProps}>
-                        <div className="space-y-2">
-                          <div className="grid grid-cols-2 gap-2">
-                            <div>
-                              <FieldLabel>Name</FieldLabel>
-                              <Input value={data.agent.name} onChange={(e) => update("agent", { ...data.agent, name: e.target.value })} className="h-8 text-sm" />
-                            </div>
-                            <div>
-                              <FieldLabel>Title</FieldLabel>
-                              <Input value={data.agent.title} onChange={(e) => update("agent", { ...data.agent, title: e.target.value })} className="h-8 text-sm" />
-                            </div>
+                        <div className="space-y-3">
+                          <div className="bg-muted/30 rounded-md px-3 py-2.5 text-xs font-body text-muted-foreground">
+                            <p className="font-medium text-foreground text-sm mb-1">
+                              {agentSettings.agent_name || "No agent info set"}
+                              {agentSettings.agent_title && <span className="text-muted-foreground"> — {agentSettings.agent_title}</span>}
+                            </p>
+                            {agentSettings.agent_email && <p>{agentSettings.agent_email}</p>}
+                            {agentSettings.agent_phone && <p>{agentSettings.agent_phone}</p>}
+                            <a href="/settings" target="_blank" className="text-primary hover:underline mt-1 inline-block">Edit in Settings →</a>
                           </div>
-                          <div className="grid grid-cols-2 gap-2">
+                          <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
                             <div>
-                              <FieldLabel>Phone</FieldLabel>
-                              <Input value={data.agent.phone} onChange={(e) => update("agent", { ...data.agent, phone: e.target.value })} className="h-8 text-sm" />
+                              <p className="text-sm font-body font-medium text-foreground">Override agent info</p>
+                              <p className="text-xs text-muted-foreground font-body">Use different contact details for this proposal.</p>
                             </div>
-                            <div>
-                              <FieldLabel>Email</FieldLabel>
-                              <Input value={data.agent.email} onChange={(e) => update("agent", { ...data.agent, email: e.target.value })} className="h-8 text-sm" />
-                            </div>
+                            <Switch
+                              checked={!!(data.agent.name || data.agent.email || data.agent.phone)}
+                              onCheckedChange={(checked) => {
+                                if (!checked) {
+                                  update("agent", { name: "", title: "", phone: "", email: "", website: "", agencyName: "", logoUrl: "", photoUrl: "" });
+                                } else {
+                                  update("agent", {
+                                    name: agentSettings.agent_name,
+                                    title: agentSettings.agent_title,
+                                    phone: agentSettings.agent_phone,
+                                    email: agentSettings.agent_email,
+                                    website: agentSettings.agent_website,
+                                    agencyName: agentSettings.agency_name,
+                                    logoUrl: agentSettings.agency_logo_url,
+                                    photoUrl: agentSettings.agent_photo_url,
+                                  });
+                                }
+                              }}
+                            />
                           </div>
-                          <div className="grid grid-cols-2 gap-2">
-                            <div>
-                              <FieldLabel>Website</FieldLabel>
-                              <Input value={data.agent.website} onChange={(e) => update("agent", { ...data.agent, website: e.target.value })} className="h-8 text-sm" />
-                            </div>
-                            <div>
-                              <FieldLabel>Agency Name</FieldLabel>
-                              <Input value={data.agent.agencyName} onChange={(e) => update("agent", { ...data.agent, agencyName: e.target.value })} className="h-8 text-sm" />
-                            </div>
-                          </div>
-                          <div>
-                            <FieldLabel>Agent Photo</FieldLabel>
-                            <ImageUploadField value={data.agent.photoUrl} onChange={(url) => update("agent", { ...data.agent, photoUrl: url })} placeholder="Agent photo URL" />
-                          </div>
-                          <div>
-                            <FieldLabel>Agency Logo</FieldLabel>
-                            <ImageUploadField value={data.agent.logoUrl} onChange={(url) => update("agent", { ...data.agent, logoUrl: url })} placeholder="Agency logo URL" />
-                          </div>
+                          {(data.agent.name || data.agent.email || data.agent.phone) && (
+                            <>
+                              <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                  <FieldLabel>Name</FieldLabel>
+                                  <Input value={data.agent.name} onChange={(e) => update("agent", { ...data.agent, name: e.target.value })} className="h-8 text-sm" />
+                                </div>
+                                <div>
+                                  <FieldLabel>Title</FieldLabel>
+                                  <Input value={data.agent.title} onChange={(e) => update("agent", { ...data.agent, title: e.target.value })} className="h-8 text-sm" />
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                  <FieldLabel>Phone</FieldLabel>
+                                  <Input value={data.agent.phone} onChange={(e) => update("agent", { ...data.agent, phone: e.target.value })} className="h-8 text-sm" />
+                                </div>
+                                <div>
+                                  <FieldLabel>Email</FieldLabel>
+                                  <Input value={data.agent.email} onChange={(e) => update("agent", { ...data.agent, email: e.target.value })} className="h-8 text-sm" />
+                                </div>
+                              </div>
+                              <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                  <FieldLabel>Website</FieldLabel>
+                                  <Input value={data.agent.website} onChange={(e) => update("agent", { ...data.agent, website: e.target.value })} className="h-8 text-sm" />
+                                </div>
+                                <div>
+                                  <FieldLabel>Agency Name</FieldLabel>
+                                  <Input value={data.agent.agencyName} onChange={(e) => update("agent", { ...data.agent, agencyName: e.target.value })} className="h-8 text-sm" />
+                                </div>
+                              </div>
+                              <div>
+                                <FieldLabel>Agent Photo</FieldLabel>
+                                <ImageUploadField value={data.agent.photoUrl} onChange={(url) => update("agent", { ...data.agent, photoUrl: url })} placeholder="Agent photo URL" />
+                              </div>
+                              <div>
+                                <FieldLabel>Agency Logo</FieldLabel>
+                                <ImageUploadField value={data.agent.logoUrl} onChange={(url) => update("agent", { ...data.agent, logoUrl: url })} placeholder="Agency logo URL" />
+                              </div>
+                            </>
+                          )}
                         </div>
                       </CollapsibleSection>
                     );

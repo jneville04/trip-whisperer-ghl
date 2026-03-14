@@ -9,11 +9,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { buildBrandCssVars } from "@/lib/brand";
 import { useAppSettings } from "@/hooks/useAppSettings";
+import { useAgentSettings } from "@/hooks/useAgentSettings";
 
 export default function EditorPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { cssVars: appBrandVars } = useAppSettings();
+  const { settings: agentSettings } = useAgentSettings();
   const [data, setData] = useState<ProposalData>(defaultProposal);
   const [mode, setMode] = useState<"split" | "preview">("split");
   const [panelOpen, setPanelOpen] = useState(true);
@@ -125,8 +127,33 @@ export default function EditorPage() {
     toast({ title: "Client link copied!", description: url });
   };
 
-  const builderBrandStyles = useMemo(() => buildBrandCssVars(data.brand), [data.brand]);
+  // Merge agent settings as fallbacks for brand and agent info
+  const previewData = useMemo<ProposalData>(() => {
+    const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
+    const agent = data.agent || { name: "", title: "", phone: "", email: "", website: "", agencyName: "", logoUrl: "", photoUrl: "" };
+    return {
+      ...data,
+      brand: {
+        primaryColor: brand.primaryColor || agentSettings.primary_color,
+        secondaryColor: brand.secondaryColor || agentSettings.secondary_color,
+        accentColor: brand.accentColor || agentSettings.accent_color,
+        logoUrl: brand.logoUrl || agentSettings.logo_url,
+        showAgencyNameWithLogo: brand.showAgencyNameWithLogo ?? agentSettings.show_agency_name_with_logo,
+      },
+      agent: {
+        name: agent.name || agentSettings.agent_name,
+        title: agent.title || agentSettings.agent_title,
+        phone: agent.phone || agentSettings.agent_phone,
+        email: agent.email || agentSettings.agent_email,
+        website: agent.website || agentSettings.agent_website,
+        agencyName: agent.agencyName || agentSettings.agency_name,
+        logoUrl: agent.logoUrl || agentSettings.agency_logo_url,
+        photoUrl: agent.photoUrl || agentSettings.agent_photo_url,
+      },
+    };
+  }, [data, agentSettings]);
 
+  const builderBrandStyles = useMemo(() => buildBrandCssVars(previewData.brand), [previewData.brand]);
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center text-muted-foreground font-body">
@@ -209,7 +236,7 @@ export default function EditorPage() {
           </div>
         )}
         <div className="flex-1 overflow-y-auto" style={builderBrandStyles as React.CSSProperties}>
-          <ProposalPreview data={data} shareId={shareId} isEditor />
+          <ProposalPreview data={previewData} shareId={shareId} isEditor />
         </div>
       </div>
     </div>

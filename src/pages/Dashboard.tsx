@@ -8,7 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import PendingApproval from "@/components/PendingApproval";
-import { Plus, Search, Copy, Trash2, ExternalLink, LogOut, MapPin, Calendar, FileText, Shield, Users, BookOpen, HelpCircle, Mail, Phone, Play } from "lucide-react";
+import { Plus, Search, Copy, Trash2, ExternalLink, LogOut, MapPin, Calendar, FileText, Shield, Users, BookOpen, HelpCircle, Mail, Phone, Play, Settings } from "lucide-react";
 import { defaultProposal, type ProposalData } from "@/types/proposal";
 
 interface ProposalRow {
@@ -162,6 +162,9 @@ export default function Dashboard() {
             </Button>
             <Button variant="travel-outline" size="sm" onClick={() => createProposal("proposal")}>
               <BookOpen className="h-4 w-4 mr-1" /> Proposal
+            </Button>
+            <Button variant="travel-ghost" size="sm" onClick={() => navigate("/settings")}>
+              <Settings className="h-4 w-4 mr-1" /> Settings
             </Button>
             <Button variant="travel-ghost" size="sm" onClick={handleLogout}>
               <LogOut className="h-4 w-4 mr-1" /> Sign Out
