@@ -83,6 +83,7 @@ export interface CruiseShip {
   amenities: string[];
   highlights: string[];
   videoUrl?: string;
+  mediaType?: "photos" | "video";
 }
 
 export interface BrandSettings {
