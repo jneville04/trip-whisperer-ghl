@@ -62,6 +62,7 @@ export interface Accommodation {
   amenities: string[];
   highlights: string[];
   videoUrl?: string;
+  mediaType?: "photos" | "video";
 }
 
 export interface CruiseShip {
@@ -82,6 +83,7 @@ export interface CruiseShip {
   amenities: string[];
   highlights: string[];
   videoUrl?: string;
+  mediaType?: "photos" | "video";
 }
 
 export interface BrandSettings {
@@ -224,6 +226,7 @@ export const createAccommodation = (): Accommodation => ({
   starRating: "",
   amenities: [],
   highlights: [],
+  mediaType: "photos",
 });
 
 export const createCruiseShip = (): CruiseShip => ({
@@ -243,6 +246,7 @@ export const createCruiseShip = (): CruiseShip => ({
   description: "",
   amenities: [],
   highlights: [],
+  mediaType: "photos",
 });
 
 export const defaultProposal: ProposalData = {

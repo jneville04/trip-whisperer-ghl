@@ -278,31 +278,38 @@ export default function ProposalPreview({ data, shareId }: Props) {
                         ...(acc.imageUrl ? [{ src: acc.imageUrl, alt: acc.hotelName }] : []),
                         ...galleryUrls.map((url, gi) => ({ src: url, alt: `${acc.hotelName} ${gi + 2}` })),
                       ];
+                      const showAccVideo = (acc.mediaType || "photos") === "video" && !!acc.videoUrl;
+                      const showAccPhotos = !showAccVideo;
                       return (
                         <motion.div key={acc.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
-                          {/* Main image + gallery in a compact grid */}
-                          <div className="grid grid-cols-3 md:grid-cols-4 gap-1">
-                            {acc.imageUrl && (
-                              <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, 0)}>
-                                <img src={acc.imageUrl} alt={acc.hotelName} className="w-full h-full object-cover" />
-                              </div>
-                            )}
-                            {!acc.imageUrl && (
-                              <div className="col-span-2 row-span-2 aspect-[4/3] bg-muted flex items-center justify-center">
-                                <BedDouble className="h-10 w-10 text-muted-foreground/30" />
-                              </div>
-                            )}
-                            {galleryUrls.slice(0, 6).map((url, gi) => (
-                              <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, gi + 1)}>
-                                <img src={url} alt={`${acc.hotelName} ${gi + 2}`} className="w-full h-full object-cover" />
-                              </div>
-                            ))}
-                            {galleryUrls.length > 6 && (
-                              <div className="aspect-[4/3] bg-muted/60 flex items-center justify-center cursor-pointer rounded-sm" onClick={() => openLightbox(allAccImages, 7)}>
-                                <span className="text-sm font-body font-semibold text-muted-foreground">+{galleryUrls.length - 6} more</span>
-                              </div>
-                            )}
-                          </div>
+                          {showAccPhotos ? (
+                            <div className="grid grid-cols-3 md:grid-cols-4 gap-1">
+                              {acc.imageUrl && (
+                                <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, 0)}>
+                                  <img src={acc.imageUrl} alt={acc.hotelName} className="w-full h-full object-cover" />
+                                </div>
+                              )}
+                              {!acc.imageUrl && (
+                                <div className="col-span-2 row-span-2 aspect-[4/3] bg-muted flex items-center justify-center">
+                                  <BedDouble className="h-10 w-10 text-muted-foreground/30" />
+                                </div>
+                              )}
+                              {galleryUrls.slice(0, 6).map((url, gi) => (
+                                <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, gi + 1)}>
+                                  <img src={url} alt={`${acc.hotelName} ${gi + 2}`} className="w-full h-full object-cover" />
+                                </div>
+                              ))}
+                              {galleryUrls.length > 6 && (
+                                <div className="aspect-[4/3] bg-muted/60 flex items-center justify-center cursor-pointer rounded-sm" onClick={() => openLightbox(allAccImages, 7)}>
+                                  <span className="text-sm font-body font-semibold text-muted-foreground">+{galleryUrls.length - 6} more</span>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="p-4 sm:p-6 border-b border-border/30">
+                              <VideoEmbed url={acc.videoUrl!} title={acc.hotelName} className="w-full" />
+                            </div>
+                          )}
                           <div className="p-6 sm:p-8">
                             <div className="flex items-start justify-between mb-3">
                               <div>
@@ -338,11 +345,6 @@ export default function ProposalPreview({ data, shareId }: Props) {
                                 </div>
                               </div>
                             )}
-                            {acc.videoUrl && (
-                              <div className="mt-4">
-                                <VideoEmbed url={acc.videoUrl} title={acc.hotelName} className="max-w-md" />
-                              </div>
-                            )}
                             <div className="flex items-center gap-6 mt-5 pt-4 border-t border-border/30 text-sm text-muted-foreground font-body">
                               {acc.checkIn && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Check-in: {acc.checkIn}</span>}
                               {acc.checkOut && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Check-out: {acc.checkOut}</span>}
@@ -375,25 +377,33 @@ export default function ProposalPreview({ data, shareId }: Props) {
                         ...(ship.imageUrl ? [{ src: ship.imageUrl, alt: ship.shipName }] : []),
                         ...galleryUrls.map((url, gi) => ({ src: url, alt: `${ship.shipName} ${gi + 2}` })),
                       ];
+                      const showShipVideo = (ship.mediaType || "photos") === "video" && !!ship.videoUrl;
+                      const showShipPhotos = !showShipVideo;
                       return (
                         <motion.div key={ship.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="bg-card rounded-2xl border border-border/50 shadow-lg overflow-hidden">
-                          <div className="grid grid-cols-3 md:grid-cols-4 gap-1">
-                            {ship.imageUrl && (
-                              <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, 0)}>
-                                <img src={ship.imageUrl} alt={ship.shipName} className="w-full h-full object-cover" />
-                              </div>
-                            )}
-                            {!ship.imageUrl && (
-                              <div className="col-span-2 row-span-2 aspect-[4/3] bg-muted flex items-center justify-center">
-                                <Ship className="h-10 w-10 text-muted-foreground/30" />
-                              </div>
-                            )}
-                            {galleryUrls.slice(0, 6).map((url, gi) => (
-                              <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, gi + 1)}>
-                                <img src={url} alt={`${ship.shipName} ${gi + 2}`} className="w-full h-full object-cover" />
-                              </div>
-                            ))}
-                          </div>
+                          {showShipPhotos ? (
+                            <div className="grid grid-cols-3 md:grid-cols-4 gap-1">
+                              {ship.imageUrl && (
+                                <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, 0)}>
+                                  <img src={ship.imageUrl} alt={ship.shipName} className="w-full h-full object-cover" />
+                                </div>
+                              )}
+                              {!ship.imageUrl && (
+                                <div className="col-span-2 row-span-2 aspect-[4/3] bg-muted flex items-center justify-center">
+                                  <Ship className="h-10 w-10 text-muted-foreground/30" />
+                                </div>
+                              )}
+                              {galleryUrls.slice(0, 6).map((url, gi) => (
+                                <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, gi + 1)}>
+                                  <img src={url} alt={`${ship.shipName} ${gi + 2}`} className="w-full h-full object-cover" />
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="p-4 sm:p-6 border-b border-border/30">
+                              <VideoEmbed url={ship.videoUrl!} title={ship.shipName} className="w-full" />
+                            </div>
+                          )}
                           <div className="p-6 sm:p-8">
                             <div className="flex items-start justify-between mb-3">
                               <div>
@@ -438,11 +448,6 @@ export default function ProposalPreview({ data, shareId }: Props) {
                                     </span>
                                   ))}
                                 </div>
-                              </div>
-                            )}
-                            {ship.videoUrl && (
-                              <div className="mt-4">
-                                <VideoEmbed url={ship.videoUrl} title={ship.shipName} className="max-w-md" />
                               </div>
                             )}
                             <div className="flex items-center gap-6 mt-5 pt-4 border-t border-border/30 text-sm text-muted-foreground font-body flex-wrap">
