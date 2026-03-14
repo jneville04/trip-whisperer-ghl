@@ -58,6 +58,12 @@ export default function ProposalPreview({ data, shareId }: Props) {
     setLightboxIndex(index);
     setLightboxOpen(true);
   };
+
+  // Proposal-type selection state (radio per category)
+  const [selectedFlight, setSelectedFlight] = useState<string>("");
+  const [selectedAccommodation, setSelectedAccommodation] = useState<string>("");
+  const [selectedCruise, setSelectedCruise] = useState<string>("");
+  const [selectedBusTrip, setSelectedBusTrip] = useState<string>("");
   const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, cruiseShips: true, busTrips: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
   const brandData = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "", showAgencyNameWithLogo: true };
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
