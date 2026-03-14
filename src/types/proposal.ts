@@ -168,6 +168,7 @@ export interface SectionVisibility {
   flights: boolean;
   accommodations: boolean;
   cruiseShips: boolean;
+  busTrips: boolean;
   itinerary: boolean;
   inclusions: boolean;
   pricing: boolean;
