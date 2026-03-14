@@ -7,6 +7,14 @@ interface VideoEmbedProps {
   className?: string;
 }
 
+function isDirectVideoUrl(url: string): boolean {
+  return /\.(mp4|webm|ogg|mov|m4v)(\?|$)/i.test(url);
+}
+
+function isAudioUrl(url: string): boolean {
+  return /\.(mp3|wav|m4a|ogg|aac)(\?|$)/i.test(url);
+}
+
 function getEmbedInfo(url: string): { type: "youtube" | "vimeo" | "unknown"; embedUrl: string; thumbnailUrl?: string } | null {
   if (!url) return null;
 
@@ -37,7 +45,9 @@ export default function VideoEmbed({ url, title, className = "" }: VideoEmbedPro
   const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const info = getEmbedInfo(url);
+  const isDirect = isDirectVideoUrl(url);
+  const isAudio = isAudioUrl(url);
+  const info = !isDirect && !isAudio ? getEmbedInfo(url) : null;
 
   // Lazy load with IntersectionObserver
   useEffect(() => {
@@ -51,6 +61,39 @@ export default function VideoEmbed({ url, title, className = "" }: VideoEmbedPro
     return () => observer.disconnect();
   }, []);
 
+  // Direct video file
+  if (isDirect) {
+    return (
+      <div ref={ref} className={`relative aspect-video rounded-xl overflow-hidden bg-muted ${className}`}>
+        {visible ? (
+          <video
+            src={url}
+            controls
+            className="w-full h-full object-contain bg-black"
+            preload="metadata"
+            title={title || "Video"}
+          />
+        ) : (
+          <div className="w-full h-full bg-muted animate-pulse" />
+        )}
+      </div>
+    );
+  }
+
+  // Audio file
+  if (isAudio) {
+    return (
+      <div ref={ref} className={`rounded-xl overflow-hidden bg-muted p-4 ${className}`}>
+        {visible ? (
+          <audio src={url} controls className="w-full" preload="metadata" title={title || "Audio"} />
+        ) : (
+          <div className="w-full h-10 bg-muted animate-pulse rounded" />
+        )}
+      </div>
+    );
+  }
+
+  // YouTube / Vimeo embed
   if (!info) return null;
 
   return (
