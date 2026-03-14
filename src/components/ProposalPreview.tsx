@@ -47,6 +47,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
   const [lightboxImages, setLightboxImages] = useState<{ src: string; alt?: string }[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [bookingOpen, setBookingOpen] = useState(false);
 
   const openLightbox = (images: { src: string; alt?: string }[], index: number = 0) => {
     setLightboxImages(images);
