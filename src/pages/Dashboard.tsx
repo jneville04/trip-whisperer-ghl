@@ -223,11 +223,14 @@ export default function Dashboard() {
                     <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20" />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 to-transparent" />
-                  <div className="absolute top-3 right-3">
+                  <div className="absolute top-3 right-3 flex gap-1.5">
+                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm ${proposalType === "proposal" ? "bg-purple-600/90 text-white" : "bg-emerald-600/90 text-white"} backdrop-blur-sm`}>
+                      {proposalType === "proposal" ? "Proposal" : "Group"}
+                    </span>
                     {(() => {
                       const sc = statusConfig[proposal.status] || statusConfig.draft;
                       return (
-                        <span className={`text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm ${sc.bg} ${sc.text}`}>
+                        <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full shadow-sm ${sc.bg} ${sc.text}`}>
                           {sc.label}
                         </span>
                       );
