@@ -360,6 +360,7 @@ export default function ProposalPreview({ data, shareId }: Props) {
                   </motion.div>
                   <div className="space-y-16">
                     {data.days.map((day, dayIdx) => {
+                      const isLastDay = dayIdx === data.days.length - 1;
                       return (
                         <motion.div key={day.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} custom={0}>
                           <div className="mb-5 border-b border-border/40 pb-4">
@@ -373,7 +374,6 @@ export default function ProposalPreview({ data, shareId }: Props) {
                           <div className="space-y-8">
                             {day.activities.map((act, actIdx) => {
                               const hasImages = act.imageUrls && act.imageUrls.length > 0;
-                              const isLastActivity = actIdx === day.activities.length - 1;
                               return (
                                 <div key={act.id || actIdx}>
                                   <div className={`flex flex-col ${hasImages ? 'sm:flex-row' : ''} gap-6`}>
@@ -407,11 +407,13 @@ export default function ProposalPreview({ data, shareId }: Props) {
                                       </div>
                                     )}
                                   </div>
-                                  
                                 </div>
                               );
                             })}
                           </div>
+                          {!isLastDay && (
+                            <div className="mt-12 border-t border-border" />
+                          )}
                         </motion.div>
                       );
                     })}
