@@ -233,9 +233,9 @@ export default function CheckoutPage() {
             </motion.div>
           </div>
 
-          {/* Right side: Embedded form OR built-in form */}
-          <div className={hasCustomForm ? "lg:col-span-3" : ""}>
-            {hasCustomForm ? (
+          {/* Right side: Embedded form */}
+          <div className="lg:col-span-3">
+            {checkout.customFormUrl ? (
               <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
                 <iframe
                   src={checkout.customFormUrl.includes("?")
@@ -248,99 +248,38 @@ export default function CheckoutPage() {
                 />
               </motion.div>
             ) : (
-              <>
-                {/* Payment Options */}
-                {enabledOptions.length > 0 && (
-                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-8">
-                    <h2 className="font-display text-lg font-semibold text-foreground mb-4">Payment Option</h2>
-                    <div className="grid gap-3">
-                      {enabledOptions.map((opt) => {
-                        const amount = getPaymentAmount(opt);
-                        const isActive = selectedPayment === opt.id;
-                        return (
-                          <button
-                            key={opt.id}
-                            type="button"
-                            onClick={() => setSelectedPayment(opt.id)}
-                            className={`relative flex items-start gap-4 p-5 rounded-xl border-2 text-left transition-all font-body ${
-                              isActive
-                                ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                                : "border-border/50 hover:border-primary/40 bg-background"
-                            }`}
-                          >
-                            <div className={`mt-0.5 h-10 w-10 rounded-full flex items-center justify-center shrink-0 ${isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
-                              {paymentIcons[opt.type]}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="font-semibold text-foreground text-sm">{opt.label}</p>
-                              <p className="text-xs text-muted-foreground mt-0.5">{opt.description}</p>
-                              {opt.type === "deposit" && opt.depositPercent && (
-                                <p className="text-xs text-muted-foreground mt-1">{opt.depositPercent}% deposit required</p>
-                              )}
-                              {opt.type === "installments" && opt.installmentCount && (
-                                <p className="text-xs text-muted-foreground mt-1">{opt.installmentCount} monthly payments</p>
-                              )}
-                            </div>
-                            {amount !== null && (
-                              <div className="text-right shrink-0">
-                                <p className="font-display text-lg font-bold text-foreground">${amount.toLocaleString()}</p>
-                                {opt.type === "deposit" && <p className="text-[10px] text-muted-foreground">due now</p>}
-                                {opt.type === "installments" && <p className="text-[10px] text-muted-foreground">/ month</p>}
-                              </div>
-                            )}
-                            <div className={`absolute top-4 right-4 h-5 w-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                              isActive ? "border-primary bg-primary" : "border-border"
-                            }`}>
-                              {isActive && <div className="h-2 w-2 rounded-full bg-primary-foreground" />}
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Contact Form */}
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-                  <h2 className="font-display text-lg font-semibold text-foreground mb-4">Your Details</h2>
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Full Name *</label>
-                      <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="John & Jane Smith" required className="h-11" />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Email *</label>
-                      <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="john@email.com" required className="h-11" />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Phone</label>
-                      <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="(555) 123-4567" className="h-11" />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Notes</label>
-                      <textarea
-                        value={form.notes}
-                        onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                        rows={3}
-                        className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring font-body"
-                        placeholder="Any special requests or notes..."
-                      />
-                    </div>
-
-                    <div className="bg-accent/10 border border-accent/30 rounded-xl p-4 text-sm font-body text-muted-foreground">
-                      <p>By confirming, you agree to the terms outlined in the proposal. Your travel advisor will follow up with payment instructions and booking confirmation.</p>
-                    </div>
-
-                    <Button type="submit" variant="travel" size="lg" className="w-full text-base py-6 h-auto" disabled={submitting}>
-                      {submitting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
-                      {submitting ? "Submitting..." : "Confirm Booking"}
-                    </Button>
-                  </form>
-                </motion.div>
-              </>
+              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-card border border-border/50 rounded-2xl p-8 text-center">
+                <p className="text-muted-foreground font-body">Your travel advisor will provide checkout instructions. Please contact them directly to complete your booking.</p>
+              </motion.div>
             )}
           </div>
         </div>
+
+        {/* Travel Advisor Footer */}
+        {agent.name && (
+          <footer className="mt-16 pt-12 border-t border-border/50 text-center">
+            <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Travel Advisor</p>
+            <div className="flex flex-col items-center gap-4 mb-6">
+              {agent.photoUrl && (
+                <img src={agent.photoUrl} alt={agent.name} className="w-20 h-20 rounded-full object-cover border-2 border-primary/20" />
+              )}
+              <div>
+                <h3 className="font-display text-2xl font-bold text-foreground">{agent.name}</h3>
+                {agent.title && <p className="text-muted-foreground font-body mt-0.5">{agent.title}</p>}
+                {agent.agencyName && <p className="text-sm text-muted-foreground font-body">{agent.agencyName}</p>}
+              </div>
+              {brandData.logoUrl && (
+                <img src={brandData.logoUrl} alt="Agency" className="h-12 max-w-[160px] object-contain" />
+              )}
+            </div>
+            <div className="flex items-center justify-center gap-6 text-sm font-body text-muted-foreground flex-wrap">
+              {agent.phone && <a href={`tel:${agent.phone}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Phone className="h-4 w-4" /> {agent.phone}</a>}
+              {agent.email && <a href={`mailto:${agent.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-4 w-4" /> {agent.email}</a>}
+              {agent.website && <a href="#" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Globe className="h-4 w-4" /> {agent.website}</a>}
+            </div>
+            <p className="text-xs text-muted-foreground/60 mt-10 font-body">© 2026 {agent.agencyName} · All prices in USD · Subject to availability</p>
+          </footer>
+        )}
       </div>
     </div>
   );
