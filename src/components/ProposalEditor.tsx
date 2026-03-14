@@ -688,7 +688,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                             else if (h > 12) h -= 12;
                                             updateActivity(dayIdx, actIdx, "time", `${h}:${mStr} ${period}`);
                                           }}
-                                          className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body w-[90px]"
+                                          className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body w-[120px]"
                                         />
                                       </div>
                                       <div className="flex items-center gap-0.5">
