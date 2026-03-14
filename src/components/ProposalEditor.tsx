@@ -487,117 +487,146 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       </CollapsibleSection>
                     );
 
-                  case "flights":
+                   case "flights":
                     return (
                       <CollapsibleSection title={sectionTitles.flights} sectionKey="flights" visible={vis.flights} onToggleVisible={() => toggleSection("flights")} defaultOpen={false} dragHandleProps={dragHandleProps}>
                         <div className="space-y-4">
-                          {flights.map((flight, i) => (
-                            <div key={flight.id} className="border border-border/40 rounded-lg p-3 bg-muted/20">
-                              <div className="flex items-center justify-between mb-2">
-                                <span className="font-body font-semibold text-sm text-foreground">{flight.type === "departure" ? "🛫 Departure" : "🛬 Return"}</span>
-                                <Button variant="travel-ghost" size="icon" onClick={() => update("flights", flights.filter((_, idx) => idx !== i))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
+                          {flightOptions.map((opt, oi) => (
+                            <div key={opt.id} className="border border-border/40 rounded-lg p-3 bg-muted/20 space-y-3">
+                              <div className="flex items-center justify-between">
+                                <span className="font-body font-semibold text-sm text-foreground">✈️ Option {oi + 1}</span>
+                                <Button variant="travel-ghost" size="icon" onClick={() => update("flightOptions", flightOptions.filter((_, idx) => idx !== oi))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
                                   <Trash2 className="h-3.5 w-3.5" />
                                 </Button>
                               </div>
-                              <div className="grid grid-cols-2 gap-2">
-                                <div>
-                                  <FieldLabel>Airline</FieldLabel>
-                                  <Input value={flight.airline} onChange={(e) => updateFlight(i, "airline", e.target.value)} placeholder="TAP Air Portugal" className="h-7 text-xs" />
-                                </div>
-                                <div>
-                                  <FieldLabel>Flight #</FieldLabel>
-                                  <Input value={flight.flightNumber} onChange={(e) => updateFlight(i, "flightNumber", e.target.value)} placeholder="TP 236" className="h-7 text-xs" />
-                                </div>
-                                <div>
-                                  <FieldLabel>From</FieldLabel>
-                                  <Input value={flight.departureAirport} onChange={(e) => updateFlight(i, "departureAirport", e.target.value)} placeholder="SFO – San Francisco" className="h-7 text-xs" />
-                                </div>
-                                <div>
-                                  <FieldLabel>To</FieldLabel>
-                                  <Input value={flight.arrivalAirport} onChange={(e) => updateFlight(i, "arrivalAirport", e.target.value)} placeholder="LIS – Lisbon" className="h-7 text-xs" />
-                                </div>
-                                <div>
-                                  <FieldLabel>Date</FieldLabel>
-                                  <DatePickerField value={flight.date} onChange={(val) => updateFlight(i, "date", val)} placeholder="Select date" />
-                                </div>
-                                <div className="grid grid-cols-2 gap-1">
-                                  <div>
-                                    <FieldLabel>Depart</FieldLabel>
-                                    <input
-                                      type="time"
-                                      value={(() => {
-                                        const m = flight.departureTime?.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-                                        if (!m) return '';
-                                        let h = parseInt(m[1]);
-                                        const period = m[3].toUpperCase();
-                                        if (period === 'AM' && h === 12) h = 0;
-                                        else if (period === 'PM' && h !== 12) h += 12;
-                                        return `${String(h).padStart(2, '0')}:${m[2]}`;
-                                      })()}
-                                      onChange={(e) => {
-                                        const val = e.target.value;
-                                        if (!val) { updateFlight(i, "departureTime", ""); return; }
-                                        const [hStr, mStr] = val.split(':');
-                                        let h = parseInt(hStr);
-                                        const period = h >= 12 ? 'PM' : 'AM';
-                                        if (h === 0) h = 12;
-                                        else if (h > 12) h -= 12;
-                                        updateFlight(i, "departureTime", `${h}:${mStr} ${period}`);
-                                      }}
-                                      className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body w-full"
-                                    />
+                              {opt.legs.map((leg, li) => (
+                                <div key={leg.id} className="border border-border/30 rounded-md p-2.5 bg-background/50">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="font-body text-xs font-medium text-muted-foreground">{leg.type === "departure" ? "🛫 Departure" : "🛬 Return"}</span>
+                                    <Button variant="travel-ghost" size="icon" onClick={() => {
+                                      const opts = [...flightOptions];
+                                      opts[oi] = { ...opts[oi], legs: opts[oi].legs.filter((_, idx) => idx !== li) };
+                                      update("flightOptions", opts);
+                                    }} className="h-6 w-6 text-destructive/60 hover:text-destructive">
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
                                   </div>
-                                  <div>
-                                    <FieldLabel>Arrive</FieldLabel>
-                                    <input
-                                      type="time"
-                                      value={(() => {
-                                        const m = flight.arrivalTime?.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-                                        if (!m) return '';
-                                        let h = parseInt(m[1]);
-                                        const period = m[3].toUpperCase();
-                                        if (period === 'AM' && h === 12) h = 0;
-                                        else if (period === 'PM' && h !== 12) h += 12;
-                                        return `${String(h).padStart(2, '0')}:${m[2]}`;
-                                      })()}
-                                      onChange={(e) => {
-                                        const val = e.target.value;
-                                        if (!val) { updateFlight(i, "arrivalTime", ""); return; }
-                                        const [hStr, mStr] = val.split(':');
-                                        let h = parseInt(hStr);
-                                        const period = h >= 12 ? 'PM' : 'AM';
-                                        if (h === 0) h = 12;
-                                        else if (h > 12) h -= 12;
-                                        updateFlight(i, "arrivalTime", `${h}:${mStr} ${period}`);
-                                      }}
-                                      className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body w-full"
-                                    />
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <div>
+                                      <FieldLabel>Airline</FieldLabel>
+                                      <Input value={leg.airline} onChange={(e) => updateFlightLeg(oi, li, "airline", e.target.value)} placeholder="TAP Air Portugal" className="h-7 text-xs" />
+                                    </div>
+                                    <div>
+                                      <FieldLabel>Flight #</FieldLabel>
+                                      <Input value={leg.flightNumber} onChange={(e) => updateFlightLeg(oi, li, "flightNumber", e.target.value)} placeholder="TP 236" className="h-7 text-xs" />
+                                    </div>
+                                    <div>
+                                      <FieldLabel>From</FieldLabel>
+                                      <Input value={leg.departureAirport} onChange={(e) => updateFlightLeg(oi, li, "departureAirport", e.target.value)} placeholder="SFO – San Francisco" className="h-7 text-xs" />
+                                    </div>
+                                    <div>
+                                      <FieldLabel>To</FieldLabel>
+                                      <Input value={leg.arrivalAirport} onChange={(e) => updateFlightLeg(oi, li, "arrivalAirport", e.target.value)} placeholder="LIS – Lisbon" className="h-7 text-xs" />
+                                    </div>
+                                    <div>
+                                      <FieldLabel>Date</FieldLabel>
+                                      <DatePickerField value={leg.date} onChange={(val) => updateFlightLeg(oi, li, "date", val)} placeholder="Select date" />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-1">
+                                      <div>
+                                        <FieldLabel>Depart</FieldLabel>
+                                        <input
+                                          type="time"
+                                          value={(() => {
+                                            const m = leg.departureTime?.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+                                            if (!m) return '';
+                                            let h = parseInt(m[1]);
+                                            const period = m[3].toUpperCase();
+                                            if (period === 'AM' && h === 12) h = 0;
+                                            else if (period === 'PM' && h !== 12) h += 12;
+                                            return `${String(h).padStart(2, '0')}:${m[2]}`;
+                                          })()}
+                                          onChange={(e) => {
+                                            const val = e.target.value;
+                                            if (!val) { updateFlightLeg(oi, li, "departureTime", ""); return; }
+                                            const [hStr, mStr] = val.split(':');
+                                            let h = parseInt(hStr);
+                                            const period = h >= 12 ? 'PM' : 'AM';
+                                            if (h === 0) h = 12;
+                                            else if (h > 12) h -= 12;
+                                            updateFlightLeg(oi, li, "departureTime", `${h}:${mStr} ${period}`);
+                                          }}
+                                          className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body w-full"
+                                        />
+                                      </div>
+                                      <div>
+                                        <FieldLabel>Arrive</FieldLabel>
+                                        <input
+                                          type="time"
+                                          value={(() => {
+                                            const m = leg.arrivalTime?.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+                                            if (!m) return '';
+                                            let h = parseInt(m[1]);
+                                            const period = m[3].toUpperCase();
+                                            if (period === 'AM' && h === 12) h = 0;
+                                            else if (period === 'PM' && h !== 12) h += 12;
+                                            return `${String(h).padStart(2, '0')}:${m[2]}`;
+                                          })()}
+                                          onChange={(e) => {
+                                            const val = e.target.value;
+                                            if (!val) { updateFlightLeg(oi, li, "arrivalTime", ""); return; }
+                                            const [hStr, mStr] = val.split(':');
+                                            let h = parseInt(hStr);
+                                            const period = h >= 12 ? 'PM' : 'AM';
+                                            if (h === 0) h = 12;
+                                            else if (h > 12) h -= 12;
+                                            updateFlightLeg(oi, li, "arrivalTime", `${h}:${mStr} ${period}`);
+                                          }}
+                                          className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body w-full"
+                                        />
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
+                              ))}
+                              <div className="flex gap-2">
+                                <Button variant="travel-ghost" size="sm" onClick={() => {
+                                  const opts = [...flightOptions];
+                                  opts[oi] = { ...opts[oi], legs: [...opts[oi].legs, createFlightLeg("departure")] };
+                                  update("flightOptions", opts);
+                                }} className="text-primary text-xs h-7">
+                                  <Plus className="h-3 w-3 mr-1" /> Departure Leg
+                                </Button>
+                                <Button variant="travel-ghost" size="sm" onClick={() => {
+                                  const opts = [...flightOptions];
+                                  opts[oi] = { ...opts[oi], legs: [...opts[oi].legs, createFlightLeg("return")] };
+                                  update("flightOptions", opts);
+                                }} className="text-primary text-xs h-7">
+                                  <Plus className="h-3 w-3 mr-1" /> Return Leg
+                                </Button>
                               </div>
                               {(data as any).proposalType === "proposal" && (
-                                <div className="mt-2">
+                                <div className="mt-1">
                                   <FieldLabel>Price (Proposal Option)</FieldLabel>
                                   <div className="relative w-32">
                                     <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
-                                    <Input value={flight.price || ""} onChange={(e) => updateFlight(i, "price" as any, e.target.value)} placeholder="0.00" className="h-7 text-xs pl-5" />
+                                    <Input value={opt.price || ""} onChange={(e) => {
+                                      const opts = [...flightOptions];
+                                      opts[oi] = { ...opts[oi], price: e.target.value };
+                                      update("flightOptions", opts);
+                                    }} placeholder="0.00" className="h-7 text-xs pl-5" />
                                   </div>
                                 </div>
                               )}
                               <AgentPricingFields
-                                pricing={flight.agentPricing}
-                                onChange={(ap) => { const f = [...flights]; f[i] = { ...f[i], agentPricing: ap }; update("flights", f); }}
+                                pricing={opt.agentPricing}
+                                onChange={(ap) => { const opts = [...flightOptions]; opts[oi] = { ...opts[oi], agentPricing: ap }; update("flightOptions", opts); }}
                               />
                             </div>
                           ))}
-                          <div className="flex gap-2">
-                            <Button variant="travel-ghost" size="sm" onClick={() => update("flights", [...flights, createFlightLeg("departure")])} className="text-primary text-xs h-7">
-                              <Plus className="h-3 w-3 mr-1" /> Departure
-                            </Button>
-                            <Button variant="travel-ghost" size="sm" onClick={() => update("flights", [...flights, createFlightLeg("return")])} className="text-primary text-xs h-7">
-                              <Plus className="h-3 w-3 mr-1" /> Return
-                            </Button>
-                          </div>
+                          <Button variant="travel-ghost" size="sm" onClick={() => update("flightOptions", [...flightOptions, createFlightOption()])} className="text-primary text-xs h-7">
+                            <Plus className="h-3 w-3 mr-1" /> Add Flight Option
+                          </Button>
                         </div>
                       </CollapsibleSection>
                     );
