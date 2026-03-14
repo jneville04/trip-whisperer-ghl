@@ -212,7 +212,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
   const sectionLabels: Record<SectionKey, string> = {
     overview: "🌍 Overview", flights: "✈️ Flights", accommodations: "🏨 Hotels",
-    cruiseShips: "🚢 Cruise Ships",
+    cruiseShips: "🚢 Cruise Ships", busTrips: "🚌 Bus Trips",
     itinerary: "📋 Itinerary", inclusions: "✅ Included", pricing: "💰 Pricing",
     essentials: "🧳 Essentials", terms: "📄 Terms", agent: "💼 Agent",
   };
