@@ -134,10 +134,10 @@ export default function Dashboard() {
       p.destination.toLowerCase().includes(search.toLowerCase())
   );
 
-  const statusColors: Record<string, string> = {
-    draft: "bg-muted text-muted-foreground",
-    sent: "bg-secondary/10 text-secondary",
-    approved: "bg-green-100 text-green-700",
+  const statusConfig: Record<string, { bg: string; text: string; label: string }> = {
+    draft: { bg: "bg-muted/80 backdrop-blur-sm", text: "text-muted-foreground", label: "Draft" },
+    sent: { bg: "bg-primary/90 backdrop-blur-sm", text: "text-primary-foreground", label: "Published" },
+    approved: { bg: "bg-green-600/90 backdrop-blur-sm", text: "text-white", label: "Approved" },
   };
 
   return (
