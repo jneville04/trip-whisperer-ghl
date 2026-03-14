@@ -121,14 +121,23 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
     setBookingOpen(true);
   }, []);
 
+  const checkoutEnabled = data.checkout?.enabled;
+  const goToCheckout = useCallback(() => {
+    navigate(`/checkout${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
+  }, [navigate, shareId, brandData, returnTo]);
+
   const goToApprove = useCallback(() => {
+    if (checkoutEnabled) {
+      goToCheckout();
+      return;
+    }
     const url = approveUrl || bookingUrl;
     if (url) {
       openModal(url, "Approve Itinerary");
     } else {
       navigate(`/approve${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
     }
-  }, [navigate, shareId, brandData, returnTo, bookingUrl, approveUrl, openModal]);
+  }, [navigate, shareId, brandData, returnTo, bookingUrl, approveUrl, openModal, checkoutEnabled, goToCheckout]);
 
   const goToRevisions = useCallback(() => {
     if (revisionsUrl) {
@@ -138,10 +147,6 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
     }
   }, [navigate, shareId, brandData, returnTo, revisionsUrl, openModal]);
 
-  const checkoutEnabled = data.checkout?.enabled;
-  const goToCheckout = useCallback(() => {
-    navigate(`/checkout${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
-  }, [navigate, shareId, brandData, returnTo]);
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
@@ -170,11 +175,6 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
           {isGroupBooking && bookingUrl && (
             <Button variant="travel" size="sm" className="text-xs" onClick={() => openModal(bookingUrl, "Book Now")}>
               Book Now
-            </Button>
-          )}
-          {!isGroupBooking && !isEditor && (
-            <Button variant="travel" size="sm" className="text-xs" onClick={goToApprove}>
-              Approve
             </Button>
           )}
         </div>
@@ -1065,11 +1065,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                       </Button>
                     )
                   ) : (
-                    checkoutEnabled ? (
-                      <Button variant="travel" size="lg" className="text-base px-8" onClick={goToCheckout}>
-                        Proceed to Checkout <ArrowRight className="h-4 w-4 ml-2" />
-                      </Button>
-                    ) : (
+                    !isEditor && (
                       <Button variant="travel" size="lg" className="text-base px-8" onClick={goToApprove}>
                         Approve Itinerary <ArrowRight className="h-4 w-4 ml-2" />
                       </Button>
@@ -1176,15 +1172,34 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
 
               {data.paymentTerms && <p className="text-xs text-muted-foreground mb-6 font-body">{data.paymentTerms}</p>}
 
+              {/* Deposit info */}
+              {(() => {
+                const checkout = data.checkout;
+                if (!checkout?.enabled) return null;
+                const depositOpt = checkout.paymentOptions.find(o => o.enabled && o.type === "deposit");
+                if (!depositOpt || !depositOpt.depositPercent) return null;
+                const totalForDeposit = (() => {
+                  const selectedFlightPrice = selectedFlight ? parseFloat(flightOptions.find(o => o.id === selectedFlight)?.price || "0") : 0;
+                  const selectedAccPrice = selectedAccommodation ? parseFloat(accommodations.find(a => a.id === selectedAccommodation)?.price || "0") : 0;
+                  const selectedCruisePrice = selectedCruise ? parseFloat(cruiseShips.find(s => s.id === selectedCruise)?.price || "0") : 0;
+                  const selectedBusPrice = selectedBusTrip ? parseFloat(busTrips.find(b => b.id === selectedBusTrip)?.price || "0") : 0;
+                  const pricingLinesTotal = data.pricing.reduce((sum, line) => sum + (parseFloat(line.amount.replace(/[^0-9.-]/g, "")) || 0), 0);
+                  return selectedFlightPrice + selectedAccPrice + selectedCruisePrice + selectedBusPrice + pricingLinesTotal;
+                })();
+                if (totalForDeposit <= 0) return null;
+                const depositAmount = Math.round(totalForDeposit * (depositOpt.depositPercent / 100));
+                return (
+                  <div className="flex justify-between items-center pt-2 mb-4">
+                    <span className="font-body text-sm text-muted-foreground">Deposit Due ({depositOpt.depositPercent}%)</span>
+                    <span className="font-display text-lg font-bold text-accent">${depositAmount.toLocaleString()}</span>
+                  </div>
+                );
+              })()}
+
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                 <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>
                   <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
                 </Button>
-                {checkoutEnabled && (
-                  <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToCheckout}>
-                    <ShoppingCart className="h-5 w-5 mr-2" /> Proceed to Checkout
-                  </Button>
-                )}
                 <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToRevisions}>
                   <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
                 </Button>
