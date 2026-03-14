@@ -1036,6 +1036,8 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
           }
 
           case "agent":
+            // For proposal mode, render footer after pricing summary below
+            if (!isGroupBooking) return null;
             return (
               <footer key="agent" className="py-16 px-6 border-t border-border/50 bg-card">
                 <div className="max-w-3xl mx-auto text-center">
@@ -1058,7 +1060,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                     {agent.email && <a href={`mailto:${agent.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-4 w-4" /> {agent.email}</a>}
                     {agent.website && <a href="#" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Globe className="h-4 w-4" /> {agent.website}</a>}
                   </div>
-                  {isGroupBooking && bookingUrl && (
+                  {bookingUrl && (
                     <Button variant="travel" size="lg" className="text-base px-8" onClick={() => openModal(bookingUrl, "Book Now")}>
                       Book Now <ArrowRight className="h-4 w-4 ml-2" />
                     </Button>
