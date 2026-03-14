@@ -226,6 +226,7 @@ export const createAccommodation = (): Accommodation => ({
   starRating: "",
   amenities: [],
   highlights: [],
+  mediaType: "photos",
 });
 
 export const createCruiseShip = (): CruiseShip => ({
