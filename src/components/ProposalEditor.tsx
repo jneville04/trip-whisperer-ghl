@@ -780,8 +780,18 @@ export default function ProposalEditor({ data, onChange }: Props) {
                             </div>
                             <div>
                               <FieldLabel>Booking / Checkout URL</FieldLabel>
-                              <Input value={data.bookingUrl || ""} onChange={(e) => update("bookingUrl", e.target.value)} placeholder="https://your-ghl-form-or-checkout-url.com" className="h-8 text-sm" />
-                              <p className="text-[10px] text-muted-foreground mt-1">GHL form or checkout page URL. Opens in a modal when clients click "Book Now".</p>
+                              <Input value={data.bookingUrl || ""} onChange={(e) => update("bookingUrl", e.target.value)} placeholder="https://your-ghl-checkout-or-form.com" className="h-8 text-sm" />
+                              <p className="text-[10px] text-muted-foreground mt-1">Opens in a modal when clients click "Book Now".</p>
+                            </div>
+                            <div>
+                              <FieldLabel>Approve Itinerary URL</FieldLabel>
+                              <Input value={data.approveUrl || ""} onChange={(e) => update("approveUrl", e.target.value)} placeholder="https://your-ghl-approve-form.com" className="h-8 text-sm" />
+                              <p className="text-[10px] text-muted-foreground mt-1">Optional. If set, "Approve Itinerary" opens this in a modal instead of the built-in form.</p>
+                            </div>
+                            <div>
+                              <FieldLabel>Request Revisions URL</FieldLabel>
+                              <Input value={data.revisionsUrl || ""} onChange={(e) => update("revisionsUrl", e.target.value)} placeholder="https://your-ghl-revisions-form.com" className="h-8 text-sm" />
+                              <p className="text-[10px] text-muted-foreground mt-1">Optional. If set, "Request Revisions" opens this in a modal instead of the built-in form.</p>
                             </div>
                           </div>
                         </div>
