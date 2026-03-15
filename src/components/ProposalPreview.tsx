@@ -177,8 +177,11 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
               </button>
             ))}
           </div>
-          {isGroupBooking && bookingUrl && (
-            <Button variant="travel" size="sm" className="text-xs" onClick={() => openModal(bookingUrl, "Book Now")}>
+          {isGroupBooking && (
+            <Button variant="travel" size="sm" className="text-xs" onClick={() => {
+              if (checkoutEnabled) goToCheckout();
+              else if (bookingUrl) openModal(bookingUrl, "Book Now");
+            }}>
               Book Now
             </Button>
           )}
