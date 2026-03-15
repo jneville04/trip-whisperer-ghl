@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Plus, BookOpen, Users, ChevronDown } from "lucide-react";
+import { Plus, BookOpen, Users } from "lucide-react";
 import { defaultProposal, type ProposalData } from "@/types/proposal";
 import {
   DropdownMenu,
@@ -152,8 +152,9 @@ export default function CreateTripMenu() {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="travel" size="sm" className="px-5 font-medium">
-            <Plus className="h-4 w-4 mr-1.5" /> Create Trip <ChevronDown className="h-3 w-3 ml-2 opacity-70" />
+          <Button variant="travel" size="sm" className="gap-2.5 px-6 font-medium">
+            <Plus className="h-4 w-4" />
+            Create Trip
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
