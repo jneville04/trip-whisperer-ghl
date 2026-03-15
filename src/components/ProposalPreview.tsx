@@ -321,50 +321,100 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
       </nav>
 
       {/* HERO */}
-      {vis.hero && (
-        <section className="relative">
-          {/* Full-width hero — edge to edge */}
-          <div className="w-full">
-            {data.heroMediaType === "video" && data.heroVideoUrl ? (
-              <div className="h-[500px] rounded-2xl overflow-hidden bg-muted">
+      {vis.hero && (() => {
+        // Collect all hero media assets
+        const isVideo = data.heroMediaType === "video" && !!data.heroVideoUrl;
+        const mainImg = data.heroImageUrl;
+        const sideImgs = (data.heroImageUrls || []).filter(Boolean);
+        const allReal = isVideo ? [data.heroVideoUrl!, ...sideImgs].filter(Boolean) : [mainImg, ...sideImgs].filter(Boolean) as string[];
+        const allHeroImgs = allReal.map((u, i) => ({
+          src: u,
+          alt: `${data.destination || "Hero"} ${i + 1}`,
+          isVideo: isVideo && i === 0,
+        }));
+        const count = allReal.length;
+
+        if (count === 0 && !isVideo) return null;
+
+        const heroMediaBadge = count > 1 ? (
+          <button
+            onClick={(e) => { e.stopPropagation(); openLightbox(allHeroImgs, 0); }}
+            className="absolute bottom-3 right-3 z-10 flex items-center gap-1.5 md:hidden"
+            style={{ background: "rgba(0,0,0,0.55)", color: "white", borderRadius: 6, padding: "4px 10px", fontSize: 13 }}
+          >
+            <Camera className="h-3.5 w-3.5" />
+            <span>{count}</span>
+          </button>
+        ) : null;
+
+        const renderFirstAsset = (className: string, onClick?: () => void) => {
+          if (isVideo) {
+            return (
+              <div className={className} style={{ position: "relative" }}>
                 <VideoEmbed
-                  url={data.heroVideoUrl}
+                  url={data.heroVideoUrl!}
                   title={data.destination}
                   thumbnailUrl={data.heroVideoThumbnailUrl}
-                  className="rounded-none !aspect-auto h-full"
+                  className="!rounded-none !aspect-auto h-full w-full"
                   autoplay={!!data.heroAutoplay}
                   muted={!!data.heroMuted}
                 />
               </div>
-            ) : (() => {
-              // Collect all real hero images (skip fallbacks)
-              const mainImg = data.heroImageUrl;
-              const sideImgs = (data.heroImageUrls || []).filter(Boolean);
-              const allReal = [mainImg, ...sideImgs].filter(Boolean) as string[];
-              const allHeroImgs = allReal.map((u, i) => ({ src: u, alt: `${data.destination || "Hero"} ${i + 1}` }));
-              const count = allReal.length;
+            );
+          }
+          return (
+            <div className={`${className} cursor-pointer`} onClick={onClick}>
+              <img
+                src={allReal[0]}
+                alt={data.destination}
+                className="w-full h-full object-cover"
+                loading="eager"
+                decoding="async"
+              />
+            </div>
+          );
+        };
 
-              if (count === 0) return null; // No images — hide hero image area entirely
+        return (
+          <section className="relative" style={{ width: "100vw", marginLeft: "calc(50% - 50vw)", padding: 0 }}>
+            {/* Mobile: single asset + badge */}
+            <div className="md:hidden relative" style={{ height: "60vw", minHeight: 240 }}>
+              {renderFirstAsset("w-full h-full overflow-hidden", () => openLightbox(allHeroImgs, 0))}
+              {heroMediaBadge}
+            </div>
 
-              if (count === 1) {
-                return (
-                  <div className="h-[500px] rounded-2xl overflow-hidden bg-muted cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
-                    <img
-                      src={allReal[0]}
-                      alt={data.destination}
-                      className="w-full h-full object-cover"
-                      loading="eager"
-                      decoding="async"
-                    />
-                  </div>
-                );
-              }
-
-              if (count === 2) {
-                return (
-                  <div className="grid grid-cols-2 gap-1 h-[500px] rounded-2xl overflow-hidden bg-muted">
-                    {allReal.map((url, i) => (
-                      <div key={i} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i)}>
+            {/* Desktop */}
+            <div className="hidden md:block">
+              {count === 1 ? (
+                <div
+                  className="overflow-hidden bg-muted cursor-pointer"
+                  style={{ minHeight: 480 }}
+                  onClick={() => openLightbox(allHeroImgs, 0)}
+                >
+                  {renderFirstAsset("w-full h-full", () => openLightbox(allHeroImgs, 0))}
+                </div>
+              ) : count === 2 ? (
+                <div
+                  className="overflow-hidden bg-muted"
+                  style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: 480 }}
+                >
+                  {allReal.map((url, i) => {
+                    if (i === 0 && isVideo) {
+                      return (
+                        <div key={i} className="overflow-hidden h-full">
+                          <VideoEmbed
+                            url={data.heroVideoUrl!}
+                            title={data.destination}
+                            thumbnailUrl={data.heroVideoThumbnailUrl}
+                            className="!rounded-none !aspect-auto h-full w-full"
+                            autoplay={!!data.heroAutoplay}
+                            muted={!!data.heroMuted}
+                          />
+                        </div>
+                      );
+                    }
+                    return (
+                      <div key={i} className="overflow-hidden cursor-pointer h-full" onClick={() => openLightbox(allHeroImgs, i)}>
                         <img
                           src={url}
                           alt={`${data.destination} ${i + 1}`}
@@ -373,24 +423,36 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           decoding="async"
                         />
                       </div>
-                    ))}
+                    );
+                  })}
+                </div>
+              ) : (
+                /* 3+ assets: 2fr 1fr grid */
+                <div
+                  className="overflow-hidden bg-muted"
+                  style={{ display: "grid", gridTemplateColumns: "2fr 1fr", minHeight: 480 }}
+                >
+                  <div className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
+                    {isVideo ? (
+                      <VideoEmbed
+                        url={data.heroVideoUrl!}
+                        title={data.destination}
+                        thumbnailUrl={data.heroVideoThumbnailUrl}
+                        className="!rounded-none !aspect-auto h-full w-full"
+                        autoplay={!!data.heroAutoplay}
+                        muted={!!data.heroMuted}
+                      />
+                    ) : (
+                      <img
+                        src={allReal[0]}
+                        alt={data.destination}
+                        className="w-full h-full object-cover"
+                        loading="eager"
+                        decoding="async"
+                      />
+                    )}
                   </div>
-                );
-              }
-
-              // 3+ images: 1 large + 2 stacked
-              return (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-1 h-[500px] rounded-2xl overflow-hidden bg-muted">
-                  <div className="md:col-span-2 overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
-                    <img
-                      src={allReal[0]}
-                      alt={data.destination}
-                      className="w-full h-full object-cover"
-                      loading="eager"
-                      decoding="async"
-                    />
-                  </div>
-                  <div className="hidden md:grid grid-rows-2 gap-1">
+                  <div style={{ display: "grid", gridTemplateRows: "1fr 1fr" }}>
                     {allReal.slice(1, 3).map((url, i) => (
                       <div key={i} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i + 1)}>
                         <img
@@ -404,27 +466,29 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                     ))}
                   </div>
                 </div>
-              );
-            })()}
-          </div>
+              )}
+            </div>
+          </section>
+        );
+      })()}
 
-          {/* Title section below images */}
-          <div className="max-w-5xl mx-auto px-6 py-10 text-center">
-            <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-              {data.destination || "Your Destination"}
-            </motion.h1>
-            {data.subtitle && (
-              <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="font-display text-lg sm:text-xl text-muted-foreground mt-3 italic">
-                {data.subtitle}
-              </motion.p>
-            )}
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.4 }} className="flex items-center justify-center gap-4 mt-6 flex-wrap">
-              {data.travelDates && <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body"><Calendar className="h-4 w-4 text-primary" /> {data.travelDates}</span>}
-              {data.travelerCount && <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body"><Users className="h-4 w-4 text-primary" /> {data.travelerCount}</span>}
-              {data.destinationCount && <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body"><MapPin className="h-4 w-4 text-primary" /> {data.destinationCount}</span>}
-            </motion.div>
-          </div>
-        </section>
+      {/* Title section below hero */}
+      {vis.hero && (
+        <div className="max-w-5xl mx-auto px-6 py-10 text-center">
+          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
+            {data.destination || "Your Destination"}
+          </motion.h1>
+          {data.subtitle && (
+            <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="font-display text-lg sm:text-xl text-muted-foreground mt-3 italic">
+              {data.subtitle}
+            </motion.p>
+          )}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.4 }} className="flex items-center justify-center gap-4 mt-6 flex-wrap">
+            {data.travelDates && <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body"><Calendar className="h-4 w-4 text-primary" /> {data.travelDates}</span>}
+            {data.travelerCount && <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body"><Users className="h-4 w-4 text-primary" /> {data.travelerCount}</span>}
+            {data.destinationCount && <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body"><MapPin className="h-4 w-4 text-primary" /> {data.destinationCount}</span>}
+          </motion.div>
+        </div>
       )}
 
       {/* DYNAMIC SECTIONS */}
