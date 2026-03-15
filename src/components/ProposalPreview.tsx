@@ -462,7 +462,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           src={url}
                           alt={`${data.destination} ${i + 2}`}
                           className="w-full h-full object-cover"
-                          style={{ objectPosition: "center 25%" }}
+                          
                           loading="lazy"
                           decoding="async"
                         />
