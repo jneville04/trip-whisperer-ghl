@@ -13,6 +13,12 @@ import { buildBrandCssVars } from "@/lib/brand";
 
 const fallbackImages: string[] = [];
 
+const fmtCurrency = (val: string) => {
+  const num = parseFloat(val.replace(/[^0-9.-]/g, ""));
+  if (isNaN(num)) return val;
+  return "$" + num.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+};
+
 const easeOut: Easing = [0.25, 0.46, 0.45, 0.94];
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
