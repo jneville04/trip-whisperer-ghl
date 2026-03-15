@@ -1354,7 +1354,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                 const depositAmount = Math.round(totalForDeposit * (depositOpt.depositPercent / 100));
                 return (
                   <div className="flex justify-between items-center pt-2 mb-4">
-                    <span className="font-body text-sm text-muted-foreground">Deposit Due ({depositOpt.depositPercent}%)</span>
+                    <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
                     <span className="font-display text-lg font-bold text-accent">${depositAmount.toLocaleString()}</span>
                   </div>
                 );
