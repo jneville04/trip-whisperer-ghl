@@ -312,6 +312,16 @@ export const createPricingLine = (): PricingLine => ({
   amount: "",
 });
 
+export const createPricingOption = (): PricingOption => ({
+  id: crypto.randomUUID(),
+  name: "",
+  totalPrice: "",
+  deposit: "",
+  paymentNote: "",
+  finalPaymentDate: "",
+  availabilityNote: "",
+});
+
 export const createFlightLeg = (type: FlightLeg["type"] = "departure"): FlightLeg => ({
   id: crypto.randomUUID(),
   type,
