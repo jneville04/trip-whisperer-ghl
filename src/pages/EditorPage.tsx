@@ -136,6 +136,8 @@ export default function EditorPage() {
     setData(merged);
     setShareId(r.share_id || "");
     setCurrentStatus(normalizeProposalStatus(r.status));
+    // If updated_at differs from created_at, user has saved before
+    setHasUserSaved(r.updated_at !== r.created_at || r.status !== "draft");
     setLoading(false);
   };
 
