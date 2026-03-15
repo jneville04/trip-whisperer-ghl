@@ -541,55 +541,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     <div className="grid grid-cols-2 gap-1">
                                       <div>
                                         <FieldLabel>Depart</FieldLabel>
-                                        <input
-                                          type="time"
-                                          value={(() => {
-                                            const m = leg.departureTime?.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-                                            if (!m) return '';
-                                            let h = parseInt(m[1]);
-                                            const period = m[3].toUpperCase();
-                                            if (period === 'AM' && h === 12) h = 0;
-                                            else if (period === 'PM' && h !== 12) h += 12;
-                                            return `${String(h).padStart(2, '0')}:${m[2]}`;
-                                          })()}
-                                          onChange={(e) => {
-                                            const val = e.target.value;
-                                            if (!val) { updateFlightLeg(oi, li, "departureTime", ""); return; }
-                                            const [hStr, mStr] = val.split(':');
-                                            let h = parseInt(hStr);
-                                            const period = h >= 12 ? 'PM' : 'AM';
-                                            if (h === 0) h = 12;
-                                            else if (h > 12) h -= 12;
-                                            updateFlightLeg(oi, li, "departureTime", `${h}:${mStr} ${period}`);
-                                          }}
-                                          className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body w-full"
-                                        />
+                                        <TimePickerDropdown value={leg.departureTime} onChange={(val) => updateFlightLeg(oi, li, "departureTime", val)} />
                                       </div>
                                       <div>
                                         <FieldLabel>Arrive</FieldLabel>
-                                        <input
-                                          type="time"
-                                          value={(() => {
-                                            const m = leg.arrivalTime?.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-                                            if (!m) return '';
-                                            let h = parseInt(m[1]);
-                                            const period = m[3].toUpperCase();
-                                            if (period === 'AM' && h === 12) h = 0;
-                                            else if (period === 'PM' && h !== 12) h += 12;
-                                            return `${String(h).padStart(2, '0')}:${m[2]}`;
-                                          })()}
-                                          onChange={(e) => {
-                                            const val = e.target.value;
-                                            if (!val) { updateFlightLeg(oi, li, "arrivalTime", ""); return; }
-                                            const [hStr, mStr] = val.split(':');
-                                            let h = parseInt(hStr);
-                                            const period = h >= 12 ? 'PM' : 'AM';
-                                            if (h === 0) h = 12;
-                                            else if (h > 12) h -= 12;
-                                            updateFlightLeg(oi, li, "arrivalTime", `${h}:${mStr} ${period}`);
-                                          }}
-                                          className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body w-full"
-                                        />
+                                        <TimePickerDropdown value={leg.arrivalTime} onChange={(val) => updateFlightLeg(oi, li, "arrivalTime", val)} />
                                       </div>
                                     </div>
                                   </div>
