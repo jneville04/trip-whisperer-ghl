@@ -117,7 +117,7 @@ export default function ApprovePage() {
 
     return (
       <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
-        <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />
+        {!isEmbeddedInEditor && <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />}
         <div className="max-w-3xl mx-auto px-6 py-8">
           <iframe
             src={iframeSrc}
