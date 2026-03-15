@@ -1534,7 +1534,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
                   case "inclusions":
                     return (
-                      <CollapsibleSection title={sectionTitles.inclusions} defaultOpen={false} sectionKey="inclusions" visible={vis.inclusions} onToggleVisible={() => toggleSection("inclusions")} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.inclusions} defaultOpen={false} sectionKey="inclusions" visible={vis.inclusions} onToggleVisible={() => toggleSection("inclusions")} sectionCustomTitle={customTitles.inclusions?.title} sectionCustomSubtitle={customTitles.inclusions?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("inclusions", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("inclusions", v)}>
                         <div className="space-y-2">
                           {data.inclusions.map((item, i) => (
                             <div key={i} className="flex gap-2">
