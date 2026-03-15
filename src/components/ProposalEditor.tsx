@@ -251,7 +251,17 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const cruiseShips = data.cruiseShips || [];
   const busTrips = data.busTrips || [];
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
+  const customTitles = data.sectionCustomTitles || {};
   const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
+
+  const updateCustomTitle = (key: SectionKey, title: string) => {
+    const cur = data.sectionCustomTitles || {};
+    update("sectionCustomTitles" as any, { ...cur, [key]: { ...cur[key], title } });
+  };
+  const updateCustomSubtitle = (key: SectionKey, subtitle: string) => {
+    const cur = data.sectionCustomTitles || {};
+    update("sectionCustomTitles" as any, { ...cur, [key]: { ...cur[key], subtitle } });
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
