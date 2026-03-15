@@ -1672,7 +1672,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
                   case "essentials":
                     return (
-                      <CollapsibleSection title={sectionTitles.essentials} defaultOpen={false} sectionKey="essentials" visible={vis.essentials} onToggleVisible={() => toggleSection("essentials")} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.essentials} defaultOpen={false} sectionKey="essentials" visible={vis.essentials} onToggleVisible={() => toggleSection("essentials")} sectionCustomTitle={customTitles.essentials?.title} sectionCustomSubtitle={customTitles.essentials?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("essentials", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("essentials", v)}>
                         <div className="space-y-2">
                           {([
                             { field: "visaRequirements" as const, label: "Visa Requirements", placeholder: "Visa requirements for destination..." },
