@@ -1545,7 +1545,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                   <div className="grid grid-cols-2 gap-2">
                                     <div>
                                       <FieldLabel>Final Payment Due (optional)</FieldLabel>
-                                      <Input value={opt.finalPaymentDate} onChange={(e) => { const p = [...pricingOptions]; p[i] = { ...p[i], finalPaymentDate: e.target.value }; update("pricingOptions", p); }} placeholder="e.g. Sept 1, 2026" className="h-8 text-sm" />
+                                      <DatePickerField value={opt.finalPaymentDate} onChange={(v) => { const p = [...pricingOptions]; p[i] = { ...p[i], finalPaymentDate: v }; update("pricingOptions", p); }} placeholder="Select date" showTime={false} />
                                     </div>
                                     <div>
                                       <FieldLabel>Availability Note (optional)</FieldLabel>
