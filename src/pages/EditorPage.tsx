@@ -284,7 +284,7 @@ export default function EditorPage() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="travel-ghost" size="sm" onClick={copyShareLink}>
+          <Button variant="travel-ghost" size="sm" onClick={copyShareLink} disabled={!shareId}>
             <ExternalLink className="h-3.5 w-3.5 mr-1" /> Client Link
           </Button>
           <Button
@@ -297,7 +297,8 @@ export default function EditorPage() {
           <Button
             variant={mode === "preview" ? "travel" : "travel-outline"}
             size="sm"
-            onClick={() => setMode("preview")}
+            onClick={() => !shareId ? toast({ title: "Please save the trip first." }) : setMode("preview")}
+            disabled={!shareId}
           >
             <Eye className="h-3.5 w-3.5 mr-1" /> Preview
           </Button>
@@ -322,8 +323,8 @@ export default function EditorPage() {
             <Button
               variant="travel"
               size="default"
-              onClick={handlePublish}
-              disabled={publishing}
+              onClick={() => !shareId ? toast({ title: "Please save the trip first." }) : handlePublish()}
+              disabled={publishing || !shareId}
               className="px-5 font-semibold shadow-md"
             >
               <Send className="h-4 w-4 mr-1.5" /> {publishing ? "Publishing..." : "Save & Publish"}
