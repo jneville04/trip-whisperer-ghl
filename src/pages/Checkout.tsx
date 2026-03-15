@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { motion, type Easing } from "framer-motion";
-import { ArrowLeft, CheckCircle2, Loader2, Calendar, Users, Phone, Mail, Globe, CreditCard, MapPin, Shield, GripHorizontal } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Loader2, Calendar, Users, Phone, Mail, Globe, CreditCard, MapPin, GripHorizontal } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { buildBrandCssVars } from "@/lib/brand";
 import type { ProposalData, CheckoutSettings, PricingOption } from "@/types/proposal";
 import { createDefaultCheckout } from "@/types/proposal";
+import ClientNav from "@/components/ClientNav";
 
 const fmtCurrency = (val: string) => {
   const num = parseFloat(val.replace(/[^0-9.-]/g, ""));
@@ -187,20 +188,12 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
 
-      {/* ── Compact top bar ── */}
-      <div className="border-b border-border/30 bg-background sticky top-0 z-10">
-        <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-2.5 flex items-center justify-between gap-3">
-          <button onClick={goBack} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors font-body">
-            <ArrowLeft className="h-4 w-4" /> Back to Proposal
-          </button>
-          {brandData.logoUrl && (
-            <img src={brandData.logoUrl} alt="Agency logo" className="h-6 object-contain" />
-          )}
-          <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground font-body">
-            <Shield className="h-3.5 w-3.5" /> Secure Booking
-          </div>
-        </div>
-      </div>
+      <ClientNav
+        logoUrl={brandData.logoUrl}
+        agencyName={agent.agencyName}
+        showAgencyNameWithLogo={brandData.showAgencyNameWithLogo ?? true}
+        onBack={goBack}
+      />
 
       {/* ── Page header ── */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0} className="max-w-[1400px] mx-auto px-4 md:px-6 pt-4 pb-2 text-center">
