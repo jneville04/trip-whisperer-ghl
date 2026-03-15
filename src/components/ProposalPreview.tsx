@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion, type Easing } from "framer-motion";
-import { MapPin, Calendar, Users, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe, PlaneTakeoff, PlaneLanding, BedDouble, MessageSquare, CheckCircle2, Sparkles, Ship, Anchor, Bus } from "lucide-react";
+import { motion, type Easing, AnimatePresence } from "framer-motion";
+import { MapPin, Calendar, Users, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe, PlaneTakeoff, PlaneLanding, BedDouble, MessageSquare, CheckCircle2, Sparkles, Ship, Anchor, Bus, ChevronDown } from "lucide-react";
 import Lightbox from "@/components/Lightbox";
 import { parseAirportValue } from "@/components/AirportAutocomplete";
 import BookingModal from "@/components/BookingModal";
@@ -46,6 +46,115 @@ interface Props {
   shareId?: string;
   isEditor?: boolean;
   onEditorSubPage?: (page: EditorSubPage) => void;
+}
+
+function ItinerarySection({ data, fadeUp, openLightbox }: { data: ProposalData; fadeUp: any; openLightbox: (images: { src: string; alt?: string }[], index?: number) => void }) {
+  const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>(() => {
+    const initial: Record<string, boolean> = {};
+    data.days.forEach((day, i) => { initial[day.id] = i === 0; });
+    return initial;
+  });
+
+  const toggleDay = (dayId: string) => {
+    setExpandedDays(prev => ({ ...prev, [dayId]: !prev[dayId] }));
+  };
+
+  return (
+    <section id="itinerary" className="pb-20 pt-20 bg-card">
+      <div className="max-w-5xl mx-auto px-6">
+        <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-16">
+          <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Journey</p>
+          <h2 className="font-display text-4xl font-bold text-foreground">Day-by-Day Itinerary</h2>
+        </motion.div>
+        <div className="space-y-4">
+          {data.days.map((day, dayIdx) => {
+            const isOpen = expandedDays[day.id] ?? false;
+            return (
+              <motion.div key={day.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} custom={0}>
+                <button
+                  onClick={() => toggleDay(day.id)}
+                  className="w-full flex items-center justify-between gap-3 pb-4 pt-2 border-b border-border/40 cursor-pointer group text-left"
+                >
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-1">
+                      <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-body font-semibold">Day {dayIdx + 1}</span>
+                      {day.date && <span className="text-sm text-muted-foreground font-body flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> {day.date}</span>}
+                      {day.location && <span className="text-sm text-muted-foreground font-body flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {day.location}</span>}
+                    </div>
+                    <h3 className="font-display text-2xl sm:text-3xl font-bold text-foreground">{day.title}</h3>
+                  </div>
+                  <ChevronDown className={`h-5 w-5 text-muted-foreground shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                </button>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                      className="overflow-hidden"
+                    >
+                      <div className="space-y-8 pt-6 pb-4">
+                        {day.activities.map((act, actIdx) => {
+                          const hasImages = act.imageUrls && act.imageUrls.length > 0;
+                          const hasVideo = !!act.videoUrl;
+                          return (
+                            <div key={act.id || actIdx}>
+                              <div className={`flex flex-col ${hasImages || hasVideo ? 'sm:flex-row' : ''} gap-6`}>
+                                <div className="flex-1">
+                                  <div className="flex items-start gap-3">
+                                    <div className="relative z-10 mt-1.5 w-[13px] h-[13px] shrink-0 rounded-full border-2 border-primary bg-background" />
+                                    <div className="flex-1">
+                                      {act.time && (
+                                        <span className="text-xs font-semibold text-primary font-body flex items-center gap-1 mb-1"><Clock className="h-3 w-3" /> {act.time}</span>
+                                      )}
+                                      <p className="font-display text-lg font-bold text-foreground">{act.title || "Untitled Activity"}</p>
+                                      {act.description && <p className="text-sm text-muted-foreground font-body mt-1.5 leading-relaxed">{act.description}</p>}
+                                    </div>
+                                  </div>
+                                </div>
+                                {hasImages && (
+                                  <div
+                                    className="sm:w-[260px] md:w-[300px] h-[180px] sm:h-[200px] shrink-0 rounded-xl overflow-hidden cursor-pointer group relative"
+                                    onClick={() => openLightbox(act.imageUrls!.map((u) => ({ src: u, alt: act.title })), 0)}
+                                  >
+                                    <img
+                                      src={act.imageUrls![0]}
+                                      alt={act.title || "Activity photo"}
+                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                    />
+                                    {act.imageUrls!.length > 1 && (
+                                      <div className="absolute bottom-2 right-2 bg-foreground/60 text-background text-xs font-semibold px-2 py-1 rounded-full backdrop-blur-sm">
+                                        +{act.imageUrls!.length - 1} more
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                                {hasVideo && !hasImages && (
+                                  <div className="sm:w-[260px] md:w-[300px] shrink-0">
+                                    <VideoEmbed url={act.videoUrl!} title={act.title} thumbnailUrl={act.videoThumbnailUrl} className="rounded-xl" />
+                                  </div>
+                                )}
+                              </div>
+                              {hasVideo && hasImages && (
+                                <div className="mt-4">
+                                  <VideoEmbed url={act.videoUrl!} title={act.title} thumbnailUrl={act.videoThumbnailUrl} className="max-w-md" />
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
 }
 
 export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPage }: Props) {
@@ -917,85 +1026,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
           case "itinerary":
             if (data.days.length === 0) return null;
             return (
-              <section key="itinerary" id="itinerary" className="pb-20 pt-20 bg-card">
-                <div className="max-w-5xl mx-auto px-6">
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-16">
-                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Journey</p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">Day-by-Day Itinerary</h2>
-                  </motion.div>
-                  <div className="space-y-16">
-                    {data.days.map((day, dayIdx) => {
-                      const isLastDay = dayIdx === data.days.length - 1;
-                      return (
-                        <motion.div key={day.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} custom={0}>
-                          <div className="mb-5 border-b border-border/40 pb-4">
-                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-1">
-                              <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-body font-semibold">Day {dayIdx + 1}</span>
-                              {day.date && <span className="text-sm text-muted-foreground font-body flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> {day.date}</span>}
-                              {day.location && <span className="text-sm text-muted-foreground font-body flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {day.location}</span>}
-                            </div>
-                            <h3 className="font-display text-2xl sm:text-3xl font-bold text-foreground">{day.title}</h3>
-                          </div>
-                          <div className="space-y-8">
-                            {day.activities.map((act, actIdx) => {
-                              const hasImages = act.imageUrls && act.imageUrls.length > 0;
-                              const hasVideo = !!act.videoUrl;
-                              return (
-                                <div key={act.id || actIdx}>
-                                  <div className={`flex flex-col ${hasImages || hasVideo ? 'sm:flex-row' : ''} gap-6`}>
-                                    <div className="flex-1">
-                                      <div className="flex items-start gap-3">
-                                        <div className="relative z-10 mt-1.5 w-[13px] h-[13px] shrink-0 rounded-full border-2 border-primary bg-background" />
-                                        <div className="flex-1">
-                                          {act.time && (
-                                            <span className="text-xs font-semibold text-primary font-body flex items-center gap-1 mb-1"><Clock className="h-3 w-3" /> {act.time}</span>
-                                          )}
-                                          <p className="font-display text-lg font-bold text-foreground">{act.title || "Untitled Activity"}</p>
-                                          {act.description && <p className="text-sm text-muted-foreground font-body mt-1.5 leading-relaxed">{act.description}</p>}
-                                        </div>
-                                      </div>
-                                    </div>
-                                    {hasImages && (
-                                      <div
-                                        className="sm:w-[260px] md:w-[300px] h-[180px] sm:h-[200px] shrink-0 rounded-xl overflow-hidden cursor-pointer group relative"
-                                        onClick={() => openLightbox(act.imageUrls!.map((u) => ({ src: u, alt: act.title })), 0)}
-                                      >
-                                        <img
-                                          src={act.imageUrls![0]}
-                                          alt={act.title || "Activity photo"}
-                                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        />
-                                        {act.imageUrls!.length > 1 && (
-                                          <div className="absolute bottom-2 right-2 bg-foreground/60 text-background text-xs font-semibold px-2 py-1 rounded-full backdrop-blur-sm">
-                                            +{act.imageUrls!.length - 1} more
-                                          </div>
-                                        )}
-                                      </div>
-                                    )}
-                                    {hasVideo && !hasImages && (
-                                      <div className="sm:w-[260px] md:w-[300px] shrink-0">
-                                        <VideoEmbed url={act.videoUrl!} title={act.title} thumbnailUrl={act.videoThumbnailUrl} className="rounded-xl" />
-                                      </div>
-                                    )}
-                                  </div>
-                                  {hasVideo && hasImages && (
-                                    <div className="mt-4">
-                                      <VideoEmbed url={act.videoUrl!} title={act.title} thumbnailUrl={act.videoThumbnailUrl} className="max-w-md" />
-                                    </div>
-                                  )}
-                                </div>
-                              );
-                            })}
-                          </div>
-                          {!isLastDay && (
-                            <div className="mt-12 border-t border-border" />
-                          )}
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </section>
+              <ItinerarySection key="itinerary" data={data} fadeUp={fadeUp} openLightbox={openLightbox} />
             );
 
           case "inclusions":
