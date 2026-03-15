@@ -155,7 +155,7 @@ export default function ApprovePage() {
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
-      <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />
+      {!isEmbeddedInEditor && <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />}
       <div className="max-w-xl mx-auto px-6 py-16">
         <div className="text-center mb-10">
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
