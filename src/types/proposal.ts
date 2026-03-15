@@ -220,6 +220,7 @@ export interface CheckoutSettings {
   message: string;
   paymentOptions: PaymentOption[];
   customFormUrl: string;
+  formHeight: number;
   showTripSummary: boolean;
   confirmationMessage: string;
 }
@@ -696,6 +697,7 @@ export function createDefaultCheckout(): CheckoutSettings {
       { id: crypto.randomUUID(), type: "installments", label: "Payment Plan", description: "Split your payment into installments", installmentCount: 3, enabled: false },
     ],
     customFormUrl: "",
+    formHeight: 1200,
     showTripSummary: true,
     confirmationMessage: "Thank you for booking! Your travel advisor will send you a confirmation email with next steps shortly.",
   };
