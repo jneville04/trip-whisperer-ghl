@@ -61,6 +61,13 @@ export default function RevisionsPage() {
       if (proposalData?.brand) {
         setBrandData(proposalData.brand as BrandColors);
       }
+      if (proposalData?.agent) {
+        setAgentData({
+          agencyName: proposalData.agent.agencyName,
+          logoUrl: proposalData.brand?.logoUrl,
+          showAgencyNameWithLogo: proposalData.brand?.showAgencyNameWithLogo,
+        });
+      }
       setBrandLoading(false);
     };
 
