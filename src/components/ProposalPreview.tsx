@@ -1279,7 +1279,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                   return (
                     <div className="flex justify-between items-center py-3 border-b border-border/30">
                       <div className="flex items-center gap-2">
-                        <ShoppingCart className="h-4 w-4 text-primary" />
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
                         <span className="font-body text-foreground font-medium">{opt.name}</span>
                       </div>
                       <span className="font-body text-sm text-primary font-semibold">{opt.totalPrice ? fmtCurrency(opt.totalPrice) : ""}</span>
