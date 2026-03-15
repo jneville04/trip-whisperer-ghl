@@ -1930,13 +1930,6 @@ function CheckoutEditorSection({ data, onChange }: { data: ProposalData; onChang
                 <p className="text-[10px] text-muted-foreground mt-1">If set, embeds this form instead of the built-in checkout.</p>
               </div>
 
-              {checkout.customFormUrl && (
-                <div>
-                  <FieldLabel>Form Height (px)</FieldLabel>
-                  <Input type="number" value={checkout.formHeight || 1200} onChange={(e) => updateCheckout({ formHeight: parseInt(e.target.value) || 1200 })} placeholder="1200" className="h-8 text-sm" min={400} max={5000} step={100} />
-                  <p className="text-[10px] text-muted-foreground mt-1">Adjust to match your form length. Start with 1200 and increase if the form gets cut off.</p>
-                </div>
-              )}
 
               <div className="flex items-center justify-between">
                 <label className="text-xs font-medium text-muted-foreground font-body">Show Trip Summary</label>
