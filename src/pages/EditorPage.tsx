@@ -1,15 +1,18 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, PenLine, ArrowLeft, Save, ExternalLink, PanelLeftClose, PanelLeft, Send, HelpCircle, Mail, Phone } from "lucide-react";
+import { Eye, EyeOff, PenLine, ArrowLeft, Save, ExternalLink, PanelLeftClose, PanelLeft, Send, HelpCircle, Mail, Phone, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProposalEditor from "@/components/ProposalEditor";
-import ProposalPreview from "@/components/ProposalPreview";
+import ProposalPreview, { type EditorSubPage } from "@/components/ProposalPreview";
 import { defaultProposal, type ProposalData } from "@/types/proposal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { buildBrandCssVars } from "@/lib/brand";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { useAgentSettings } from "@/hooks/useAgentSettings";
+import CheckoutPage from "@/pages/Checkout";
+import ApprovePage from "@/pages/Approve";
+import RevisionsPage from "@/pages/Revisions";
 
 export default function EditorPage() {
   const { id } = useParams<{ id: string }>();
