@@ -322,11 +322,12 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
 
       {/* HERO */}
       {vis.hero && (() => {
-        // Collect all hero media assets
         const isVideo = data.heroMediaType === "video" && !!data.heroVideoUrl;
         const mainImg = data.heroImageUrl;
-        const sideImgs = (data.heroImageUrls || []).filter(Boolean);
-        const allReal = isVideo ? [data.heroVideoUrl!, ...sideImgs].filter(Boolean) : [mainImg, ...sideImgs].filter(Boolean) as string[];
+        const sideImgs = (data.heroImageUrls || []).filter(Boolean).slice(0, 2);
+        const allReal = isVideo
+          ? [data.heroVideoUrl!, ...sideImgs].filter(Boolean)
+          : [mainImg, ...sideImgs].filter(Boolean) as string[];
         const allHeroImgs = allReal.map((u, i) => ({
           src: u,
           alt: `${data.destination || "Hero"} ${i + 1}`,
@@ -335,6 +336,8 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
         const count = allReal.length;
 
         if (count === 0 && !isVideo) return null;
+
+        const HERO_HEIGHT = 380;
 
         const heroMediaBadge = count > 1 ? (
           <button
@@ -347,55 +350,27 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
           </button>
         ) : null;
 
-        const renderFirstAsset = (className: string, onClick?: () => void) => {
-          if (isVideo) {
-            return (
-              <div className={className} style={{ position: "relative" }}>
-                <VideoEmbed
-                  url={data.heroVideoUrl!}
-                  title={data.destination}
-                  thumbnailUrl={data.heroVideoThumbnailUrl}
-                  className="!rounded-none !aspect-auto h-full w-full"
-                  autoplay={!!data.heroAutoplay}
-                  muted={!!data.heroMuted}
-                />
-              </div>
-            );
-          }
-          return (
-            <div className={`${className} cursor-pointer`} onClick={onClick}>
-              <img
-                src={allReal[0]}
-                alt={data.destination}
-                className="w-full h-full object-cover"
-                
-                loading="eager"
-                decoding="async"
-              />
-            </div>
-          );
-        };
+        const renderVideo = (className = "") => (
+          <VideoEmbed
+            url={data.heroVideoUrl!}
+            title={data.destination}
+            thumbnailUrl={data.heroVideoThumbnailUrl}
+            className={`!rounded-none !aspect-auto w-full h-full ${className}`}
+            autoplay={!!data.heroAutoplay}
+            muted={!!data.heroMuted}
+          />
+        );
 
         return (
-          <section className="relative w-full" style={{ background: "#ffffff" }}>
-            {/* Mobile: single first asset only */}
-            <div className="md:hidden relative">
-              {isVideo ? (
-                <VideoEmbed
-                  url={data.heroVideoUrl!}
-                  title={data.destination}
-                  thumbnailUrl={data.heroVideoThumbnailUrl}
-                  className="!rounded-none w-full"
-                  autoplay={!!data.heroAutoplay}
-                  muted={!!data.heroMuted}
-                />
-              ) : (
-                <div className="cursor-pointer relative" onClick={() => openLightbox(allHeroImgs, 0)}>
+          <section className="relative w-full overflow-hidden" style={{ background: "#ffffff" }}>
+            {/* Mobile: first asset only */}
+            <div className="md:hidden relative" style={{ height: HERO_HEIGHT }}>
+              {isVideo ? renderVideo() : (
+                <div className="cursor-pointer relative h-full" onClick={() => openLightbox(allHeroImgs, 0)}>
                   <img
                     src={allReal[0]}
                     alt={data.destination}
-                    className="w-full object-cover"
-                    style={{ maxHeight: 400 }}
+                    className="w-full h-full object-cover"
                     loading="eager"
                     decoding="async"
                   />
@@ -405,53 +380,28 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
             </div>
 
             {/* Desktop */}
-            <div className="hidden md:block">
+            <div className="hidden md:block" style={{ height: HERO_HEIGHT }}>
               {count === 1 ? (
-                /* Single image — full width */
-                <div
-                  className="cursor-pointer"
-                  onClick={() => openLightbox(allHeroImgs, 0)}
-                >
-                  {isVideo ? (
-                    <VideoEmbed
-                      url={data.heroVideoUrl!}
-                      title={data.destination}
-                      thumbnailUrl={data.heroVideoThumbnailUrl}
-                      className="!rounded-none w-full"
-                      autoplay={!!data.heroAutoplay}
-                      muted={!!data.heroMuted}
-                    />
-                  ) : (
+                <div className="cursor-pointer h-full" onClick={() => openLightbox(allHeroImgs, 0)}>
+                  {isVideo ? renderVideo() : (
                     <img
                       src={allReal[0]}
                       alt={data.destination}
-                      className="w-full object-cover"
-                      style={{ maxHeight: 520 }}
+                      className="w-full h-full object-cover"
                       loading="eager"
                       decoding="async"
                     />
                   )}
                 </div>
               ) : count === 2 ? (
-                /* 2 images side by side */
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "65fr 35fr", gap: 6, height: "100%" }}>
                   {allReal.map((url, i) => (
                     <div key={i} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i)}>
-                      {i === 0 && isVideo ? (
-                        <VideoEmbed
-                          url={data.heroVideoUrl!}
-                          title={data.destination}
-                          thumbnailUrl={data.heroVideoThumbnailUrl}
-                          className="!rounded-none w-full h-full"
-                          autoplay={!!data.heroAutoplay}
-                          muted={!!data.heroMuted}
-                        />
-                      ) : (
+                      {i === 0 && isVideo ? renderVideo() : (
                         <img
                           src={url}
                           alt={`${data.destination} ${i + 1}`}
-                          className="w-full object-cover"
-                          style={{ height: 420 }}
+                          className="w-full h-full object-cover"
                           loading={i === 0 ? "eager" : "lazy"}
                           decoding="async"
                         />
@@ -460,20 +410,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                   ))}
                 </div>
               ) : (
-                /* 3+ images: main left (2fr) + 2 stacked right (1fr) with white gaps */
-                <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 6, height: 480 }}>
-                  {/* Main image */}
+                <div style={{ display: "grid", gridTemplateColumns: "65fr 35fr", gap: 6, height: "100%" }}>
                   <div className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
-                    {isVideo ? (
-                      <VideoEmbed
-                        url={data.heroVideoUrl!}
-                        title={data.destination}
-                        thumbnailUrl={data.heroVideoThumbnailUrl}
-                        className="!rounded-none w-full h-full"
-                        autoplay={!!data.heroAutoplay}
-                        muted={!!data.heroMuted}
-                      />
-                    ) : (
+                    {isVideo ? renderVideo() : (
                       <img
                         src={allReal[0]}
                         alt={data.destination}
@@ -483,7 +422,6 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                       />
                     )}
                   </div>
-                  {/* Two stacked equal images */}
                   <div style={{ display: "grid", gridTemplateRows: "1fr 1fr", gap: 6, height: "100%" }}>
                     {allReal.slice(1, 3).map((url, i) => (
                       <div key={i} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i + 1)}>
