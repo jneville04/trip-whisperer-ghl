@@ -37,6 +37,7 @@ export default function RevisionsPage() {
   const navState = location.state as { brand?: BrandColors; returnTo?: string } | null;
   const initialBrand = navState?.brand;
   const returnTo = navState?.returnTo;
+  const isEmbeddedInEditor = location.pathname.includes("/editor");
 
   const [brandData, setBrandData] = useState<BrandColors>(initialBrand || {});
   const [brandLoading, setBrandLoading] = useState(Boolean(shareId) && !initialBrand);
