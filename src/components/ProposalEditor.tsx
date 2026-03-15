@@ -527,7 +527,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={sectionOrder} strategy={verticalListSortingStrategy}>
-          {sectionOrder.map((key) => (
+          {sectionOrder.filter((k) => k !== "agent").map((key) => (
             <SortableSection key={key} id={key}>
               {(() => {
                 switch (key) {
