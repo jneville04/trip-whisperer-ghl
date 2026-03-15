@@ -430,7 +430,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                 /* 3+ assets: 2fr 1fr grid */
                 <div
                   className="overflow-hidden bg-muted"
-                  style={{ display: "grid", gridTemplateColumns: "2fr 1fr", minHeight: 480 }}
+                  style={{ display: "grid", gridTemplateColumns: "2fr 1fr", height: "calc(100vh - 64px)", maxHeight: 480, minHeight: 320 }}
                 >
                   <div className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
                     {isVideo ? (
