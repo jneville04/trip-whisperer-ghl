@@ -258,7 +258,7 @@ export default function EditorPage() {
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden" style={appBrandVars as React.CSSProperties}>
       {/* Top Bar */}
-      <div className="h-14 border-b border-border/50 flex items-center justify-between px-4 sm:px-6 bg-card shrink-0">
+      <div className="h-16 border-b border-border flex items-center justify-between px-4 sm:px-6 bg-card shadow-sm shrink-0">
         <div className="flex items-center gap-3">
           <Button variant="travel-ghost" size="sm" onClick={() => navigate("/dashboard")}>
             <ArrowLeft className="h-3.5 w-3.5 mr-1" /> Library
