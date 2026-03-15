@@ -528,11 +528,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     </div>
                                     <div>
                                       <FieldLabel>From</FieldLabel>
-                                      <Input value={leg.departureAirport} onChange={(e) => updateFlightLeg(oi, li, "departureAirport", e.target.value)} placeholder="SFO – San Francisco" className="h-7 text-xs" />
+                                      <LocationAutocomplete value={leg.departureAirport} onChange={(val) => updateFlightLeg(oi, li, "departureAirport", val)} placeholder="SFO – San Francisco" className="h-7 text-xs" />
                                     </div>
                                     <div>
                                       <FieldLabel>To</FieldLabel>
-                                      <Input value={leg.arrivalAirport} onChange={(e) => updateFlightLeg(oi, li, "arrivalAirport", e.target.value)} placeholder="LIS – Lisbon" className="h-7 text-xs" />
+                                      <LocationAutocomplete value={leg.arrivalAirport} onChange={(val) => updateFlightLeg(oi, li, "arrivalAirport", val)} placeholder="LIS – Lisbon" className="h-7 text-xs" />
                                     </div>
                                     <div>
                                       <FieldLabel>Date</FieldLabel>
