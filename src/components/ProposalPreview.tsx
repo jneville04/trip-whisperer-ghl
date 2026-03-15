@@ -1823,9 +1823,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                     className="text-center mb-12"
                   >
                     <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
-                      Everything Taken Care Of
+                      {ct.inclusions?.subtitle || "Everything Taken Care Of"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">What's Included</h2>
+                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.inclusions?.title || "What's Included"}</h2>
                   </motion.div>
                   <motion.div
                     variants={fadeUp}
