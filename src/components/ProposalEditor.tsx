@@ -351,7 +351,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
               <Input value={data.subtitle} onChange={(e) => update("subtitle", e.target.value)} placeholder="e.g. Lisbon · Porto · Algarve" />
             </div>
           </div>
-          </div>
+          <div>
             <FieldLabel>Hero Media</FieldLabel>
             <div className="flex gap-2 mt-1 mb-2">
               <Button type="button" size="sm" variant={(!data.heroMediaType || data.heroMediaType === "photos") ? "default" : "outline"} className="text-xs h-7" onClick={() => update("heroMediaType", "photos")}>
