@@ -250,7 +250,7 @@ export default function EditorPage() {
             </span>
           </span>
           {editorSubPage && (
-            <Button variant="travel-outline" size="sm" onClick={() => setEditorSubPage(null)} className="ml-2">
+            <Button variant="travel-outline" size="sm" onClick={() => handleEditorSubPage(null)} className="ml-2">
               <X className="h-3.5 w-3.5 mr-1" /> Back to Preview
             </Button>
           )}
