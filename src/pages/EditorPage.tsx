@@ -322,11 +322,12 @@ export default function EditorPage() {
           ) : (
             <Button
               variant="travel"
-              size="sm"
+              size="default"
               onClick={handlePublish}
               disabled={publishing}
+              className="px-5 font-semibold shadow-md"
             >
-              <Send className="h-3.5 w-3.5 mr-1" /> {publishing ? "Publishing..." : "Save & Publish"}
+              <Send className="h-4 w-4 mr-1.5" /> {publishing ? "Publishing..." : "Save & Publish"}
             </Button>
           )}
         </div>
