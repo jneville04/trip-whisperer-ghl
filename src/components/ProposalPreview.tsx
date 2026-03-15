@@ -1487,9 +1487,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                     className="text-center mb-12"
                   >
                     <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
-                      Ground Transport
+                      {ct.busTrips?.subtitle || "Ground Transport"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">Bus Trips</h2>
+                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.busTrips?.title || "Bus Trips"}</h2>
                   </motion.div>
                   <div className="space-y-10">
                     {busTrips.map((trip) => {
