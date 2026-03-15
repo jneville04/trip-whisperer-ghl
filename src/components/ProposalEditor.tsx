@@ -48,7 +48,10 @@ function CollapsibleSection({
   sectionKey,
   visible,
   onToggleVisible,
-  dragHandleProps,
+  sectionCustomTitle,
+  sectionCustomSubtitle,
+  onCustomTitleChange,
+  onCustomSubtitleChange,
 }: {
   title: string;
   children: React.ReactNode;
@@ -56,18 +59,16 @@ function CollapsibleSection({
   sectionKey?: keyof SectionVisibility;
   visible?: boolean;
   onToggleVisible?: () => void;
-  dragHandleProps?: Record<string, any>;
+  sectionCustomTitle?: string;
+  sectionCustomSubtitle?: string;
+  onCustomTitleChange?: (val: string) => void;
+  onCustomSubtitleChange?: (val: string) => void;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <Card className={`border-border/50 ${visible === false ? "opacity-50" : ""}`}>
       <CardHeader className="py-4">
         <div className="flex items-center justify-between">
-          {dragHandleProps && (
-            <button {...dragHandleProps} className="cursor-grab active:cursor-grabbing p-1 -ml-1 mr-1 text-muted-foreground/40 hover:text-muted-foreground touch-none">
-              <GripVertical className="h-4 w-4" />
-            </button>
-          )}
           <div className="flex items-center gap-2 cursor-pointer flex-1" onClick={() => setOpen(!open)}>
             <CardTitle className="text-base font-display">{title}</CardTitle>
             {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
@@ -83,7 +84,35 @@ function CollapsibleSection({
           )}
         </div>
       </CardHeader>
-      {open && <CardContent className="pt-0">{children}</CardContent>}
+      {open && (
+        <CardContent className="pt-0">
+          {/* Section Title & Subtitle (client-facing) */}
+          {onCustomTitleChange && (
+            <div className="mb-4 space-y-2 p-3 rounded-lg bg-muted/30 border border-border/30">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold font-body">Client-Facing Labels</p>
+              <div>
+                <FieldLabel>Section Title</FieldLabel>
+                <Input
+                  value={sectionCustomTitle || ""}
+                  onChange={(e) => onCustomTitleChange(e.target.value)}
+                  placeholder="Default title"
+                  className="h-7 text-xs"
+                />
+              </div>
+              <div>
+                <FieldLabel>Section Subtitle</FieldLabel>
+                <Input
+                  value={sectionCustomSubtitle || ""}
+                  onChange={(e) => onCustomSubtitleChange?.(e.target.value)}
+                  placeholder="Optional subtitle"
+                  className="h-7 text-xs"
+                />
+              </div>
+            </div>
+          )}
+          {children}
+        </CardContent>
+      )}
     </Card>
   );
 }
