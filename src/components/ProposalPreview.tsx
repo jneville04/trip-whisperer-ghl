@@ -449,7 +449,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                         src={allReal[0]}
                         alt={data.destination}
                         className="w-full h-full object-cover"
-                        style={{ objectPosition: "center 25%" }}
+                        
                         loading="eager"
                         decoding="async"
                       />
