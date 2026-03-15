@@ -785,7 +785,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                                   {stops.map((stop, si) => (
                                     <div key={stop.id || si} className="relative pl-6 py-2">
                                       <div className="absolute left-0 top-3 w-3 h-3 rounded-full bg-primary border-2 border-background" />
-                                      <p className="text-sm font-body font-semibold text-foreground">{stop.location}</p>
+                                      <p className="text-sm font-body font-semibold text-foreground">{stop.locationAddress ? [stop.locationAddress.name, stop.locationAddress.address, stop.locationAddress.city, [stop.locationAddress.state, stop.locationAddress.zip].filter(Boolean).join(" ")].filter(Boolean).join(", ") : stop.location}</p>
                                       <div className="flex gap-3 text-xs text-muted-foreground font-body mt-0.5">
                                         {stop.arrivalTime && <span>Arrive: {stop.arrivalTime}</span>}
                                         {stop.departureTime && <span>Depart: {stop.departureTime}</span>}
@@ -822,13 +822,13 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                               </div>
                             )}
                             <div className="flex items-center gap-6 mt-5 pt-4 border-t border-border/30 text-sm text-muted-foreground font-body flex-wrap">
-                              {trip.pickupLocation && <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> Pickup: {trip.pickupLocation}</span>}
+                              {(trip.pickupAddress || trip.pickupLocation) && <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> Pickup: {trip.pickupAddress ? [trip.pickupAddress.name, trip.pickupAddress.address, trip.pickupAddress.city, [trip.pickupAddress.state, trip.pickupAddress.zip].filter(Boolean).join(" ")].filter(Boolean).join(", ") : trip.pickupLocation}</span>}
                               {trip.pickupDate && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {trip.pickupDate}</span>}
                               {trip.pickupTime && <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> {trip.pickupTime}</span>}
                             </div>
-                            {(trip.dropoffLocation || trip.dropoffDate || trip.dropoffTime) && (
+                            {(trip.dropoffLocation || trip.dropoffAddress || trip.dropoffDate || trip.dropoffTime) && (
                               <div className="flex items-center gap-6 mt-2 text-sm text-muted-foreground font-body flex-wrap">
-                                {trip.dropoffLocation && <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> Dropoff: {trip.dropoffLocation}</span>}
+                                {(trip.dropoffAddress || trip.dropoffLocation) && <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> Dropoff: {trip.dropoffAddress ? [trip.dropoffAddress.name, trip.dropoffAddress.address, trip.dropoffAddress.city, [trip.dropoffAddress.state, trip.dropoffAddress.zip].filter(Boolean).join(" ")].filter(Boolean).join(", ") : trip.dropoffLocation}</span>}
                                 {trip.dropoffDate && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {trip.dropoffDate}</span>}
                                 {trip.dropoffTime && <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> {trip.dropoffTime}</span>}
                               </div>

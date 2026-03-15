@@ -109,14 +109,24 @@ export interface CruiseShip {
   agentPricing?: AgentPricing;
 }
 
+export interface LocationAddress {
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+}
+
 export interface BusTrip {
   id: string;
   busCompany: string;
   routeName: string;
   pickupLocation: string;
+  pickupAddress?: LocationAddress;
   pickupTime: string;
   pickupDate: string;
   dropoffLocation: string;
+  dropoffAddress?: LocationAddress;
   dropoffTime: string;
   dropoffDate: string;
   duration: string;
@@ -138,6 +148,7 @@ export interface BusTrip {
 export interface BusStop {
   id: string;
   location: string;
+  locationAddress?: LocationAddress;
   arrivalTime: string;
   departureTime: string;
   notes: string;

@@ -6,6 +6,9 @@ import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } 
 import { CSS } from "@dnd-kit/utilities";
 
 import DatePickerField from "@/components/DatePickerField";
+import TimePickerDropdown from "@/components/TimePickerDropdown";
+import LocationAutocomplete from "@/components/LocationAutocomplete";
+import AddressFields, { type AddressData } from "@/components/AddressFields";
 import ImageUploadField from "@/components/ImageUploadField";
 import SortableImageGrid from "@/components/SortableImageGrid";
 import HotelSearchDialog from "@/components/HotelSearchDialog";
@@ -17,7 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import RichTextEditor from "@/components/RichTextEditor";
 import AgentPricingFields from "@/components/AgentPricingFields";
-import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, SectionKey, CheckoutSettings, PaymentOption } from "@/types/proposal";
+import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, BusStop, SectionKey, CheckoutSettings, PaymentOption, LocationAddress } from "@/types/proposal";
 import { createActivity, createDay, createPricingLine, createFlightLeg, createFlightOption, createAccommodation, createCruiseShip, createBusTrip, createBusStop, defaultSectionOrder, createDefaultCheckout } from "@/types/proposal";
 import { normalizeHexInput } from "@/lib/brand";
 import { useAgentSettings } from "@/hooks/useAgentSettings";
@@ -341,7 +344,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <FieldLabel>Destination</FieldLabel>
-              <Input value={data.destination} onChange={(e) => update("destination", e.target.value)} placeholder="e.g. Portugal" />
+              <LocationAutocomplete value={data.destination} onChange={(val) => update("destination", val)} placeholder="e.g. Portugal" />
             </div>
             <div>
               <FieldLabel>Subtitle</FieldLabel>
@@ -525,11 +528,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     </div>
                                     <div>
                                       <FieldLabel>From</FieldLabel>
-                                      <Input value={leg.departureAirport} onChange={(e) => updateFlightLeg(oi, li, "departureAirport", e.target.value)} placeholder="SFO – San Francisco" className="h-7 text-xs" />
+                                      <LocationAutocomplete value={leg.departureAirport} onChange={(val) => updateFlightLeg(oi, li, "departureAirport", val)} placeholder="SFO – San Francisco" className="h-7 text-xs" />
                                     </div>
                                     <div>
                                       <FieldLabel>To</FieldLabel>
-                                      <Input value={leg.arrivalAirport} onChange={(e) => updateFlightLeg(oi, li, "arrivalAirport", e.target.value)} placeholder="LIS – Lisbon" className="h-7 text-xs" />
+                                      <LocationAutocomplete value={leg.arrivalAirport} onChange={(val) => updateFlightLeg(oi, li, "arrivalAirport", val)} placeholder="LIS – Lisbon" className="h-7 text-xs" />
                                     </div>
                                     <div>
                                       <FieldLabel>Date</FieldLabel>
@@ -538,55 +541,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     <div className="grid grid-cols-2 gap-1">
                                       <div>
                                         <FieldLabel>Depart</FieldLabel>
-                                        <input
-                                          type="time"
-                                          value={(() => {
-                                            const m = leg.departureTime?.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-                                            if (!m) return '';
-                                            let h = parseInt(m[1]);
-                                            const period = m[3].toUpperCase();
-                                            if (period === 'AM' && h === 12) h = 0;
-                                            else if (period === 'PM' && h !== 12) h += 12;
-                                            return `${String(h).padStart(2, '0')}:${m[2]}`;
-                                          })()}
-                                          onChange={(e) => {
-                                            const val = e.target.value;
-                                            if (!val) { updateFlightLeg(oi, li, "departureTime", ""); return; }
-                                            const [hStr, mStr] = val.split(':');
-                                            let h = parseInt(hStr);
-                                            const period = h >= 12 ? 'PM' : 'AM';
-                                            if (h === 0) h = 12;
-                                            else if (h > 12) h -= 12;
-                                            updateFlightLeg(oi, li, "departureTime", `${h}:${mStr} ${period}`);
-                                          }}
-                                          className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body w-full"
-                                        />
+                                        <TimePickerDropdown value={leg.departureTime} onChange={(val) => updateFlightLeg(oi, li, "departureTime", val)} />
                                       </div>
                                       <div>
                                         <FieldLabel>Arrive</FieldLabel>
-                                        <input
-                                          type="time"
-                                          value={(() => {
-                                            const m = leg.arrivalTime?.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-                                            if (!m) return '';
-                                            let h = parseInt(m[1]);
-                                            const period = m[3].toUpperCase();
-                                            if (period === 'AM' && h === 12) h = 0;
-                                            else if (period === 'PM' && h !== 12) h += 12;
-                                            return `${String(h).padStart(2, '0')}:${m[2]}`;
-                                          })()}
-                                          onChange={(e) => {
-                                            const val = e.target.value;
-                                            if (!val) { updateFlightLeg(oi, li, "arrivalTime", ""); return; }
-                                            const [hStr, mStr] = val.split(':');
-                                            let h = parseInt(hStr);
-                                            const period = h >= 12 ? 'PM' : 'AM';
-                                            if (h === 0) h = 12;
-                                            else if (h > 12) h -= 12;
-                                            updateFlightLeg(oi, li, "arrivalTime", `${h}:${mStr} ${period}`);
-                                          }}
-                                          className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body w-full"
-                                        />
+                                        <TimePickerDropdown value={leg.arrivalTime} onChange={(val) => updateFlightLeg(oi, li, "arrivalTime", val)} />
                                       </div>
                                     </div>
                                   </div>
@@ -675,12 +634,12 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     <TabsContent value="general" className="p-3 space-y-2 mt-0">
                                       <div>
                                         <FieldLabel>Hotel Name</FieldLabel>
-                                        <Input value={acc.hotelName} onChange={(e) => updateAccommodation(i, "hotelName", e.target.value)} placeholder="Four Seasons Hotel" className="h-8 text-xs" />
+                                        <LocationAutocomplete value={acc.hotelName} onChange={(val) => updateAccommodation(i, "hotelName", val)} placeholder="Four Seasons Hotel" className="h-8 text-xs" suggestions={[]} />
                                       </div>
                                       <div className="grid grid-cols-2 gap-2">
                                         <div>
                                           <FieldLabel>Location</FieldLabel>
-                                          <Input value={acc.location} onChange={(e) => updateAccommodation(i, "location", e.target.value)} placeholder="Lisbon" className="h-8 text-xs" />
+                                          <LocationAutocomplete value={acc.location} onChange={(val) => updateAccommodation(i, "location", val)} placeholder="Lisbon" className="h-8 text-xs" />
                                         </div>
                                         <div>
                                           <FieldLabel>Room Type</FieldLabel>
@@ -942,11 +901,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                       <div className="grid grid-cols-2 gap-2">
                                         <div>
                                           <FieldLabel>Embarkation Port</FieldLabel>
-                                          <Input value={ship.embarkationPort} onChange={(e) => updateShipField("embarkationPort", e.target.value)} placeholder="Miami, FL" className="h-8 text-xs" />
+                                          <LocationAutocomplete value={ship.embarkationPort} onChange={(val) => updateShipField("embarkationPort", val)} placeholder="Miami, FL" className="h-8 text-xs" />
                                         </div>
                                         <div>
                                           <FieldLabel>Disembarkation Port</FieldLabel>
-                                          <Input value={ship.disembarkationPort} onChange={(e) => updateShipField("disembarkationPort", e.target.value)} placeholder="Miami, FL" className="h-8 text-xs" />
+                                          <LocationAutocomplete value={ship.disembarkationPort} onChange={(val) => updateShipField("disembarkationPort", val)} placeholder="Miami, FL" className="h-8 text-xs" />
                                         </div>
                                       </div>
                                       <div className="grid grid-cols-2 gap-2">
@@ -1164,65 +1123,76 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                         onChange={(ap) => { const t = [...busTrips]; t[i] = { ...t[i], agentPricing: ap }; update("busTrips", t); }}
                                       />
                                     </TabsContent>
-                                    <TabsContent value="schedule" className="p-3 space-y-2 mt-0">
-                                      <div className="grid grid-cols-2 gap-2">
+                                    <TabsContent value="schedule" className="p-3 space-y-3 mt-0">
+                                      <div className="grid grid-cols-2 gap-3">
                                         <div>
                                           <FieldLabel>Pickup Location</FieldLabel>
-                                          <Input value={trip.pickupLocation} onChange={(e) => updateTripField("pickupLocation", e.target.value)} placeholder="Lisbon Central Bus Station" className="h-8 text-xs" />
+                                          <AddressFields
+                                            value={trip.pickupAddress || { name: trip.pickupLocation, address: "", city: "", state: "", zip: "" }}
+                                            onChange={(addr) => {
+                                              updateTripField("pickupAddress", addr);
+                                              updateTripField("pickupLocation", addr.name);
+                                            }}
+                                            nameLabel="Location Name"
+                                            namePlaceholder="Lisbon Central Bus Station"
+                                            compact
+                                          />
                                         </div>
                                         <div>
                                           <FieldLabel>Dropoff Location</FieldLabel>
-                                          <Input value={trip.dropoffLocation} onChange={(e) => updateTripField("dropoffLocation", e.target.value)} placeholder="Porto Bus Terminal" className="h-8 text-xs" />
+                                          <AddressFields
+                                            value={trip.dropoffAddress || { name: trip.dropoffLocation, address: "", city: "", state: "", zip: "" }}
+                                            onChange={(addr) => {
+                                              updateTripField("dropoffAddress", addr);
+                                              updateTripField("dropoffLocation", addr.name);
+                                            }}
+                                            nameLabel="Location Name"
+                                            namePlaceholder="Porto Bus Terminal"
+                                            compact
+                                          />
                                         </div>
                                       </div>
                                       <div className="grid grid-cols-2 gap-2">
                                         <div>
                                           <FieldLabel>Pickup Date</FieldLabel>
-                                          <DatePickerField value={trip.pickupDate} onChange={(val) => updateTripField("pickupDate", val)} placeholder="Pickup date" />
+                                          <DatePickerField value={trip.pickupDate} onChange={(val) => updateTripField("pickupDate", val)} placeholder="Pickup date" showTime timeValue={trip.pickupTime} onTimeChange={(val) => updateTripField("pickupTime", val)} />
                                         </div>
                                         <div>
                                           <FieldLabel>Dropoff Date</FieldLabel>
-                                          <DatePickerField value={trip.dropoffDate} onChange={(val) => updateTripField("dropoffDate", val)} placeholder="Dropoff date" />
-                                        </div>
-                                      </div>
-                                      <div className="grid grid-cols-2 gap-2">
-                                        <div>
-                                          <FieldLabel>Pickup Time</FieldLabel>
-                                          <Input value={trip.pickupTime} onChange={(e) => updateTripField("pickupTime", e.target.value)} placeholder="8:00 AM" className="h-8 text-xs" />
-                                        </div>
-                                        <div>
-                                          <FieldLabel>Dropoff Time</FieldLabel>
-                                          <Input value={trip.dropoffTime} onChange={(e) => updateTripField("dropoffTime", e.target.value)} placeholder="11:30 AM" className="h-8 text-xs" />
+                                          <DatePickerField value={trip.dropoffDate} onChange={(val) => updateTripField("dropoffDate", val)} placeholder="Dropoff date" showTime timeValue={trip.dropoffTime} onTimeChange={(val) => updateTripField("dropoffTime", val)} />
                                         </div>
                                       </div>
                                     </TabsContent>
                                     <TabsContent value="stops" className="p-3 space-y-2 mt-0">
                                       {tripStops.map((stop, si) => (
-                                        <div key={stop.id} className="p-2 border border-border/30 rounded-lg space-y-1.5 relative">
+                                        <div key={stop.id} className="p-2.5 border border-border/30 rounded-lg space-y-2 relative">
                                           <button type="button" className="absolute top-1 right-1 text-destructive" onClick={() => {
                                             const s = tripStops.filter((_, idx) => idx !== si);
                                             updateTripField("stops", s);
                                           }}><X className="h-3 w-3" /></button>
-                                          <div className="grid grid-cols-3 gap-2">
-                                            <div className="col-span-3">
-                                              <FieldLabel>Stop Location</FieldLabel>
-                                              <Input value={stop.location} onChange={(e) => {
-                                                const s = [...tripStops]; s[si] = { ...s[si], location: e.target.value }; updateTripField("stops", s);
-                                              }} placeholder="Coimbra Bus Station" className="h-7 text-xs" />
-                                            </div>
-                                          </div>
+                                          <AddressFields
+                                            value={stop.locationAddress || { name: stop.location, address: "", city: "", state: "", zip: "" }}
+                                            onChange={(addr) => {
+                                              const s = [...tripStops];
+                                              s[si] = { ...s[si], locationAddress: addr, location: addr.name };
+                                              updateTripField("stops", s);
+                                            }}
+                                            nameLabel="Stop Name"
+                                            namePlaceholder="Coimbra Bus Station"
+                                            compact
+                                          />
                                           <div className="grid grid-cols-3 gap-2">
                                             <div>
                                               <FieldLabel>Arrival</FieldLabel>
-                                              <Input value={stop.arrivalTime} onChange={(e) => {
-                                                const s = [...tripStops]; s[si] = { ...s[si], arrivalTime: e.target.value }; updateTripField("stops", s);
-                                              }} placeholder="9:30 AM" className="h-7 text-xs" />
+                                              <TimePickerDropdown value={stop.arrivalTime} onChange={(val) => {
+                                                const s = [...tripStops]; s[si] = { ...s[si], arrivalTime: val }; updateTripField("stops", s);
+                                              }} />
                                             </div>
                                             <div>
                                               <FieldLabel>Departure</FieldLabel>
-                                              <Input value={stop.departureTime} onChange={(e) => {
-                                                const s = [...tripStops]; s[si] = { ...s[si], departureTime: e.target.value }; updateTripField("stops", s);
-                                              }} placeholder="9:45 AM" className="h-7 text-xs" />
+                                              <TimePickerDropdown value={stop.departureTime} onChange={(val) => {
+                                                const s = [...tripStops]; s[si] = { ...s[si], departureTime: val }; updateTripField("stops", s);
+                                              }} />
                                             </div>
                                             <div>
                                               <FieldLabel>Notes</FieldLabel>
@@ -1345,7 +1315,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                               <div className="mb-3">
                                 <div className="mb-2">
                                   <FieldLabel>Location</FieldLabel>
-                                  <Input value={day.location} onChange={(e) => updateDay(dayIdx, { ...day, location: e.target.value })} placeholder="Lisbon" className="h-8 text-sm" />
+                                  <LocationAutocomplete value={day.location} onChange={(val) => updateDay(dayIdx, { ...day, location: val })} placeholder="Lisbon" className="h-8 text-sm" />
                                 </div>
                               </div>
                               <div className="space-y-2">
@@ -1359,29 +1329,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                             <option key={t.value} value={t.value}>{t.label}</option>
                                           ))}
                                         </select>
-                                        <input
-                                          type="time"
-                                          value={(() => {
-                                            const m = act.time?.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-                                            if (!m) return '';
-                                            let h = parseInt(m[1]);
-                                            const period = m[3].toUpperCase();
-                                            if (period === 'AM' && h === 12) h = 0;
-                                            else if (period === 'PM' && h !== 12) h += 12;
-                                            return `${String(h).padStart(2, '0')}:${m[2]}`;
-                                          })()}
-                                          onChange={(e) => {
-                                            const val = e.target.value;
-                                            if (!val) { updateActivity(dayIdx, actIdx, "time", ""); return; }
-                                            const [hStr, mStr] = val.split(':');
-                                            let h = parseInt(hStr);
-                                            const period = h >= 12 ? 'PM' : 'AM';
-                                            if (h === 0) h = 12;
-                                            else if (h > 12) h -= 12;
-                                            updateActivity(dayIdx, actIdx, "time", `${h}:${mStr} ${period}`);
-                                          }}
-                                          className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body w-[120px]"
-                                        />
+                                        <TimePickerDropdown value={act.time} onChange={(val) => updateActivity(dayIdx, actIdx, "time", val)} />
                                       </div>
                                       <div className="flex items-center gap-0.5">
                                         <button onClick={() => {
