@@ -1695,7 +1695,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
                   case "terms":
                     return (
-                      <CollapsibleSection title={sectionTitles.terms} defaultOpen={false} sectionKey="terms" visible={vis.terms} onToggleVisible={() => toggleSection("terms")} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.terms} defaultOpen={false} sectionKey="terms" visible={vis.terms} onToggleVisible={() => toggleSection("terms")} sectionCustomTitle={customTitles.terms?.title} sectionCustomSubtitle={customTitles.terms?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("terms", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("terms", v)}>
                         <div className="space-y-3">
                           {([
                             { key: "showCancellation" as const, field: "cancellationPolicy" as const, label: "Cancellation Policy", placeholder: "Cancellation and refund policy details..." },
