@@ -1121,7 +1121,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
                   case "busTrips":
                     return (
-                      <CollapsibleSection title={sectionTitles.busTrips} sectionKey="busTrips" visible={vis.busTrips} onToggleVisible={() => toggleSection("busTrips")} defaultOpen={false} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.busTrips} sectionKey="busTrips" visible={vis.busTrips} onToggleVisible={() => toggleSection("busTrips")} defaultOpen={false} sectionCustomTitle={customTitles.busTrips?.title} sectionCustomSubtitle={customTitles.busTrips?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("busTrips", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("busTrips", v)}>
                         <div className="space-y-4">
                           {busTrips.map((trip, i) => {
                             const tripAmenities = trip.amenities || [];
