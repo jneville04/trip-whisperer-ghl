@@ -299,13 +299,26 @@ export default function CheckoutPage() {
       {/* ── SECTION 2: Booking Form ── */}
       <motion.section variants={fadeUp} initial="hidden" animate="visible" custom={2} className="max-w-[1400px] mx-auto px-4 md:px-6 pb-6">
         {iframeUrl ? (
-          <iframe
-            src={iframeUrl}
-            className="w-full bg-transparent rounded-xl"
-            style={{ height: `${checkout.formHeight || 1200}px`, border: "none" }}
-            title="Booking Form"
-            allow="payment"
-          />
+          <div className="relative">
+            <iframe
+              src={iframeUrl}
+              className="w-full bg-transparent rounded-xl"
+              style={{ height: `${localFormHeight}px`, border: "none" }}
+              title="Booking Form"
+              allow="payment"
+            />
+            {isEditorContext && (
+              <div
+                onMouseDown={handleDragStart}
+                className="absolute bottom-0 left-0 right-0 flex items-center justify-center h-6 cursor-row-resize group hover:bg-primary/10 transition-colors rounded-b-xl border-t border-dashed border-primary/30"
+              >
+                <GripHorizontal className="h-4 w-4 text-primary/50 group-hover:text-primary transition-colors" />
+                <span className="ml-2 text-[10px] text-primary/50 group-hover:text-primary font-body transition-colors">
+                  Drag to resize · {localFormHeight}px
+                </span>
+              </div>
+            )}
+          </div>
         ) : (
           <div className="bg-card rounded-xl border border-border/30 px-6 py-12 text-center">
             <h2 className="font-display text-2xl font-bold text-foreground mb-3">Ready to Book?</h2>
