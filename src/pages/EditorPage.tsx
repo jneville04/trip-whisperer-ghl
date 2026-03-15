@@ -71,7 +71,7 @@ export default function EditorPage() {
     draft: { label: "Draft", badgeClassName: "text-muted-foreground bg-muted/80" },
     published: { label: "Published", badgeClassName: "text-primary-foreground bg-primary/90" },
     sent: { label: "Published", badgeClassName: "text-primary-foreground bg-primary/90" },
-    unpublished: { label: "Unpublished", badgeClassName: "text-secondary-foreground bg-secondary/90" },
+    unpublished: { label: "Draft", badgeClassName: "text-muted-foreground bg-muted/80" },
   };
 
   const normalizeProposalStatus = (status?: string | null) => {
