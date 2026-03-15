@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { motion, type Easing } from "framer-motion";
-import { ArrowLeft, CheckCircle2, Loader2, Calendar, Users, Phone, Mail, Globe, CreditCard, MapPin } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Loader2, Calendar, Users, Phone, Mail, Globe, CreditCard, MapPin, GripHorizontal } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { buildBrandCssVars } from "@/lib/brand";
 import type { ProposalData, CheckoutSettings, PricingOption } from "@/types/proposal";
