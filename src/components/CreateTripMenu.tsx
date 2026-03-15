@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Plus, BookOpen, Users, ChevronDown } from "lucide-react";
+import { Plus, BookOpen, Users } from "lucide-react";
 import { defaultProposal, type ProposalData } from "@/types/proposal";
 import {
   DropdownMenu,
