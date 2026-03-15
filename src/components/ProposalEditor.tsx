@@ -1722,8 +1722,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
                     );
 
                   default:
-
-                  default:
                     return null;
                 }
               })()}
