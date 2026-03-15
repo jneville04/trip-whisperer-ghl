@@ -323,56 +323,98 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
       {/* HERO */}
       {vis.hero && (
         <section className="relative">
-          {data.heroMediaType === "video" && data.heroVideoUrl ? (
-            <div className="h-[500px] overflow-hidden">
-              <VideoEmbed url={data.heroVideoUrl} title={data.destination} thumbnailUrl={data.heroVideoThumbnailUrl} className="rounded-none !aspect-auto h-full" autoplay={!!data.heroAutoplay} muted={!!data.heroMuted} />
-            </div>
-          ) : (() => {
-            // Collect all real hero images (skip fallbacks)
-            const mainImg = data.heroImageUrl;
-            const sideImgs = (data.heroImageUrls || []).filter(Boolean);
-            const allReal = [mainImg, ...sideImgs].filter(Boolean) as string[];
-            const allHeroImgs = allReal.map((u, i) => ({ src: u, alt: `${data.destination || "Hero"} ${i + 1}` }));
-            const count = allReal.length;
+          {/*
+            Why it looked sharper in the builder:
+            - The editor preview is narrower, so images are effectively downscaled.
+            - On full-width preview/client links, a fixed 500px height + object-cover can upscale/zoom the same asset,
+              which can both crop more aggressively and look softer.
 
-            if (count === 0) return null; // No images — hide hero image area entirely
-
-            if (count === 1) {
-              return (
-                <div className="h-[500px] overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
-                  <img src={allReal[0]} alt={data.destination} className="w-full h-full object-cover" />
-                </div>
-              );
-            }
-
-            if (count === 2) {
-              return (
-                <div className="grid grid-cols-2 gap-1 h-[500px] overflow-hidden">
-                  {allReal.map((url, i) => (
-                    <div key={i} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i)}>
-                      <img src={url} alt={`${data.destination} ${i + 1}`} className="w-full h-full object-cover" />
-                    </div>
-                  ))}
-                </div>
-              );
-            }
-
-            // 3+ images: 1 large + 2 stacked
-            return (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-1 h-[500px] overflow-hidden">
-                <div className="md:col-span-2 overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
-                  <img src={allReal[0]} alt={data.destination} className="w-full h-full object-cover" />
-                </div>
-                <div className="hidden md:grid grid-rows-2 gap-1">
-                  {allReal.slice(1, 3).map((url, i) => (
-                    <div key={i} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i + 1)}>
-                      <img src={url} alt={`${data.destination} ${i + 2}`} className="w-full h-full object-cover" />
-                    </div>
-                  ))}
-                </div>
+            Fix:
+            - Constrain the hero media to a consistent max width so it doesn’t get “blown up” on large screens.
+          */}
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
+            {data.heroMediaType === "video" && data.heroVideoUrl ? (
+              <div className="h-[500px] rounded-2xl overflow-hidden bg-muted">
+                <VideoEmbed
+                  url={data.heroVideoUrl}
+                  title={data.destination}
+                  thumbnailUrl={data.heroVideoThumbnailUrl}
+                  className="rounded-none !aspect-auto h-full"
+                  autoplay={!!data.heroAutoplay}
+                  muted={!!data.heroMuted}
+                />
               </div>
-            );
-          })()}
+            ) : (() => {
+              // Collect all real hero images (skip fallbacks)
+              const mainImg = data.heroImageUrl;
+              const sideImgs = (data.heroImageUrls || []).filter(Boolean);
+              const allReal = [mainImg, ...sideImgs].filter(Boolean) as string[];
+              const allHeroImgs = allReal.map((u, i) => ({ src: u, alt: `${data.destination || "Hero"} ${i + 1}` }));
+              const count = allReal.length;
+
+              if (count === 0) return null; // No images — hide hero image area entirely
+
+              if (count === 1) {
+                return (
+                  <div className="h-[500px] rounded-2xl overflow-hidden bg-muted cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
+                    <img
+                      src={allReal[0]}
+                      alt={data.destination}
+                      className="w-full h-full object-cover"
+                      loading="eager"
+                      decoding="async"
+                    />
+                  </div>
+                );
+              }
+
+              if (count === 2) {
+                return (
+                  <div className="grid grid-cols-2 gap-1 h-[500px] rounded-2xl overflow-hidden bg-muted">
+                    {allReal.map((url, i) => (
+                      <div key={i} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i)}>
+                        <img
+                          src={url}
+                          alt={`${data.destination} ${i + 1}`}
+                          className="w-full h-full object-cover"
+                          loading={i === 0 ? "eager" : "lazy"}
+                          decoding="async"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                );
+              }
+
+              // 3+ images: 1 large + 2 stacked
+              return (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-1 h-[500px] rounded-2xl overflow-hidden bg-muted">
+                  <div className="md:col-span-2 overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
+                    <img
+                      src={allReal[0]}
+                      alt={data.destination}
+                      className="w-full h-full object-cover"
+                      loading="eager"
+                      decoding="async"
+                    />
+                  </div>
+                  <div className="hidden md:grid grid-rows-2 gap-1">
+                    {allReal.slice(1, 3).map((url, i) => (
+                      <div key={i} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i + 1)}>
+                        <img
+                          src={url}
+                          alt={`${data.destination} ${i + 2}`}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
 
           {/* Title section below images */}
           <div className="max-w-5xl mx-auto px-6 py-10 text-center">
