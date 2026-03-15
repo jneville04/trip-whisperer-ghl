@@ -239,6 +239,11 @@ export default function EditorPage() {
               {(statusMeta[currentStatus] || statusMeta.draft).label}
             </span>
           </span>
+          {editorSubPage && (
+            <Button variant="travel-outline" size="sm" onClick={() => setEditorSubPage(null)} className="ml-2">
+              <X className="h-3.5 w-3.5 mr-1" /> Back to Preview
+            </Button>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <Button variant="travel-ghost" size="sm" onClick={copyShareLink}>
