@@ -160,7 +160,7 @@ export default function CreateTripMenu() {
     if (!user) { setCreating(false); return; }
 
     const proposalData: ProposalData = {
-      ...defaultProposal,
+      ...blankProposal,
       proposalType: "group_booking",
       clientName: groupName.trim() || groupTripTitle.trim(),
       destination: groupDestination.trim(),
