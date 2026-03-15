@@ -177,8 +177,11 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
               </button>
             ))}
           </div>
-          {isGroupBooking && bookingUrl && (
-            <Button variant="travel" size="sm" className="text-xs" onClick={() => openModal(bookingUrl, "Book Now")}>
+          {isGroupBooking && (
+            <Button variant="travel" size="sm" className="text-xs" onClick={() => {
+              if (checkoutEnabled) goToCheckout();
+              else if (bookingUrl) openModal(bookingUrl, "Book Now");
+            }}>
               Book Now
             </Button>
           )}
@@ -1065,24 +1068,22 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                     </motion.div>
                   )}
 
-                  {/* Book Now CTA for group trips */}
+                  {/* Book Now CTA for group trips — always visible */}
                   <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={3} className="text-center">
-                    {(bookingUrl || checkoutEnabled || selectedPricingOption) && (
-                      <Button
-                        variant="travel"
-                        size="lg"
-                        className="text-lg px-12 py-6 h-auto"
-                        onClick={() => {
-                          if (checkoutEnabled) {
-                            goToCheckout();
-                          } else if (bookingUrl) {
-                            openModal(bookingUrl, "Book Now");
-                          }
-                        }}
-                      >
-                        <ShoppingCart className="h-5 w-5 mr-2" /> Book Now
-                      </Button>
-                    )}
+                    <Button
+                      variant="travel"
+                      size="lg"
+                      className="text-lg px-12 py-6 h-auto"
+                      onClick={() => {
+                        if (checkoutEnabled) {
+                          goToCheckout();
+                        } else if (bookingUrl) {
+                          openModal(bookingUrl, "Book Now");
+                        }
+                      }}
+                    >
+                      <ShoppingCart className="h-5 w-5 mr-2" /> Book Now
+                    </Button>
                     {data.validUntil && <p className="text-sm text-muted-foreground mt-4 font-body">This proposal is valid until {data.validUntil}</p>}
                   </motion.div>
                 </div>
@@ -1158,11 +1159,12 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                     {agent.email && <a href={`mailto:${agent.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-4 w-4" /> {agent.email}</a>}
                     {agent.website && <a href={agent.website.startsWith('http') ? agent.website : `https://${agent.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Globe className="h-4 w-4" /> {agent.website}</a>}
                   </div>
-                  {bookingUrl && (
-                    <Button variant="travel" size="lg" className="text-base px-8" onClick={() => openModal(bookingUrl, "Book Now")}>
-                      Book Now <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
-                  )}
+                  <Button variant="travel" size="lg" className="text-base px-8" onClick={() => {
+                    if (checkoutEnabled) goToCheckout();
+                    else if (bookingUrl) openModal(bookingUrl, "Book Now");
+                  }}>
+                    Book Now <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
                   <p className="text-xs text-muted-foreground/60 mt-10 font-body">© 2026 {agent.agencyName} · All prices in USD · Subject to availability</p>
                 </div>
               </footer>
