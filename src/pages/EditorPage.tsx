@@ -203,7 +203,7 @@ export default function EditorPage() {
 
   const handleSave = () => saveProposal();
   const handlePublish = () => saveProposal("published");
-  const handleUnpublish = () => saveProposal("unpublished");
+  const handleUnpublish = () => saveProposal("draft");
 
   const copyShareLink = () => {
     const url = `${window.location.origin}/view/${shareId}`;
