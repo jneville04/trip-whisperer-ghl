@@ -901,11 +901,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                       <div className="grid grid-cols-2 gap-2">
                                         <div>
                                           <FieldLabel>Embarkation Port</FieldLabel>
-                                          <Input value={ship.embarkationPort} onChange={(e) => updateShipField("embarkationPort", e.target.value)} placeholder="Miami, FL" className="h-8 text-xs" />
+                                          <LocationAutocomplete value={ship.embarkationPort} onChange={(val) => updateShipField("embarkationPort", val)} placeholder="Miami, FL" className="h-8 text-xs" />
                                         </div>
                                         <div>
                                           <FieldLabel>Disembarkation Port</FieldLabel>
-                                          <Input value={ship.disembarkationPort} onChange={(e) => updateShipField("disembarkationPort", e.target.value)} placeholder="Miami, FL" className="h-8 text-xs" />
+                                          <LocationAutocomplete value={ship.disembarkationPort} onChange={(val) => updateShipField("disembarkationPort", val)} placeholder="Miami, FL" className="h-8 text-xs" />
                                         </div>
                                       </div>
                                       <div className="grid grid-cols-2 gap-2">
