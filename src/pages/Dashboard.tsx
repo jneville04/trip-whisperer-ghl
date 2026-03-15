@@ -42,6 +42,45 @@ export default function Dashboard() {
     }
   }, [profileStatus, isAdmin]);
 
+  // Filter + search + sort
+  const filtered = useMemo(() => {
+    let result = proposals.filter((p) => {
+      const q = search.toLowerCase();
+      const matchesSearch =
+        !q ||
+        p.title.toLowerCase().includes(q) ||
+        p.client_name.toLowerCase().includes(q) ||
+        p.destination.toLowerCase().includes(q);
+      if (!matchesSearch) return false;
+
+      const proposalType = (p.data as any)?.proposalType || "group_booking";
+
+      switch (filter) {
+        case "proposals": return proposalType === "proposal";
+        case "group_trips": return proposalType === "group_booking";
+        case "drafts": return p.status === "draft";
+        case "published": return ["published", "sent", "approved"].includes(p.status);
+        default: return true;
+      }
+    });
+
+    result.sort((a, b) => {
+      switch (sort) {
+        case "oldest": return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case "az": return (a.title || "").localeCompare(b.title || "");
+        case "za": return (b.title || "").localeCompare(a.title || "");
+        default: return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+      }
+    });
+
+    return result;
+  }, [proposals, search, filter, sort]);
+
+  // Early return for pending/rejected — after all hooks
+  if (!authLoading && profileStatus && profileStatus !== "approved" && !isAdmin) {
+    return <PendingApproval status={profileStatus as "pending" | "rejected"} />;
+  }
+
   const loadProposals = async () => {
     const { data, error } = await supabase
       .from("proposals")
