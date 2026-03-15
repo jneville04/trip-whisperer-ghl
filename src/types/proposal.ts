@@ -288,6 +288,7 @@ export interface ProposalData {
   brand: BrandSettings;
   sectionVisibility: SectionVisibility;
   sectionOrder: SectionKey[];
+  sectionCustomTitles?: SectionTitles;
   checkout?: CheckoutSettings;
 }
 
