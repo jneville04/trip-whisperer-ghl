@@ -377,70 +377,99 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
         };
 
         return (
-          <section className="relative" style={{ width: "100%", marginLeft: 0, padding: 0 }}>
-            {/* Mobile: single asset + badge */}
-            <div className="md:hidden relative" style={{ width: "100%", aspectRatio: "5/2", maxHeight: 480 }}>
-              {renderFirstAsset("w-full h-full overflow-hidden", () => openLightbox(allHeroImgs, 0))}
-              {heroMediaBadge}
+          <section className="relative w-full" style={{ background: "#ffffff" }}>
+            {/* Mobile: single first asset only */}
+            <div className="md:hidden relative">
+              {isVideo ? (
+                <VideoEmbed
+                  url={data.heroVideoUrl!}
+                  title={data.destination}
+                  thumbnailUrl={data.heroVideoThumbnailUrl}
+                  className="!rounded-none w-full"
+                  autoplay={!!data.heroAutoplay}
+                  muted={!!data.heroMuted}
+                />
+              ) : (
+                <div className="cursor-pointer relative" onClick={() => openLightbox(allHeroImgs, 0)}>
+                  <img
+                    src={allReal[0]}
+                    alt={data.destination}
+                    className="w-full object-cover"
+                    style={{ maxHeight: 400 }}
+                    loading="eager"
+                    decoding="async"
+                  />
+                  {heroMediaBadge}
+                </div>
+              )}
             </div>
 
             {/* Desktop */}
             <div className="hidden md:block">
               {count === 1 ? (
+                /* Single image — full width */
                 <div
-                  className="overflow-hidden bg-muted cursor-pointer"
-                  style={{ width: "100%", aspectRatio: "5/2", maxHeight: 480 }}
+                  className="cursor-pointer"
                   onClick={() => openLightbox(allHeroImgs, 0)}
                 >
-                  {renderFirstAsset("w-full h-full", () => openLightbox(allHeroImgs, 0))}
+                  {isVideo ? (
+                    <VideoEmbed
+                      url={data.heroVideoUrl!}
+                      title={data.destination}
+                      thumbnailUrl={data.heroVideoThumbnailUrl}
+                      className="!rounded-none w-full"
+                      autoplay={!!data.heroAutoplay}
+                      muted={!!data.heroMuted}
+                    />
+                  ) : (
+                    <img
+                      src={allReal[0]}
+                      alt={data.destination}
+                      className="w-full object-cover"
+                      style={{ maxHeight: 520 }}
+                      loading="eager"
+                      decoding="async"
+                    />
+                  )}
                 </div>
               ) : count === 2 ? (
-                <div
-                  className="overflow-hidden bg-muted"
-                  style={{ width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, aspectRatio: "5/2", maxHeight: 480 }}
-                >
-                  {allReal.map((url, i) => {
-                    if (i === 0 && isVideo) {
-                      return (
-                        <div key={i} className="overflow-hidden h-full">
-                          <VideoEmbed
-                            url={data.heroVideoUrl!}
-                            title={data.destination}
-                            thumbnailUrl={data.heroVideoThumbnailUrl}
-                            className="!rounded-none !aspect-auto h-full w-full"
-                            autoplay={!!data.heroAutoplay}
-                            muted={!!data.heroMuted}
-                          />
-                        </div>
-                      );
-                    }
-                    return (
-                      <div key={i} className="overflow-hidden cursor-pointer h-full" onClick={() => openLightbox(allHeroImgs, i)}>
+                /* 2 images side by side */
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+                  {allReal.map((url, i) => (
+                    <div key={i} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i)}>
+                      {i === 0 && isVideo ? (
+                        <VideoEmbed
+                          url={data.heroVideoUrl!}
+                          title={data.destination}
+                          thumbnailUrl={data.heroVideoThumbnailUrl}
+                          className="!rounded-none w-full h-full"
+                          autoplay={!!data.heroAutoplay}
+                          muted={!!data.heroMuted}
+                        />
+                      ) : (
                         <img
                           src={url}
                           alt={`${data.destination} ${i + 1}`}
-                          className="w-full h-full object-cover"
-                          
+                          className="w-full object-cover"
+                          style={{ height: 420 }}
                           loading={i === 0 ? "eager" : "lazy"}
                           decoding="async"
                         />
-                      </div>
-                    );
-                  })}
+                      )}
+                    </div>
+                  ))}
                 </div>
               ) : (
-                /* 3+ assets: 2fr 1fr grid */
-                <div
-                  className="overflow-hidden bg-muted"
-                  style={{ width: "100%", display: "grid", gridTemplateColumns: "2fr 1fr", gap: 4, aspectRatio: "5/2", maxHeight: 480 }}
-                >
+                /* 3+ images: main left (2fr) + 2 stacked right (1fr) with white gaps */
+                <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 6, height: 480 }}>
+                  {/* Main image */}
                   <div className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
                     {isVideo ? (
                       <VideoEmbed
                         url={data.heroVideoUrl!}
                         title={data.destination}
                         thumbnailUrl={data.heroVideoThumbnailUrl}
-                        className="!rounded-none !aspect-auto h-full w-full"
+                        className="!rounded-none w-full h-full"
                         autoplay={!!data.heroAutoplay}
                         muted={!!data.heroMuted}
                       />
@@ -449,20 +478,19 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                         src={allReal[0]}
                         alt={data.destination}
                         className="w-full h-full object-cover"
-                        
                         loading="eager"
                         decoding="async"
                       />
                     )}
                   </div>
-                  <div style={{ display: "grid", gridTemplateRows: "1fr 1fr", gap: 4 }}>
+                  {/* Two stacked equal images */}
+                  <div style={{ display: "grid", gridTemplateRows: "1fr 1fr", gap: 6, height: "100%" }}>
                     {allReal.slice(1, 3).map((url, i) => (
                       <div key={i} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i + 1)}>
                         <img
                           src={url}
                           alt={`${data.destination} ${i + 2}`}
                           className="w-full h-full object-cover"
-                          
                           loading="lazy"
                           decoding="async"
                         />
