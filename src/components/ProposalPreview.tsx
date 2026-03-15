@@ -396,7 +396,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
               ) : count === 2 ? (
                 <div
                   className="overflow-hidden bg-muted"
-                  style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: 480 }}
+                  style={{ display: "grid", gridTemplateColumns: "1fr 1fr", height: "calc(100vh - 64px)", maxHeight: 480, minHeight: 320 }}
                 >
                   {allReal.map((url, i) => {
                     if (i === 0 && isVideo) {
