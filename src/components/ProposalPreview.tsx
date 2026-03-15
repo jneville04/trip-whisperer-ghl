@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, type Easing } from "framer-motion";
-import { MapPin, Calendar, Users, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe, PlaneTakeoff, PlaneLanding, BedDouble, MessageSquare, CheckCircle2, Sparkles, Ship, Anchor, Bus, ShoppingCart } from "lucide-react";
+import { MapPin, Calendar, Users, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe, PlaneTakeoff, PlaneLanding, BedDouble, MessageSquare, CheckCircle2, Sparkles, Ship, Anchor, Bus } from "lucide-react";
 import Lightbox from "@/components/Lightbox";
 import { parseAirportValue } from "@/components/AirportAutocomplete";
 import BookingModal from "@/components/BookingModal";
@@ -1090,7 +1090,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                         }
                       }}
                     >
-                      <ShoppingCart className="h-5 w-5 mr-2" /> Book Now
+                      Book Now
                     </Button>
                     {data.validUntil && <p className="text-sm text-muted-foreground mt-4 font-body">This proposal is valid until {data.validUntil}</p>}
                   </motion.div>
@@ -1158,21 +1158,12 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                       <p className="text-muted-foreground font-body mt-0.5">{agent.title}</p>
                       <p className="text-sm text-muted-foreground font-body">{agent.agencyName}</p>
                     </div>
-                    {agent.logoUrl && (
-                      <img src={agent.logoUrl} alt={agent.agencyName} className="h-12 max-w-[160px] object-contain" />
-                    )}
                   </div>
-                  <div className="flex items-center justify-center gap-6 text-sm font-body text-muted-foreground flex-wrap mb-8">
+                  <div className="flex items-center justify-center gap-6 text-sm font-body text-muted-foreground flex-wrap">
                     {agent.phone && <a href={`tel:${agent.phone.replace(/[^\d+]/g, '')}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Phone className="h-4 w-4" /> {agent.phone}</a>}
                     {agent.email && <a href={`mailto:${agent.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-4 w-4" /> {agent.email}</a>}
                     {agent.website && <a href={agent.website.startsWith('http') ? agent.website : `https://${agent.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Globe className="h-4 w-4" /> {agent.website}</a>}
                   </div>
-                  <Button variant="travel" size="lg" className="text-base px-8" onClick={() => {
-                    if (checkoutEnabled) goToCheckout();
-                    else if (bookingUrl) openModal(bookingUrl, "Book Now");
-                  }}>
-                    Book Now <ArrowRight className="h-4 w-4 ml-2" />
-                  </Button>
                   <p className="text-xs text-muted-foreground/60 mt-10 font-body">© 2026 {agent.agencyName} · All prices in USD · Subject to availability</p>
                 </div>
               </footer>
@@ -1288,7 +1279,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                   return (
                     <div className="flex justify-between items-center py-3 border-b border-border/30">
                       <div className="flex items-center gap-2">
-                        <ShoppingCart className="h-4 w-4 text-primary" />
+                        <CheckCircle2 className="h-4 w-4 text-primary" />
                         <span className="font-body text-foreground font-medium">{opt.name}</span>
                       </div>
                       <span className="font-body text-sm text-primary font-semibold">{opt.totalPrice ? fmtCurrency(opt.totalPrice) : ""}</span>
@@ -1363,7 +1354,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                 const depositAmount = Math.round(totalForDeposit * (depositOpt.depositPercent / 100));
                 return (
                   <div className="flex justify-between items-center pt-2 mb-4">
-                    <span className="font-body text-sm text-muted-foreground">Deposit Due ({depositOpt.depositPercent}%)</span>
+                    <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
                     <span className="font-display text-lg font-bold text-accent">${depositAmount.toLocaleString()}</span>
                   </div>
                 );
@@ -1397,9 +1388,6 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                 <p className="text-muted-foreground font-body mt-0.5">{agent.title}</p>
                 <p className="text-sm text-muted-foreground font-body">{agent.agencyName}</p>
               </div>
-              {agent.logoUrl && (
-                <img src={agent.logoUrl} alt={agent.agencyName} className="h-12 max-w-[160px] object-contain" />
-              )}
             </div>
             <div className="flex items-center justify-center gap-6 text-sm font-body text-muted-foreground flex-wrap">
               {agent.phone && <a href={`tel:${agent.phone.replace(/[^\d+]/g, '')}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Phone className="h-4 w-4" /> {agent.phone}</a>}
