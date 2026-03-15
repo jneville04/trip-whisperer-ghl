@@ -35,6 +35,7 @@ export default function CheckoutPage() {
     returnTo?: string;
     selectedPricingOption?: PricingOption | null;
     tripName?: string;
+    isEditor?: boolean;
   };
   const selectedOption = navState.selectedPricingOption || null;
   const tripName = navState.tripName || "";
@@ -72,8 +73,10 @@ export default function CheckoutPage() {
   const resolvedTripName = tripName || proposalData?.clientName || proposalData?.destination || "";
 
   // Editable form height with drag-to-resize
-  const isEditorContext = !!navState.returnTo;
+  // Only show resize handle when navigated from the editor (not client view)
+  const isEditorContext = !!navState.returnTo && navState.returnTo.includes("/editor");
   const [localFormHeight, setLocalFormHeight] = useState(checkout.formHeight || 1200);
+  const [isResizing, setIsResizing] = useState(false);
   const isDragging = useRef(false);
   const dragStartY = useRef(0);
   const dragStartHeight = useRef(0);
@@ -88,12 +91,18 @@ export default function CheckoutPage() {
     await supabase.from("proposals").update({ data: updated as any }).eq("share_id", shareId);
   }, [proposalData, shareId]);
 
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
   const handleDragStart = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     isDragging.current = true;
+    setIsResizing(true);
     dragStartY.current = e.clientY;
     dragStartHeight.current = localFormHeight;
     let latestHeight = localFormHeight;
+
+    // Block iframe from stealing mouse events
+    if (iframeRef.current) iframeRef.current.style.pointerEvents = "none";
 
     const handleMove = (ev: MouseEvent) => {
       if (!isDragging.current) return;
@@ -103,6 +112,8 @@ export default function CheckoutPage() {
     };
     const handleUp = () => {
       isDragging.current = false;
+      setIsResizing(false);
+      if (iframeRef.current) iframeRef.current.style.pointerEvents = "";
       document.removeEventListener("mousemove", handleMove);
       document.removeEventListener("mouseup", handleUp);
       saveFormHeight(latestHeight);
@@ -302,6 +313,7 @@ export default function CheckoutPage() {
         {iframeUrl ? (
           <div className="relative">
             <iframe
+              ref={iframeRef}
               src={iframeUrl}
               className="w-full bg-transparent rounded-xl"
               style={{ height: `${localFormHeight}px`, border: "none" }}
@@ -311,11 +323,12 @@ export default function CheckoutPage() {
             {isEditorContext && (
               <div
                 onMouseDown={handleDragStart}
-                className="absolute bottom-0 left-0 right-0 flex items-center justify-center h-6 cursor-row-resize group hover:bg-primary/10 transition-colors rounded-b-xl border-t border-dashed border-primary/30"
+                className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex items-center justify-center px-4 py-1.5 cursor-row-resize rounded-full bg-primary/90 text-primary-foreground shadow-lg hover:bg-primary transition-colors select-none"
+                style={{ zIndex: 20 }}
               >
-                <GripHorizontal className="h-4 w-4 text-primary/50 group-hover:text-primary transition-colors" />
-                <span className="ml-2 text-[10px] text-primary/50 group-hover:text-primary font-body transition-colors">
-                  Drag to resize · {localFormHeight}px
+                <GripHorizontal className="h-3.5 w-3.5 mr-1.5" />
+                <span className="text-[11px] font-body font-medium">
+                  {isResizing ? `${localFormHeight}px` : "Drag to resize"}
                 </span>
               </div>
             )}
