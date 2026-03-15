@@ -116,10 +116,8 @@ export default function ApprovePage() {
 
     return (
       <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
+        <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />
         <div className="max-w-3xl mx-auto px-6 py-8">
-          <button onClick={goBack} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors font-body mb-6">
-            <ArrowLeft className="h-4 w-4" /> Back to Proposal
-          </button>
           <iframe
             src={iframeSrc}
             className="w-full border-0 rounded-xl"
