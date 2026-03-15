@@ -71,6 +71,45 @@ export default function CheckoutPage() {
 
   const resolvedTripName = tripName || proposalData?.clientName || proposalData?.destination || "";
 
+  // Editable form height with drag-to-resize
+  const isEditorContext = !!navState.returnTo;
+  const [localFormHeight, setLocalFormHeight] = useState(checkout.formHeight || 1200);
+  const isDragging = useRef(false);
+  const dragStartY = useRef(0);
+  const dragStartHeight = useRef(0);
+
+  useEffect(() => {
+    setLocalFormHeight(checkout.formHeight || 1200);
+  }, [checkout.formHeight]);
+
+  const saveFormHeight = useCallback(async (height: number) => {
+    if (!proposalData || !shareId) return;
+    const updated = { ...proposalData, checkout: { ...proposalData.checkout || createDefaultCheckout(), formHeight: height } };
+    await supabase.from("proposals").update({ data: updated as any }).eq("share_id", shareId);
+  }, [proposalData, shareId]);
+
+  const handleDragStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    isDragging.current = true;
+    dragStartY.current = e.clientY;
+    dragStartHeight.current = localFormHeight;
+
+    const handleMove = (ev: MouseEvent) => {
+      if (!isDragging.current) return;
+      const delta = ev.clientY - dragStartY.current;
+      const newHeight = Math.max(400, Math.min(5000, dragStartHeight.current + delta));
+      setLocalFormHeight(newHeight);
+    };
+    const handleUp = () => {
+      isDragging.current = false;
+      document.removeEventListener("mousemove", handleMove);
+      document.removeEventListener("mouseup", handleUp);
+      saveFormHeight(localFormHeight);
+    };
+    document.addEventListener("mousemove", handleMove);
+    document.addEventListener("mouseup", handleUp);
+  }, [localFormHeight, saveFormHeight]);
+
   // Calculate installments in dollar amounts
   const installments = useMemo(() => {
     if (!selectedOption?.totalPrice) return null;
