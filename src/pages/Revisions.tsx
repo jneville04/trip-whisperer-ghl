@@ -149,19 +149,22 @@ export default function RevisionsPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-6" style={brandStyles as React.CSSProperties}>
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md">
-          <div className="w-20 h-20 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="h-10 w-10 text-secondary" />
-          </div>
-          <h1 className="font-display text-3xl font-bold text-foreground mb-3">Revision Request Sent!</h1>
-          <p className="text-muted-foreground font-body mb-8">
-            Your travel advisor has received your feedback and will update the proposal shortly. You'll receive an email when the revised version is ready.
-          </p>
-          <Button variant="travel-ghost" onClick={goBack} className="text-sm">
-            <ArrowLeft className="h-4 w-4 mr-1" /> Back to Proposal
-          </Button>
-        </motion.div>
+      <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
+        {!isEmbeddedInEditor && <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />}
+        <div className="flex items-center justify-center px-6" style={{ minHeight: isEmbeddedInEditor ? "100%" : "calc(100vh - 56px)" }}>
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md">
+            <div className="w-20 h-20 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 className="h-10 w-10 text-secondary" />
+            </div>
+            <h1 className="font-display text-3xl font-bold text-foreground mb-3">Revision Request Sent!</h1>
+            <p className="text-muted-foreground font-body mb-8">
+              Your travel advisor has received your feedback and will update the proposal shortly. You'll receive an email when the revised version is ready.
+            </p>
+            <Button variant="travel-ghost" onClick={goBack} className="text-sm">
+              <ArrowLeft className="h-4 w-4 mr-1" /> Back to Proposal
+            </Button>
+          </motion.div>
+        </div>
       </div>
     );
   }
