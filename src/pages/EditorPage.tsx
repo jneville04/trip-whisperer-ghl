@@ -270,8 +270,10 @@ export default function EditorPage() {
           )}
           <span className="text-xs text-muted-foreground font-body hidden sm:inline">
             — {data.destination || "New Trip"} for {data.clientName || "Client"}
-            <span className={`ml-2 text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded-full ${
-              (statusMeta[currentStatus] || statusMeta.draft).badgeClassName
+            <span className={`ml-3 text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full ${
+              currentStatus === "draft" ? "bg-amber-100 text-amber-700" :
+              currentStatus === "published" ? "bg-emerald-100 text-emerald-700" :
+              "bg-muted text-muted-foreground"
             }`}>
               {(statusMeta[currentStatus] || statusMeta.draft).label}
             </span>
