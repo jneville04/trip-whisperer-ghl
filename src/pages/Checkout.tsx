@@ -254,7 +254,7 @@ export default function CheckoutPage() {
 
       {/* Non-selected fallback */}
       {!selectedOption && resolvedTripName && (
-        <motion.section variants={fadeUp} initial="hidden" animate="visible" custom={1} className="max-w-6xl mx-auto px-6 pb-10">
+        <motion.section variants={fadeUp} initial="hidden" animate="visible" custom={1} className="max-w-[1400px] mx-auto px-4 md:px-6 pb-5">
           <div className="bg-card rounded-2xl border border-border/40 px-8 py-6">
             <h2 className="font-display text-2xl font-bold text-foreground">{resolvedTripName}</h2>
             {proposalData?.travelDates && (
