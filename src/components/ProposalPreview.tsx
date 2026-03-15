@@ -389,7 +389,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
               {count === 1 ? (
                 <div
                   className="overflow-hidden bg-muted cursor-pointer"
-                  style={{ height: "calc(100vh - 64px)", maxHeight: 480, minHeight: 320 }}
+                  style={{ aspectRatio: "5/2", maxHeight: 480 }}
                   onClick={() => openLightbox(allHeroImgs, 0)}
                 >
                   {renderFirstAsset("w-full h-full", () => openLightbox(allHeroImgs, 0))}
