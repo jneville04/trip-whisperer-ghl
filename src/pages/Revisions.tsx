@@ -171,9 +171,8 @@ export default function RevisionsPage() {
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
+      {!isEmbeddedInEditor && <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />}
       <div className="max-w-xl mx-auto px-6 py-16">
-        <button onClick={goBack} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors font-body mb-8">
-          <ArrowLeft className="h-4 w-4" /> Back to Proposal
         </button>
 
         <div className="text-center mb-10">
