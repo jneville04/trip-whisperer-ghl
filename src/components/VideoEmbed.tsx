@@ -91,7 +91,7 @@ export default function VideoEmbed({ url, title, className = "", thumbnailUrl, a
   // If custom thumbnail is set, always use click-to-play pattern
   if (thumbnailUrl || isDirect) {
     return (
-        <div ref={ref} className={`relative aspect-video rounded-xl overflow-hidden bg-muted ${className}`} style={className.includes('aspect-auto') ? { aspectRatio: 'unset' } : undefined}>
+        <div ref={ref} className={`relative ${className.includes('aspect-auto') ? '' : 'aspect-video'} rounded-xl overflow-hidden bg-muted ${className}`}>
         {!visible ? (
           <div className="w-full h-full bg-muted animate-pulse" />
         ) : !playing ? (
@@ -116,7 +116,7 @@ export default function VideoEmbed({ url, title, className = "", thumbnailUrl, a
             autoPlay
             muted={muted || autoplay}
             loop={autoplay}
-            className="w-full h-full object-contain bg-black"
+            className="w-full h-full object-cover bg-black"
             title={title || "Video"}
           />
         ) : info ? (
@@ -137,7 +137,7 @@ export default function VideoEmbed({ url, title, className = "", thumbnailUrl, a
   if (!info) return null;
 
   return (
-    <div ref={ref} className={`relative aspect-video rounded-xl overflow-hidden bg-muted ${className}`} style={className.includes('aspect-auto') ? { aspectRatio: 'unset' } : undefined}>
+    <div ref={ref} className={`relative ${className.includes('aspect-auto') ? '' : 'aspect-video'} rounded-xl overflow-hidden bg-muted ${className}`}>
       {!visible ? (
         <div className="w-full h-full bg-muted animate-pulse" />
       ) : (
