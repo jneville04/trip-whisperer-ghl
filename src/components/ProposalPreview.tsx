@@ -571,7 +571,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
           };
 
           return (
-            <section className="relative" style={{ width: "100%", marginLeft: 0, padding: 0 }}>
+            <section className="relative overflow-hidden" style={{ width: "100%", marginLeft: 0, padding: 0 }}>
               {/* Mobile: single asset + badge */}
               <div className="md:hidden relative" style={{ width: "100%", aspectRatio: "5/2", maxHeight: 480 }}>
                 {renderFirstAsset("w-full h-full overflow-hidden", () => openLightbox(allHeroImgs, 0))}
