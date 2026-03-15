@@ -1388,9 +1388,6 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                 <p className="text-muted-foreground font-body mt-0.5">{agent.title}</p>
                 <p className="text-sm text-muted-foreground font-body">{agent.agencyName}</p>
               </div>
-              {agent.logoUrl && (
-                <img src={agent.logoUrl} alt={agent.agencyName} className="h-12 max-w-[160px] object-contain" />
-              )}
             </div>
             <div className="flex items-center justify-center gap-6 text-sm font-body text-muted-foreground flex-wrap">
               {agent.phone && <a href={`tel:${agent.phone.replace(/[^\d+]/g, '')}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Phone className="h-4 w-4" /> {agent.phone}</a>}
