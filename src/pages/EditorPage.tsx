@@ -71,7 +71,7 @@ export default function EditorPage() {
     draft: { label: "Draft", badgeClassName: "text-muted-foreground bg-muted/80" },
     published: { label: "Published", badgeClassName: "text-primary-foreground bg-primary/90" },
     sent: { label: "Published", badgeClassName: "text-primary-foreground bg-primary/90" },
-    unpublished: { label: "Unpublished", badgeClassName: "text-secondary-foreground bg-secondary/90" },
+    unpublished: { label: "Draft", badgeClassName: "text-muted-foreground bg-muted/80" },
   };
 
   const normalizeProposalStatus = (status?: string | null) => {
@@ -203,7 +203,7 @@ export default function EditorPage() {
 
   const handleSave = () => saveProposal();
   const handlePublish = () => saveProposal("published");
-  const handleUnpublish = () => saveProposal("unpublished");
+  const handleUnpublish = () => saveProposal("draft");
 
   const copyShareLink = () => {
     const url = `${window.location.origin}/view/${shareId}`;
@@ -270,10 +270,9 @@ export default function EditorPage() {
           )}
           <span className="text-xs text-muted-foreground font-body hidden sm:inline">
             — {data.destination || "New Trip"} for {data.clientName || "Client"}
-            <span className={`ml-3 text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full ${
-              currentStatus === "draft" ? "bg-amber-100 text-amber-700" :
+             <span className={`ml-3 text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full ${
               currentStatus === "published" ? "bg-emerald-100 text-emerald-700" :
-              "bg-muted text-muted-foreground"
+              "bg-amber-100 text-amber-700"
             }`}>
               {(statusMeta[currentStatus] || statusMeta.draft).label}
             </span>
@@ -306,7 +305,7 @@ export default function EditorPage() {
             variant="travel-outline"
             size="sm"
             onClick={handleSave}
-            disabled={saving || !dirty}
+            disabled={saving}
           >
             <Save className="h-3.5 w-3.5 mr-1" /> {saving ? "Saving..." : "Save Draft"}
           </Button>
