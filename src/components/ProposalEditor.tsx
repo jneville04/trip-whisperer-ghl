@@ -1329,29 +1329,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                             <option key={t.value} value={t.value}>{t.label}</option>
                                           ))}
                                         </select>
-                                        <input
-                                          type="time"
-                                          value={(() => {
-                                            const m = act.time?.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
-                                            if (!m) return '';
-                                            let h = parseInt(m[1]);
-                                            const period = m[3].toUpperCase();
-                                            if (period === 'AM' && h === 12) h = 0;
-                                            else if (period === 'PM' && h !== 12) h += 12;
-                                            return `${String(h).padStart(2, '0')}:${m[2]}`;
-                                          })()}
-                                          onChange={(e) => {
-                                            const val = e.target.value;
-                                            if (!val) { updateActivity(dayIdx, actIdx, "time", ""); return; }
-                                            const [hStr, mStr] = val.split(':');
-                                            let h = parseInt(hStr);
-                                            const period = h >= 12 ? 'PM' : 'AM';
-                                            if (h === 0) h = 12;
-                                            else if (h > 12) h -= 12;
-                                            updateActivity(dayIdx, actIdx, "time", `${h}:${mStr} ${period}`);
-                                          }}
-                                          className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body w-[120px]"
-                                        />
+                                        <TimePickerDropdown value={act.time} onChange={(val) => updateActivity(dayIdx, actIdx, "time", val)} />
                                       </div>
                                       <div className="flex items-center gap-0.5">
                                         <button onClick={() => {
