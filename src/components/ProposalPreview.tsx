@@ -985,9 +985,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                     className="text-center mb-12"
                   >
                     <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
-                      Where You'll Stay
+                      {ct.accommodations?.subtitle || "Where You'll Stay"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">Accommodations</h2>
+                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.accommodations?.title || "Accommodations"}</h2>
                     {!isGroupBooking && accommodations.length > 1 && (
                       <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>
                     )}
