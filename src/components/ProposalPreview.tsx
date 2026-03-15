@@ -151,21 +151,29 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
       goToCheckout();
       return;
     }
+    if (isEditor && onEditorSubPage) {
+      onEditorSubPage("approve");
+      return;
+    }
     const url = approveUrl || bookingUrl;
     if (url) {
       openModal(url, "Approve Itinerary");
     } else {
       navigate(`/approve${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
     }
-  }, [navigate, shareId, brandData, returnTo, bookingUrl, approveUrl, openModal, checkoutEnabled, goToCheckout]);
+  }, [navigate, shareId, brandData, returnTo, bookingUrl, approveUrl, openModal, checkoutEnabled, goToCheckout, isEditor, onEditorSubPage]);
 
   const goToRevisions = useCallback(() => {
+    if (isEditor && onEditorSubPage) {
+      onEditorSubPage("revisions");
+      return;
+    }
     if (revisionsUrl) {
       openModal(revisionsUrl, "Request Revisions");
     } else {
       navigate(`/revisions${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
     }
-  }, [navigate, shareId, brandData, returnTo, revisionsUrl, openModal]);
+  }, [navigate, shareId, brandData, returnTo, revisionsUrl, openModal, isEditor, onEditorSubPage]);
 
 
   return (
