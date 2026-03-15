@@ -323,16 +323,8 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
       {/* HERO */}
       {vis.hero && (
         <section className="relative">
-          {/*
-            Why it looked sharper in the builder:
-            - The editor preview is narrower, so images are effectively downscaled.
-            - On full-width preview/client links, a fixed 500px height + object-cover can upscale/zoom the same asset,
-              which can both crop more aggressively and look softer.
-
-            Fix:
-            - Constrain the hero media to a consistent max width so it doesn’t get “blown up” on large screens.
-          */}
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-6">
+          {/* Full-width hero — edge to edge */}
+          <div className="w-full">
             {data.heroMediaType === "video" && data.heroVideoUrl ? (
               <div className="h-[500px] rounded-2xl overflow-hidden bg-muted">
                 <VideoEmbed
