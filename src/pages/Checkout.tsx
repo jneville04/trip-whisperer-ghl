@@ -71,6 +71,18 @@ export default function CheckoutPage() {
 
   const resolvedTripName = tripName || proposalData?.clientName || proposalData?.destination || "";
 
+  // Auto-resize iframe based on content height
+  const [iframeHeight, setIframeHeight] = useState(800);
+  useEffect(() => {
+    const handleMessage = (e: MessageEvent) => {
+      if (e.data?.type === "resize" && typeof e.data.height === "number") {
+        setIframeHeight(e.data.height);
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
   // Calculate installments in dollar amounts
   const installments = useMemo(() => {
     if (!selectedOption?.totalPrice) return null;
@@ -275,9 +287,21 @@ export default function CheckoutPage() {
             <iframe
               src={iframeUrl}
               className="w-full bg-transparent"
-              style={{ height: "1600px", minHeight: "calc(100vh - 120px)", border: "none" }}
+              style={{ height: `${iframeHeight}px`, border: "none", transition: "height 0.3s ease" }}
               title="Booking Form"
               allow="payment"
+              onLoad={(e) => {
+                // Try to read content height from same-origin iframes
+                try {
+                  const doc = (e.target as HTMLIFrameElement).contentDocument;
+                  if (doc?.body) {
+                    const h = doc.body.scrollHeight;
+                    if (h > 100) setIframeHeight(h + 32);
+                  }
+                } catch {
+                  // Cross-origin — rely on postMessage or default
+                }
+              }}
             />
           </div>
         ) : (
