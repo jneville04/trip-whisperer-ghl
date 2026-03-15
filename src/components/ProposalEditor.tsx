@@ -137,8 +137,8 @@ function SortableSection({ id, children }: { id: string; children: ReactNode }) 
       }`}
     >
       {/* Drag handle — visible on hover */}
-      <div className="absolute left-0 top-0 bottom-0 w-6 flex items-center justify-center opacity-0 group-hover/sortable:opacity-100 transition-opacity z-10 pointer-events-none">
-        <GripVertical className="h-4 w-4 text-muted-foreground/60" />
+      <div className="absolute left-0 top-0 bottom-0 w-6 flex items-center justify-center z-10 pointer-events-none">
+        <GripVertical className="h-4 w-4 text-muted-foreground/40" />
       </div>
       {children}
     </div>
