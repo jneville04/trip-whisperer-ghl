@@ -73,56 +73,7 @@ export default function CheckoutPage() {
 
   const resolvedTripName = tripName || proposalData?.clientName || proposalData?.destination || "";
 
-  // Editable form height with drag-to-resize
-  // Detect if embedded inside editor (URL contains /editor or nav state has returnTo with /editor)
-  const isEmbeddedInEditor = location.pathname.includes("/editor") || (!!navState.returnTo && navState.returnTo.includes("/editor"));
-  const isEditorContext = isEmbeddedInEditor;
-  const [localFormHeight, setLocalFormHeight] = useState(checkout.formHeight || 1200);
-  const [isResizing, setIsResizing] = useState(false);
-  const isDragging = useRef(false);
-  const dragStartY = useRef(0);
-  const dragStartHeight = useRef(0);
-
-  useEffect(() => {
-    setLocalFormHeight(checkout.formHeight || 1200);
-  }, [checkout.formHeight]);
-
-  const saveFormHeight = useCallback(async (height: number) => {
-    if (!proposalData || !shareId) return;
-    const updated = { ...proposalData, checkout: { ...proposalData.checkout || createDefaultCheckout(), formHeight: height } };
-    await supabase.from("proposals").update({ data: updated as any }).eq("share_id", shareId);
-  }, [proposalData, shareId]);
-
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-
-  const handleDragStart = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    isDragging.current = true;
-    setIsResizing(true);
-    dragStartY.current = e.clientY;
-    dragStartHeight.current = localFormHeight;
-    let latestHeight = localFormHeight;
-
-    // Block iframe from stealing mouse events
-    if (iframeRef.current) iframeRef.current.style.pointerEvents = "none";
-
-    const handleMove = (ev: MouseEvent) => {
-      if (!isDragging.current) return;
-      const delta = ev.clientY - dragStartY.current;
-      latestHeight = Math.max(400, Math.min(5000, dragStartHeight.current + delta));
-      setLocalFormHeight(latestHeight);
-    };
-    const handleUp = () => {
-      isDragging.current = false;
-      setIsResizing(false);
-      if (iframeRef.current) iframeRef.current.style.pointerEvents = "";
-      document.removeEventListener("mousemove", handleMove);
-      document.removeEventListener("mouseup", handleUp);
-      saveFormHeight(latestHeight);
-    };
-    document.addEventListener("mousemove", handleMove);
-    document.addEventListener("mouseup", handleUp);
-  }, [localFormHeight, saveFormHeight]);
+  const formHeight = checkout.formHeight || 1200;
 
   // Calculate installments in dollar amounts
   const installments = useMemo(() => {
