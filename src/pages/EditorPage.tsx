@@ -198,6 +198,7 @@ export default function EditorPage() {
       const msg = isPublish ? "Published!" : isUnpublish ? "Unpublished!" : "Saved!";
       toast({ title: msg });
       setDirty(false);
+      setHasUserSaved(true);
     }
 
     setSaving(false);
