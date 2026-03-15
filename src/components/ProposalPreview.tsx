@@ -455,7 +455,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                       />
                     )}
                   </div>
-                  <div style={{ display: "grid", gridTemplateRows: "1fr 1fr" }}>
+                  <div style={{ display: "grid", gridTemplateRows: "1fr 1fr", gap: 4 }}>
                     {allReal.slice(1, 3).map((url, i) => (
                       <div key={i} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i + 1)}>
                         <img
