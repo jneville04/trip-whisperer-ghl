@@ -73,8 +73,10 @@ export default function CheckoutPage() {
   const resolvedTripName = tripName || proposalData?.clientName || proposalData?.destination || "";
 
   // Editable form height with drag-to-resize
-  const isEditorContext = !!navState.returnTo;
+  // Only show resize handle when navigated from the editor (not client view)
+  const isEditorContext = !!navState.returnTo && navState.returnTo.includes("/editor");
   const [localFormHeight, setLocalFormHeight] = useState(checkout.formHeight || 1200);
+  const [isResizing, setIsResizing] = useState(false);
   const isDragging = useRef(false);
   const dragStartY = useRef(0);
   const dragStartHeight = useRef(0);
