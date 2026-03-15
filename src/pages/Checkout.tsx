@@ -91,12 +91,18 @@ export default function CheckoutPage() {
     await supabase.from("proposals").update({ data: updated as any }).eq("share_id", shareId);
   }, [proposalData, shareId]);
 
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
   const handleDragStart = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     isDragging.current = true;
+    setIsResizing(true);
     dragStartY.current = e.clientY;
     dragStartHeight.current = localFormHeight;
     let latestHeight = localFormHeight;
+
+    // Block iframe from stealing mouse events
+    if (iframeRef.current) iframeRef.current.style.pointerEvents = "none";
 
     const handleMove = (ev: MouseEvent) => {
       if (!isDragging.current) return;
@@ -106,6 +112,8 @@ export default function CheckoutPage() {
     };
     const handleUp = () => {
       isDragging.current = false;
+      setIsResizing(false);
+      if (iframeRef.current) iframeRef.current.style.pointerEvents = "";
       document.removeEventListener("mousemove", handleMove);
       document.removeEventListener("mouseup", handleUp);
       saveFormHeight(latestHeight);
