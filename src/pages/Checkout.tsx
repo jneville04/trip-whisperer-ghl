@@ -163,7 +163,7 @@ export default function CheckoutPage() {
 
       {/* ── SECTION 1: Booking Summary ── */}
       {selectedOption && (
-        <motion.section variants={fadeUp} initial="hidden" animate="visible" custom={1} className="max-w-6xl mx-auto px-6 pb-10">
+        <motion.section variants={fadeUp} initial="hidden" animate="visible" custom={1} className="max-w-[1400px] mx-auto px-4 md:px-6 pb-5">
           <div className="bg-card rounded-2xl border border-border/40 overflow-hidden">
             {/* Summary header band */}
             <div className="bg-primary/5 border-b border-primary/10 px-8 py-5">
