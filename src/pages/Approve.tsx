@@ -148,8 +148,9 @@ export default function ApprovePage() {
           </Button>
         </motion.div>
       </div>
+        </div>
+      </div>
     );
-  }
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
