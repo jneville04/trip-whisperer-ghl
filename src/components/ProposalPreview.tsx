@@ -112,8 +112,8 @@ function ItinerarySection({
           custom={0}
           className="text-center mb-16"
         >
-          <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Journey</p>
-          <h2 className="font-display text-4xl font-bold text-foreground">Day-by-Day Itinerary</h2>
+          <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">{data.sectionCustomTitles?.itinerary?.subtitle || "Your Journey"}</p>
+          <h2 className="font-display text-4xl font-bold text-foreground">{data.sectionCustomTitles?.itinerary?.title || "Day-by-Day Itinerary"}</h2>
         </motion.div>
         <div className="space-y-4">
           {data.days.map((day, dayIdx) => {
@@ -294,6 +294,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
     showAgencyNameWithLogo: true,
   };
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
+  const ct = data.sectionCustomTitles || {};
   const flightOptions = data.flightOptions || [];
   const accommodations = data.accommodations || [];
   const cruiseShips = data.cruiseShips || [];
@@ -777,9 +778,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                     className="text-center mb-12"
                   >
                     <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
-                      Your Flights
+                      {ct.flights?.subtitle || "Your Flights"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">Air Travel</h2>
+                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.flights?.title || "Air Travel"}</h2>
                     {!isGroupBooking && flightOptions.length > 1 && (
                       <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>
                     )}
@@ -984,9 +985,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                     className="text-center mb-12"
                   >
                     <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
-                      Where You'll Stay
+                      {ct.accommodations?.subtitle || "Where You'll Stay"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">Accommodations</h2>
+                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.accommodations?.title || "Accommodations"}</h2>
                     {!isGroupBooking && accommodations.length > 1 && (
                       <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>
                     )}
@@ -1229,9 +1230,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                     className="text-center mb-12"
                   >
                     <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
-                      Your Vessel
+                      {ct.cruiseShips?.subtitle || "Your Vessel"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">Cruise Ship & Cabin</h2>
+                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.cruiseShips?.title || "Cruise Ship & Cabin"}</h2>
                   </motion.div>
                   <div className="space-y-10">
                     {cruiseShips.map((ship) => {
@@ -1486,9 +1487,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                     className="text-center mb-12"
                   >
                     <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
-                      Ground Transport
+                      {ct.busTrips?.subtitle || "Ground Transport"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">Bus Trips</h2>
+                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.busTrips?.title || "Bus Trips"}</h2>
                   </motion.div>
                   <div className="space-y-10">
                     {busTrips.map((trip) => {
@@ -1822,9 +1823,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                     className="text-center mb-12"
                   >
                     <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
-                      Everything Taken Care Of
+                      {ct.inclusions?.subtitle || "Everything Taken Care Of"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">What's Included</h2>
+                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.inclusions?.title || "What's Included"}</h2>
                   </motion.div>
                   <motion.div
                     variants={fadeUp}
@@ -1863,9 +1864,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                     className="text-center mb-12"
                   >
                     <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
-                      Investment
+                      {ct.pricing?.subtitle || "Investment"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">Choose Your Package</h2>
+                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.pricing?.title || "Choose Your Package"}</h2>
                     {pricingOptions.length > 1 && (
                       <p className="text-muted-foreground font-body mt-2">Select the option that works best for you</p>
                     )}
@@ -2011,9 +2012,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                     className="text-center mb-12"
                   >
                     <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
-                      Important Information
+                      {ct.terms?.subtitle || "Important Information"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">Terms & Conditions</h2>
+                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.terms?.title || "Terms & Conditions"}</h2>
                   </motion.div>
                   <motion.div
                     variants={fadeUp}
@@ -2080,7 +2081,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
               <footer key="agent" className="py-16 px-6 border-t border-border/50 bg-card">
                 <div className="max-w-3xl mx-auto text-center">
                   <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
-                    Your Travel Advisor
+                    {ct.agent?.subtitle || "Your Travel Advisor"}
                   </p>
                   <div className="flex flex-col items-center gap-4 mb-6">
                     {agent.photoUrl && (
@@ -2459,7 +2460,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
         <footer className="py-16 px-6 border-t border-border/50 bg-card">
           <div className="max-w-3xl mx-auto text-center">
             <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
-              Your Travel Advisor
+              {ct.agent?.subtitle || "Your Travel Advisor"}
             </p>
             <div className="flex flex-col items-center gap-4 mb-6">
               {agent.photoUrl && (

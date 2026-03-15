@@ -248,6 +248,8 @@ export const defaultSectionOrder: SectionKey[] = [
 
 export type ProposalType = "group_booking" | "proposal";
 
+export type SectionTitles = Partial<Record<SectionKey, { title?: string; subtitle?: string }>>;
+
 export interface ProposalData {
   proposalType: ProposalType;
   destination: string;
@@ -286,6 +288,7 @@ export interface ProposalData {
   brand: BrandSettings;
   sectionVisibility: SectionVisibility;
   sectionOrder: SectionKey[];
+  sectionCustomTitles?: SectionTitles;
   checkout?: CheckoutSettings;
 }
 
@@ -483,6 +486,7 @@ export const blankProposal: ProposalData = {
   },
   notes: "",
   sectionOrder: [...defaultSectionOrder],
+  sectionCustomTitles: {},
   checkout: createDefaultCheckout(),
 };
 

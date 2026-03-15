@@ -22,7 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import RichTextEditor from "@/components/RichTextEditor";
 import AgentPricingFields from "@/components/AgentPricingFields";
-import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, BusStop, SectionKey, CheckoutSettings, PaymentOption, LocationAddress, PricingOption } from "@/types/proposal";
+import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, BusStop, SectionKey, CheckoutSettings, PaymentOption, LocationAddress, PricingOption, SectionTitles } from "@/types/proposal";
 import { createActivity, createDay, createPricingLine, createPricingOption, createFlightLeg, createFlightOption, createAccommodation, createCruiseShip, createBusTrip, createBusStop, defaultSectionOrder, createDefaultCheckout } from "@/types/proposal";
 import { normalizeHexInput } from "@/lib/brand";
 import { useAgentSettings } from "@/hooks/useAgentSettings";
@@ -48,7 +48,10 @@ function CollapsibleSection({
   sectionKey,
   visible,
   onToggleVisible,
-  dragHandleProps,
+  sectionCustomTitle,
+  sectionCustomSubtitle,
+  onCustomTitleChange,
+  onCustomSubtitleChange,
 }: {
   title: string;
   children: React.ReactNode;
@@ -56,18 +59,16 @@ function CollapsibleSection({
   sectionKey?: keyof SectionVisibility;
   visible?: boolean;
   onToggleVisible?: () => void;
-  dragHandleProps?: Record<string, any>;
+  sectionCustomTitle?: string;
+  sectionCustomSubtitle?: string;
+  onCustomTitleChange?: (val: string) => void;
+  onCustomSubtitleChange?: (val: string) => void;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <Card className={`border-border/50 ${visible === false ? "opacity-50" : ""}`}>
       <CardHeader className="py-4">
         <div className="flex items-center justify-between">
-          {dragHandleProps && (
-            <button {...dragHandleProps} className="cursor-grab active:cursor-grabbing p-1 -ml-1 mr-1 text-muted-foreground/40 hover:text-muted-foreground touch-none">
-              <GripVertical className="h-4 w-4" />
-            </button>
-          )}
           <div className="flex items-center gap-2 cursor-pointer flex-1" onClick={() => setOpen(!open)}>
             <CardTitle className="text-base font-display">{title}</CardTitle>
             {open ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
@@ -83,22 +84,63 @@ function CollapsibleSection({
           )}
         </div>
       </CardHeader>
-      {open && <CardContent className="pt-0">{children}</CardContent>}
+      {open && (
+        <CardContent className="pt-0">
+          {/* Section Title & Subtitle (client-facing) */}
+          {onCustomTitleChange && (
+            <div className="mb-4 space-y-2 p-3 rounded-lg bg-muted/30 border border-border/30">
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold font-body">Client-Facing Labels</p>
+              <div>
+                <FieldLabel>Section Title</FieldLabel>
+                <Input
+                  value={sectionCustomTitle || ""}
+                  onChange={(e) => onCustomTitleChange(e.target.value)}
+                  placeholder="Default title"
+                  className="h-7 text-xs"
+                />
+              </div>
+              <div>
+                <FieldLabel>Section Subtitle</FieldLabel>
+                <Input
+                  value={sectionCustomSubtitle || ""}
+                  onChange={(e) => onCustomSubtitleChange?.(e.target.value)}
+                  placeholder="Optional subtitle"
+                  className="h-7 text-xs"
+                />
+              </div>
+            </div>
+          )}
+          {children}
+        </CardContent>
+      )}
     </Card>
   );
 }
 
-function SortableSection({ id, children }: { id: string; children: (dragHandleProps: Record<string, any>) => ReactNode }) {
+function SortableSection({ id, children }: { id: string; children: ReactNode }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 10 : undefined,
   };
   return (
-    <div ref={setNodeRef} style={style}>
-      {children({ ...attributes, ...listeners })}
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={`relative group/sortable touch-none transition-shadow duration-200 rounded-xl ${
+        isDragging
+          ? "shadow-xl ring-2 ring-primary/20 opacity-90 scale-[1.01] bg-background"
+          : "hover:shadow-md"
+      }`}
+    >
+      {/* Drag handle — visible on hover */}
+      <div className="absolute left-0 top-0 bottom-0 w-6 flex items-center justify-center opacity-0 group-hover/sortable:opacity-100 transition-opacity z-10 pointer-events-none">
+        <GripVertical className="h-4 w-4 text-muted-foreground/60" />
+      </div>
+      {children}
     </div>
   );
 }
@@ -209,7 +251,17 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const cruiseShips = data.cruiseShips || [];
   const busTrips = data.busTrips || [];
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
+  const customTitles = data.sectionCustomTitles || {};
   const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
+
+  const updateCustomTitle = (key: SectionKey, title: string) => {
+    const cur = data.sectionCustomTitles || {};
+    update("sectionCustomTitles" as any, { ...cur, [key]: { ...cur[key], title } });
+  };
+  const updateCustomSubtitle = (key: SectionKey, subtitle: string) => {
+    const cur = data.sectionCustomTitles || {};
+    update("sectionCustomTitles" as any, { ...cur, [key]: { ...cur[key], subtitle } });
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -477,11 +529,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
         <SortableContext items={sectionOrder} strategy={verticalListSortingStrategy}>
           {sectionOrder.map((key) => (
             <SortableSection key={key} id={key}>
-              {(dragHandleProps) => {
+              {(() => {
                 switch (key) {
                   case "overview":
                     return (
-                      <CollapsibleSection title={sectionTitles.overview} sectionKey="overview" visible={vis.overview} onToggleVisible={() => toggleSection("overview")} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.overview} sectionKey="overview" visible={vis.overview} onToggleVisible={() => toggleSection("overview")} sectionCustomTitle={customTitles.overview?.title} sectionCustomSubtitle={customTitles.overview?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("overview", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("overview", v)}>
                         <div className="space-y-3">
                           <div>
                             <FieldLabel>Client Name</FieldLabel>
@@ -497,7 +549,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
                    case "flights":
                     return (
-                      <CollapsibleSection title={sectionTitles.flights} sectionKey="flights" visible={vis.flights} onToggleVisible={() => toggleSection("flights")} defaultOpen={false} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.flights} sectionKey="flights" visible={vis.flights} onToggleVisible={() => toggleSection("flights")} defaultOpen={false} sectionCustomTitle={customTitles.flights?.title} sectionCustomSubtitle={customTitles.flights?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("flights", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("flights", v)}>
                         <div className="space-y-4">
                           {flightOptions.map((opt, oi) => (
                             <div key={opt.id} className="border border-border/40 rounded-lg p-3 bg-muted/20 space-y-3">
@@ -608,7 +660,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
                   case "accommodations":
                     return (
-                      <CollapsibleSection title={sectionTitles.accommodations} sectionKey="accommodations" visible={vis.accommodations} onToggleVisible={() => toggleSection("accommodations")} defaultOpen={false} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.accommodations} sectionKey="accommodations" visible={vis.accommodations} onToggleVisible={() => toggleSection("accommodations")} defaultOpen={false} sectionCustomTitle={customTitles.accommodations?.title} sectionCustomSubtitle={customTitles.accommodations?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("accommodations", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("accommodations", v)}>
                         <div className="space-y-4">
                           {accommodations.map((acc, i) => {
                             const accAmenities = acc.amenities || [];
@@ -845,7 +897,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
                   case "cruiseShips":
                     return (
-                      <CollapsibleSection title={sectionTitles.cruiseShips} sectionKey="cruiseShips" visible={vis.cruiseShips} onToggleVisible={() => toggleSection("cruiseShips")} defaultOpen={false} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.cruiseShips} sectionKey="cruiseShips" visible={vis.cruiseShips} onToggleVisible={() => toggleSection("cruiseShips")} defaultOpen={false} sectionCustomTitle={customTitles.cruiseShips?.title} sectionCustomSubtitle={customTitles.cruiseShips?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("cruiseShips", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("cruiseShips", v)}>
                         <div className="space-y-4">
                           {cruiseShips.map((ship, i) => {
                             const shipAmenities = ship.amenities || [];
@@ -1069,7 +1121,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
                   case "busTrips":
                     return (
-                      <CollapsibleSection title={sectionTitles.busTrips} sectionKey="busTrips" visible={vis.busTrips} onToggleVisible={() => toggleSection("busTrips")} defaultOpen={false} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.busTrips} sectionKey="busTrips" visible={vis.busTrips} onToggleVisible={() => toggleSection("busTrips")} defaultOpen={false} sectionCustomTitle={customTitles.busTrips?.title} sectionCustomSubtitle={customTitles.busTrips?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("busTrips", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("busTrips", v)}>
                         <div className="space-y-4">
                           {busTrips.map((trip, i) => {
                             const tripAmenities = trip.amenities || [];
@@ -1310,7 +1362,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
                   case "itinerary":
                     return (
-                      <CollapsibleSection title={sectionTitles.itinerary} sectionKey="itinerary" visible={vis.itinerary} onToggleVisible={() => toggleSection("itinerary")} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.itinerary} sectionKey="itinerary" visible={vis.itinerary} onToggleVisible={() => toggleSection("itinerary")} sectionCustomTitle={customTitles.itinerary?.title} sectionCustomSubtitle={customTitles.itinerary?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("itinerary", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("itinerary", v)}>
                         <div className="space-y-6">
                           {data.days.map((day, dayIdx) => (
                             <CollapsibleHotel key={day.id} defaultOpen={dayIdx === 0} hotelName={`Day ${dayIdx + 1}${day.title ? `: ${day.title}` : ""}`} location={day.location} onDelete={() => removeDay(dayIdx)}>
@@ -1482,7 +1534,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
                   case "inclusions":
                     return (
-                      <CollapsibleSection title={sectionTitles.inclusions} defaultOpen={false} sectionKey="inclusions" visible={vis.inclusions} onToggleVisible={() => toggleSection("inclusions")} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.inclusions} defaultOpen={false} sectionKey="inclusions" visible={vis.inclusions} onToggleVisible={() => toggleSection("inclusions")} sectionCustomTitle={customTitles.inclusions?.title} sectionCustomSubtitle={customTitles.inclusions?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("inclusions", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("inclusions", v)}>
                         <div className="space-y-2">
                           {data.inclusions.map((item, i) => (
                             <div key={i} className="flex gap-2">
@@ -1502,7 +1554,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   case "pricing": {
                     const pricingOptions = data.pricingOptions || [];
                     return (
-                      <CollapsibleSection title={sectionTitles.pricing} defaultOpen={false} sectionKey="pricing" visible={vis.pricing} onToggleVisible={() => toggleSection("pricing")} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.pricing} defaultOpen={false} sectionKey="pricing" visible={vis.pricing} onToggleVisible={() => toggleSection("pricing")} sectionCustomTitle={customTitles.pricing?.title} sectionCustomSubtitle={customTitles.pricing?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("pricing", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("pricing", v)}>
                         <div className="space-y-4">
                           {/* Pricing Options */}
                           <div>
@@ -1620,7 +1672,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
                   case "essentials":
                     return (
-                      <CollapsibleSection title={sectionTitles.essentials} defaultOpen={false} sectionKey="essentials" visible={vis.essentials} onToggleVisible={() => toggleSection("essentials")} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.essentials} defaultOpen={false} sectionKey="essentials" visible={vis.essentials} onToggleVisible={() => toggleSection("essentials")} sectionCustomTitle={customTitles.essentials?.title} sectionCustomSubtitle={customTitles.essentials?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("essentials", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("essentials", v)}>
                         <div className="space-y-2">
                           {([
                             { field: "visaRequirements" as const, label: "Visa Requirements", placeholder: "Visa requirements for destination..." },
@@ -1643,7 +1695,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
                   case "terms":
                     return (
-                      <CollapsibleSection title={sectionTitles.terms} defaultOpen={false} sectionKey="terms" visible={vis.terms} onToggleVisible={() => toggleSection("terms")} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.terms} defaultOpen={false} sectionKey="terms" visible={vis.terms} onToggleVisible={() => toggleSection("terms")} sectionCustomTitle={customTitles.terms?.title} sectionCustomSubtitle={customTitles.terms?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("terms", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("terms", v)}>
                         <div className="space-y-3">
                           {([
                             { key: "showCancellation" as const, field: "cancellationPolicy" as const, label: "Cancellation Policy", placeholder: "Cancellation and refund policy details..." },
@@ -1675,7 +1727,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   default:
                     return null;
                 }
-              }}
+              })()}
             </SortableSection>
           ))}
         </SortableContext>
