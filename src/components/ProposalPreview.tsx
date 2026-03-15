@@ -2012,9 +2012,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                     className="text-center mb-12"
                   >
                     <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
-                      Important Information
+                      {ct.terms?.subtitle || "Important Information"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">Terms & Conditions</h2>
+                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.terms?.title || "Terms & Conditions"}</h2>
                   </motion.div>
                   <motion.div
                     variants={fadeUp}
