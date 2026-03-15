@@ -40,6 +40,33 @@ export default function EditorPage() {
     }
   }, [shareId, setSearchParams]);
 
+  useEffect(() => {
+    const handleCheckoutHeightUpdated = (event: Event) => {
+      const custom = event as CustomEvent<{ shareId?: string; height?: number }>;
+      const updatedShareId = custom.detail?.shareId;
+      const updatedHeight = custom.detail?.height;
+      if (!updatedHeight) return;
+      if (shareId && updatedShareId && updatedShareId !== shareId) return;
+
+      setData((prev) => {
+        const currentHeight = prev.checkout?.formHeight || 1200;
+        if (currentHeight === updatedHeight) return prev;
+        return {
+          ...prev,
+          checkout: {
+            ...(prev.checkout || createDefaultCheckout()),
+            formHeight: updatedHeight,
+          },
+        };
+      });
+    };
+
+    window.addEventListener("checkout-form-height-updated", handleCheckoutHeightUpdated);
+    return () => {
+      window.removeEventListener("checkout-form-height-updated", handleCheckoutHeightUpdated);
+    };
+  }, [shareId]);
+
   const statusMeta: Record<string, { label: string; badgeClassName: string }> = {
     draft: { label: "Draft", badgeClassName: "text-muted-foreground bg-muted/80" },
     published: { label: "Published", badgeClassName: "text-primary-foreground bg-primary/90" },
