@@ -116,7 +116,7 @@ export default function VideoEmbed({ url, title, className = "", thumbnailUrl, a
             autoPlay
             muted={muted || autoplay}
             loop={autoplay}
-            className="w-full h-full object-contain bg-black"
+            className="w-full h-full object-cover bg-black"
             title={title || "Video"}
           />
         ) : info ? (
