@@ -486,6 +486,7 @@ export const blankProposal: ProposalData = {
   },
   notes: "",
   sectionOrder: [...defaultSectionOrder],
+  sectionCustomTitles: {},
   checkout: createDefaultCheckout(),
 };
 
