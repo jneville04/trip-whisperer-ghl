@@ -368,7 +368,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                 src={allReal[0]}
                 alt={data.destination}
                 className="w-full h-full object-cover"
-                style={{ objectPosition: "center 25%" }}
+                
                 loading="eager"
                 decoding="async"
               />
@@ -379,7 +379,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
         return (
           <section className="relative" style={{ width: "100vw", marginLeft: "calc(50% - 50vw)", padding: 0 }}>
             {/* Mobile: single asset + badge */}
-            <div className="md:hidden relative" style={{ height: "calc(100vh - 64px)", maxHeight: 480, minHeight: 320 }}>
+            <div className="md:hidden relative" style={{ aspectRatio: "5/2", maxHeight: 480 }}>
               {renderFirstAsset("w-full h-full overflow-hidden", () => openLightbox(allHeroImgs, 0))}
               {heroMediaBadge}
             </div>
@@ -389,7 +389,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
               {count === 1 ? (
                 <div
                   className="overflow-hidden bg-muted cursor-pointer"
-                  style={{ height: "calc(100vh - 64px)", maxHeight: 480, minHeight: 320 }}
+                  style={{ aspectRatio: "5/2", maxHeight: 480 }}
                   onClick={() => openLightbox(allHeroImgs, 0)}
                 >
                   {renderFirstAsset("w-full h-full", () => openLightbox(allHeroImgs, 0))}
@@ -397,7 +397,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
               ) : count === 2 ? (
                 <div
                   className="overflow-hidden bg-muted"
-                  style={{ display: "grid", gridTemplateColumns: "1fr 1fr", height: "calc(100vh - 64px)", maxHeight: 480, minHeight: 320 }}
+                  style={{ display: "grid", gridTemplateColumns: "1fr 1fr", aspectRatio: "5/2", maxHeight: 480 }}
                 >
                   {allReal.map((url, i) => {
                     if (i === 0 && isVideo) {
@@ -420,7 +420,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           src={url}
                           alt={`${data.destination} ${i + 1}`}
                           className="w-full h-full object-cover"
-                          style={{ objectPosition: "center 25%" }}
+                          
                           loading={i === 0 ? "eager" : "lazy"}
                           decoding="async"
                         />
@@ -432,7 +432,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                 /* 3+ assets: 2fr 1fr grid */
                 <div
                   className="overflow-hidden bg-muted"
-                  style={{ display: "grid", gridTemplateColumns: "2fr 1fr", height: "calc(100vh - 64px)", maxHeight: 480, minHeight: 320 }}
+                  style={{ display: "grid", gridTemplateColumns: "2fr 1fr", aspectRatio: "5/2", maxHeight: 480 }}
                 >
                   <div className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
                     {isVideo ? (
@@ -449,7 +449,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                         src={allReal[0]}
                         alt={data.destination}
                         className="w-full h-full object-cover"
-                        style={{ objectPosition: "center 25%" }}
+                        
                         loading="eager"
                         decoding="async"
                       />
@@ -462,7 +462,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           src={url}
                           alt={`${data.destination} ${i + 2}`}
                           className="w-full h-full object-cover"
-                          style={{ objectPosition: "center 25%" }}
+                          
                           loading="lazy"
                           decoding="async"
                         />
