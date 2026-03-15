@@ -1165,31 +1165,34 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     </TabsContent>
                                     <TabsContent value="stops" className="p-3 space-y-2 mt-0">
                                       {tripStops.map((stop, si) => (
-                                        <div key={stop.id} className="p-2 border border-border/30 rounded-lg space-y-1.5 relative">
+                                        <div key={stop.id} className="p-2.5 border border-border/30 rounded-lg space-y-2 relative">
                                           <button type="button" className="absolute top-1 right-1 text-destructive" onClick={() => {
                                             const s = tripStops.filter((_, idx) => idx !== si);
                                             updateTripField("stops", s);
                                           }}><X className="h-3 w-3" /></button>
-                                          <div className="grid grid-cols-3 gap-2">
-                                            <div className="col-span-3">
-                                              <FieldLabel>Stop Location</FieldLabel>
-                                              <Input value={stop.location} onChange={(e) => {
-                                                const s = [...tripStops]; s[si] = { ...s[si], location: e.target.value }; updateTripField("stops", s);
-                                              }} placeholder="Coimbra Bus Station" className="h-7 text-xs" />
-                                            </div>
-                                          </div>
+                                          <AddressFields
+                                            value={stop.locationAddress || { name: stop.location, address: "", city: "", state: "", zip: "" }}
+                                            onChange={(addr) => {
+                                              const s = [...tripStops];
+                                              s[si] = { ...s[si], locationAddress: addr, location: addr.name };
+                                              updateTripField("stops", s);
+                                            }}
+                                            nameLabel="Stop Name"
+                                            namePlaceholder="Coimbra Bus Station"
+                                            compact
+                                          />
                                           <div className="grid grid-cols-3 gap-2">
                                             <div>
                                               <FieldLabel>Arrival</FieldLabel>
-                                              <Input value={stop.arrivalTime} onChange={(e) => {
-                                                const s = [...tripStops]; s[si] = { ...s[si], arrivalTime: e.target.value }; updateTripField("stops", s);
-                                              }} placeholder="9:30 AM" className="h-7 text-xs" />
+                                              <TimePickerDropdown value={stop.arrivalTime} onChange={(val) => {
+                                                const s = [...tripStops]; s[si] = { ...s[si], arrivalTime: val }; updateTripField("stops", s);
+                                              }} />
                                             </div>
                                             <div>
                                               <FieldLabel>Departure</FieldLabel>
-                                              <Input value={stop.departureTime} onChange={(e) => {
-                                                const s = [...tripStops]; s[si] = { ...s[si], departureTime: e.target.value }; updateTripField("stops", s);
-                                              }} placeholder="9:45 AM" className="h-7 text-xs" />
+                                              <TimePickerDropdown value={stop.departureTime} onChange={(val) => {
+                                                const s = [...tripStops]; s[si] = { ...s[si], departureTime: val }; updateTripField("stops", s);
+                                              }} />
                                             </div>
                                             <div>
                                               <FieldLabel>Notes</FieldLabel>
