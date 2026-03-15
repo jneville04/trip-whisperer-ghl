@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { buildBrandCssVars, type BrandColors } from "@/lib/brand";
 import { useAppSettings } from "@/hooks/useAppSettings";
+import ClientNav from "@/components/ClientNav";
 
 export default function ApprovePage() {
   const navigate = useNavigate();
