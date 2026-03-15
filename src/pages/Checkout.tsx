@@ -35,6 +35,7 @@ export default function CheckoutPage() {
     returnTo?: string;
     selectedPricingOption?: PricingOption | null;
     tripName?: string;
+    isEditor?: boolean;
   };
   const selectedOption = navState.selectedPricingOption || null;
   const tripName = navState.tripName || "";
