@@ -296,7 +296,7 @@ export default function EditorPage() {
             <PenLine className="h-3.5 w-3.5 mr-1" /> Edit
           </Button>
           <Button
-            variant={mode === "preview" ? "travel" : "travel-ghost"}
+            variant={mode === "preview" ? "travel" : "travel-outline"}
             size="sm"
             onClick={() => setMode("preview")}
           >
