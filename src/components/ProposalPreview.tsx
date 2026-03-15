@@ -368,6 +368,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                 src={allReal[0]}
                 alt={data.destination}
                 className="w-full h-full object-cover"
+                style={{ objectPosition: "center 25%" }}
                 loading="eager"
                 decoding="async"
               />
@@ -419,6 +420,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           src={url}
                           alt={`${data.destination} ${i + 1}`}
                           className="w-full h-full object-cover"
+                          style={{ objectPosition: "center 25%" }}
                           loading={i === 0 ? "eager" : "lazy"}
                           decoding="async"
                         />
@@ -447,6 +449,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                         src={allReal[0]}
                         alt={data.destination}
                         className="w-full h-full object-cover"
+                        style={{ objectPosition: "center 25%" }}
                         loading="eager"
                         decoding="async"
                       />
@@ -459,6 +462,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           src={url}
                           alt={`${data.destination} ${i + 2}`}
                           className="w-full h-full object-cover"
+                          style={{ objectPosition: "center 25%" }}
                           loading="lazy"
                           decoding="async"
                         />
