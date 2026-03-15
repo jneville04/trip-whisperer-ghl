@@ -322,7 +322,7 @@ export default function EditorPage() {
             <RevisionsPage />
           )}
           {!editorSubPage && (
-            <ProposalPreview data={previewData} shareId={shareId} isEditor onEditorSubPage={setEditorSubPage} />
+            <ProposalPreview data={previewData} shareId={shareId} isEditor onEditorSubPage={handleEditorSubPage} />
           )}
         </div>
       </div>
