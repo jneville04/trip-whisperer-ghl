@@ -338,7 +338,7 @@ export default function EditorPage() {
             <HelpdeskFooter />
           </div>
         )}
-        <div className="flex-1 overflow-y-auto" style={builderBrandStyles as React.CSSProperties}>
+        <div className="flex-1 overflow-y-auto overflow-x-hidden" style={builderBrandStyles as React.CSSProperties}>
           {editorSubPage === "checkout" && (
             <CheckoutPage />
           )}
