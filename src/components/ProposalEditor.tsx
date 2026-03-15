@@ -8,6 +8,8 @@ import { CSS } from "@dnd-kit/utilities";
 import DatePickerField from "@/components/DatePickerField";
 import TimePickerDropdown from "@/components/TimePickerDropdown";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
+import AirportAutocomplete from "@/components/AirportAutocomplete";
+import AirlineAutocomplete, { findAirlineCode } from "@/components/AirlineAutocomplete";
 import AddressFields, { type AddressData } from "@/components/AddressFields";
 import ImageUploadField from "@/components/ImageUploadField";
 import SortableImageGrid from "@/components/SortableImageGrid";
