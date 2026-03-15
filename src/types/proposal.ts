@@ -25,6 +25,16 @@ export interface PricingLine {
   amount: string;
 }
 
+export interface PricingOption {
+  id: string;
+  name: string;
+  totalPrice: string;
+  deposit: string;
+  paymentNote: string;
+  finalPaymentDate: string;
+  availabilityNote: string;
+}
+
 export interface AgentPricing {
   cost: string;
   commission: string;
@@ -264,6 +274,7 @@ export interface ProposalData {
   busTrips: BusTrip[];
   inclusions: string[];
   pricing: PricingLine[];
+  pricingOptions: PricingOption[];
   paymentTerms: string;
   validUntil: string;
   travelers: Traveler[];
@@ -299,6 +310,16 @@ export const createPricingLine = (): PricingLine => ({
   id: crypto.randomUUID(),
   label: "",
   amount: "",
+});
+
+export const createPricingOption = (): PricingOption => ({
+  id: crypto.randomUUID(),
+  name: "",
+  totalPrice: "",
+  deposit: "",
+  paymentNote: "",
+  finalPaymentDate: "",
+  availabilityNote: "",
 });
 
 export const createFlightLeg = (type: FlightLeg["type"] = "departure"): FlightLeg => ({
@@ -602,6 +623,7 @@ export const defaultProposal: ProposalData = {
   pricing: [
     { id: crypto.randomUUID(), label: "Air & Hotel Package", amount: "Contact for pricing" },
   ],
+  pricingOptions: [],
   paymentTerms: "Deposit secures your booking — flexible payment options available.",
   validUntil: "",
   agent: {

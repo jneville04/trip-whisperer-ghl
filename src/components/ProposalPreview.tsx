@@ -13,6 +13,12 @@ import { buildBrandCssVars } from "@/lib/brand";
 
 const fallbackImages: string[] = [];
 
+const fmtCurrency = (val: string) => {
+  const num = parseFloat(val.replace(/[^0-9.-]/g, ""));
+  if (isNaN(num)) return val;
+  return "$" + num.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+};
+
 const easeOut: Easing = [0.25, 0.46, 0.45, 0.94];
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -62,6 +68,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
   const [selectedAccommodation, setSelectedAccommodation] = useState<string>("");
   const [selectedCruise, setSelectedCruise] = useState<string>("");
   const [selectedBusTrip, setSelectedBusTrip] = useState<string>("");
+  const [selectedPricingOption, setSelectedPricingOption] = useState<string>("");
   const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, cruiseShips: true, busTrips: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
   const brandData = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "", showAgencyNameWithLogo: true };
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
@@ -69,6 +76,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
   const accommodations = data.accommodations || [];
   const cruiseShips = data.cruiseShips || [];
   const busTrips = data.busTrips || [];
+  const pricingOptions = data.pricingOptions || [];
   const agent = data.agent || { name: "", title: "", phone: "", email: "", website: "", agencyName: "", logoUrl: "", photoUrl: "" };
   const essentials = data.essentials || { visaRequirements: "", passportInfo: "", currency: "", language: "", timeZone: "", weatherInfo: "", packingTips: "", emergencyContacts: "" };
   const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
@@ -92,7 +100,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
       busTrips: busTrips.length > 0,
       itinerary: (data.days || []).length > 0,
       inclusions: (data.inclusions || []).length > 0,
-      pricing: (data.pricing || []).length > 0,
+      pricing: (data.pricing || []).length > 0 || (data.pricingOptions || []).length > 0,
       essentials: !!(essentials.passportInfo || essentials.currency || essentials.weatherInfo || essentials.packingTips),
       terms: !!(terms.cancellationPolicy || terms.travelInsurance || terms.bookingTerms || terms.liability),
       agent: !!(agent.name),
@@ -990,7 +998,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
           case "pricing":
             // In proposal mode, pricing is merged into the selection summary below
             if (!isGroupBooking) return null;
-            if (data.pricing.length === 0) return null;
+            if (data.pricing.length === 0 && pricingOptions.length === 0) return null;
             return (
               <section key="pricing" id="pricing" className="py-20 bg-card">
                 <div className="max-w-3xl mx-auto px-6 text-center">
@@ -998,18 +1006,65 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                     <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Investment</p>
                     <h2 className="font-display text-4xl font-bold text-foreground mb-8">Trip Pricing</h2>
                   </motion.div>
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="bg-background rounded-2xl border border-border/50 shadow-lg p-10">
-                    <div className="space-y-4 mb-8">
-                      {data.pricing.map((line) => (
-                        <div key={line.id} className="flex justify-between items-center py-2 border-b border-border/30 font-body">
-                          <span className="text-muted-foreground">{line.label}</span>
-                          <span className="font-semibold text-foreground">{line.amount}</span>
-                        </div>
-                      ))}
-                    </div>
-                    {data.paymentTerms && <p className="text-xs text-muted-foreground mt-3 font-body">{data.paymentTerms}</p>}
-                  </motion.div>
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2} className="mt-10">
+
+                  {/* Pricing Options Cards */}
+                  {pricingOptions.length > 0 && (
+                    <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 text-left">
+                      {pricingOptions.map((opt) => {
+                        const isSelected = selectedPricingOption === opt.id;
+                        return (
+                          <div
+                            key={opt.id}
+                            onClick={() => setSelectedPricingOption(isSelected ? "" : opt.id)}
+                            className={`relative bg-background rounded-xl border-2 p-6 cursor-pointer transition-all ${
+                              isSelected ? "border-primary ring-2 ring-primary/20 shadow-lg" : "border-border/50 hover:border-primary/40"
+                            }`}
+                          >
+                            {isSelected && (
+                              <div className="absolute top-3 right-3 h-6 w-6 rounded-full bg-primary flex items-center justify-center">
+                                <Check className="h-3.5 w-3.5 text-primary-foreground" />
+                              </div>
+                            )}
+                            <h3 className="font-display text-lg font-bold text-foreground mb-2">{opt.name || "Untitled Option"}</h3>
+                            {opt.totalPrice && (
+                              <p className="font-display text-2xl font-bold text-primary mb-3">{fmtCurrency(opt.totalPrice)}<span className="text-sm font-normal text-muted-foreground ml-1">total</span></p>
+                            )}
+                            <div className="space-y-1.5">
+                              {opt.deposit && (
+                                <p className="text-sm text-muted-foreground font-body">Deposit due today: <span className="font-semibold text-foreground">{fmtCurrency(opt.deposit)}</span></p>
+                              )}
+                              {opt.finalPaymentDate && (
+                                <p className="text-sm text-muted-foreground font-body">Final payment due by {opt.finalPaymentDate}</p>
+                              )}
+                              {opt.paymentNote && (
+                                <p className="text-sm text-muted-foreground font-body italic">{opt.paymentNote}</p>
+                              )}
+                              {opt.availabilityNote && (
+                                <p className="text-xs font-semibold text-accent font-body mt-2">{opt.availabilityNote}</p>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+
+                  {/* Legacy pricing lines */}
+                  {data.pricing.length > 0 && (
+                    <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2} className="bg-background rounded-2xl border border-border/50 shadow-lg p-10">
+                      <div className="space-y-4 mb-8">
+                        {data.pricing.map((line) => (
+                          <div key={line.id} className="flex justify-between items-center py-2 border-b border-border/30 font-body">
+                            <span className="text-muted-foreground">{line.label}</span>
+                            <span className="font-semibold text-foreground">{line.amount}</span>
+                          </div>
+                        ))}
+                      </div>
+                      {data.paymentTerms && <p className="text-xs text-muted-foreground mt-3 font-body">{data.paymentTerms}</p>}
+                    </motion.div>
+                  )}
+
+                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={3} className="mt-10">
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                       {bookingUrl && (
                         <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={() => openModal(bookingUrl, "Book Now")}>
@@ -1115,7 +1170,51 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
               <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Investment</p>
               <h2 className="font-display text-4xl font-bold text-foreground">Trip Pricing</h2>
             </motion.div>
-            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="bg-background rounded-2xl border border-border/50 shadow-lg p-8">
+
+            {/* Pricing Options Cards */}
+            {pricingOptions.length > 0 && (
+              <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                {pricingOptions.map((opt) => {
+                  const isSelected = selectedPricingOption === opt.id;
+                  return (
+                    <div
+                      key={opt.id}
+                      onClick={() => setSelectedPricingOption(isSelected ? "" : opt.id)}
+                      className={`relative bg-background rounded-xl border-2 p-6 cursor-pointer transition-all text-left ${
+                        isSelected ? "border-primary ring-2 ring-primary/20 shadow-lg" : "border-border/50 hover:border-primary/40"
+                      }`}
+                    >
+                      {isSelected && (
+                        <div className="absolute top-3 right-3 h-6 w-6 rounded-full bg-primary flex items-center justify-center">
+                          <Check className="h-3.5 w-3.5 text-primary-foreground" />
+                        </div>
+                      )}
+                      <h3 className="font-display text-lg font-bold text-foreground mb-2">{opt.name || "Untitled Option"}</h3>
+                      {opt.totalPrice && (
+                        <p className="font-display text-2xl font-bold text-primary mb-3">{fmtCurrency(opt.totalPrice)}</p>
+                      )}
+                      <div className="space-y-1.5">
+                        {opt.deposit && (
+                          <p className="text-sm text-muted-foreground font-body">Deposit due today: <span className="font-semibold text-foreground">{fmtCurrency(opt.deposit)}</span></p>
+                        )}
+                        {opt.finalPaymentDate && (
+                          <p className="text-sm text-muted-foreground font-body">Final payment due by {opt.finalPaymentDate}</p>
+                        )}
+                        {opt.paymentNote && (
+                          <p className="text-sm text-muted-foreground font-body italic">{opt.paymentNote}</p>
+                        )}
+                        {opt.availabilityNote && (
+                          <p className="text-xs font-semibold text-accent font-body mt-2">{opt.availabilityNote}</p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </motion.div>
+            )}
+
+            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2} className="bg-background rounded-2xl border border-border/50 shadow-lg p-8">
+              {/* Selected items summary */}
               <div className="space-y-4 mb-6">
                 {flightOptions.length > 0 && (
                   <div className="flex justify-between items-center py-3 border-b border-border/30">
@@ -1161,6 +1260,20 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                     </span>
                   </div>
                 )}
+                {/* Selected pricing option */}
+                {selectedPricingOption && (() => {
+                  const opt = pricingOptions.find(o => o.id === selectedPricingOption);
+                  if (!opt) return null;
+                  return (
+                    <div className="flex justify-between items-center py-3 border-b border-border/30">
+                      <div className="flex items-center gap-2">
+                        <ShoppingCart className="h-4 w-4 text-primary" />
+                        <span className="font-body text-foreground font-medium">{opt.name}</span>
+                      </div>
+                      <span className="font-body text-sm text-primary font-semibold">{opt.totalPrice ? fmtCurrency(opt.totalPrice) : ""}</span>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Additional pricing lines */}
@@ -1182,7 +1295,8 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                 const selectedCruisePrice = selectedCruise ? parseFloat(cruiseShips.find(s => s.id === selectedCruise)?.price || "0") : 0;
                 const selectedBusPrice = selectedBusTrip ? parseFloat(busTrips.find(b => b.id === selectedBusTrip)?.price || "0") : 0;
                 const pricingLinesTotal = data.pricing.reduce((sum, line) => sum + (parseFloat(line.amount.replace(/[^0-9.-]/g, "")) || 0), 0);
-                const total = selectedFlightPrice + selectedAccPrice + selectedCruisePrice + selectedBusPrice + pricingLinesTotal;
+                const selectedOptionPrice = selectedPricingOption ? parseFloat(pricingOptions.find(o => o.id === selectedPricingOption)?.totalPrice?.replace(/[^0-9.-]/g, "") || "0") : 0;
+                const total = selectedFlightPrice + selectedAccPrice + selectedCruisePrice + selectedBusPrice + pricingLinesTotal + selectedOptionPrice;
                 if (total > 0) {
                   return (
                     <div className="pt-4 border-t-2 border-primary/30 mb-6">
@@ -1190,6 +1304,17 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                         <span className="font-display text-xl font-bold text-foreground">Estimated Total</span>
                         <span className="font-display text-2xl font-bold text-primary">${total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                       </div>
+                      {/* Show deposit from selected pricing option */}
+                      {selectedPricingOption && (() => {
+                        const opt = pricingOptions.find(o => o.id === selectedPricingOption);
+                        if (!opt?.deposit) return null;
+                        return (
+                          <div className="flex justify-between items-center mt-2">
+                            <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
+                            <span className="font-display text-lg font-bold text-accent">{fmtCurrency(opt.deposit)}</span>
+                          </div>
+                        );
+                      })()}
                     </div>
                   );
                 }
@@ -1198,10 +1323,11 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
 
               {data.paymentTerms && <p className="text-xs text-muted-foreground mb-6 font-body">{data.paymentTerms}</p>}
 
-              {/* Deposit info */}
+              {/* Deposit info from checkout settings (legacy) */}
               {(() => {
                 const checkout = data.checkout;
                 if (!checkout?.enabled) return null;
+                if (selectedPricingOption) return null; // pricing option deposit takes precedence
                 const depositOpt = checkout.paymentOptions.find(o => o.enabled && o.type === "deposit");
                 if (!depositOpt || !depositOpt.depositPercent) return null;
                 const totalForDeposit = (() => {
