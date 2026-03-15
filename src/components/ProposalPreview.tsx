@@ -100,7 +100,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
       busTrips: busTrips.length > 0,
       itinerary: (data.days || []).length > 0,
       inclusions: (data.inclusions || []).length > 0,
-      pricing: (data.pricing || []).length > 0,
+      pricing: (data.pricing || []).length > 0 || (data.pricingOptions || []).length > 0,
       essentials: !!(essentials.passportInfo || essentials.currency || essentials.weatherInfo || essentials.packingTips),
       terms: !!(terms.cancellationPolicy || terms.travelInsurance || terms.bookingTerms || terms.liability),
       agent: !!(agent.name),
