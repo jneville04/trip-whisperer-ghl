@@ -1090,7 +1090,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                         }
                       }}
                     >
-                      <ShoppingCart className="h-5 w-5 mr-2" /> Book Now
+                      Book Now
                     </Button>
                     {data.validUntil && <p className="text-sm text-muted-foreground mt-4 font-body">This proposal is valid until {data.validUntil}</p>}
                   </motion.div>
