@@ -71,6 +71,18 @@ export default function CheckoutPage() {
 
   const resolvedTripName = tripName || proposalData?.clientName || proposalData?.destination || "";
 
+  // Auto-resize iframe based on content height
+  const [iframeHeight, setIframeHeight] = useState(800);
+  useEffect(() => {
+    const handleMessage = (e: MessageEvent) => {
+      if (e.data?.type === "resize" && typeof e.data.height === "number") {
+        setIframeHeight(e.data.height);
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
   // Calculate installments in dollar amounts
   const installments = useMemo(() => {
     if (!selectedOption?.totalPrice) return null;
