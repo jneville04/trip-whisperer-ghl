@@ -122,9 +122,10 @@ export default function ApprovePage() {
           <iframe
             src={iframeSrc}
             className="w-full border-0 rounded-xl"
-            style={{ minHeight: "600px", height: "80vh" }}
+            style={{ height: "calc(100vh - 120px)", border: "none" }}
             title="Approve Trip"
             allow="camera; microphone"
+            scrolling="no"
           />
         </div>
       </div>
