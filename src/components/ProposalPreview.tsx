@@ -294,6 +294,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
     showAgencyNameWithLogo: true,
   };
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
+  const ct = data.sectionCustomTitles || {};
   const flightOptions = data.flightOptions || [];
   const accommodations = data.accommodations || [];
   const cruiseShips = data.cruiseShips || [];
