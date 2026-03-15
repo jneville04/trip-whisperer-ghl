@@ -378,7 +378,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
         return (
           <section className="relative" style={{ width: "100vw", marginLeft: "calc(50% - 50vw)", padding: 0 }}>
             {/* Mobile: single asset + badge */}
-            <div className="md:hidden relative" style={{ height: "60vw", minHeight: 240 }}>
+            <div className="md:hidden relative" style={{ height: "calc(100vh - 64px)", maxHeight: 480, minHeight: 320 }}>
               {renderFirstAsset("w-full h-full overflow-hidden", () => openLightbox(allHeroImgs, 0))}
               {heroMediaBadge}
             </div>
