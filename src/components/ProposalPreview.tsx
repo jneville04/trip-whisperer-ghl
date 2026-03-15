@@ -39,10 +39,13 @@ function getActivityIcon(type: Activity["type"]) {
   }
 }
 
+export type EditorSubPage = "checkout" | "approve" | "revisions";
+
 interface Props {
   data: ProposalData;
   shareId?: string;
   isEditor?: boolean;
+  onEditorSubPage?: (page: EditorSubPage) => void;
 }
 
 export default function ProposalPreview({ data, shareId, isEditor }: Props) {
