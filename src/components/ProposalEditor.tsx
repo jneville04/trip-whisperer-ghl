@@ -1727,7 +1727,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   default:
                     return null;
                 }
-              }}
+              })()}
             </SortableSection>
           ))}
         </SortableContext>
