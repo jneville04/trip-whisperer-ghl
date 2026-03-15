@@ -298,8 +298,8 @@ export default function CheckoutPage() {
       {/* ── SECTION 3: Travel Advisor ── */}
       {agent.name && (
         <motion.footer variants={fadeUp} initial="hidden" animate="visible" custom={3} className="border-t border-border/40 bg-card/50">
-          <div className="max-w-6xl mx-auto px-6 py-16">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-8 max-w-2xl mx-auto">
+          <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-10">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 max-w-2xl mx-auto">
               {agent.photoUrl && (
                 <img src={agent.photoUrl} alt={agent.name} className="w-24 h-24 rounded-full object-cover border-2 border-primary/20 shrink-0" />
               )}
