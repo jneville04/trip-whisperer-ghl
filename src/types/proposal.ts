@@ -274,6 +274,7 @@ export interface ProposalData {
   busTrips: BusTrip[];
   inclusions: string[];
   pricing: PricingLine[];
+  pricingOptions: PricingOption[];
   paymentTerms: string;
   validUntil: string;
   travelers: Traveler[];
