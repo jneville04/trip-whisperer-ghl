@@ -112,8 +112,8 @@ function ItinerarySection({
           custom={0}
           className="text-center mb-16"
         >
-          <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Journey</p>
-          <h2 className="font-display text-4xl font-bold text-foreground">Day-by-Day Itinerary</h2>
+          <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">{data.sectionCustomTitles?.itinerary?.subtitle || "Your Journey"}</p>
+          <h2 className="font-display text-4xl font-bold text-foreground">{data.sectionCustomTitles?.itinerary?.title || "Day-by-Day Itinerary"}</h2>
         </motion.div>
         <div className="space-y-4">
           {data.days.map((day, dayIdx) => {
