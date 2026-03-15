@@ -62,6 +62,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
   const [selectedAccommodation, setSelectedAccommodation] = useState<string>("");
   const [selectedCruise, setSelectedCruise] = useState<string>("");
   const [selectedBusTrip, setSelectedBusTrip] = useState<string>("");
+  const [selectedPricingOption, setSelectedPricingOption] = useState<string>("");
   const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, cruiseShips: true, busTrips: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
   const brandData = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "", showAgencyNameWithLogo: true };
   const sectionOrder = data.sectionOrder || defaultSectionOrder;

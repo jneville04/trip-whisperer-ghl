@@ -1499,26 +1499,90 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       </CollapsibleSection>
                     );
 
-                  case "pricing":
+                  case "pricing": {
+                    const pricingOptions = data.pricingOptions || [];
                     return (
                       <CollapsibleSection title={sectionTitles.pricing} defaultOpen={false} sectionKey="pricing" visible={vis.pricing} onToggleVisible={() => toggleSection("pricing")} dragHandleProps={dragHandleProps}>
-                        <div className="space-y-2">
-                          {data.pricing.map((line, i) => (
-                            <div key={line.id} className="flex gap-2">
-                              <Input value={line.label} onChange={(e) => { const p = [...data.pricing]; p[i] = { ...p[i], label: e.target.value }; update("pricing", p); }} placeholder="Line item" className="h-8 text-sm flex-1" />
-                              <div className="relative w-28">
-                                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">$</span>
-                                <Input value={line.amount} onChange={(e) => { const p = [...data.pricing]; p[i] = { ...p[i], amount: e.target.value }; update("pricing", p); }} placeholder="0.00" className="h-8 text-sm pl-5" />
-                              </div>
-                              <Button variant="travel-ghost" size="icon" onClick={() => update("pricing", data.pricing.filter((_, idx) => idx !== i))} className="h-8 w-8 text-muted-foreground/40 hover:text-destructive shrink-0">
-                                <Trash2 className="h-3 w-3" />
+                        <div className="space-y-4">
+                          {/* Pricing Options */}
+                          <div>
+                            <div className="flex items-center justify-between mb-2">
+                              <FieldLabel>Pricing Options</FieldLabel>
+                            </div>
+                            <div className="space-y-3">
+                              {pricingOptions.map((opt, i) => (
+                                <div key={opt.id} className="border border-border/40 rounded-lg bg-muted/20 p-3 space-y-2">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider font-body">Option {i + 1}</span>
+                                    <Button variant="travel-ghost" size="icon" onClick={() => update("pricingOptions", pricingOptions.filter((_, idx) => idx !== i))} className="h-7 w-7 text-muted-foreground/40 hover:text-destructive shrink-0">
+                                      <Trash2 className="h-3 w-3" />
+                                    </Button>
+                                  </div>
+                                  <div>
+                                    <FieldLabel>Option Name</FieldLabel>
+                                    <Input value={opt.name} onChange={(e) => { const p = [...pricingOptions]; p[i] = { ...p[i], name: e.target.value }; update("pricingOptions", p); }} placeholder="e.g. Double Occupancy, Ocean View, VIP Package" className="h-8 text-sm" />
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <div>
+                                      <FieldLabel>Total Price</FieldLabel>
+                                      <div className="relative">
+                                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">$</span>
+                                        <Input value={opt.totalPrice} onChange={(e) => { const p = [...pricingOptions]; p[i] = { ...p[i], totalPrice: e.target.value }; update("pricingOptions", p); }} placeholder="0.00" className="h-8 text-sm pl-5" />
+                                      </div>
+                                    </div>
+                                    <div>
+                                      <FieldLabel>Deposit Amount</FieldLabel>
+                                      <div className="relative">
+                                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">$</span>
+                                        <Input value={opt.deposit} onChange={(e) => { const p = [...pricingOptions]; p[i] = { ...p[i], deposit: e.target.value }; update("pricingOptions", p); }} placeholder="0.00" className="h-8 text-sm pl-5" />
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <FieldLabel>Payment Note (optional)</FieldLabel>
+                                    <Input value={opt.paymentNote} onChange={(e) => { const p = [...pricingOptions]; p[i] = { ...p[i], paymentNote: e.target.value }; update("pricingOptions", p); }} placeholder="e.g. Flexible payment plan available" className="h-8 text-sm" />
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <div>
+                                      <FieldLabel>Final Payment Due (optional)</FieldLabel>
+                                      <Input value={opt.finalPaymentDate} onChange={(e) => { const p = [...pricingOptions]; p[i] = { ...p[i], finalPaymentDate: e.target.value }; update("pricingOptions", p); }} placeholder="e.g. Sept 1, 2026" className="h-8 text-sm" />
+                                    </div>
+                                    <div>
+                                      <FieldLabel>Availability Note (optional)</FieldLabel>
+                                      <Input value={opt.availabilityNote} onChange={(e) => { const p = [...pricingOptions]; p[i] = { ...p[i], availabilityNote: e.target.value }; update("pricingOptions", p); }} placeholder="e.g. Only 5 spots left" className="h-8 text-sm" />
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                              <Button variant="travel-ghost" size="sm" onClick={() => update("pricingOptions", [...pricingOptions, createPricingOption()])} className="text-primary text-xs h-7">
+                                <Plus className="h-3 w-3 mr-1" /> Add Pricing Option
                               </Button>
                             </div>
-                          ))}
-                          <Button variant="travel-ghost" size="sm" onClick={() => update("pricing", [...data.pricing, createPricingLine()])} className="text-primary text-xs h-7">
-                            <Plus className="h-3 w-3 mr-1" /> Add Line
-                          </Button>
-                          <div className="pt-2 space-y-2">
+                          </div>
+
+                          {/* Legacy pricing lines */}
+                          <div className="pt-2 border-t border-border/30">
+                            <FieldLabel>Additional Line Items</FieldLabel>
+                            <div className="space-y-2 mt-1">
+                              {data.pricing.map((line, i) => (
+                                <div key={line.id} className="flex gap-2">
+                                  <Input value={line.label} onChange={(e) => { const p = [...data.pricing]; p[i] = { ...p[i], label: e.target.value }; update("pricing", p); }} placeholder="Line item" className="h-8 text-sm flex-1" />
+                                  <div className="relative w-28">
+                                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">$</span>
+                                    <Input value={line.amount} onChange={(e) => { const p = [...data.pricing]; p[i] = { ...p[i], amount: e.target.value }; update("pricing", p); }} placeholder="0.00" className="h-8 text-sm pl-5" />
+                                  </div>
+                                  <Button variant="travel-ghost" size="icon" onClick={() => update("pricing", data.pricing.filter((_, idx) => idx !== i))} className="h-8 w-8 text-muted-foreground/40 hover:text-destructive shrink-0">
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ))}
+                              <Button variant="travel-ghost" size="sm" onClick={() => update("pricing", [...data.pricing, createPricingLine()])} className="text-primary text-xs h-7">
+                                <Plus className="h-3 w-3 mr-1" /> Add Line
+                              </Button>
+                            </div>
+                          </div>
+
+                          <div className="pt-2 space-y-2 border-t border-border/30">
                             <div>
                               <FieldLabel>Payment Terms</FieldLabel>
                               <Input value={data.paymentTerms} onChange={(e) => update("paymentTerms", e.target.value)} className="h-8 text-sm" />
@@ -1552,6 +1616,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                         </div>
                       </CollapsibleSection>
                     );
+                  }
 
                   case "essentials":
                     return (
