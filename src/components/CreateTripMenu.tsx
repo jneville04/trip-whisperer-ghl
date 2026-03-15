@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Plus, BookOpen, Users } from "lucide-react";
-import { defaultProposal, type ProposalData } from "@/types/proposal";
+import { blankProposal, type ProposalData } from "@/types/proposal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -124,7 +124,7 @@ export default function CreateTripMenu() {
     if (!user) { setCreating(false); return; }
 
     const proposalData: ProposalData = {
-      ...defaultProposal,
+      ...blankProposal,
       proposalType: "proposal",
       clientName: clientName.trim(),
       destination: destination.trim(),
@@ -160,7 +160,7 @@ export default function CreateTripMenu() {
     if (!user) { setCreating(false); return; }
 
     const proposalData: ProposalData = {
-      ...defaultProposal,
+      ...blankProposal,
       proposalType: "group_booking",
       clientName: groupName.trim() || groupTripTitle.trim(),
       destination: groupDestination.trim(),
