@@ -28,6 +28,7 @@ export default function EditorPage() {
   const [shareId, setShareId] = useState("");
   const [dirty, setDirty] = useState(false);
   const [currentStatus, setCurrentStatus] = useState("draft");
+  const [editorSubPage, setEditorSubPage] = useState<EditorSubPage | null>(null);
 
   const statusMeta: Record<string, { label: string; badgeClassName: string }> = {
     draft: { label: "Draft", badgeClassName: "text-muted-foreground bg-muted/80" },
