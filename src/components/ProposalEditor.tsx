@@ -1315,7 +1315,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                               <div className="mb-3">
                                 <div className="mb-2">
                                   <FieldLabel>Location</FieldLabel>
-                                  <Input value={day.location} onChange={(e) => updateDay(dayIdx, { ...day, location: e.target.value })} placeholder="Lisbon" className="h-8 text-sm" />
+                                  <LocationAutocomplete value={day.location} onChange={(val) => updateDay(dayIdx, { ...day, location: val })} placeholder="Lisbon" className="h-8 text-sm" />
                                 </div>
                               </div>
                               <div className="space-y-2">
