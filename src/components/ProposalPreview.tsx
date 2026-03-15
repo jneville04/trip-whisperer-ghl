@@ -1,7 +1,32 @@
 import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, type Easing, AnimatePresence } from "framer-motion";
-import { MapPin, Calendar, Users, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe, PlaneTakeoff, PlaneLanding, BedDouble, MessageSquare, CheckCircle2, Sparkles, Ship, Anchor, Bus, ChevronDown } from "lucide-react";
+import {
+  MapPin,
+  Calendar,
+  Users,
+  Clock,
+  Utensils,
+  Hotel,
+  Camera,
+  Wine,
+  Plane,
+  ArrowRight,
+  Check,
+  Phone,
+  Mail,
+  Globe,
+  PlaneTakeoff,
+  PlaneLanding,
+  BedDouble,
+  MessageSquare,
+  CheckCircle2,
+  Sparkles,
+  Ship,
+  Anchor,
+  Bus,
+  ChevronDown,
+} from "lucide-react";
 import Lightbox from "@/components/Lightbox";
 import { parseAirportValue } from "@/components/AirportAutocomplete";
 import BookingModal from "@/components/BookingModal";
@@ -23,19 +48,26 @@ const easeOut: Easing = [0.25, 0.46, 0.45, 0.94];
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: (i: number) => ({
-    opacity: 1, y: 0,
+    opacity: 1,
+    y: 0,
     transition: { duration: 0.6, delay: i * 0.1, ease: easeOut },
   }),
 };
 
 function getActivityIcon(type: Activity["type"]) {
   switch (type) {
-    case "transport": return <Plane className="h-4 w-4" />;
-    case "hotel": return <Hotel className="h-4 w-4" />;
-    case "dining": return <Utensils className="h-4 w-4" />;
-    case "sightseeing": return <Camera className="h-4 w-4" />;
-    case "activity": return <Wine className="h-4 w-4" />;
-    default: return <Camera className="h-4 w-4" />;
+    case "transport":
+      return <Plane className="h-4 w-4" />;
+    case "hotel":
+      return <Hotel className="h-4 w-4" />;
+    case "dining":
+      return <Utensils className="h-4 w-4" />;
+    case "sightseeing":
+      return <Camera className="h-4 w-4" />;
+    case "activity":
+      return <Wine className="h-4 w-4" />;
+    default:
+      return <Camera className="h-4 w-4" />;
   }
 }
 
@@ -48,21 +80,38 @@ interface Props {
   onEditorSubPage?: (page: EditorSubPage) => void;
 }
 
-function ItinerarySection({ data, fadeUp, openLightbox }: { data: ProposalData; fadeUp: any; openLightbox: (images: { src: string; alt?: string }[], index?: number) => void }) {
+function ItinerarySection({
+  data,
+  fadeUp,
+  openLightbox,
+}: {
+  data: ProposalData;
+  fadeUp: any;
+  openLightbox: (images: { src: string; alt?: string }[], index?: number) => void;
+}) {
   const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {};
-    data.days.forEach((day, i) => { initial[day.id] = i === 0; });
+    data.days.forEach((day, i) => {
+      initial[day.id] = i === 0;
+    });
     return initial;
   });
 
   const toggleDay = (dayId: string) => {
-    setExpandedDays(prev => ({ ...prev, [dayId]: !prev[dayId] }));
+    setExpandedDays((prev) => ({ ...prev, [dayId]: !prev[dayId] }));
   };
 
   return (
     <section id="itinerary" className="pb-20 pt-20 bg-card">
       <div className="max-w-5xl mx-auto px-6">
-        <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-16">
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          custom={0}
+          className="text-center mb-16"
+        >
           <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Journey</p>
           <h2 className="font-display text-4xl font-bold text-foreground">Day-by-Day Itinerary</h2>
         </motion.div>
@@ -70,20 +119,39 @@ function ItinerarySection({ data, fadeUp, openLightbox }: { data: ProposalData; 
           {data.days.map((day, dayIdx) => {
             const isOpen = expandedDays[day.id] ?? false;
             return (
-              <motion.div key={day.id} variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-50px" }} custom={0}>
+              <motion.div
+                key={day.id}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-50px" }}
+                custom={0}
+              >
                 <button
                   onClick={() => toggleDay(day.id)}
                   className="w-full flex items-center justify-between gap-3 pb-4 pt-2 border-b border-border/40 cursor-pointer group text-left"
                 >
                   <div>
                     <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-1">
-                      <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-body font-semibold">Day {dayIdx + 1}</span>
-                      {day.date && <span className="text-sm text-muted-foreground font-body flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> {day.date}</span>}
-                      {day.location && <span className="text-sm text-muted-foreground font-body flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {day.location}</span>}
+                      <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-body font-semibold">
+                        Day {dayIdx + 1}
+                      </span>
+                      {day.date && (
+                        <span className="text-sm text-muted-foreground font-body flex items-center gap-1">
+                          <Calendar className="h-3.5 w-3.5" /> {day.date}
+                        </span>
+                      )}
+                      {day.location && (
+                        <span className="text-sm text-muted-foreground font-body flex items-center gap-1">
+                          <MapPin className="h-3.5 w-3.5" /> {day.location}
+                        </span>
+                      )}
                     </div>
                     <h3 className="font-display text-2xl sm:text-3xl font-bold text-foreground">{day.title}</h3>
                   </div>
-                  <ChevronDown className={`h-5 w-5 text-muted-foreground shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                  <ChevronDown
+                    className={`h-5 w-5 text-muted-foreground shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                  />
                 </button>
                 <AnimatePresence initial={false}>
                   {isOpen && (
@@ -100,23 +168,36 @@ function ItinerarySection({ data, fadeUp, openLightbox }: { data: ProposalData; 
                           const hasVideo = !!act.videoUrl;
                           return (
                             <div key={act.id || actIdx}>
-                              <div className={`flex flex-col ${hasImages || hasVideo ? 'sm:flex-row' : ''} gap-6`}>
+                              <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-6`}>
                                 <div className="flex-1">
                                   <div className="flex items-start gap-3">
                                     <div className="relative z-10 mt-1.5 w-[13px] h-[13px] shrink-0 rounded-full border-2 border-primary bg-background" />
                                     <div className="flex-1">
                                       {act.time && (
-                                        <span className="text-xs font-semibold text-primary font-body flex items-center gap-1 mb-1"><Clock className="h-3 w-3" /> {act.time}</span>
+                                        <span className="text-xs font-semibold text-primary font-body flex items-center gap-1 mb-1">
+                                          <Clock className="h-3 w-3" /> {act.time}
+                                        </span>
                                       )}
-                                      <p className="font-display text-lg font-bold text-foreground">{act.title || "Untitled Activity"}</p>
-                                      {act.description && <p className="text-sm text-muted-foreground font-body mt-1.5 leading-relaxed">{act.description}</p>}
+                                      <p className="font-display text-lg font-bold text-foreground">
+                                        {act.title || "Untitled Activity"}
+                                      </p>
+                                      {act.description && (
+                                        <p className="text-sm text-muted-foreground font-body mt-1.5 leading-relaxed">
+                                          {act.description}
+                                        </p>
+                                      )}
                                     </div>
                                   </div>
                                 </div>
                                 {hasImages && (
                                   <div
                                     className="sm:w-[260px] md:w-[300px] h-[180px] sm:h-[200px] shrink-0 rounded-xl overflow-hidden cursor-pointer group relative"
-                                    onClick={() => openLightbox(act.imageUrls!.map((u) => ({ src: u, alt: act.title })), 0)}
+                                    onClick={() =>
+                                      openLightbox(
+                                        act.imageUrls!.map((u) => ({ src: u, alt: act.title })),
+                                        0,
+                                      )
+                                    }
                                   >
                                     <img
                                       src={act.imageUrls![0]}
@@ -132,13 +213,23 @@ function ItinerarySection({ data, fadeUp, openLightbox }: { data: ProposalData; 
                                 )}
                                 {hasVideo && !hasImages && (
                                   <div className="sm:w-[260px] md:w-[300px] shrink-0">
-                                    <VideoEmbed url={act.videoUrl!} title={act.title} thumbnailUrl={act.videoThumbnailUrl} className="rounded-xl" />
+                                    <VideoEmbed
+                                      url={act.videoUrl!}
+                                      title={act.title}
+                                      thumbnailUrl={act.videoThumbnailUrl}
+                                      className="rounded-xl"
+                                    />
                                   </div>
                                 )}
                               </div>
                               {hasVideo && hasImages && (
                                 <div className="mt-4">
-                                  <VideoEmbed url={act.videoUrl!} title={act.title} thumbnailUrl={act.videoThumbnailUrl} className="max-w-md" />
+                                  <VideoEmbed
+                                    url={act.videoUrl!}
+                                    title={act.title}
+                                    thumbnailUrl={act.videoThumbnailUrl}
+                                    className="max-w-md"
+                                  />
                                 </div>
                               )}
                             </div>
@@ -181,31 +272,84 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
   const [selectedCruise, setSelectedCruise] = useState<string>("");
   const [selectedBusTrip, setSelectedBusTrip] = useState<string>("");
   const [selectedPricingOption, setSelectedPricingOption] = useState<string>("");
-  const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, cruiseShips: true, busTrips: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
-  const brandData = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "", showAgencyNameWithLogo: true };
+  const vis = data.sectionVisibility || {
+    hero: true,
+    overview: true,
+    flights: true,
+    accommodations: true,
+    cruiseShips: true,
+    busTrips: true,
+    itinerary: true,
+    inclusions: true,
+    pricing: true,
+    essentials: true,
+    terms: true,
+    agent: true,
+  };
+  const brandData = data.brand || {
+    primaryColor: "",
+    secondaryColor: "",
+    accentColor: "",
+    logoUrl: "",
+    showAgencyNameWithLogo: true,
+  };
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
   const flightOptions = data.flightOptions || [];
   const accommodations = data.accommodations || [];
   const cruiseShips = data.cruiseShips || [];
   const busTrips = data.busTrips || [];
   const pricingOptions = data.pricingOptions || [];
-  const agent = data.agent || { name: "", title: "", phone: "", email: "", website: "", agencyName: "", logoUrl: "", photoUrl: "" };
-  const essentials = data.essentials || { visaRequirements: "", passportInfo: "", currency: "", language: "", timeZone: "", weatherInfo: "", packingTips: "", emergencyContacts: "" };
-  const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
+  const agent = data.agent || {
+    name: "",
+    title: "",
+    phone: "",
+    email: "",
+    website: "",
+    agencyName: "",
+    logoUrl: "",
+    photoUrl: "",
+  };
+  const essentials = data.essentials || {
+    visaRequirements: "",
+    passportInfo: "",
+    currency: "",
+    language: "",
+    timeZone: "",
+    weatherInfo: "",
+    packingTips: "",
+    emergencyContacts: "",
+  };
+  const terms = data.terms || {
+    cancellationPolicy: "",
+    travelInsurance: "",
+    bookingTerms: "",
+    liability: "",
+    showCancellation: true,
+    showInsurance: true,
+    showBookingTerms: true,
+    showLiability: true,
+  };
 
   const brandStyles = useMemo(() => buildBrandCssVars(brandData), [brandData]);
   const showAgencyNameWithLogo = brandData.showAgencyNameWithLogo ?? true;
 
   const sectionLabels: Record<SectionKey, string> = {
-    overview: "Overview", flights: "Flights", accommodations: "Hotels",
-    cruiseShips: "Cruise", busTrips: "Bus",
-    itinerary: "Itinerary", inclusions: "Included", pricing: "Pricing",
-    essentials: "Essentials", terms: "Terms", agent: "Advisor",
+    overview: "Overview",
+    flights: "Flights",
+    accommodations: "Hotels",
+    cruiseShips: "Cruise",
+    busTrips: "Bus",
+    itinerary: "Itinerary",
+    inclusions: "Included",
+    pricing: "Pricing",
+    essentials: "Essentials",
+    terms: "Terms",
+    agent: "Advisor",
   };
 
   const navItems = useMemo(() => {
     const hasContent: Record<string, boolean> = {
-      overview: !!(data.introText),
+      overview: !!data.introText,
       flights: flightOptions.length > 0,
       accommodations: accommodations.length > 0,
       cruiseShips: cruiseShips.length > 0,
@@ -213,9 +357,14 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
       itinerary: (data.days || []).length > 0,
       inclusions: (data.inclusions || []).length > 0,
       pricing: (data.pricing || []).length > 0 || (data.pricingOptions || []).length > 0,
-      essentials: !!(essentials.passportInfo || essentials.currency || essentials.weatherInfo || essentials.packingTips),
+      essentials: !!(
+        essentials.passportInfo ||
+        essentials.currency ||
+        essentials.weatherInfo ||
+        essentials.packingTips
+      ),
       terms: !!(terms.cancellationPolicy || terms.travelInsurance || terms.bookingTerms || terms.liability),
-      agent: !!(agent.name),
+      agent: !!agent.name,
     };
     return sectionOrder
       .filter((key) => key !== "agent" && vis[key] && hasContent[key])
@@ -244,7 +393,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
       onEditorSubPage("checkout");
       return;
     }
-    const selectedOpt = pricingOptions.find(o => o.id === selectedPricingOption) || null;
+    const selectedOpt = pricingOptions.find((o) => o.id === selectedPricingOption) || null;
     navigate(`/checkout${shareId ? `?share=${shareId}` : ""}`, {
       state: {
         brand: brandData,
@@ -253,7 +402,18 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
         tripName: data.clientName || data.destination || "",
       },
     });
-  }, [navigate, shareId, brandData, returnTo, pricingOptions, selectedPricingOption, data.clientName, data.destination, isEditor, onEditorSubPage]);
+  }, [
+    navigate,
+    shareId,
+    brandData,
+    returnTo,
+    pricingOptions,
+    selectedPricingOption,
+    data.clientName,
+    data.destination,
+    isEditor,
+    onEditorSubPage,
+  ]);
 
   const goToApprove = useCallback(() => {
     if (checkoutEnabled) {
@@ -270,7 +430,19 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
     } else {
       navigate(`/approve${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
     }
-  }, [navigate, shareId, brandData, returnTo, bookingUrl, approveUrl, openModal, checkoutEnabled, goToCheckout, isEditor, onEditorSubPage]);
+  }, [
+    navigate,
+    shareId,
+    brandData,
+    returnTo,
+    bookingUrl,
+    approveUrl,
+    openModal,
+    checkoutEnabled,
+    goToCheckout,
+    isEditor,
+    onEditorSubPage,
+  ]);
 
   const goToRevisions = useCallback(() => {
     if (isEditor && onEditorSubPage) {
@@ -284,7 +456,6 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
     }
   }, [navigate, shareId, brandData, returnTo, revisionsUrl, openModal, isEditor, onEditorSubPage]);
 
-
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
       {/* STICKY HEADER NAV */}
@@ -292,10 +463,16 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
           <div className="flex items-center gap-2 min-w-0">
             {brandData.logoUrl && (
-              <img src={brandData.logoUrl} alt={`${agent.agencyName || "Agency"} logo`} className="h-8 max-w-[120px] object-contain shrink-0" />
+              <img
+                src={brandData.logoUrl}
+                alt={`${agent.agencyName || "Agency"} logo`}
+                className="h-8 max-w-[120px] object-contain shrink-0"
+              />
             )}
             {(!brandData.logoUrl || showAgencyNameWithLogo) && (
-              <span className="font-display text-lg font-bold text-foreground truncate">{agent.agencyName || "Travel Co."}</span>
+              <span className="font-display text-lg font-bold text-foreground truncate">
+                {agent.agencyName || "Travel Co."}
+              </span>
             )}
           </div>
           <div className="hidden sm:flex items-center gap-1">
@@ -310,10 +487,15 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
             ))}
           </div>
           {isGroupBooking && (
-            <Button variant="travel" size="sm" className="text-xs" onClick={() => {
-              if (checkoutEnabled) goToCheckout();
-              else if (bookingUrl) openModal(bookingUrl, "Book Now");
-            }}>
+            <Button
+              variant="travel"
+              size="sm"
+              className="text-xs"
+              onClick={() => {
+                if (checkoutEnabled) goToCheckout();
+                else if (bookingUrl) openModal(bookingUrl, "Book Now");
+              }}
+            >
               Book Now
             </Button>
           )}
@@ -321,204 +503,220 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
       </nav>
 
       {/* HERO */}
-      {vis.hero && (() => {
-        // Collect all hero media assets
-        const isVideo = data.heroMediaType === "video" && !!data.heroVideoUrl;
-        const mainImg = data.heroImageUrl;
-        const sideImgs = (data.heroImageUrls || []).filter(Boolean);
-        const allReal = isVideo ? [data.heroVideoUrl!, ...sideImgs].filter(Boolean) : [mainImg, ...sideImgs].filter(Boolean) as string[];
-        const allHeroImgs = allReal.map((u, i) => ({
-          src: u,
-          alt: `${data.destination || "Hero"} ${i + 1}`,
-          isVideo: isVideo && i === 0,
-        }));
-        const count = allReal.length;
+      {vis.hero &&
+        (() => {
+          // Collect all hero media assets
+          const isVideo = data.heroMediaType === "video" && !!data.heroVideoUrl;
+          const mainImg = data.heroImageUrl;
+          const sideImgs = (data.heroImageUrls || []).filter(Boolean);
+          const allReal = isVideo
+            ? [data.heroVideoUrl!, ...sideImgs].filter(Boolean)
+            : ([mainImg, ...sideImgs].filter(Boolean) as string[]);
+          const allHeroImgs = allReal.map((u, i) => ({
+            src: u,
+            alt: `${data.destination || "Hero"} ${i + 1}`,
+            isVideo: isVideo && i === 0,
+          }));
+          const count = allReal.length;
 
-        if (count === 0 && !isVideo) return null;
+          if (count === 0 && !isVideo) return null;
 
-        const heroMediaBadge = count > 1 ? (
-          <button
-            onClick={(e) => { e.stopPropagation(); openLightbox(allHeroImgs, 0); }}
-            className="absolute bottom-3 right-3 z-10 flex items-center gap-1.5 md:hidden"
-            style={{ background: "rgba(0,0,0,0.55)", color: "white", borderRadius: 6, padding: "4px 10px", fontSize: 13 }}
-          >
-            <Camera className="h-3.5 w-3.5" />
-            <span>{count}</span>
-          </button>
-        ) : null;
+          const heroMediaBadge =
+            count > 1 ? (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openLightbox(allHeroImgs, 0);
+                }}
+                className="absolute bottom-3 right-3 z-10 flex items-center gap-1.5 md:hidden"
+                style={{
+                  background: "rgba(0,0,0,0.55)",
+                  color: "white",
+                  borderRadius: 6,
+                  padding: "4px 10px",
+                  fontSize: 13,
+                }}
+              >
+                <Camera className="h-3.5 w-3.5" />
+                <span>{count}</span>
+              </button>
+            ) : null;
 
-        const renderFirstAsset = (className: string, onClick?: () => void) => {
-          if (isVideo) {
+          const renderFirstAsset = (className: string, onClick?: () => void) => {
+            if (isVideo) {
+              return (
+                <div className={className} style={{ position: "relative" }}>
+                  <VideoEmbed
+                    url={data.heroVideoUrl!}
+                    title={data.destination}
+                    thumbnailUrl={data.heroVideoThumbnailUrl}
+                    className="!rounded-none !aspect-auto h-full w-full"
+                    autoplay={!!data.heroAutoplay}
+                    muted={!!data.heroMuted}
+                  />
+                </div>
+              );
+            }
             return (
-              <div className={className} style={{ position: "relative" }}>
-                <VideoEmbed
-                  url={data.heroVideoUrl!}
-                  title={data.destination}
-                  thumbnailUrl={data.heroVideoThumbnailUrl}
-                  className="!rounded-none !aspect-auto h-full w-full"
-                  autoplay={!!data.heroAutoplay}
-                  muted={!!data.heroMuted}
+              <div className={`${className} cursor-pointer`} onClick={onClick}>
+                <img
+                  src={allReal[0]}
+                  alt={data.destination}
+                  className="w-full h-full object-cover"
+                  loading="eager"
+                  decoding="async"
                 />
               </div>
             );
-          }
+          };
+
           return (
-            <div className={`${className} cursor-pointer`} onClick={onClick}>
-              <img
-                src={allReal[0]}
-                alt={data.destination}
-                className="w-full h-full object-cover"
-                
-                loading="eager"
-                decoding="async"
-              />
-            </div>
-          );
-        };
+            <section className="relative" style={{ width: "100%", marginLeft: 0, padding: 0 }}>
+              {/* Mobile: single asset + badge */}
+              <div className="md:hidden relative" style={{ width: "100%", aspectRatio: "5/2", maxHeight: 480 }}>
+                {renderFirstAsset("w-full h-full overflow-hidden", () => openLightbox(allHeroImgs, 0))}
+                {heroMediaBadge}
+              </div>
 
-        return (
-          <section className="relative w-full" style={{ background: "#ffffff" }}>
-            {/* Mobile: single first asset only */}
-            <div className="md:hidden relative">
-              {isVideo ? (
-                <VideoEmbed
-                  url={data.heroVideoUrl!}
-                  title={data.destination}
-                  thumbnailUrl={data.heroVideoThumbnailUrl}
-                  className="!rounded-none w-full"
-                  autoplay={!!data.heroAutoplay}
-                  muted={!!data.heroMuted}
-                />
-              ) : (
-                <div className="cursor-pointer relative" onClick={() => openLightbox(allHeroImgs, 0)}>
-                  <img
-                    src={allReal[0]}
-                    alt={data.destination}
-                    className="w-full object-cover"
-                    style={{ maxHeight: 400 }}
-                    loading="eager"
-                    decoding="async"
-                  />
-                  {heroMediaBadge}
-                </div>
-              )}
-            </div>
-
-            {/* Desktop */}
-            <div className="hidden md:block">
-              {count === 1 ? (
-                /* Single image — full width */
-                <div
-                  className="cursor-pointer"
-                  onClick={() => openLightbox(allHeroImgs, 0)}
-                >
-                  {isVideo ? (
-                    <VideoEmbed
-                      url={data.heroVideoUrl!}
-                      title={data.destination}
-                      thumbnailUrl={data.heroVideoThumbnailUrl}
-                      className="!rounded-none w-full"
-                      autoplay={!!data.heroAutoplay}
-                      muted={!!data.heroMuted}
-                    />
-                  ) : (
-                    <img
-                      src={allReal[0]}
-                      alt={data.destination}
-                      className="w-full object-cover"
-                      style={{ maxHeight: 520 }}
-                      loading="eager"
-                      decoding="async"
-                    />
-                  )}
-                </div>
-              ) : count === 2 ? (
-                /* 2 images side by side */
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
-                  {allReal.map((url, i) => (
-                    <div key={i} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i)}>
-                      {i === 0 && isVideo ? (
+              {/* Desktop */}
+              <div className="hidden md:block">
+                {count === 1 ? (
+                  <div
+                    className="overflow-hidden bg-muted cursor-pointer"
+                    style={{ width: "100%", aspectRatio: "5/2", maxHeight: 480 }}
+                    onClick={() => openLightbox(allHeroImgs, 0)}
+                  >
+                    {renderFirstAsset("w-full h-full", () => openLightbox(allHeroImgs, 0))}
+                  </div>
+                ) : count === 2 ? (
+                  <div
+                    className="overflow-hidden bg-muted"
+                    style={{ width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, height: "70vh" }}
+                  >
+                    {allReal.map((url, i) => {
+                      if (i === 0 && isVideo) {
+                        return (
+                          <div key={i} className="overflow-hidden h-full">
+                            <VideoEmbed
+                              url={data.heroVideoUrl!}
+                              title={data.destination}
+                              thumbnailUrl={data.heroVideoThumbnailUrl}
+                              className="!rounded-none !aspect-auto h-full w-full"
+                              autoplay={!!data.heroAutoplay}
+                              muted={!!data.heroMuted}
+                            />
+                          </div>
+                        );
+                      }
+                      return (
+                        <div
+                          key={i}
+                          className="overflow-hidden cursor-pointer h-full"
+                          onClick={() => openLightbox(allHeroImgs, i)}
+                        >
+                          <img
+                            src={url}
+                            alt={`${data.destination} ${i + 1}`}
+                            className="w-full h-full object-cover"
+                            loading={i === 0 ? "eager" : "lazy"}
+                            decoding="async"
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  /* 3+ assets: 2fr 1fr grid */
+                  <div
+                    className="overflow-hidden bg-muted"
+                    style={{ width: "100%", display: "grid", gridTemplateColumns: "2fr 1fr", gap: 4, height: "70vh" }}
+                  >
+                    <div className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
+                      {isVideo ? (
                         <VideoEmbed
                           url={data.heroVideoUrl!}
                           title={data.destination}
                           thumbnailUrl={data.heroVideoThumbnailUrl}
-                          className="!rounded-none w-full h-full"
+                          className="!rounded-none !aspect-auto h-full w-full"
                           autoplay={!!data.heroAutoplay}
                           muted={!!data.heroMuted}
                         />
                       ) : (
                         <img
-                          src={url}
-                          alt={`${data.destination} ${i + 1}`}
-                          className="w-full object-cover"
-                          style={{ height: 420 }}
-                          loading={i === 0 ? "eager" : "lazy"}
+                          src={allReal[0]}
+                          alt={data.destination}
+                          className="w-full h-full object-cover"
+                          loading="eager"
                           decoding="async"
                         />
                       )}
                     </div>
-                  ))}
-                </div>
-              ) : (
-                /* 3+ images: main left (2fr) + 2 stacked right (1fr) with white gaps */
-                <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 6, height: 480 }}>
-                  {/* Main image */}
-                  <div className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
-                    {isVideo ? (
-                      <VideoEmbed
-                        url={data.heroVideoUrl!}
-                        title={data.destination}
-                        thumbnailUrl={data.heroVideoThumbnailUrl}
-                        className="!rounded-none w-full h-full"
-                        autoplay={!!data.heroAutoplay}
-                        muted={!!data.heroMuted}
-                      />
-                    ) : (
-                      <img
-                        src={allReal[0]}
-                        alt={data.destination}
-                        className="w-full h-full object-cover"
-                        loading="eager"
-                        decoding="async"
-                      />
-                    )}
+                    <div style={{ display: "grid", gridTemplateRows: "1fr 1fr", gap: 4 }}>
+                      {allReal.slice(1, 3).map((url, i) => (
+                        <div
+                          key={i}
+                          className="overflow-hidden cursor-pointer"
+                          onClick={() => openLightbox(allHeroImgs, i + 1)}
+                        >
+                          <img
+                            src={url}
+                            alt={`${data.destination} ${i + 2}`}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  {/* Two stacked equal images */}
-                  <div style={{ display: "grid", gridTemplateRows: "1fr 1fr", gap: 6, height: "100%" }}>
-                    {allReal.slice(1, 3).map((url, i) => (
-                      <div key={i} className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i + 1)}>
-                        <img
-                          src={url}
-                          alt={`${data.destination} ${i + 2}`}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </section>
-        );
-      })()}
+                )}
+              </div>
+            </section>
+          );
+        })()}
 
       {/* Title section below hero */}
       {vis.hero && (
         <div className="max-w-5xl mx-auto px-6 py-10 text-center">
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight"
+          >
             {data.destination || "Your Destination"}
           </motion.h1>
           {data.subtitle && (
-            <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.2 }} className="font-display text-lg sm:text-xl text-muted-foreground mt-3 italic">
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="font-display text-lg sm:text-xl text-muted-foreground mt-3 italic"
+            >
               {data.subtitle}
             </motion.p>
           )}
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.4 }} className="flex items-center justify-center gap-4 mt-6 flex-wrap">
-            {data.travelDates && <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body"><Calendar className="h-4 w-4 text-primary" /> {data.travelDates}</span>}
-            {data.travelerCount && <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body"><Users className="h-4 w-4 text-primary" /> {data.travelerCount}</span>}
-            {data.destinationCount && <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body"><MapPin className="h-4 w-4 text-primary" /> {data.destinationCount}</span>}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="flex items-center justify-center gap-4 mt-6 flex-wrap"
+          >
+            {data.travelDates && (
+              <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body">
+                <Calendar className="h-4 w-4 text-primary" /> {data.travelDates}
+              </span>
+            )}
+            {data.travelerCount && (
+              <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body">
+                <Users className="h-4 w-4 text-primary" /> {data.travelerCount}
+              </span>
+            )}
+            {data.destinationCount && (
+              <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body">
+                <MapPin className="h-4 w-4 text-primary" /> {data.destinationCount}
+              </span>
+            )}
           </motion.div>
         </div>
       )}
@@ -532,13 +730,44 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
             return (
               <section key="overview" id="overview" className="py-20 px-6">
                 <div className="max-w-3xl mx-auto text-center">
-                  <motion.p variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Prepared Exclusively For</motion.p>
-                  <motion.h2 variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="font-display text-4xl sm:text-5xl font-bold text-foreground">
+                  <motion.p
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    custom={0}
+                    className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3"
+                  >
+                    Prepared Exclusively For
+                  </motion.p>
+                  <motion.h2
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    custom={1}
+                    className="font-display text-4xl sm:text-5xl font-bold text-foreground"
+                  >
                     {data.clientName || "Your Client"}
                   </motion.h2>
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2} className="w-16 h-0.5 bg-primary mx-auto mt-6 mb-8" />
+                  <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    custom={2}
+                    className="w-16 h-0.5 bg-primary mx-auto mt-6 mb-8"
+                  />
                   {data.introText && (
-                    <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={3} className="text-muted-foreground leading-relaxed text-lg font-body prose prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: data.introText }} />
+                    <motion.div
+                      variants={fadeUp}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true }}
+                      custom={3}
+                      className="text-muted-foreground leading-relaxed text-lg font-body prose prose-lg max-w-none"
+                      dangerouslySetInnerHTML={{ __html: data.introText }}
+                    />
                   )}
                 </div>
               </section>
@@ -549,10 +778,21 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
             return (
               <section key="flights" id="flights" className="py-20 bg-card">
                 <div className="max-w-4xl mx-auto px-6">
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
-                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Flights</p>
+                  <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    custom={0}
+                    className="text-center mb-12"
+                  >
+                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+                      Your Flights
+                    </p>
                     <h2 className="font-display text-4xl font-bold text-foreground">Air Travel</h2>
-                    {!isGroupBooking && flightOptions.length > 1 && <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>}
+                    {!isGroupBooking && flightOptions.length > 1 && (
+                      <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>
+                    )}
                   </motion.div>
                   <div className="space-y-8">
                     {flightOptions.map((opt, optIdx) => {
@@ -567,7 +807,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           custom={optIdx}
                           className={`bg-background rounded-2xl border-2 shadow-sm relative overflow-hidden transition-all ${
                             !isGroupBooking
-                              ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40 cursor-pointer"
+                              ? isSelected
+                                ? "border-primary ring-2 ring-primary/20"
+                                : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
                           onClick={() => !isGroupBooking && setSelectedFlight(isSelected ? "" : opt.id)}
@@ -575,8 +817,15 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           {/* Option header bar */}
                           {flightOptions.length > 1 && (
                             <div className="bg-primary/5 border-b border-border/30 px-6 py-3 flex items-center justify-between">
-                              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary font-body">Option {optIdx + 1} of {flightOptions.length}</span>
-                              {opt.price && <span className="font-display text-lg font-bold text-foreground">${opt.price}<span className="text-xs text-muted-foreground font-body ml-1">/ person</span></span>}
+                              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary font-body">
+                                Option {optIdx + 1} of {flightOptions.length}
+                              </span>
+                              {opt.price && (
+                                <span className="font-display text-lg font-bold text-foreground">
+                                  ${opt.price}
+                                  <span className="text-xs text-muted-foreground font-body ml-1">/ person</span>
+                                </span>
+                              )}
                             </div>
                           )}
 
@@ -588,11 +837,21 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                                 <div className="flex items-center justify-between mb-4">
                                   <div className="flex items-center gap-2">
                                     <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                      {leg.type === "departure" ? <PlaneTakeoff className="h-4 w-4 text-primary" /> : <PlaneLanding className="h-4 w-4 text-primary" />}
+                                      {leg.type === "departure" ? (
+                                        <PlaneTakeoff className="h-4 w-4 text-primary" />
+                                      ) : (
+                                        <PlaneLanding className="h-4 w-4 text-primary" />
+                                      )}
                                     </div>
-                                    <span className="font-body font-semibold text-foreground text-sm">{leg.type === "departure" ? "Departure" : "Return"}</span>
+                                    <span className="font-body font-semibold text-foreground text-sm">
+                                      {leg.type === "departure" ? "Departure" : "Return"}
+                                    </span>
                                   </div>
-                                  {leg.date && <span className="text-xs text-muted-foreground font-body bg-muted/50 px-2.5 py-1 rounded-full">{leg.date}</span>}
+                                  {leg.date && (
+                                    <span className="text-xs text-muted-foreground font-body bg-muted/50 px-2.5 py-1 rounded-full">
+                                      {leg.date}
+                                    </span>
+                                  )}
                                 </div>
 
                                 {/* Airport codes + flight path */}
@@ -601,12 +860,22 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                                   <div className="flex-1">
                                     {(() => {
                                       const ap = parseAirportValue(leg.departureAirport);
-                                      return <>
-                                        <p className="font-display text-3xl font-bold text-foreground leading-none">{ap.code || leg.departureAirport.slice(0, 3).toUpperCase() || "—"}</p>
-                                        <p className="text-xs text-muted-foreground font-body mt-1 truncate">{ap.city || leg.departureAirport}</p>
-                                      </>;
+                                      return (
+                                        <>
+                                          <p className="font-display text-3xl font-bold text-foreground leading-none">
+                                            {ap.code || leg.departureAirport.slice(0, 3).toUpperCase() || "—"}
+                                          </p>
+                                          <p className="text-xs text-muted-foreground font-body mt-1 truncate">
+                                            {ap.city || leg.departureAirport}
+                                          </p>
+                                        </>
+                                      );
                                     })()}
-                                    {leg.departureTime && <p className="text-sm font-semibold text-foreground font-body mt-1">{leg.departureTime}</p>}
+                                    {leg.departureTime && (
+                                      <p className="text-sm font-semibold text-foreground font-body mt-1">
+                                        {leg.departureTime}
+                                      </p>
+                                    )}
                                   </div>
 
                                   {/* Flight path visual */}
@@ -620,7 +889,8 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                                     </div>
                                     {(leg.airline || leg.flightNumber) && (
                                       <p className="text-[10px] text-muted-foreground font-body whitespace-nowrap">
-                                        {leg.airline}{leg.flightNumber ? ` · ${leg.flightNumber}` : ""}
+                                        {leg.airline}
+                                        {leg.flightNumber ? ` · ${leg.flightNumber}` : ""}
                                       </p>
                                     )}
                                   </div>
@@ -629,12 +899,22 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                                   <div className="flex-1 text-right">
                                     {(() => {
                                       const ap = parseAirportValue(leg.arrivalAirport);
-                                      return <>
-                                        <p className="font-display text-3xl font-bold text-foreground leading-none">{ap.code || leg.arrivalAirport.slice(0, 3).toUpperCase() || "—"}</p>
-                                        <p className="text-xs text-muted-foreground font-body mt-1 truncate">{ap.city || leg.arrivalAirport}</p>
-                                      </>;
+                                      return (
+                                        <>
+                                          <p className="font-display text-3xl font-bold text-foreground leading-none">
+                                            {ap.code || leg.arrivalAirport.slice(0, 3).toUpperCase() || "—"}
+                                          </p>
+                                          <p className="text-xs text-muted-foreground font-body mt-1 truncate">
+                                            {ap.city || leg.arrivalAirport}
+                                          </p>
+                                        </>
+                                      );
                                     })()}
-                                    {leg.arrivalTime && <p className="text-sm font-semibold text-foreground font-body mt-1">{leg.arrivalTime}</p>}
+                                    {leg.arrivalTime && (
+                                      <p className="text-sm font-semibold text-foreground font-body mt-1">
+                                        {leg.arrivalTime}
+                                      </p>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -644,21 +924,47 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           {/* Footer: price (if single option) + selection */}
                           {(opt.price || !isGroupBooking) && (
                             <div className="bg-muted/30 border-t border-border/30 px-6 py-4 flex items-center justify-between">
-                              {opt.price && flightOptions.length <= 1 && <span className="font-display text-xl font-bold text-foreground">${opt.price}<span className="text-xs text-muted-foreground font-body ml-1">/ person</span></span>}
+                              {opt.price && flightOptions.length <= 1 && (
+                                <span className="font-display text-xl font-bold text-foreground">
+                                  ${opt.price}
+                                  <span className="text-xs text-muted-foreground font-body ml-1">/ person</span>
+                                </span>
+                              )}
                               {(!opt.price || flightOptions.length > 1) && <span />}
                               {!isGroupBooking && (
                                 <div className="flex items-center gap-2">
                                   {isSelected ? (
                                     <div className="flex items-center gap-1.5">
-                                      <Button variant="travel" size="sm" className="text-xs" onClick={(e) => e.stopPropagation()}>
+                                      <Button
+                                        variant="travel"
+                                        size="sm"
+                                        className="text-xs"
+                                        onClick={(e) => e.stopPropagation()}
+                                      >
                                         <Check className="h-3 w-3 mr-1" /> Option selected
                                       </Button>
-                                      <Button variant="travel-ghost" size="sm" className="text-xs text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); setSelectedFlight(""); }}>
+                                      <Button
+                                        variant="travel-ghost"
+                                        size="sm"
+                                        className="text-xs text-destructive hover:text-destructive"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setSelectedFlight("");
+                                        }}
+                                      >
                                         Cancel ✕
                                       </Button>
                                     </div>
                                   ) : (
-                                    <Button variant="travel-outline" size="sm" className="text-xs" onClick={(e) => { e.stopPropagation(); setSelectedFlight(opt.id); }}>
+                                    <Button
+                                      variant="travel-outline"
+                                      size="sm"
+                                      className="text-xs"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedFlight(opt.id);
+                                      }}
+                                    >
                                       Select option
                                     </Button>
                                   )}
@@ -679,10 +985,21 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
             return (
               <section key="accommodations" id="accommodations" className="py-20">
                 <div className="max-w-5xl mx-auto px-6">
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
-                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Where You'll Stay</p>
+                  <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    custom={0}
+                    className="text-center mb-12"
+                  >
+                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+                      Where You'll Stay
+                    </p>
                     <h2 className="font-display text-4xl font-bold text-foreground">Accommodations</h2>
-                    {!isGroupBooking && accommodations.length > 1 && <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>}
+                    {!isGroupBooking && accommodations.length > 1 && (
+                      <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>
+                    )}
                   </motion.div>
                   <div className="space-y-10">
                     {accommodations.map((acc) => {
@@ -706,7 +1023,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           custom={0}
                           className={`bg-card rounded-2xl border-2 shadow-lg overflow-hidden transition-all ${
                             !isGroupBooking
-                              ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40 cursor-pointer"
+                              ? isSelected
+                                ? "border-primary ring-2 ring-primary/20"
+                                : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
                           onClick={() => !isGroupBooking && setSelectedAccommodation(isSelected ? "" : acc.id)}
@@ -721,22 +1040,49 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           {showAccPhotos && allAccImages.length > 0 ? (
                             <div className={allAccImages.length === 1 ? "" : "grid grid-cols-3 md:grid-cols-4 gap-1"}>
                               {allAccImages.length === 1 ? (
-                                <div className="aspect-[21/9] overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, 0)}>
-                                  <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover" />
+                                <div
+                                  className="aspect-[21/9] overflow-hidden cursor-pointer"
+                                  onClick={() => openLightbox(allAccImages, 0)}
+                                >
+                                  <img
+                                    src={allAccImages[0].src}
+                                    alt={acc.hotelName}
+                                    className="w-full h-full object-cover"
+                                  />
                                 </div>
                               ) : (
                                 <>
-                                  <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, 0)}>
-                                    <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover" />
+                                  <div
+                                    className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer"
+                                    onClick={() => openLightbox(allAccImages, 0)}
+                                  >
+                                    <img
+                                      src={allAccImages[0].src}
+                                      alt={acc.hotelName}
+                                      className="w-full h-full object-cover"
+                                    />
                                   </div>
                                   {galleryUrls.slice(0, 6).map((url, gi) => (
-                                    <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allAccImages, gi + 1)}>
-                                      <img src={url} alt={`${acc.hotelName} ${gi + 2}`} className="w-full h-full object-cover" />
+                                    <div
+                                      key={gi}
+                                      className="aspect-[4/3] overflow-hidden cursor-pointer"
+                                      onClick={() => openLightbox(allAccImages, gi + 1)}
+                                    >
+                                      <img
+                                        src={url}
+                                        alt={`${acc.hotelName} ${gi + 2}`}
+                                        className="w-full h-full object-cover"
+                                      />
                                     </div>
                                   ))}
                                   {galleryUrls.length > 6 && (
-                                    <div className="aspect-[4/3] bg-muted/60 flex items-center justify-center cursor-pointer rounded-sm" onClick={() => openLightbox(allAccImages, 7)}>
-                                      <span className="text-sm font-body font-semibold text-muted-foreground">+{galleryUrls.length - 6} more</span>
+                                    <div
+                                      className="aspect-[4/3] bg-muted/60 flex items-center justify-center cursor-pointer rounded-sm"
+                                      onClick={() => openLightbox(allAccImages, 7)}
+                                    >
+                                      <span className="text-sm font-body font-semibold text-muted-foreground">
+                                        +{galleryUrls.length - 6} more
+                                      </span>
                                     </div>
                                   )}
                                 </>
@@ -744,22 +1090,40 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                             </div>
                           ) : (
                             <div className="p-4 sm:p-6 border-b border-border/30">
-                              <VideoEmbed url={acc.videoUrl!} title={acc.hotelName} thumbnailUrl={acc.videoThumbnailUrl} className="w-full" />
+                              <VideoEmbed
+                                url={acc.videoUrl!}
+                                title={acc.hotelName}
+                                thumbnailUrl={acc.videoThumbnailUrl}
+                                className="w-full"
+                              />
                             </div>
                           )}
                           <div className="p-6 sm:p-8">
                             <div className="flex items-start justify-between mb-3">
                               <div>
-                                <h3 className="font-display text-2xl font-bold text-foreground mb-1">{acc.hotelName || "Hotel"}</h3>
-                                <p className="text-sm text-muted-foreground font-body flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {acc.location}</p>
+                                <h3 className="font-display text-2xl font-bold text-foreground mb-1">
+                                  {acc.hotelName || "Hotel"}
+                                </h3>
+                                <p className="text-sm text-muted-foreground font-body flex items-center gap-1">
+                                  <MapPin className="h-3.5 w-3.5" /> {acc.location}
+                                </p>
                               </div>
                               <BedDouble className="h-6 w-6 text-primary mt-1 shrink-0" />
                             </div>
-                            {acc.roomType && <p className="font-body text-foreground font-semibold mt-3">{acc.roomType}</p>}
-                            {acc.description && <div className="text-sm text-muted-foreground font-body mt-2 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: acc.description }} />}
+                            {acc.roomType && (
+                              <p className="font-body text-foreground font-semibold mt-3">{acc.roomType}</p>
+                            )}
+                            {acc.description && (
+                              <div
+                                className="text-sm text-muted-foreground font-body mt-2 leading-relaxed prose prose-sm max-w-none"
+                                dangerouslySetInnerHTML={{ __html: acc.description }}
+                              />
+                            )}
                             {highlights.length > 0 && (
                               <div className="mt-4">
-                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">Highlights</p>
+                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">
+                                  Highlights
+                                </p>
                                 <div className="space-y-1.5">
                                   {highlights.map((h, hi) => (
                                     <div key={hi} className="flex items-center gap-2 text-sm font-body text-foreground">
@@ -772,10 +1136,15 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                             )}
                             {amenities.length > 0 && (
                               <div className="mt-4 pt-4 border-t border-border/30">
-                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Amenities</p>
+                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">
+                                  Amenities
+                                </p>
                                 <div className="flex flex-wrap gap-2">
                                   {amenities.map((a, ai) => (
-                                    <span key={ai} className="inline-flex items-center gap-1.5 bg-muted/50 text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full border border-border/30">
+                                    <span
+                                      key={ai}
+                                      className="inline-flex items-center gap-1.5 bg-muted/50 text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full border border-border/30"
+                                    >
                                       <Check className="h-3 w-3 text-primary" /> {a}
                                     </span>
                                   ))}
@@ -783,30 +1152,63 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                               </div>
                             )}
                             <div className="flex items-center gap-6 mt-5 pt-4 border-t border-border/30 text-sm text-muted-foreground font-body">
-                              {acc.checkIn && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Check-in: {acc.checkIn}</span>}
-                              {acc.checkOut && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Check-out: {acc.checkOut}</span>}
+                              {acc.checkIn && (
+                                <span className="flex items-center gap-1.5">
+                                  <Calendar className="h-3.5 w-3.5" /> Check-in: {acc.checkIn}
+                                </span>
+                              )}
+                              {acc.checkOut && (
+                                <span className="flex items-center gap-1.5">
+                                  <Calendar className="h-3.5 w-3.5" /> Check-out: {acc.checkOut}
+                                </span>
+                              )}
                               {acc.nights && <span className="text-primary font-semibold">{acc.nights}</span>}
                             </div>
                             {(acc.price || !isGroupBooking) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
-                                {acc.price && <span className="font-display text-xl font-bold text-foreground">${acc.price}</span>}
+                                {acc.price && (
+                                  <span className="font-display text-xl font-bold text-foreground">${acc.price}</span>
+                                )}
                                 {!acc.price && <span />}
                                 {!isGroupBooking && (
                                   <div className="flex items-center gap-2">
                                     {accommodations.length > 1 && (
-                                      <span className="text-[10px] text-muted-foreground font-body">Option {accommodations.indexOf(acc) + 1} of {accommodations.length}</span>
+                                      <span className="text-[10px] text-muted-foreground font-body">
+                                        Option {accommodations.indexOf(acc) + 1} of {accommodations.length}
+                                      </span>
                                     )}
                                     {isSelected ? (
                                       <div className="flex items-center gap-1.5">
-                                        <Button variant="travel" size="sm" className="text-xs" onClick={(e) => e.stopPropagation()}>
+                                        <Button
+                                          variant="travel"
+                                          size="sm"
+                                          className="text-xs"
+                                          onClick={(e) => e.stopPropagation()}
+                                        >
                                           <Check className="h-3 w-3 mr-1" /> Option selected
                                         </Button>
-                                        <Button variant="travel-ghost" size="sm" className="text-xs text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); setSelectedAccommodation(""); }}>
+                                        <Button
+                                          variant="travel-ghost"
+                                          size="sm"
+                                          className="text-xs text-destructive hover:text-destructive"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setSelectedAccommodation("");
+                                          }}
+                                        >
                                           Cancel ✕
                                         </Button>
                                       </div>
                                     ) : (
-                                      <Button variant="travel-outline" size="sm" className="text-xs" onClick={(e) => { e.stopPropagation(); setSelectedAccommodation(acc.id); }}>
+                                      <Button
+                                        variant="travel-outline"
+                                        size="sm"
+                                        className="text-xs"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setSelectedAccommodation(acc.id);
+                                        }}
+                                      >
                                         Select option
                                       </Button>
                                     )}
@@ -828,8 +1230,17 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
             return (
               <section key="cruiseShips" id="cruiseShips" className="py-20">
                 <div className="max-w-5xl mx-auto px-6">
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
-                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Vessel</p>
+                  <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    custom={0}
+                    className="text-center mb-12"
+                  >
+                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+                      Your Vessel
+                    </p>
                     <h2 className="font-display text-4xl font-bold text-foreground">Cruise Ship & Cabin</h2>
                   </motion.div>
                   <div className="space-y-10">
@@ -854,7 +1265,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           custom={0}
                           className={`bg-card rounded-2xl border-2 shadow-lg overflow-hidden relative transition-all ${
                             !isGroupBooking
-                              ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40 cursor-pointer"
+                              ? isSelected
+                                ? "border-primary ring-2 ring-primary/20"
+                                : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
                           onClick={() => !isGroupBooking && setSelectedCruise(isSelected ? "" : ship.id)}
@@ -869,17 +1282,39 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           {showShipPhotos && allShipImages.length > 0 ? (
                             <div className={allShipImages.length === 1 ? "" : "grid grid-cols-3 md:grid-cols-4 gap-1"}>
                               {allShipImages.length === 1 ? (
-                                <div className="aspect-[21/9] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, 0)}>
-                                  <img src={allShipImages[0].src} alt={ship.shipName} className="w-full h-full object-cover" />
+                                <div
+                                  className="aspect-[21/9] overflow-hidden cursor-pointer"
+                                  onClick={() => openLightbox(allShipImages, 0)}
+                                >
+                                  <img
+                                    src={allShipImages[0].src}
+                                    alt={ship.shipName}
+                                    className="w-full h-full object-cover"
+                                  />
                                 </div>
                               ) : (
                                 <>
-                                  <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, 0)}>
-                                    <img src={ship.imageUrl} alt={ship.shipName} className="w-full h-full object-cover" />
+                                  <div
+                                    className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer"
+                                    onClick={() => openLightbox(allShipImages, 0)}
+                                  >
+                                    <img
+                                      src={ship.imageUrl}
+                                      alt={ship.shipName}
+                                      className="w-full h-full object-cover"
+                                    />
                                   </div>
                                   {galleryUrls.slice(0, 6).map((url, gi) => (
-                                    <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allShipImages, gi + 1)}>
-                                      <img src={url} alt={`${ship.shipName} ${gi + 2}`} className="w-full h-full object-cover" />
+                                    <div
+                                      key={gi}
+                                      className="aspect-[4/3] overflow-hidden cursor-pointer"
+                                      onClick={() => openLightbox(allShipImages, gi + 1)}
+                                    >
+                                      <img
+                                        src={url}
+                                        alt={`${ship.shipName} ${gi + 2}`}
+                                        className="w-full h-full object-cover"
+                                      />
                                     </div>
                                   ))}
                                 </>
@@ -887,33 +1322,55 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                             </div>
                           ) : showShipPhotos ? null : (
                             <div className="p-4 sm:p-6 border-b border-border/30">
-                              <VideoEmbed url={ship.videoUrl!} title={ship.shipName} thumbnailUrl={ship.videoThumbnailUrl} className="w-full" />
+                              <VideoEmbed
+                                url={ship.videoUrl!}
+                                title={ship.shipName}
+                                thumbnailUrl={ship.videoThumbnailUrl}
+                                className="w-full"
+                              />
                             </div>
                           )}
                           <div className="p-6 sm:p-8">
                             <div className="flex items-start justify-between mb-3">
                               <div>
-                                <h3 className="font-display text-2xl font-bold text-foreground mb-1">{ship.shipName || "Cruise Ship"}</h3>
-                                <p className="text-sm text-muted-foreground font-body flex items-center gap-1"><Ship className="h-3.5 w-3.5" /> {ship.cruiseLine}</p>
+                                <h3 className="font-display text-2xl font-bold text-foreground mb-1">
+                                  {ship.shipName || "Cruise Ship"}
+                                </h3>
+                                <p className="text-sm text-muted-foreground font-body flex items-center gap-1">
+                                  <Ship className="h-3.5 w-3.5" /> {ship.cruiseLine}
+                                </p>
                               </div>
                               <Anchor className="h-6 w-6 text-primary mt-1 shrink-0" />
                             </div>
                             {/* Cabin details */}
                             <div className="flex flex-wrap gap-3 mt-4">
                               {ship.cabinType && (
-                                <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-body font-semibold px-3 py-1.5 rounded-full">{ship.cabinType}</span>
+                                <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-body font-semibold px-3 py-1.5 rounded-full">
+                                  {ship.cabinType}
+                                </span>
                               )}
                               {ship.cabinNumber && (
-                                <span className="inline-flex items-center gap-1.5 bg-muted text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full">Cabin {ship.cabinNumber}</span>
+                                <span className="inline-flex items-center gap-1.5 bg-muted text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full">
+                                  Cabin {ship.cabinNumber}
+                                </span>
                               )}
                               {ship.deck && (
-                                <span className="inline-flex items-center gap-1.5 bg-muted text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full">{ship.deck}</span>
+                                <span className="inline-flex items-center gap-1.5 bg-muted text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full">
+                                  {ship.deck}
+                                </span>
                               )}
                             </div>
-                            {ship.description && <div className="text-sm text-muted-foreground font-body mt-4 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: ship.description }} />}
+                            {ship.description && (
+                              <div
+                                className="text-sm text-muted-foreground font-body mt-4 leading-relaxed prose prose-sm max-w-none"
+                                dangerouslySetInnerHTML={{ __html: ship.description }}
+                              />
+                            )}
                             {highlights.length > 0 && (
                               <div className="mt-4">
-                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">Highlights</p>
+                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">
+                                  Highlights
+                                </p>
                                 <div className="space-y-1.5">
                                   {highlights.map((h, hi) => (
                                     <div key={hi} className="flex items-center gap-2 text-sm font-body text-foreground">
@@ -926,10 +1383,15 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                             )}
                             {amenities.length > 0 && (
                               <div className="mt-4 pt-4 border-t border-border/30">
-                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Ship Amenities</p>
+                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">
+                                  Ship Amenities
+                                </p>
                                 <div className="flex flex-wrap gap-2">
                                   {amenities.map((a, ai) => (
-                                    <span key={ai} className="inline-flex items-center gap-1.5 bg-muted/50 text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full border border-border/30">
+                                    <span
+                                      key={ai}
+                                      className="inline-flex items-center gap-1.5 bg-muted/50 text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full border border-border/30"
+                                    >
                                       <Check className="h-3 w-3 text-primary" /> {a}
                                     </span>
                                   ))}
@@ -937,32 +1399,73 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                               </div>
                             )}
                             <div className="flex items-center gap-6 mt-5 pt-4 border-t border-border/30 text-sm text-muted-foreground font-body flex-wrap">
-                              {ship.embarkationPort && <span className="flex items-center gap-1.5"><Anchor className="h-3.5 w-3.5" /> Embark: {ship.embarkationPort}</span>}
-                              {ship.embarkationDate && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {ship.embarkationDate}</span>}
-                              {ship.disembarkationPort && <span className="flex items-center gap-1.5"><Anchor className="h-3.5 w-3.5" /> Disembark: {ship.disembarkationPort}</span>}
-                              {ship.disembarkationDate && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {ship.disembarkationDate}</span>}
+                              {ship.embarkationPort && (
+                                <span className="flex items-center gap-1.5">
+                                  <Anchor className="h-3.5 w-3.5" /> Embark: {ship.embarkationPort}
+                                </span>
+                              )}
+                              {ship.embarkationDate && (
+                                <span className="flex items-center gap-1.5">
+                                  <Calendar className="h-3.5 w-3.5" /> {ship.embarkationDate}
+                                </span>
+                              )}
+                              {ship.disembarkationPort && (
+                                <span className="flex items-center gap-1.5">
+                                  <Anchor className="h-3.5 w-3.5" /> Disembark: {ship.disembarkationPort}
+                                </span>
+                              )}
+                              {ship.disembarkationDate && (
+                                <span className="flex items-center gap-1.5">
+                                  <Calendar className="h-3.5 w-3.5" /> {ship.disembarkationDate}
+                                </span>
+                              )}
                               {ship.nights && <span className="text-primary font-semibold">{ship.nights} Nights</span>}
                             </div>
                             {(ship.price || !isGroupBooking) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
-                                {ship.price && <span className="font-display text-xl font-bold text-foreground">${ship.price}</span>}
+                                {ship.price && (
+                                  <span className="font-display text-xl font-bold text-foreground">${ship.price}</span>
+                                )}
                                 {!ship.price && <span />}
                                 {!isGroupBooking && (
                                   <div className="flex items-center gap-2">
                                     {cruiseShips.length > 1 && (
-                                      <span className="text-[10px] text-muted-foreground font-body">Option {cruiseShips.indexOf(ship) + 1} of {cruiseShips.length}</span>
+                                      <span className="text-[10px] text-muted-foreground font-body">
+                                        Option {cruiseShips.indexOf(ship) + 1} of {cruiseShips.length}
+                                      </span>
                                     )}
                                     {isSelected ? (
                                       <div className="flex items-center gap-1.5">
-                                        <Button variant="travel" size="sm" className="text-xs" onClick={(e) => e.stopPropagation()}>
+                                        <Button
+                                          variant="travel"
+                                          size="sm"
+                                          className="text-xs"
+                                          onClick={(e) => e.stopPropagation()}
+                                        >
                                           <Check className="h-3 w-3 mr-1" /> Option selected
                                         </Button>
-                                        <Button variant="travel-ghost" size="sm" className="text-xs text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); setSelectedCruise(""); }}>
+                                        <Button
+                                          variant="travel-ghost"
+                                          size="sm"
+                                          className="text-xs text-destructive hover:text-destructive"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setSelectedCruise("");
+                                          }}
+                                        >
                                           Cancel ✕
                                         </Button>
                                       </div>
                                     ) : (
-                                      <Button variant="travel-outline" size="sm" className="text-xs" onClick={(e) => { e.stopPropagation(); setSelectedCruise(ship.id); }}>
+                                      <Button
+                                        variant="travel-outline"
+                                        size="sm"
+                                        className="text-xs"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setSelectedCruise(ship.id);
+                                        }}
+                                      >
                                         Select option
                                       </Button>
                                     )}
@@ -984,8 +1487,17 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
             return (
               <section key="busTrips" id="busTrips" className="py-20">
                 <div className="max-w-5xl mx-auto px-6">
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
-                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Ground Transport</p>
+                  <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    custom={0}
+                    className="text-center mb-12"
+                  >
+                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+                      Ground Transport
+                    </p>
                     <h2 className="font-display text-4xl font-bold text-foreground">Bus Trips</h2>
                   </motion.div>
                   <div className="space-y-10">
@@ -1010,7 +1522,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           custom={0}
                           className={`bg-card rounded-2xl border-2 shadow-lg overflow-hidden relative transition-all ${
                             !isGroupBooking
-                              ? isSelected ? "border-primary ring-2 ring-primary/20" : "border-border/50 hover:border-primary/40 cursor-pointer"
+                              ? isSelected
+                                ? "border-primary ring-2 ring-primary/20"
+                                : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
                           onClick={() => !isGroupBooking && setSelectedBusTrip(isSelected ? "" : trip.id)}
@@ -1024,22 +1538,49 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           )}
                           {showVideo ? (
                             <div className="p-4 sm:p-6 border-b border-border/30">
-                              <VideoEmbed url={trip.videoUrl!} title={trip.routeName} thumbnailUrl={trip.videoThumbnailUrl} className="w-full" />
+                              <VideoEmbed
+                                url={trip.videoUrl!}
+                                title={trip.routeName}
+                                thumbnailUrl={trip.videoThumbnailUrl}
+                                className="w-full"
+                              />
                             </div>
                           ) : allTripImages.length > 0 ? (
                             <div className={allTripImages.length === 1 ? "" : "grid grid-cols-3 md:grid-cols-4 gap-1"}>
                               {allTripImages.length === 1 ? (
-                                <div className="aspect-[21/9] overflow-hidden cursor-pointer" onClick={() => openLightbox(allTripImages, 0)}>
-                                  <img src={allTripImages[0].src} alt={trip.routeName} className="w-full h-full object-cover" />
+                                <div
+                                  className="aspect-[21/9] overflow-hidden cursor-pointer"
+                                  onClick={() => openLightbox(allTripImages, 0)}
+                                >
+                                  <img
+                                    src={allTripImages[0].src}
+                                    alt={trip.routeName}
+                                    className="w-full h-full object-cover"
+                                  />
                                 </div>
                               ) : (
                                 <>
-                                  <div className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allTripImages, 0)}>
-                                    <img src={allTripImages[0].src} alt={trip.routeName} className="w-full h-full object-cover" />
+                                  <div
+                                    className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer"
+                                    onClick={() => openLightbox(allTripImages, 0)}
+                                  >
+                                    <img
+                                      src={allTripImages[0].src}
+                                      alt={trip.routeName}
+                                      className="w-full h-full object-cover"
+                                    />
                                   </div>
                                   {galleryUrls.slice(0, 6).map((url, gi) => (
-                                    <div key={gi} className="aspect-[4/3] overflow-hidden cursor-pointer" onClick={() => openLightbox(allTripImages, gi + 1)}>
-                                      <img src={url} alt={`${trip.routeName} ${gi + 2}`} className="w-full h-full object-cover" />
+                                    <div
+                                      key={gi}
+                                      className="aspect-[4/3] overflow-hidden cursor-pointer"
+                                      onClick={() => openLightbox(allTripImages, gi + 1)}
+                                    >
+                                      <img
+                                        src={url}
+                                        alt={`${trip.routeName} ${gi + 2}`}
+                                        className="w-full h-full object-cover"
+                                      />
                                     </div>
                                   ))}
                                 </>
@@ -1049,32 +1590,74 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           <div className="p-6 sm:p-8">
                             <div className="flex items-start justify-between mb-3">
                               <div>
-                                <h3 className="font-display text-2xl font-bold text-foreground mb-1">{trip.routeName || "Bus Trip"}</h3>
-                                {trip.busCompany && <p className="text-sm text-muted-foreground font-body flex items-center gap-1"><Bus className="h-3.5 w-3.5" /> {trip.busCompany}</p>}
+                                <h3 className="font-display text-2xl font-bold text-foreground mb-1">
+                                  {trip.routeName || "Bus Trip"}
+                                </h3>
+                                {trip.busCompany && (
+                                  <p className="text-sm text-muted-foreground font-body flex items-center gap-1">
+                                    <Bus className="h-3.5 w-3.5" /> {trip.busCompany}
+                                  </p>
+                                )}
                               </div>
                               <Bus className="h-6 w-6 text-primary mt-1 shrink-0" />
                             </div>
                             <div className="flex flex-wrap gap-3 mt-4">
-                              {trip.busType && <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-body font-semibold px-3 py-1.5 rounded-full">{trip.busType}</span>}
-                              {trip.seatType && <span className="inline-flex items-center gap-1.5 bg-muted text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full">{trip.seatType}</span>}
-                              {trip.duration && <span className="inline-flex items-center gap-1.5 bg-muted text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full"><Clock className="h-3 w-3" /> {trip.duration}</span>}
+                              {trip.busType && (
+                                <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-body font-semibold px-3 py-1.5 rounded-full">
+                                  {trip.busType}
+                                </span>
+                              )}
+                              {trip.seatType && (
+                                <span className="inline-flex items-center gap-1.5 bg-muted text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full">
+                                  {trip.seatType}
+                                </span>
+                              )}
+                              {trip.duration && (
+                                <span className="inline-flex items-center gap-1.5 bg-muted text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full">
+                                  <Clock className="h-3 w-3" /> {trip.duration}
+                                </span>
+                              )}
                             </div>
-                            {trip.description && <div className="text-sm text-muted-foreground font-body mt-4 leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: trip.description }} />}
+                            {trip.description && (
+                              <div
+                                className="text-sm text-muted-foreground font-body mt-4 leading-relaxed prose prose-sm max-w-none"
+                                dangerouslySetInnerHTML={{ __html: trip.description }}
+                              />
+                            )}
                             {/* Stops timeline */}
                             {stops.length > 0 && (
                               <div className="mt-5">
-                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Route Stops</p>
+                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">
+                                  Route Stops
+                                </p>
                                 <div className="space-y-0 relative ml-3">
                                   <div className="absolute left-[5px] top-2 bottom-2 w-0.5 bg-border" />
                                   {stops.map((stop, si) => (
                                     <div key={stop.id || si} className="relative pl-6 py-2">
                                       <div className="absolute left-0 top-3 w-3 h-3 rounded-full bg-primary border-2 border-background" />
-                                      <p className="text-sm font-body font-semibold text-foreground">{stop.locationAddress ? [stop.locationAddress.name, stop.locationAddress.address, stop.locationAddress.city, [stop.locationAddress.state, stop.locationAddress.zip].filter(Boolean).join(" ")].filter(Boolean).join(", ") : stop.location}</p>
+                                      <p className="text-sm font-body font-semibold text-foreground">
+                                        {stop.locationAddress
+                                          ? [
+                                              stop.locationAddress.name,
+                                              stop.locationAddress.address,
+                                              stop.locationAddress.city,
+                                              [stop.locationAddress.state, stop.locationAddress.zip]
+                                                .filter(Boolean)
+                                                .join(" "),
+                                            ]
+                                              .filter(Boolean)
+                                              .join(", ")
+                                          : stop.location}
+                                      </p>
                                       <div className="flex gap-3 text-xs text-muted-foreground font-body mt-0.5">
                                         {stop.arrivalTime && <span>Arrive: {stop.arrivalTime}</span>}
                                         {stop.departureTime && <span>Depart: {stop.departureTime}</span>}
                                       </div>
-                                      {stop.notes && <p className="text-xs text-muted-foreground/80 font-body mt-0.5 italic">{stop.notes}</p>}
+                                      {stop.notes && (
+                                        <p className="text-xs text-muted-foreground/80 font-body mt-0.5 italic">
+                                          {stop.notes}
+                                        </p>
+                                      )}
                                     </div>
                                   ))}
                                 </div>
@@ -1082,7 +1665,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                             )}
                             {highlights.length > 0 && (
                               <div className="mt-4">
-                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">Highlights</p>
+                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">
+                                  Highlights
+                                </p>
                                 <div className="space-y-1.5">
                                   {highlights.map((h, hi) => (
                                     <div key={hi} className="flex items-center gap-2 text-sm font-body text-foreground">
@@ -1095,10 +1680,15 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                             )}
                             {amenities.length > 0 && (
                               <div className="mt-4 pt-4 border-t border-border/30">
-                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Bus Amenities</p>
+                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">
+                                  Bus Amenities
+                                </p>
                                 <div className="flex flex-wrap gap-2">
                                   {amenities.map((a, ai) => (
-                                    <span key={ai} className="inline-flex items-center gap-1.5 bg-muted/50 text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full border border-border/30">
+                                    <span
+                                      key={ai}
+                                      className="inline-flex items-center gap-1.5 bg-muted/50 text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full border border-border/30"
+                                    >
                                       <Check className="h-3 w-3 text-primary" /> {a}
                                     </span>
                                   ))}
@@ -1106,37 +1696,108 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                               </div>
                             )}
                             <div className="flex items-center gap-6 mt-5 pt-4 border-t border-border/30 text-sm text-muted-foreground font-body flex-wrap">
-                              {(trip.pickupAddress || trip.pickupLocation) && <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> Pickup: {trip.pickupAddress ? [trip.pickupAddress.name, trip.pickupAddress.address, trip.pickupAddress.city, [trip.pickupAddress.state, trip.pickupAddress.zip].filter(Boolean).join(" ")].filter(Boolean).join(", ") : trip.pickupLocation}</span>}
-                              {trip.pickupDate && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {trip.pickupDate}</span>}
-                              {trip.pickupTime && <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> {trip.pickupTime}</span>}
+                              {(trip.pickupAddress || trip.pickupLocation) && (
+                                <span className="flex items-center gap-1.5">
+                                  <MapPin className="h-3.5 w-3.5" /> Pickup:{" "}
+                                  {trip.pickupAddress
+                                    ? [
+                                        trip.pickupAddress.name,
+                                        trip.pickupAddress.address,
+                                        trip.pickupAddress.city,
+                                        [trip.pickupAddress.state, trip.pickupAddress.zip].filter(Boolean).join(" "),
+                                      ]
+                                        .filter(Boolean)
+                                        .join(", ")
+                                    : trip.pickupLocation}
+                                </span>
+                              )}
+                              {trip.pickupDate && (
+                                <span className="flex items-center gap-1.5">
+                                  <Calendar className="h-3.5 w-3.5" /> {trip.pickupDate}
+                                </span>
+                              )}
+                              {trip.pickupTime && (
+                                <span className="flex items-center gap-1.5">
+                                  <Clock className="h-3.5 w-3.5" /> {trip.pickupTime}
+                                </span>
+                              )}
                             </div>
                             {(trip.dropoffLocation || trip.dropoffAddress || trip.dropoffDate || trip.dropoffTime) && (
                               <div className="flex items-center gap-6 mt-2 text-sm text-muted-foreground font-body flex-wrap">
-                                {(trip.dropoffAddress || trip.dropoffLocation) && <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5" /> Dropoff: {trip.dropoffAddress ? [trip.dropoffAddress.name, trip.dropoffAddress.address, trip.dropoffAddress.city, [trip.dropoffAddress.state, trip.dropoffAddress.zip].filter(Boolean).join(" ")].filter(Boolean).join(", ") : trip.dropoffLocation}</span>}
-                                {trip.dropoffDate && <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {trip.dropoffDate}</span>}
-                                {trip.dropoffTime && <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> {trip.dropoffTime}</span>}
+                                {(trip.dropoffAddress || trip.dropoffLocation) && (
+                                  <span className="flex items-center gap-1.5">
+                                    <MapPin className="h-3.5 w-3.5" /> Dropoff:{" "}
+                                    {trip.dropoffAddress
+                                      ? [
+                                          trip.dropoffAddress.name,
+                                          trip.dropoffAddress.address,
+                                          trip.dropoffAddress.city,
+                                          [trip.dropoffAddress.state, trip.dropoffAddress.zip]
+                                            .filter(Boolean)
+                                            .join(" "),
+                                        ]
+                                          .filter(Boolean)
+                                          .join(", ")
+                                      : trip.dropoffLocation}
+                                  </span>
+                                )}
+                                {trip.dropoffDate && (
+                                  <span className="flex items-center gap-1.5">
+                                    <Calendar className="h-3.5 w-3.5" /> {trip.dropoffDate}
+                                  </span>
+                                )}
+                                {trip.dropoffTime && (
+                                  <span className="flex items-center gap-1.5">
+                                    <Clock className="h-3.5 w-3.5" /> {trip.dropoffTime}
+                                  </span>
+                                )}
                               </div>
                             )}
                             {(trip.price || !isGroupBooking) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
-                                {trip.price && <span className="font-display text-xl font-bold text-foreground">${trip.price}</span>}
+                                {trip.price && (
+                                  <span className="font-display text-xl font-bold text-foreground">${trip.price}</span>
+                                )}
                                 {!trip.price && <span />}
                                 {!isGroupBooking && (
                                   <div className="flex items-center gap-2">
                                     {busTrips.length > 1 && (
-                                      <span className="text-[10px] text-muted-foreground font-body">Option {busTrips.indexOf(trip) + 1} of {busTrips.length}</span>
+                                      <span className="text-[10px] text-muted-foreground font-body">
+                                        Option {busTrips.indexOf(trip) + 1} of {busTrips.length}
+                                      </span>
                                     )}
                                     {isSelected ? (
                                       <div className="flex items-center gap-1.5">
-                                        <Button variant="travel" size="sm" className="text-xs" onClick={(e) => e.stopPropagation()}>
+                                        <Button
+                                          variant="travel"
+                                          size="sm"
+                                          className="text-xs"
+                                          onClick={(e) => e.stopPropagation()}
+                                        >
                                           <Check className="h-3 w-3 mr-1" /> Option selected
                                         </Button>
-                                        <Button variant="travel-ghost" size="sm" className="text-xs text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); setSelectedBusTrip(""); }}>
+                                        <Button
+                                          variant="travel-ghost"
+                                          size="sm"
+                                          className="text-xs text-destructive hover:text-destructive"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setSelectedBusTrip("");
+                                          }}
+                                        >
                                           Cancel ✕
                                         </Button>
                                       </div>
                                     ) : (
-                                      <Button variant="travel-outline" size="sm" className="text-xs" onClick={(e) => { e.stopPropagation(); setSelectedBusTrip(trip.id); }}>
+                                      <Button
+                                        variant="travel-outline"
+                                        size="sm"
+                                        className="text-xs"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setSelectedBusTrip(trip.id);
+                                        }}
+                                      >
                                         Select option
                                       </Button>
                                     )}
@@ -1155,20 +1816,34 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
 
           case "itinerary":
             if (data.days.length === 0) return null;
-            return (
-              <ItinerarySection key="itinerary" data={data} fadeUp={fadeUp} openLightbox={openLightbox} />
-            );
+            return <ItinerarySection key="itinerary" data={data} fadeUp={fadeUp} openLightbox={openLightbox} />;
 
           case "inclusions":
             if (data.inclusions.filter(Boolean).length === 0) return null;
             return (
               <section key="inclusions" id="inclusions" className="py-20">
                 <div className="max-w-4xl mx-auto px-6">
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
-                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Everything Taken Care Of</p>
+                  <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    custom={0}
+                    className="text-center mb-12"
+                  >
+                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+                      Everything Taken Care Of
+                    </p>
                     <h2 className="font-display text-4xl font-bold text-foreground">What's Included</h2>
                   </motion.div>
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-4">
+                  <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    custom={1}
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-4"
+                  >
                     {data.inclusions.filter(Boolean).map((item, i) => (
                       <div key={i} className="flex items-center gap-3 py-2 border-b border-border/50">
                         <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
@@ -1189,15 +1864,33 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
             return (
               <section key="pricing" id="pricing" className="py-20 bg-card">
                 <div className="max-w-4xl mx-auto px-6">
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
-                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Investment</p>
+                  <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    custom={0}
+                    className="text-center mb-12"
+                  >
+                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+                      Investment
+                    </p>
                     <h2 className="font-display text-4xl font-bold text-foreground">Choose Your Package</h2>
-                    {pricingOptions.length > 1 && <p className="text-muted-foreground font-body mt-2">Select the option that works best for you</p>}
+                    {pricingOptions.length > 1 && (
+                      <p className="text-muted-foreground font-body mt-2">Select the option that works best for you</p>
+                    )}
                   </motion.div>
 
                   {/* Pricing Options Cards — large & prominent */}
                   {pricingOptions.length > 0 && (
-                    <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className={`grid gap-6 mb-10 ${pricingOptions.length === 1 ? "max-w-lg mx-auto" : pricingOptions.length === 2 ? "grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"}`}>
+                    <motion.div
+                      variants={fadeUp}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true }}
+                      custom={1}
+                      className={`grid gap-6 mb-10 ${pricingOptions.length === 1 ? "max-w-lg mx-auto" : pricingOptions.length === 2 ? "grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"}`}
+                    >
                       {pricingOptions.map((opt) => {
                         const isSelected = selectedPricingOption === opt.id;
                         return (
@@ -1205,7 +1898,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                             key={opt.id}
                             onClick={() => setSelectedPricingOption(isSelected ? "" : opt.id)}
                             className={`relative bg-background rounded-2xl border-2 p-8 cursor-pointer transition-all text-left ${
-                              isSelected ? "border-primary ring-2 ring-primary/20 shadow-xl scale-[1.02]" : "border-border/50 hover:border-primary/40 hover:shadow-md"
+                              isSelected
+                                ? "border-primary ring-2 ring-primary/20 shadow-xl scale-[1.02]"
+                                : "border-border/50 hover:border-primary/40 hover:shadow-md"
                             }`}
                           >
                             {isSelected && (
@@ -1213,22 +1908,33 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                                 <Check className="h-4 w-4 text-primary-foreground" />
                               </div>
                             )}
-                            <h3 className="font-display text-xl font-bold text-foreground mb-3">{opt.name || "Untitled Option"}</h3>
+                            <h3 className="font-display text-xl font-bold text-foreground mb-3">
+                              {opt.name || "Untitled Option"}
+                            </h3>
                             {opt.totalPrice && (
-                              <p className="font-display text-3xl font-bold text-primary mb-4">{fmtCurrency(opt.totalPrice)}</p>
+                              <p className="font-display text-3xl font-bold text-primary mb-4">
+                                {fmtCurrency(opt.totalPrice)}
+                              </p>
                             )}
                             <div className="space-y-2">
                               {opt.deposit && (
-                                <p className="text-sm text-muted-foreground font-body">Deposit due today: <span className="font-semibold text-foreground">{fmtCurrency(opt.deposit)}</span></p>
+                                <p className="text-sm text-muted-foreground font-body">
+                                  Deposit due today:{" "}
+                                  <span className="font-semibold text-foreground">{fmtCurrency(opt.deposit)}</span>
+                                </p>
                               )}
                               {opt.finalPaymentDate && (
-                                <p className="text-sm text-muted-foreground font-body">Final payment due by {opt.finalPaymentDate}</p>
+                                <p className="text-sm text-muted-foreground font-body">
+                                  Final payment due by {opt.finalPaymentDate}
+                                </p>
                               )}
                               {opt.paymentNote && (
                                 <p className="text-sm text-muted-foreground font-body italic mt-1">{opt.paymentNote}</p>
                               )}
                               {opt.availabilityNote && (
-                                <p className="text-xs font-semibold text-accent font-body mt-3">{opt.availabilityNote}</p>
+                                <p className="text-xs font-semibold text-accent font-body mt-3">
+                                  {opt.availabilityNote}
+                                </p>
                               )}
                             </div>
                           </div>
@@ -1239,21 +1945,40 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
 
                   {/* Legacy pricing lines */}
                   {data.pricing.length > 0 && (
-                    <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2} className="bg-background rounded-2xl border border-border/50 shadow-lg p-10 max-w-2xl mx-auto mb-10">
+                    <motion.div
+                      variants={fadeUp}
+                      initial="hidden"
+                      whileInView="visible"
+                      viewport={{ once: true }}
+                      custom={2}
+                      className="bg-background rounded-2xl border border-border/50 shadow-lg p-10 max-w-2xl mx-auto mb-10"
+                    >
                       <div className="space-y-4">
                         {data.pricing.map((line) => (
-                          <div key={line.id} className="flex justify-between items-center py-2 border-b border-border/30 font-body">
+                          <div
+                            key={line.id}
+                            className="flex justify-between items-center py-2 border-b border-border/30 font-body"
+                          >
                             <span className="text-muted-foreground">{line.label}</span>
                             <span className="font-semibold text-foreground">{line.amount}</span>
                           </div>
                         ))}
                       </div>
-                      {data.paymentTerms && <p className="text-xs text-muted-foreground mt-4 font-body">{data.paymentTerms}</p>}
+                      {data.paymentTerms && (
+                        <p className="text-xs text-muted-foreground mt-4 font-body">{data.paymentTerms}</p>
+                      )}
                     </motion.div>
                   )}
 
                   {/* Book Now CTA for group trips — always visible */}
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={3} className="text-center">
+                  <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    custom={3}
+                    className="text-center"
+                  >
                     <Button
                       variant="travel"
                       size="lg"
@@ -1268,7 +1993,11 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                     >
                       Book Now
                     </Button>
-                    {data.validUntil && <p className="text-sm text-muted-foreground mt-4 font-body">This proposal is valid until {data.validUntil}</p>}
+                    {data.validUntil && (
+                      <p className="text-sm text-muted-foreground mt-4 font-body">
+                        This proposal is valid until {data.validUntil}
+                      </p>
+                    )}
                   </motion.div>
                 </div>
               </section>
@@ -1283,33 +2012,69 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
             return (
               <section key="terms" id="terms" className="py-20 bg-card">
                 <div className="max-w-4xl mx-auto px-6">
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
-                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Important Information</p>
+                  <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    custom={0}
+                    className="text-center mb-12"
+                  >
+                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+                      Important Information
+                    </p>
                     <h2 className="font-display text-4xl font-bold text-foreground">Terms & Conditions</h2>
                   </motion.div>
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="space-y-6">
+                  <motion.div
+                    variants={fadeUp}
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true }}
+                    custom={1}
+                    className="space-y-6"
+                  >
                     {terms.showCancellation !== false && terms.cancellationPolicy && (
                       <div className="bg-background rounded-xl border border-border/50 p-6">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Cancellation Policy</p>
-                        <div className="prose prose-sm max-w-none text-foreground font-body" dangerouslySetInnerHTML={{ __html: terms.cancellationPolicy }} />
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">
+                          Cancellation Policy
+                        </p>
+                        <div
+                          className="prose prose-sm max-w-none text-foreground font-body"
+                          dangerouslySetInnerHTML={{ __html: terms.cancellationPolicy }}
+                        />
                       </div>
                     )}
                     {terms.showInsurance !== false && terms.travelInsurance && (
                       <div className="bg-background rounded-xl border border-border/50 p-6">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Travel Insurance</p>
-                        <div className="prose prose-sm max-w-none text-foreground font-body" dangerouslySetInnerHTML={{ __html: terms.travelInsurance }} />
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">
+                          Travel Insurance
+                        </p>
+                        <div
+                          className="prose prose-sm max-w-none text-foreground font-body"
+                          dangerouslySetInnerHTML={{ __html: terms.travelInsurance }}
+                        />
                       </div>
                     )}
                     {terms.showBookingTerms !== false && terms.bookingTerms && (
                       <div className="bg-background rounded-xl border border-border/50 p-6">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Booking Terms</p>
-                        <div className="prose prose-sm max-w-none text-foreground font-body" dangerouslySetInnerHTML={{ __html: terms.bookingTerms }} />
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">
+                          Booking Terms
+                        </p>
+                        <div
+                          className="prose prose-sm max-w-none text-foreground font-body"
+                          dangerouslySetInnerHTML={{ __html: terms.bookingTerms }}
+                        />
                       </div>
                     )}
                     {terms.showLiability !== false && terms.liability && (
                       <div className="bg-background rounded-xl border border-border/50 p-6">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">Liability</p>
-                        <div className="prose prose-sm max-w-none text-foreground font-body" dangerouslySetInnerHTML={{ __html: terms.liability }} />
+                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">
+                          Liability
+                        </p>
+                        <div
+                          className="prose prose-sm max-w-none text-foreground font-body"
+                          dangerouslySetInnerHTML={{ __html: terms.liability }}
+                        />
                       </div>
                     )}
                   </motion.div>
@@ -1324,10 +2089,16 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
             return (
               <footer key="agent" className="py-16 px-6 border-t border-border/50 bg-card">
                 <div className="max-w-3xl mx-auto text-center">
-                  <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Travel Advisor</p>
+                  <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+                    Your Travel Advisor
+                  </p>
                   <div className="flex flex-col items-center gap-4 mb-6">
                     {agent.photoUrl && (
-                      <img src={agent.photoUrl} alt={agent.name} className="w-20 h-20 rounded-full object-cover border-2 border-primary/20" />
+                      <img
+                        src={agent.photoUrl}
+                        alt={agent.name}
+                        className="w-20 h-20 rounded-full object-cover border-2 border-primary/20"
+                      />
                     )}
                     <div>
                       <h3 className="font-display text-2xl font-bold text-foreground">{agent.name}</h3>
@@ -1336,11 +2107,36 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                     </div>
                   </div>
                   <div className="flex items-center justify-center gap-6 text-sm font-body text-muted-foreground flex-wrap">
-                    {agent.phone && <a href={`tel:${agent.phone.replace(/[^\d+]/g, '')}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Phone className="h-4 w-4" /> {agent.phone}</a>}
-                    {agent.email && <a href={`mailto:${agent.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-4 w-4" /> {agent.email}</a>}
-                    {agent.website && <a href={agent.website.startsWith('http') ? agent.website : `https://${agent.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Globe className="h-4 w-4" /> {agent.website}</a>}
+                    {agent.phone && (
+                      <a
+                        href={`tel:${agent.phone.replace(/[^\d+]/g, "")}`}
+                        className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                      >
+                        <Phone className="h-4 w-4" /> {agent.phone}
+                      </a>
+                    )}
+                    {agent.email && (
+                      <a
+                        href={`mailto:${agent.email}`}
+                        className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                      >
+                        <Mail className="h-4 w-4" /> {agent.email}
+                      </a>
+                    )}
+                    {agent.website && (
+                      <a
+                        href={agent.website.startsWith("http") ? agent.website : `https://${agent.website}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                      >
+                        <Globe className="h-4 w-4" /> {agent.website}
+                      </a>
+                    )}
                   </div>
-                  <p className="text-xs text-muted-foreground/60 mt-10 font-body">© 2026 {agent.agencyName} · All prices in USD · Subject to availability</p>
+                  <p className="text-xs text-muted-foreground/60 mt-10 font-body">
+                    © 2026 {agent.agencyName} · All prices in USD · Subject to availability
+                  </p>
                 </div>
               </footer>
             );
@@ -1354,14 +2150,28 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
       {!isGroupBooking && (
         <section id="pricing" className="py-20 bg-card border-t border-border/50">
           <div className="max-w-3xl mx-auto px-6">
-            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-10">
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              custom={0}
+              className="text-center mb-10"
+            >
               <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Investment</p>
               <h2 className="font-display text-4xl font-bold text-foreground">Trip Pricing</h2>
             </motion.div>
 
             {/* Pricing Options Cards — large & prominent */}
             {pricingOptions.length > 0 && (
-              <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className={`grid gap-6 mb-10 ${pricingOptions.length === 1 ? "max-w-lg mx-auto" : pricingOptions.length === 2 ? "grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"}`}>
+              <motion.div
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                custom={1}
+                className={`grid gap-6 mb-10 ${pricingOptions.length === 1 ? "max-w-lg mx-auto" : pricingOptions.length === 2 ? "grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"}`}
+              >
                 {pricingOptions.map((opt) => {
                   const isSelected = selectedPricingOption === opt.id;
                   return (
@@ -1369,7 +2179,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                       key={opt.id}
                       onClick={() => setSelectedPricingOption(isSelected ? "" : opt.id)}
                       className={`relative bg-background rounded-2xl border-2 p-8 cursor-pointer transition-all text-left ${
-                        isSelected ? "border-primary ring-2 ring-primary/20 shadow-xl scale-[1.02]" : "border-border/50 hover:border-primary/40 hover:shadow-md"
+                        isSelected
+                          ? "border-primary ring-2 ring-primary/20 shadow-xl scale-[1.02]"
+                          : "border-border/50 hover:border-primary/40 hover:shadow-md"
                       }`}
                     >
                       {isSelected && (
@@ -1377,16 +2189,25 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           <Check className="h-4 w-4 text-primary-foreground" />
                         </div>
                       )}
-                      <h3 className="font-display text-xl font-bold text-foreground mb-3">{opt.name || "Untitled Option"}</h3>
+                      <h3 className="font-display text-xl font-bold text-foreground mb-3">
+                        {opt.name || "Untitled Option"}
+                      </h3>
                       {opt.totalPrice && (
-                        <p className="font-display text-3xl font-bold text-primary mb-4">{fmtCurrency(opt.totalPrice)}</p>
+                        <p className="font-display text-3xl font-bold text-primary mb-4">
+                          {fmtCurrency(opt.totalPrice)}
+                        </p>
                       )}
                       <div className="space-y-2">
                         {opt.deposit && (
-                          <p className="text-sm text-muted-foreground font-body">Deposit due today: <span className="font-semibold text-foreground">{fmtCurrency(opt.deposit)}</span></p>
+                          <p className="text-sm text-muted-foreground font-body">
+                            Deposit due today:{" "}
+                            <span className="font-semibold text-foreground">{fmtCurrency(opt.deposit)}</span>
+                          </p>
                         )}
                         {opt.finalPaymentDate && (
-                          <p className="text-sm text-muted-foreground font-body">Final payment due by {opt.finalPaymentDate}</p>
+                          <p className="text-sm text-muted-foreground font-body">
+                            Final payment due by {opt.finalPaymentDate}
+                          </p>
                         )}
                         {opt.paymentNote && (
                           <p className="text-sm text-muted-foreground font-body italic mt-1">{opt.paymentNote}</p>
@@ -1401,7 +2222,14 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
               </motion.div>
             )}
 
-            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2} className="bg-background rounded-2xl border border-border/50 shadow-lg p-8">
+            <motion.div
+              variants={fadeUp}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              custom={2}
+              className="bg-background rounded-2xl border border-border/50 shadow-lg p-8"
+            >
               {/* Selected items summary */}
               <div className="space-y-4 mb-6">
                 {flightOptions.length > 0 && (
@@ -1411,7 +2239,23 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                       <span className="font-body text-foreground font-medium">Flight</span>
                     </div>
                     <span className="font-body text-sm">
-                      {selectedFlight ? (() => { const opt = flightOptions.find(o => o.id === selectedFlight); const dep = opt?.legs.find(l => l.type === "departure"); return <span className="text-foreground">{dep?.airline || "Selected"} — {dep?.departureAirport?.split("–")[0]?.trim()} → {dep?.arrivalAirport?.split("–")[0]?.trim()}{opt?.price ? <span className="ml-2 text-primary font-semibold">${opt.price}</span> : null}</span>; })() : <span className="text-muted-foreground italic text-xs">Not selected</span>}
+                      {selectedFlight ? (
+                        (() => {
+                          const opt = flightOptions.find((o) => o.id === selectedFlight);
+                          const dep = opt?.legs.find((l) => l.type === "departure");
+                          return (
+                            <span className="text-foreground">
+                              {dep?.airline || "Selected"} — {dep?.departureAirport?.split("–")[0]?.trim()} →{" "}
+                              {dep?.arrivalAirport?.split("–")[0]?.trim()}
+                              {opt?.price ? (
+                                <span className="ml-2 text-primary font-semibold">${opt.price}</span>
+                              ) : null}
+                            </span>
+                          );
+                        })()
+                      ) : (
+                        <span className="text-muted-foreground italic text-xs">Not selected</span>
+                      )}
                     </span>
                   </div>
                 )}
@@ -1422,7 +2266,19 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                       <span className="font-body text-foreground font-medium">Accommodation</span>
                     </div>
                     <span className="font-body text-sm">
-                      {selectedAccommodation ? (() => { const a = accommodations.find(a => a.id === selectedAccommodation); return <span className="text-foreground">{a?.hotelName || "Selected"}{a?.price ? <span className="ml-2 text-primary font-semibold">${a.price}</span> : null}</span>; })() : <span className="text-muted-foreground italic text-xs">Not selected</span>}
+                      {selectedAccommodation ? (
+                        (() => {
+                          const a = accommodations.find((a) => a.id === selectedAccommodation);
+                          return (
+                            <span className="text-foreground">
+                              {a?.hotelName || "Selected"}
+                              {a?.price ? <span className="ml-2 text-primary font-semibold">${a.price}</span> : null}
+                            </span>
+                          );
+                        })()
+                      ) : (
+                        <span className="text-muted-foreground italic text-xs">Not selected</span>
+                      )}
                     </span>
                   </div>
                 )}
@@ -1433,7 +2289,19 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                       <span className="font-body text-foreground font-medium">Cruise</span>
                     </div>
                     <span className="font-body text-sm">
-                      {selectedCruise ? (() => { const s = cruiseShips.find(s => s.id === selectedCruise); return <span className="text-foreground">{s?.shipName || "Selected"}{s?.price ? <span className="ml-2 text-primary font-semibold">${s.price}</span> : null}</span>; })() : <span className="text-muted-foreground italic text-xs">Not selected</span>}
+                      {selectedCruise ? (
+                        (() => {
+                          const s = cruiseShips.find((s) => s.id === selectedCruise);
+                          return (
+                            <span className="text-foreground">
+                              {s?.shipName || "Selected"}
+                              {s?.price ? <span className="ml-2 text-primary font-semibold">${s.price}</span> : null}
+                            </span>
+                          );
+                        })()
+                      ) : (
+                        <span className="text-muted-foreground italic text-xs">Not selected</span>
+                      )}
                     </span>
                   </div>
                 )}
@@ -1444,24 +2312,39 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                       <span className="font-body text-foreground font-medium">Bus Trip</span>
                     </div>
                     <span className="font-body text-sm">
-                      {selectedBusTrip ? (() => { const b = busTrips.find(b => b.id === selectedBusTrip); return <span className="text-foreground">{b?.routeName || "Selected"}{b?.price ? <span className="ml-2 text-primary font-semibold">${b.price}</span> : null}</span>; })() : <span className="text-muted-foreground italic text-xs">Not selected</span>}
+                      {selectedBusTrip ? (
+                        (() => {
+                          const b = busTrips.find((b) => b.id === selectedBusTrip);
+                          return (
+                            <span className="text-foreground">
+                              {b?.routeName || "Selected"}
+                              {b?.price ? <span className="ml-2 text-primary font-semibold">${b.price}</span> : null}
+                            </span>
+                          );
+                        })()
+                      ) : (
+                        <span className="text-muted-foreground italic text-xs">Not selected</span>
+                      )}
                     </span>
                   </div>
                 )}
                 {/* Selected pricing option */}
-                {selectedPricingOption && (() => {
-                  const opt = pricingOptions.find(o => o.id === selectedPricingOption);
-                  if (!opt) return null;
-                  return (
-                    <div className="flex justify-between items-center py-3 border-b border-border/30">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-primary" />
-                        <span className="font-body text-foreground font-medium">{opt.name}</span>
+                {selectedPricingOption &&
+                  (() => {
+                    const opt = pricingOptions.find((o) => o.id === selectedPricingOption);
+                    if (!opt) return null;
+                    return (
+                      <div className="flex justify-between items-center py-3 border-b border-border/30">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="h-4 w-4 text-primary" />
+                          <span className="font-body text-foreground font-medium">{opt.name}</span>
+                        </div>
+                        <span className="font-body text-sm text-primary font-semibold">
+                          {opt.totalPrice ? fmtCurrency(opt.totalPrice) : ""}
+                        </span>
                       </div>
-                      <span className="font-body text-sm text-primary font-semibold">{opt.totalPrice ? fmtCurrency(opt.totalPrice) : ""}</span>
-                    </div>
-                  );
-                })()}
+                    );
+                  })()}
               </div>
 
               {/* Additional pricing lines */}
@@ -1478,31 +2361,59 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
 
               {/* Dynamic Total */}
               {(() => {
-                const selectedFlightPrice = selectedFlight ? parseFloat(flightOptions.find(o => o.id === selectedFlight)?.price || "0") : 0;
-                const selectedAccPrice = selectedAccommodation ? parseFloat(accommodations.find(a => a.id === selectedAccommodation)?.price || "0") : 0;
-                const selectedCruisePrice = selectedCruise ? parseFloat(cruiseShips.find(s => s.id === selectedCruise)?.price || "0") : 0;
-                const selectedBusPrice = selectedBusTrip ? parseFloat(busTrips.find(b => b.id === selectedBusTrip)?.price || "0") : 0;
-                const pricingLinesTotal = data.pricing.reduce((sum, line) => sum + (parseFloat(line.amount.replace(/[^0-9.-]/g, "")) || 0), 0);
-                const selectedOptionPrice = selectedPricingOption ? parseFloat(pricingOptions.find(o => o.id === selectedPricingOption)?.totalPrice?.replace(/[^0-9.-]/g, "") || "0") : 0;
-                const total = selectedFlightPrice + selectedAccPrice + selectedCruisePrice + selectedBusPrice + pricingLinesTotal + selectedOptionPrice;
+                const selectedFlightPrice = selectedFlight
+                  ? parseFloat(flightOptions.find((o) => o.id === selectedFlight)?.price || "0")
+                  : 0;
+                const selectedAccPrice = selectedAccommodation
+                  ? parseFloat(accommodations.find((a) => a.id === selectedAccommodation)?.price || "0")
+                  : 0;
+                const selectedCruisePrice = selectedCruise
+                  ? parseFloat(cruiseShips.find((s) => s.id === selectedCruise)?.price || "0")
+                  : 0;
+                const selectedBusPrice = selectedBusTrip
+                  ? parseFloat(busTrips.find((b) => b.id === selectedBusTrip)?.price || "0")
+                  : 0;
+                const pricingLinesTotal = data.pricing.reduce(
+                  (sum, line) => sum + (parseFloat(line.amount.replace(/[^0-9.-]/g, "")) || 0),
+                  0,
+                );
+                const selectedOptionPrice = selectedPricingOption
+                  ? parseFloat(
+                      pricingOptions
+                        .find((o) => o.id === selectedPricingOption)
+                        ?.totalPrice?.replace(/[^0-9.-]/g, "") || "0",
+                    )
+                  : 0;
+                const total =
+                  selectedFlightPrice +
+                  selectedAccPrice +
+                  selectedCruisePrice +
+                  selectedBusPrice +
+                  pricingLinesTotal +
+                  selectedOptionPrice;
                 if (total > 0) {
                   return (
                     <div className="pt-4 border-t-2 border-primary/30 mb-6">
                       <div className="flex justify-between items-center">
                         <span className="font-display text-xl font-bold text-foreground">Estimated Total</span>
-                        <span className="font-display text-2xl font-bold text-primary">${total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                        <span className="font-display text-2xl font-bold text-primary">
+                          ${total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
                       </div>
                       {/* Show deposit from selected pricing option */}
-                      {selectedPricingOption && (() => {
-                        const opt = pricingOptions.find(o => o.id === selectedPricingOption);
-                        if (!opt?.deposit) return null;
-                        return (
-                          <div className="flex justify-between items-center mt-2">
-                            <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
-                            <span className="font-display text-lg font-bold text-accent">{fmtCurrency(opt.deposit)}</span>
-                          </div>
-                        );
-                      })()}
+                      {selectedPricingOption &&
+                        (() => {
+                          const opt = pricingOptions.find((o) => o.id === selectedPricingOption);
+                          if (!opt?.deposit) return null;
+                          return (
+                            <div className="flex justify-between items-center mt-2">
+                              <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
+                              <span className="font-display text-lg font-bold text-accent">
+                                {fmtCurrency(opt.deposit)}
+                              </span>
+                            </div>
+                          );
+                        })()}
                     </div>
                   );
                 }
@@ -1516,14 +2427,16 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                 const checkout = data.checkout;
                 if (!checkout?.enabled) return null;
                 if (selectedPricingOption) return null; // pricing option deposit takes precedence
-                const depositOpt = checkout.paymentOptions.find(o => o.enabled && o.type === "deposit");
+                const depositOpt = checkout.paymentOptions.find((o) => o.enabled && o.type === "deposit");
                 if (!depositOpt || !depositOpt.depositPercent) return null;
                 // depositPercent now stores dollar amount directly
                 const depositAmount = depositOpt.depositPercent;
                 return (
                   <div className="flex justify-between items-center pt-2 mb-4">
                     <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
-                    <span className="font-display text-lg font-bold text-accent">${depositAmount.toLocaleString()}</span>
+                    <span className="font-display text-lg font-bold text-accent">
+                      ${depositAmount.toLocaleString()}
+                    </span>
                   </div>
                 );
               })()}
@@ -1532,11 +2445,20 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                 <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>
                   <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
                 </Button>
-                <Button variant="travel-outline" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToRevisions}>
+                <Button
+                  variant="travel-outline"
+                  size="lg"
+                  className="text-lg px-10 py-6 h-auto"
+                  onClick={goToRevisions}
+                >
                   <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
                 </Button>
               </div>
-              {data.validUntil && <p className="text-sm text-muted-foreground mt-4 text-center font-body">This proposal is valid until {data.validUntil}</p>}
+              {data.validUntil && (
+                <p className="text-sm text-muted-foreground mt-4 text-center font-body">
+                  This proposal is valid until {data.validUntil}
+                </p>
+              )}
             </motion.div>
           </div>
         </section>
@@ -1546,10 +2468,16 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
       {!isGroupBooking && agent.name && (
         <footer className="py-16 px-6 border-t border-border/50 bg-card">
           <div className="max-w-3xl mx-auto text-center">
-            <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Travel Advisor</p>
+            <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+              Your Travel Advisor
+            </p>
             <div className="flex flex-col items-center gap-4 mb-6">
               {agent.photoUrl && (
-                <img src={agent.photoUrl} alt={agent.name} className="w-20 h-20 rounded-full object-cover border-2 border-primary/20" />
+                <img
+                  src={agent.photoUrl}
+                  alt={agent.name}
+                  className="w-20 h-20 rounded-full object-cover border-2 border-primary/20"
+                />
               )}
               <div>
                 <h3 className="font-display text-2xl font-bold text-foreground">{agent.name}</h3>
@@ -1558,17 +2486,52 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
               </div>
             </div>
             <div className="flex items-center justify-center gap-6 text-sm font-body text-muted-foreground flex-wrap">
-              {agent.phone && <a href={`tel:${agent.phone.replace(/[^\d+]/g, '')}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Phone className="h-4 w-4" /> {agent.phone}</a>}
-              {agent.email && <a href={`mailto:${agent.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-4 w-4" /> {agent.email}</a>}
-              {agent.website && <a href={agent.website.startsWith('http') ? agent.website : `https://${agent.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Globe className="h-4 w-4" /> {agent.website}</a>}
+              {agent.phone && (
+                <a
+                  href={`tel:${agent.phone.replace(/[^\d+]/g, "")}`}
+                  className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                >
+                  <Phone className="h-4 w-4" /> {agent.phone}
+                </a>
+              )}
+              {agent.email && (
+                <a
+                  href={`mailto:${agent.email}`}
+                  className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                >
+                  <Mail className="h-4 w-4" /> {agent.email}
+                </a>
+              )}
+              {agent.website && (
+                <a
+                  href={agent.website.startsWith("http") ? agent.website : `https://${agent.website}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                >
+                  <Globe className="h-4 w-4" /> {agent.website}
+                </a>
+              )}
             </div>
-            <p className="text-xs text-muted-foreground/60 mt-10 font-body">© 2026 {agent.agencyName} · All prices in USD · Subject to availability</p>
+            <p className="text-xs text-muted-foreground/60 mt-10 font-body">
+              © 2026 {agent.agencyName} · All prices in USD · Subject to availability
+            </p>
           </div>
         </footer>
       )}
 
-      <Lightbox images={lightboxImages} initialIndex={lightboxIndex} open={lightboxOpen} onClose={() => setLightboxOpen(false)} />
-      <BookingModal open={bookingOpen} onClose={() => setBookingOpen(false)} url={bookingModalUrl} agencyName={bookingModalTitle || agent.agencyName} />
+      <Lightbox
+        images={lightboxImages}
+        initialIndex={lightboxIndex}
+        open={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+      />
+      <BookingModal
+        open={bookingOpen}
+        onClose={() => setBookingOpen(false)}
+        url={bookingModalUrl}
+        agencyName={bookingModalTitle || agent.agencyName}
+      />
     </div>
   );
 }
