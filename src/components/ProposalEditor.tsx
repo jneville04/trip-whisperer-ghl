@@ -897,7 +897,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
                   case "cruiseShips":
                     return (
-                      <CollapsibleSection title={sectionTitles.cruiseShips} sectionKey="cruiseShips" visible={vis.cruiseShips} onToggleVisible={() => toggleSection("cruiseShips")} defaultOpen={false} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.cruiseShips} sectionKey="cruiseShips" visible={vis.cruiseShips} onToggleVisible={() => toggleSection("cruiseShips")} defaultOpen={false} sectionCustomTitle={customTitles.cruiseShips?.title} sectionCustomSubtitle={customTitles.cruiseShips?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("cruiseShips", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("cruiseShips", v)}>
                         <div className="space-y-4">
                           {cruiseShips.map((ship, i) => {
                             const shipAmenities = ship.amenities || [];
