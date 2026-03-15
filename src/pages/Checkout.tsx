@@ -1,7 +1,7 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { motion, type Easing } from "framer-motion";
-import { ArrowLeft, CheckCircle2, Loader2, Calendar, Users, Phone, Mail, Globe, CreditCard, MapPin } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Loader2, Calendar, Users, Phone, Mail, Globe, CreditCard, MapPin, GripHorizontal } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { buildBrandCssVars } from "@/lib/brand";
 import type { ProposalData, CheckoutSettings, PricingOption } from "@/types/proposal";
@@ -73,8 +73,51 @@ export default function CheckoutPage() {
 
   const resolvedTripName = tripName || proposalData?.clientName || proposalData?.destination || "";
 
-  const formHeight = checkout.formHeight || 1200;
   const isEmbeddedInEditor = location.pathname.includes("/editor") || (!!navState.returnTo && navState.returnTo.includes("/editor"));
+
+  // Drag-to-resize for iframe (editor only)
+  const [localFormHeight, setLocalFormHeight] = useState(checkout.formHeight || 1200);
+  const [isResizing, setIsResizing] = useState(false);
+  const isDragging = useRef(false);
+  const dragStartY = useRef(0);
+  const dragStartHeight = useRef(0);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    setLocalFormHeight(checkout.formHeight || 1200);
+  }, [checkout.formHeight]);
+
+  const saveFormHeight = useCallback(async (height: number) => {
+    if (!proposalData || !shareId) return;
+    const updated = { ...proposalData, checkout: { ...proposalData.checkout || createDefaultCheckout(), formHeight: height } };
+    await supabase.from("proposals").update({ data: updated as any }).eq("share_id", shareId);
+  }, [proposalData, shareId]);
+
+  const handleDragStart = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    isDragging.current = true;
+    setIsResizing(true);
+    dragStartY.current = e.clientY;
+    dragStartHeight.current = localFormHeight;
+    let latestHeight = localFormHeight;
+    if (iframeRef.current) iframeRef.current.style.pointerEvents = "none";
+    const handleMove = (ev: MouseEvent) => {
+      if (!isDragging.current) return;
+      const delta = ev.clientY - dragStartY.current;
+      latestHeight = Math.max(400, Math.min(5000, dragStartHeight.current + delta));
+      setLocalFormHeight(latestHeight);
+    };
+    const handleUp = () => {
+      isDragging.current = false;
+      setIsResizing(false);
+      if (iframeRef.current) iframeRef.current.style.pointerEvents = "";
+      document.removeEventListener("mousemove", handleMove);
+      document.removeEventListener("mouseup", handleUp);
+      saveFormHeight(latestHeight);
+    };
+    document.addEventListener("mousemove", handleMove);
+    document.addEventListener("mouseup", handleUp);
+  }, [localFormHeight, saveFormHeight]);
 
   // Calculate installments in dollar amounts
   const installments = useMemo(() => {
@@ -259,13 +302,28 @@ export default function CheckoutPage() {
       {/* ── SECTION 2: Booking Form ── */}
       <motion.section variants={fadeUp} initial="hidden" animate="visible" custom={2} className="max-w-[1400px] mx-auto px-4 md:px-6 pb-6">
         {iframeUrl ? (
-          <iframe
-            src={iframeUrl}
-            className="w-full bg-transparent rounded-xl"
-            style={{ height: `${formHeight}px`, border: "none" }}
-            title="Booking Form"
-            allow="payment"
-          />
+          <div className="relative">
+            <iframe
+              ref={iframeRef}
+              src={iframeUrl}
+              className="w-full bg-transparent rounded-xl"
+              style={{ height: `${localFormHeight}px`, border: "none" }}
+              title="Booking Form"
+              allow="payment"
+            />
+            {isEmbeddedInEditor && (
+              <div
+                onMouseDown={handleDragStart}
+                className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex items-center justify-center px-4 py-1.5 cursor-row-resize rounded-full bg-primary/90 text-primary-foreground shadow-lg hover:bg-primary transition-colors select-none"
+                style={{ zIndex: 20 }}
+              >
+                <GripHorizontal className="h-3.5 w-3.5 mr-1.5" />
+                <span className="text-[11px] font-body font-medium">
+                  {isResizing ? `${localFormHeight}px` : "Drag to resize"}
+                </span>
+              </div>
+            )}
+          </div>
         ) : (
           <div className="bg-card rounded-xl border border-border/30 px-6 py-12 text-center">
             <h2 className="font-display text-2xl font-bold text-foreground mb-3">Ready to Book?</h2>
