@@ -1554,7 +1554,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   case "pricing": {
                     const pricingOptions = data.pricingOptions || [];
                     return (
-                      <CollapsibleSection title={sectionTitles.pricing} defaultOpen={false} sectionKey="pricing" visible={vis.pricing} onToggleVisible={() => toggleSection("pricing")} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.pricing} defaultOpen={false} sectionKey="pricing" visible={vis.pricing} onToggleVisible={() => toggleSection("pricing")} sectionCustomTitle={customTitles.pricing?.title} sectionCustomSubtitle={customTitles.pricing?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("pricing", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("pricing", v)}>
                         <div className="space-y-4">
                           {/* Pricing Options */}
                           <div>
