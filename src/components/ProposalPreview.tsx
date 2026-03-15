@@ -378,7 +378,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
         return (
           <section className="relative" style={{ width: "100vw", marginLeft: "calc(50% - 50vw)", padding: 0 }}>
             {/* Mobile: single asset + badge */}
-            <div className="md:hidden relative" style={{ height: "60vw", minHeight: 240 }}>
+            <div className="md:hidden relative" style={{ height: "calc(100vh - 64px)", maxHeight: 480, minHeight: 320 }}>
               {renderFirstAsset("w-full h-full overflow-hidden", () => openLightbox(allHeroImgs, 0))}
               {heroMediaBadge}
             </div>
@@ -388,7 +388,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
               {count === 1 ? (
                 <div
                   className="overflow-hidden bg-muted cursor-pointer"
-                  style={{ minHeight: 480 }}
+                  style={{ height: "calc(100vh - 64px)", maxHeight: 480, minHeight: 320 }}
                   onClick={() => openLightbox(allHeroImgs, 0)}
                 >
                   {renderFirstAsset("w-full h-full", () => openLightbox(allHeroImgs, 0))}
@@ -396,7 +396,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
               ) : count === 2 ? (
                 <div
                   className="overflow-hidden bg-muted"
-                  style={{ display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: 480 }}
+                  style={{ display: "grid", gridTemplateColumns: "1fr 1fr", height: "calc(100vh - 64px)", maxHeight: 480, minHeight: 320 }}
                 >
                   {allReal.map((url, i) => {
                     if (i === 0 && isVideo) {
@@ -430,7 +430,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                 /* 3+ assets: 2fr 1fr grid */
                 <div
                   className="overflow-hidden bg-muted"
-                  style={{ display: "grid", gridTemplateColumns: "2fr 1fr", minHeight: 480 }}
+                  style={{ display: "grid", gridTemplateColumns: "2fr 1fr", height: "calc(100vh - 64px)", maxHeight: 480, minHeight: 320 }}
                 >
                   <div className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
                     {isVideo ? (
