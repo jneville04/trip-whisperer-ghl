@@ -124,7 +124,7 @@ export default function CreateTripMenu() {
     if (!user) { setCreating(false); return; }
 
     const proposalData: ProposalData = {
-      ...defaultProposal,
+      ...blankProposal,
       proposalType: "proposal",
       clientName: clientName.trim(),
       destination: destination.trim(),
