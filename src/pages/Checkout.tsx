@@ -137,34 +137,34 @@ export default function CheckoutPage() {
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
 
       {/* ── Compact top bar ── */}
-      <div className="border-b border-border/40 bg-card/60 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+      <div className="border-b border-border/30 bg-background sticky top-0 z-10">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-2.5 flex items-center justify-between gap-3">
           <button onClick={goBack} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors font-body">
             <ArrowLeft className="h-4 w-4" /> Back to Proposal
           </button>
           {brandData.logoUrl && (
-            <img src={brandData.logoUrl} alt="Agency logo" className="h-7 object-contain" />
+            <img src={brandData.logoUrl} alt="Agency logo" className="h-6 object-contain" />
           )}
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-body">
+          <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground font-body">
             <Shield className="h-3.5 w-3.5" /> Secure Booking
           </div>
         </div>
       </div>
 
       {/* ── Page header ── */}
-      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0} className="max-w-6xl mx-auto px-6 pt-12 pb-6">
-        <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground tracking-tight">
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0} className="max-w-[1400px] mx-auto px-4 md:px-6 pt-4 pb-2">
+        <h1 className="font-display text-xl md:text-2xl font-bold text-foreground tracking-tight">
           {checkout.headline || "Complete Your Booking"}
         </h1>
         {checkout.message && (
-          <p className="text-muted-foreground font-body mt-3 text-lg max-w-2xl">{checkout.message}</p>
+          <p className="text-muted-foreground font-body mt-1 text-sm max-w-3xl">{checkout.message}</p>
         )}
       </motion.div>
 
       {/* ── SECTION 1: Booking Summary ── */}
       {selectedOption && (
-        <motion.section variants={fadeUp} initial="hidden" animate="visible" custom={1} className="max-w-6xl mx-auto px-6 pb-10">
-          <div className="bg-card rounded-2xl border border-border/40 overflow-hidden">
+        <motion.section variants={fadeUp} initial="hidden" animate="visible" custom={1} className="max-w-[1400px] mx-auto px-4 md:px-6 pb-5">
+          <div className="bg-background rounded-xl border border-border/30 overflow-hidden">
             {/* Summary header band */}
             <div className="bg-primary/5 border-b border-primary/10 px-8 py-5">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -254,7 +254,7 @@ export default function CheckoutPage() {
 
       {/* Non-selected fallback */}
       {!selectedOption && resolvedTripName && (
-        <motion.section variants={fadeUp} initial="hidden" animate="visible" custom={1} className="max-w-6xl mx-auto px-6 pb-10">
+        <motion.section variants={fadeUp} initial="hidden" animate="visible" custom={1} className="max-w-[1400px] mx-auto px-4 md:px-6 pb-5">
           <div className="bg-card rounded-2xl border border-border/40 px-8 py-6">
             <h2 className="font-display text-2xl font-bold text-foreground">{resolvedTripName}</h2>
             {proposalData?.travelDates && (
@@ -265,25 +265,23 @@ export default function CheckoutPage() {
       )}
 
       {/* ── SECTION 2: Booking Form ── */}
-      <motion.section variants={fadeUp} initial="hidden" animate="visible" custom={2} className="max-w-6xl mx-auto px-6 pb-10">
+      <motion.section variants={fadeUp} initial="hidden" animate="visible" custom={2} className="max-w-[1400px] mx-auto px-4 md:px-6 pb-6">
         {iframeUrl ? (
-          <div className="bg-card rounded-2xl border border-border/40 overflow-hidden">
-            <div className="px-8 pt-6 pb-4 border-b border-border/30">
-              <h2 className="font-display text-2xl font-bold text-foreground">Traveler Information</h2>
-              <p className="text-sm text-muted-foreground font-body mt-1">Please fill in your details below to complete your booking.</p>
+          <div className="bg-background rounded-xl border border-border/30 overflow-hidden">
+            <div className="px-4 md:px-6 pt-3 pb-2 border-b border-border/20">
+              <h2 className="font-display text-lg md:text-xl font-bold text-foreground">Traveler Information</h2>
+              <p className="text-xs text-muted-foreground font-body mt-1">Please fill in your details below to complete your booking.</p>
             </div>
-            <div className="px-2 py-2">
-              <iframe
-                src={iframeUrl}
-                className="w-full bg-transparent"
-                style={{ minHeight: "800px", border: "none" }}
-                title="Booking Form"
-                allow="payment"
-              />
-            </div>
+            <iframe
+              src={iframeUrl}
+              className="w-full bg-transparent"
+              style={{ height: "1600px", minHeight: "calc(100vh - 120px)", border: "none" }}
+              title="Booking Form"
+              allow="payment"
+            />
           </div>
         ) : (
-          <div className="bg-card rounded-2xl border border-border/40 px-8 py-16 text-center">
+          <div className="bg-card rounded-xl border border-border/30 px-6 py-12 text-center">
             <h2 className="font-display text-2xl font-bold text-foreground mb-3">Ready to Book?</h2>
             <p className="text-muted-foreground font-body max-w-md mx-auto">
               Your travel advisor will provide booking instructions. Please contact them directly to complete your reservation.
@@ -300,8 +298,8 @@ export default function CheckoutPage() {
       {/* ── SECTION 3: Travel Advisor ── */}
       {agent.name && (
         <motion.footer variants={fadeUp} initial="hidden" animate="visible" custom={3} className="border-t border-border/40 bg-card/50">
-          <div className="max-w-6xl mx-auto px-6 py-16">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-8 max-w-2xl mx-auto">
+          <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-10">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 max-w-2xl mx-auto">
               {agent.photoUrl && (
                 <img src={agent.photoUrl} alt={agent.name} className="w-24 h-24 rounded-full object-cover border-2 border-primary/20 shrink-0" />
               )}
