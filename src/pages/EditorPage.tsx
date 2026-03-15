@@ -295,14 +295,25 @@ export default function EditorPage() {
 
       {/* Content */}
       <div className="flex-1 flex overflow-hidden">
-        {mode === "split" && panelOpen && (
+        {mode === "split" && panelOpen && !editorSubPage && (
           <div className="w-full max-w-lg border-r border-border/50 overflow-y-auto bg-background">
             <ProposalEditor data={data} onChange={handleChange} />
             <HelpdeskFooter />
           </div>
         )}
         <div className="flex-1 overflow-y-auto" style={builderBrandStyles as React.CSSProperties}>
-          <ProposalPreview data={previewData} shareId={shareId} isEditor />
+          {editorSubPage === "checkout" && (
+            <CheckoutPage />
+          )}
+          {editorSubPage === "approve" && (
+            <ApprovePage />
+          )}
+          {editorSubPage === "revisions" && (
+            <RevisionsPage />
+          )}
+          {!editorSubPage && (
+            <ProposalPreview data={previewData} shareId={shareId} isEditor onEditorSubPage={setEditorSubPage} />
+          )}
         </div>
       </div>
     </div>
