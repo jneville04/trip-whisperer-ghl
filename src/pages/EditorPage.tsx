@@ -4,7 +4,7 @@ import { Eye, EyeOff, PenLine, ArrowLeft, Save, ExternalLink, PanelLeftClose, Pa
 import { Button } from "@/components/ui/button";
 import ProposalEditor from "@/components/ProposalEditor";
 import ProposalPreview, { type EditorSubPage } from "@/components/ProposalPreview";
-import { defaultProposal, type ProposalData } from "@/types/proposal";
+import { defaultProposal, createDefaultCheckout, type ProposalData } from "@/types/proposal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { buildBrandCssVars } from "@/lib/brand";
@@ -39,6 +39,33 @@ export default function EditorPage() {
       setSearchParams({}, { replace: true });
     }
   }, [shareId, setSearchParams]);
+
+  useEffect(() => {
+    const handleCheckoutHeightUpdated = (event: Event) => {
+      const custom = event as CustomEvent<{ shareId?: string; height?: number }>;
+      const updatedShareId = custom.detail?.shareId;
+      const updatedHeight = custom.detail?.height;
+      if (!updatedHeight) return;
+      if (shareId && updatedShareId && updatedShareId !== shareId) return;
+
+      setData((prev) => {
+        const currentHeight = prev.checkout?.formHeight || 1200;
+        if (currentHeight === updatedHeight) return prev;
+        return {
+          ...prev,
+          checkout: {
+            ...(prev.checkout || createDefaultCheckout()),
+            formHeight: updatedHeight,
+          },
+        };
+      });
+    };
+
+    window.addEventListener("checkout-form-height-updated", handleCheckoutHeightUpdated);
+    return () => {
+      window.removeEventListener("checkout-form-height-updated", handleCheckoutHeightUpdated);
+    };
+  }, [shareId]);
 
   const statusMeta: Record<string, { label: string; badgeClassName: string }> = {
     draft: { label: "Draft", badgeClassName: "text-muted-foreground bg-muted/80" },

@@ -89,8 +89,15 @@ export default function CheckoutPage() {
 
   const saveFormHeight = useCallback(async (height: number) => {
     if (!proposalData || !shareId) return;
-    const updated = { ...proposalData, checkout: { ...proposalData.checkout || createDefaultCheckout(), formHeight: height } };
-    await supabase.from("proposals").update({ data: updated as any }).eq("share_id", shareId);
+    const nextCheckout = { ...(proposalData.checkout || createDefaultCheckout()), formHeight: height };
+    const updated = { ...proposalData, checkout: nextCheckout };
+    const { error } = await supabase.from("proposals").update({ data: updated as any }).eq("share_id", shareId);
+    if (error) {
+      console.error("Failed to save checkout form height:", error);
+      return;
+    }
+    setProposalData(updated);
+    window.dispatchEvent(new CustomEvent("checkout-form-height-updated", { detail: { shareId, height } }));
   }, [proposalData, shareId]);
 
   const handleDragStart = useCallback((e: React.MouseEvent) => {
