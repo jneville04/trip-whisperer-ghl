@@ -26,6 +26,29 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+function RequiredMark() {
+  return <span className="text-destructive ml-0.5">*</span>;
+}
+
+function FieldError({ message }: { message?: string }) {
+  if (!message) return null;
+  return <p className="text-destructive text-xs mt-1">{message}</p>;
+}
+
+type ProposalErrors = {
+  clientName?: string;
+  tripTitle?: string;
+  startDate?: string;
+  endDate?: string;
+};
+
+type GroupErrors = {
+  groupTripTitle?: string;
+  groupStartDate?: string;
+  groupEndDate?: string;
+  groupDestination?: string;
+};
+
 export default function CreateTripMenu() {
   const navigate = useNavigate();
   const [proposalOpen, setProposalOpen] = useState(false);
@@ -37,6 +60,7 @@ export default function CreateTripMenu() {
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
   const [destination, setDestination] = useState("");
+  const [proposalErrors, setProposalErrors] = useState<ProposalErrors>({});
 
   // Group fields
   const [groupTripTitle, setGroupTripTitle] = useState("");
@@ -44,6 +68,7 @@ export default function CreateTripMenu() {
   const [groupEndDate, setGroupEndDate] = useState<Date>();
   const [groupDestination, setGroupDestination] = useState("");
   const [groupName, setGroupName] = useState("");
+  const [groupErrors, setGroupErrors] = useState<GroupErrors>({});
 
   const [creating, setCreating] = useState(false);
 
@@ -53,6 +78,7 @@ export default function CreateTripMenu() {
     setStartDate(undefined);
     setEndDate(undefined);
     setDestination("");
+    setProposalErrors({});
   };
 
   const resetGroup = () => {
@@ -61,6 +87,7 @@ export default function CreateTripMenu() {
     setGroupEndDate(undefined);
     setGroupDestination("");
     setGroupName("");
+    setGroupErrors({});
   };
 
   const formatDateRange = (start?: Date, end?: Date) => {
@@ -70,11 +97,28 @@ export default function CreateTripMenu() {
     return "";
   };
 
+  const validateProposal = (): boolean => {
+    const errors: ProposalErrors = {};
+    if (!clientName.trim()) errors.clientName = "This field is required.";
+    if (!tripTitle.trim()) errors.tripTitle = "This field is required.";
+    if (!startDate) errors.startDate = "This field is required.";
+    if (!endDate) errors.endDate = "This field is required.";
+    setProposalErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const validateGroup = (): boolean => {
+    const errors: GroupErrors = {};
+    if (!groupTripTitle.trim()) errors.groupTripTitle = "This field is required.";
+    if (!groupStartDate) errors.groupStartDate = "This field is required.";
+    if (!groupEndDate) errors.groupEndDate = "This field is required.";
+    if (!groupDestination.trim()) errors.groupDestination = "This field is required.";
+    setGroupErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleCreateProposal = async () => {
-    if (!tripTitle.trim()) {
-      toast({ title: "Please enter a trip title", variant: "destructive" });
-      return;
-    }
+    if (!validateProposal()) return;
     setCreating(true);
     const user = (await supabase.auth.getUser()).data.user;
     if (!user) { setCreating(false); return; }
@@ -110,10 +154,7 @@ export default function CreateTripMenu() {
   };
 
   const handleCreateGroup = async () => {
-    if (!groupTripTitle.trim()) {
-      toast({ title: "Please enter a trip title", variant: "destructive" });
-      return;
-    }
+    if (!validateGroup()) return;
     setCreating(true);
     const user = (await supabase.auth.getUser()).data.user;
     if (!user) { setCreating(false); return; }
@@ -175,41 +216,71 @@ export default function CreateTripMenu() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
-              <Label htmlFor="clientName">Client Name</Label>
-              <Input id="clientName" placeholder="Search or enter client name..." value={clientName} onChange={(e) => setClientName(e.target.value)} />
+              <Label htmlFor="clientName">Client Name<RequiredMark /></Label>
+              <Input
+                id="clientName"
+                placeholder="Search or enter client name..."
+                value={clientName}
+                onChange={(e) => { setClientName(e.target.value); setProposalErrors((p) => ({ ...p, clientName: undefined })); }}
+                className={cn(proposalErrors.clientName && "border-destructive focus-visible:ring-destructive")}
+              />
+              <FieldError message={proposalErrors.clientName} />
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="tripTitle">Trip Title</Label>
-              <Input id="tripTitle" placeholder="e.g. Italy Adventure 2026" value={tripTitle} onChange={(e) => setTripTitle(e.target.value)} />
+              <Label htmlFor="tripTitle">Trip Title<RequiredMark /></Label>
+              <Input
+                id="tripTitle"
+                placeholder="e.g. Italy Adventure 2026"
+                value={tripTitle}
+                onChange={(e) => { setTripTitle(e.target.value); setProposalErrors((p) => ({ ...p, tripTitle: undefined })); }}
+                className={cn(proposalErrors.tripTitle && "border-destructive focus-visible:ring-destructive")}
+              />
+              <FieldError message={proposalErrors.tripTitle} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label>Start Date</Label>
+                <Label>Start Date<RequiredMark /></Label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !startDate && "text-muted-foreground")}>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !startDate && "text-muted-foreground",
+                        proposalErrors.startDate && "border-destructive"
+                      )}
+                    >
                       <CalendarIcon className="h-4 w-4 mr-2" />
                       {startDate ? format(startDate, "MMM d, yyyy") : "Pick date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar mode="single" selected={startDate} onSelect={setStartDate} className="p-3 pointer-events-auto" />
+                    <Calendar mode="single" selected={startDate} onSelect={(d) => { setStartDate(d); setProposalErrors((p) => ({ ...p, startDate: undefined })); }} className="p-3 pointer-events-auto" />
                   </PopoverContent>
                 </Popover>
+                <FieldError message={proposalErrors.startDate} />
               </div>
               <div className="space-y-1.5">
-                <Label>End Date</Label>
+                <Label>End Date<RequiredMark /></Label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !endDate && "text-muted-foreground")}>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !endDate && "text-muted-foreground",
+                        proposalErrors.endDate && "border-destructive"
+                      )}
+                    >
                       <CalendarIcon className="h-4 w-4 mr-2" />
                       {endDate ? format(endDate, "MMM d, yyyy") : "Pick date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar mode="single" selected={endDate} onSelect={setEndDate} className="p-3 pointer-events-auto" />
+                    <Calendar mode="single" selected={endDate} onSelect={(d) => { setEndDate(d); setProposalErrors((p) => ({ ...p, endDate: undefined })); }} className="p-3 pointer-events-auto" />
                   </PopoverContent>
                 </Popover>
+                <FieldError message={proposalErrors.endDate} />
               </div>
             </div>
             <div className="space-y-1.5">
@@ -234,42 +305,72 @@ export default function CreateTripMenu() {
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
-              <Label htmlFor="groupTripTitle">Group Trip Title</Label>
-              <Input id="groupTripTitle" placeholder="e.g. Portugal Group Tour 2026" value={groupTripTitle} onChange={(e) => setGroupTripTitle(e.target.value)} />
+              <Label htmlFor="groupTripTitle">Group Trip Title<RequiredMark /></Label>
+              <Input
+                id="groupTripTitle"
+                placeholder="e.g. Portugal Group Tour 2026"
+                value={groupTripTitle}
+                onChange={(e) => { setGroupTripTitle(e.target.value); setGroupErrors((p) => ({ ...p, groupTripTitle: undefined })); }}
+                className={cn(groupErrors.groupTripTitle && "border-destructive focus-visible:ring-destructive")}
+              />
+              <FieldError message={groupErrors.groupTripTitle} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <Label>Start Date</Label>
+                <Label>Start Date<RequiredMark /></Label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !groupStartDate && "text-muted-foreground")}>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !groupStartDate && "text-muted-foreground",
+                        groupErrors.groupStartDate && "border-destructive"
+                      )}
+                    >
                       <CalendarIcon className="h-4 w-4 mr-2" />
                       {groupStartDate ? format(groupStartDate, "MMM d, yyyy") : "Pick date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar mode="single" selected={groupStartDate} onSelect={setGroupStartDate} className="p-3 pointer-events-auto" />
+                    <Calendar mode="single" selected={groupStartDate} onSelect={(d) => { setGroupStartDate(d); setGroupErrors((p) => ({ ...p, groupStartDate: undefined })); }} className="p-3 pointer-events-auto" />
                   </PopoverContent>
                 </Popover>
+                <FieldError message={groupErrors.groupStartDate} />
               </div>
               <div className="space-y-1.5">
-                <Label>End Date</Label>
+                <Label>End Date<RequiredMark /></Label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !groupEndDate && "text-muted-foreground")}>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !groupEndDate && "text-muted-foreground",
+                        groupErrors.groupEndDate && "border-destructive"
+                      )}
+                    >
                       <CalendarIcon className="h-4 w-4 mr-2" />
                       {groupEndDate ? format(groupEndDate, "MMM d, yyyy") : "Pick date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar mode="single" selected={groupEndDate} onSelect={setGroupEndDate} className="p-3 pointer-events-auto" />
+                    <Calendar mode="single" selected={groupEndDate} onSelect={(d) => { setGroupEndDate(d); setGroupErrors((p) => ({ ...p, groupEndDate: undefined })); }} className="p-3 pointer-events-auto" />
                   </PopoverContent>
                 </Popover>
+                <FieldError message={groupErrors.groupEndDate} />
               </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="groupDestination">Destination(s)</Label>
-              <Input id="groupDestination" placeholder="e.g. Lisbon, Porto, Fátima" value={groupDestination} onChange={(e) => setGroupDestination(e.target.value)} />
+              <Label htmlFor="groupDestination">Destination(s)<RequiredMark /></Label>
+              <Input
+                id="groupDestination"
+                placeholder="e.g. Lisbon, Porto, Fátima"
+                value={groupDestination}
+                onChange={(e) => { setGroupDestination(e.target.value); setGroupErrors((p) => ({ ...p, groupDestination: undefined })); }}
+                className={cn(groupErrors.groupDestination && "border-destructive focus-visible:ring-destructive")}
+              />
+              <FieldError message={groupErrors.groupDestination} />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="groupName">Group Name <span className="text-muted-foreground text-xs">(optional)</span></Label>
