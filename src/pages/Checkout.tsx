@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { buildBrandCssVars } from "@/lib/brand";
 import type { ProposalData, CheckoutSettings, PricingOption } from "@/types/proposal";
 import { createDefaultCheckout } from "@/types/proposal";
+import ClientNav from "@/components/ClientNav";
 
 const fmtCurrency = (val: string) => {
   const num = parseFloat(val.replace(/[^0-9.-]/g, ""));
