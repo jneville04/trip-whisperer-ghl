@@ -74,6 +74,7 @@ export default function CheckoutPage() {
   const resolvedTripName = tripName || proposalData?.clientName || proposalData?.destination || "";
 
   const formHeight = checkout.formHeight || 1200;
+  const isEmbeddedInEditor = location.pathname.includes("/editor") || (!!navState.returnTo && navState.returnTo.includes("/editor"));
 
   // Calculate installments in dollar amounts
   const installments = useMemo(() => {
