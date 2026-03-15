@@ -166,31 +166,24 @@ export default function CheckoutPage() {
         <motion.section variants={fadeUp} initial="hidden" animate="visible" custom={1} className="max-w-[1400px] mx-auto px-4 md:px-6 pb-5">
           <div className="bg-background rounded-xl border border-border/30 overflow-hidden">
             {/* Summary header band */}
-            <div className="bg-primary/5 border-b border-primary/10 px-8 py-5">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div>
-                  {resolvedTripName && (
-                    <h2 className="font-display text-2xl font-bold text-foreground">{resolvedTripName}</h2>
-                  )}
-                  <div className="flex items-center gap-4 mt-2 text-sm font-body text-muted-foreground flex-wrap">
-                    {proposalData?.destination && (
-                      <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {proposalData.destination}</span>
-                    )}
-                    {proposalData?.travelDates && (
-                      <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> {proposalData.travelDates}</span>
-                    )}
-                    {proposalData?.travelerCount && (
-                      <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5" /> {proposalData.travelerCount} travelers</span>
-                    )}
-                  </div>
-                </div>
-                {selectedOption.totalPrice && (
-                  <div className="text-right">
-                    <p className="text-sm font-body text-muted-foreground">Total</p>
-                    <p className="font-display text-3xl font-bold text-foreground">{fmtCurrency(selectedOption.totalPrice)}</p>
-                  </div>
+            <div className="bg-primary/5 border-b border-primary/10 px-8 py-5 text-center">
+              {resolvedTripName && (
+                <h2 className="font-display text-2xl font-bold text-foreground">{resolvedTripName}</h2>
+              )}
+              <div className="flex items-center justify-center gap-4 mt-2 text-sm font-body text-muted-foreground flex-wrap">
+                {proposalData?.destination && (
+                  <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {proposalData.destination}</span>
+                )}
+                {proposalData?.travelDates && (
+                  <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> {proposalData.travelDates}</span>
+                )}
+                {proposalData?.travelerCount && (
+                  <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5" /> {proposalData.travelerCount} travelers</span>
                 )}
               </div>
+              {selectedOption.totalPrice && (
+                <p className="font-display text-3xl font-bold text-foreground mt-3">{fmtCurrency(selectedOption.totalPrice)}</p>
+              )}
             </div>
 
             {/* Selected option + payment details */}
