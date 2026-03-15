@@ -8,6 +8,8 @@ import { CSS } from "@dnd-kit/utilities";
 import DatePickerField from "@/components/DatePickerField";
 import TimePickerDropdown from "@/components/TimePickerDropdown";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
+import AirportAutocomplete from "@/components/AirportAutocomplete";
+import AirlineAutocomplete, { findAirlineCode } from "@/components/AirlineAutocomplete";
 import AddressFields, { type AddressData } from "@/components/AddressFields";
 import ImageUploadField from "@/components/ImageUploadField";
 import SortableImageGrid from "@/components/SortableImageGrid";
@@ -520,19 +522,30 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                   <div className="grid grid-cols-2 gap-2">
                                     <div>
                                       <FieldLabel>Airline</FieldLabel>
-                                      <Input value={leg.airline} onChange={(e) => updateFlightLeg(oi, li, "airline", e.target.value)} placeholder="TAP Air Portugal" className="h-7 text-xs" />
+                                      <AirlineAutocomplete
+                                        value={leg.airline}
+                                        onChange={(val, code) => {
+                                          const opts = [...(data.flightOptions || [])];
+                                          const legs = [...opts[oi].legs];
+                                          legs[li] = { ...legs[li], airline: val, airlineCode: code || findAirlineCode(val) };
+                                          opts[oi] = { ...opts[oi], legs };
+                                          update("flightOptions", opts);
+                                        }}
+                                        placeholder="TAP Air Portugal"
+                                        className="h-7 text-xs"
+                                      />
                                     </div>
                                     <div>
                                       <FieldLabel>Flight #</FieldLabel>
-                                      <Input value={leg.flightNumber} onChange={(e) => updateFlightLeg(oi, li, "flightNumber", e.target.value)} placeholder="TP 236" className="h-7 text-xs" />
+                                      <Input value={leg.flightNumber} onChange={(e) => updateFlightLeg(oi, li, "flightNumber", e.target.value)} placeholder={leg.airlineCode ? `${leg.airlineCode} 236` : "TP 236"} className="h-7 text-xs" />
                                     </div>
                                     <div>
                                       <FieldLabel>From</FieldLabel>
-                                      <LocationAutocomplete value={leg.departureAirport} onChange={(val) => updateFlightLeg(oi, li, "departureAirport", val)} placeholder="SFO – San Francisco" className="h-7 text-xs" />
+                                      <AirportAutocomplete value={leg.departureAirport} onChange={(val) => updateFlightLeg(oi, li, "departureAirport", val)} placeholder="SFO — San Francisco" className="h-7 text-xs" />
                                     </div>
                                     <div>
                                       <FieldLabel>To</FieldLabel>
-                                      <LocationAutocomplete value={leg.arrivalAirport} onChange={(val) => updateFlightLeg(oi, li, "arrivalAirport", val)} placeholder="LIS – Lisbon" className="h-7 text-xs" />
+                                      <AirportAutocomplete value={leg.arrivalAirport} onChange={(val) => updateFlightLeg(oi, li, "arrivalAirport", val)} placeholder="LIS — Lisbon" className="h-7 text-xs" />
                                     </div>
                                     <div>
                                       <FieldLabel>Date</FieldLabel>

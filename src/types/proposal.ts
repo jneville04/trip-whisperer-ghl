@@ -47,6 +47,7 @@ export interface FlightLeg {
   id: string;
   type: "departure" | "return";
   airline: string;
+  airlineCode?: string;
   flightNumber: string;
   departureAirport: string;
   arrivalAirport: string;

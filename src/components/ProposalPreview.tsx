@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, type Easing } from "framer-motion";
 import { MapPin, Calendar, Users, Clock, Utensils, Hotel, Camera, Wine, Plane, ArrowRight, Check, Phone, Mail, Globe, PlaneTakeoff, PlaneLanding, BedDouble, MessageSquare, CheckCircle2, Sparkles, Ship, Anchor, Bus, ShoppingCart } from "lucide-react";
 import Lightbox from "@/components/Lightbox";
+import { parseAirportValue } from "@/components/AirportAutocomplete";
 import BookingModal from "@/components/BookingModal";
 import VideoEmbed from "@/components/VideoEmbed";
 import { Button } from "@/components/ui/button";
@@ -325,8 +326,13 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                                 <div className="flex items-center gap-4">
                                   {/* Origin */}
                                   <div className="flex-1">
-                                    <p className="font-display text-3xl font-bold text-foreground leading-none">{leg.departureAirport.split("–")[0]?.split("(")[0]?.trim().slice(0, 3).toUpperCase() || "—"}</p>
-                                    <p className="text-xs text-muted-foreground font-body mt-1 truncate">{leg.departureAirport}</p>
+                                    {(() => {
+                                      const ap = parseAirportValue(leg.departureAirport);
+                                      return <>
+                                        <p className="font-display text-3xl font-bold text-foreground leading-none">{ap.code || leg.departureAirport.slice(0, 3).toUpperCase() || "—"}</p>
+                                        <p className="text-xs text-muted-foreground font-body mt-1 truncate">{ap.city || leg.departureAirport}</p>
+                                      </>;
+                                    })()}
                                     {leg.departureTime && <p className="text-sm font-semibold text-foreground font-body mt-1">{leg.departureTime}</p>}
                                   </div>
 
@@ -348,8 +354,13 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
 
                                   {/* Destination */}
                                   <div className="flex-1 text-right">
-                                    <p className="font-display text-3xl font-bold text-foreground leading-none">{leg.arrivalAirport.split("–")[0]?.split("(")[0]?.trim().slice(0, 3).toUpperCase() || "—"}</p>
-                                    <p className="text-xs text-muted-foreground font-body mt-1 truncate">{leg.arrivalAirport}</p>
+                                    {(() => {
+                                      const ap = parseAirportValue(leg.arrivalAirport);
+                                      return <>
+                                        <p className="font-display text-3xl font-bold text-foreground leading-none">{ap.code || leg.arrivalAirport.slice(0, 3).toUpperCase() || "—"}</p>
+                                        <p className="text-xs text-muted-foreground font-body mt-1 truncate">{ap.city || leg.arrivalAirport}</p>
+                                      </>;
+                                    })()}
                                     {leg.arrivalTime && <p className="text-sm font-semibold text-foreground font-body mt-1">{leg.arrivalTime}</p>}
                                   </div>
                                 </div>
