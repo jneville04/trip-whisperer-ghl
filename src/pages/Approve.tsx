@@ -26,6 +26,7 @@ export default function ApprovePage() {
   const navState = location.state as { brand?: BrandColors; returnTo?: string } | null;
   const initialBrand = navState?.brand;
   const returnTo = navState?.returnTo;
+  const isEmbeddedInEditor = location.pathname.includes("/editor");
 
   const [brandData, setBrandData] = useState<BrandColors>(initialBrand || {});
   const [agentData, setAgentData] = useState<{ agencyName?: string; logoUrl?: string; showAgencyNameWithLogo?: boolean }>({});
@@ -116,7 +117,7 @@ export default function ApprovePage() {
 
     return (
       <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
-        <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />
+        {!isEmbeddedInEditor && <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />}
         <div className="max-w-3xl mx-auto px-6 py-8">
           <iframe
             src={iframeSrc}
@@ -133,7 +134,7 @@ export default function ApprovePage() {
   if (submitted) {
     return (
       <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
-        <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />
+        {!isEmbeddedInEditor && <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />}
         <div className="flex items-center justify-center px-6" style={{ minHeight: "calc(100vh - 56px)" }}>
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md">
             <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
@@ -154,7 +155,7 @@ export default function ApprovePage() {
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
-      <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />
+      {!isEmbeddedInEditor && <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />}
       <div className="max-w-xl mx-auto px-6 py-16">
         <div className="text-center mb-10">
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">

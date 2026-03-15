@@ -1,15 +1,18 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, PenLine, ArrowLeft, Save, ExternalLink, PanelLeftClose, PanelLeft, Send, HelpCircle, Mail, Phone } from "lucide-react";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { Eye, EyeOff, PenLine, ArrowLeft, Save, ExternalLink, PanelLeftClose, PanelLeft, Send, HelpCircle, Mail, Phone, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProposalEditor from "@/components/ProposalEditor";
-import ProposalPreview from "@/components/ProposalPreview";
+import ProposalPreview, { type EditorSubPage } from "@/components/ProposalPreview";
 import { defaultProposal, type ProposalData } from "@/types/proposal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { buildBrandCssVars } from "@/lib/brand";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { useAgentSettings } from "@/hooks/useAgentSettings";
+import CheckoutPage from "@/pages/Checkout";
+import ApprovePage from "@/pages/Approve";
+import RevisionsPage from "@/pages/Revisions";
 
 export default function EditorPage() {
   const { id } = useParams<{ id: string }>();
@@ -25,6 +28,17 @@ export default function EditorPage() {
   const [shareId, setShareId] = useState("");
   const [dirty, setDirty] = useState(false);
   const [currentStatus, setCurrentStatus] = useState("draft");
+  const [editorSubPage, setEditorSubPage] = useState<EditorSubPage | null>(null);
+  const [, setSearchParams] = useSearchParams();
+
+  const handleEditorSubPage = useCallback((page: EditorSubPage | null) => {
+    setEditorSubPage(page);
+    if (page && shareId) {
+      setSearchParams({ share: shareId, subpage: page }, { replace: true });
+    } else {
+      setSearchParams({}, { replace: true });
+    }
+  }, [shareId, setSearchParams]);
 
   const statusMeta: Record<string, { label: string; badgeClassName: string }> = {
     draft: { label: "Draft", badgeClassName: "text-muted-foreground bg-muted/80" },
@@ -235,6 +249,11 @@ export default function EditorPage() {
               {(statusMeta[currentStatus] || statusMeta.draft).label}
             </span>
           </span>
+          {editorSubPage && (
+            <Button variant="travel-outline" size="sm" onClick={() => handleEditorSubPage(null)} className="ml-2">
+              <X className="h-3.5 w-3.5 mr-1" /> Back to Preview
+            </Button>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <Button variant="travel-ghost" size="sm" onClick={copyShareLink}>
@@ -286,14 +305,25 @@ export default function EditorPage() {
 
       {/* Content */}
       <div className="flex-1 flex overflow-hidden">
-        {mode === "split" && panelOpen && (
+        {mode === "split" && panelOpen && !editorSubPage && (
           <div className="w-full max-w-lg border-r border-border/50 overflow-y-auto bg-background">
             <ProposalEditor data={data} onChange={handleChange} />
             <HelpdeskFooter />
           </div>
         )}
         <div className="flex-1 overflow-y-auto" style={builderBrandStyles as React.CSSProperties}>
-          <ProposalPreview data={previewData} shareId={shareId} isEditor />
+          {editorSubPage === "checkout" && (
+            <CheckoutPage />
+          )}
+          {editorSubPage === "approve" && (
+            <ApprovePage />
+          )}
+          {editorSubPage === "revisions" && (
+            <RevisionsPage />
+          )}
+          {!editorSubPage && (
+            <ProposalPreview data={previewData} shareId={shareId} isEditor onEditorSubPage={handleEditorSubPage} />
+          )}
         </div>
       </div>
     </div>

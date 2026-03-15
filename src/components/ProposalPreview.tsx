@@ -39,13 +39,16 @@ function getActivityIcon(type: Activity["type"]) {
   }
 }
 
+export type EditorSubPage = "checkout" | "approve" | "revisions";
+
 interface Props {
   data: ProposalData;
   shareId?: string;
   isEditor?: boolean;
+  onEditorSubPage?: (page: EditorSubPage) => void;
 }
 
-export default function ProposalPreview({ data, shareId, isEditor }: Props) {
+export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPage }: Props) {
   const isGroupBooking = (data as any).proposalType !== "proposal";
   const navigate = useNavigate();
   const heroImage = data.heroImageUrl || "";
@@ -128,6 +131,10 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
 
   const checkoutEnabled = data.checkout?.enabled;
   const goToCheckout = useCallback(() => {
+    if (isEditor && onEditorSubPage) {
+      onEditorSubPage("checkout");
+      return;
+    }
     const selectedOpt = pricingOptions.find(o => o.id === selectedPricingOption) || null;
     navigate(`/checkout${shareId ? `?share=${shareId}` : ""}`, {
       state: {
@@ -137,11 +144,15 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
         tripName: data.clientName || data.destination || "",
       },
     });
-  }, [navigate, shareId, brandData, returnTo, pricingOptions, selectedPricingOption, data.clientName, data.destination]);
+  }, [navigate, shareId, brandData, returnTo, pricingOptions, selectedPricingOption, data.clientName, data.destination, isEditor, onEditorSubPage]);
 
   const goToApprove = useCallback(() => {
     if (checkoutEnabled) {
       goToCheckout();
+      return;
+    }
+    if (isEditor && onEditorSubPage) {
+      onEditorSubPage("approve");
       return;
     }
     const url = approveUrl || bookingUrl;
@@ -150,15 +161,19 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
     } else {
       navigate(`/approve${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
     }
-  }, [navigate, shareId, brandData, returnTo, bookingUrl, approveUrl, openModal, checkoutEnabled, goToCheckout]);
+  }, [navigate, shareId, brandData, returnTo, bookingUrl, approveUrl, openModal, checkoutEnabled, goToCheckout, isEditor, onEditorSubPage]);
 
   const goToRevisions = useCallback(() => {
+    if (isEditor && onEditorSubPage) {
+      onEditorSubPage("revisions");
+      return;
+    }
     if (revisionsUrl) {
       openModal(revisionsUrl, "Request Revisions");
     } else {
       navigate(`/revisions${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
     }
-  }, [navigate, shareId, brandData, returnTo, revisionsUrl, openModal]);
+  }, [navigate, shareId, brandData, returnTo, revisionsUrl, openModal, isEditor, onEditorSubPage]);
 
 
   return (

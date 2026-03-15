@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { buildBrandCssVars, type BrandColors } from "@/lib/brand";
 import { useAppSettings } from "@/hooks/useAppSettings";
+import ClientNav from "@/components/ClientNav";
 
 const revisionCategories = [
   { id: "dates", label: "Travel Dates" },
@@ -36,8 +37,10 @@ export default function RevisionsPage() {
   const navState = location.state as { brand?: BrandColors; returnTo?: string } | null;
   const initialBrand = navState?.brand;
   const returnTo = navState?.returnTo;
+  const isEmbeddedInEditor = location.pathname.includes("/editor");
 
   const [brandData, setBrandData] = useState<BrandColors>(initialBrand || {});
+  const [agentData, setAgentData] = useState<{ agencyName?: string; logoUrl?: string; showAgencyNameWithLogo?: boolean }>({});
   const [brandLoading, setBrandLoading] = useState(Boolean(shareId) && !initialBrand);
 
   useEffect(() => {
@@ -57,6 +60,13 @@ export default function RevisionsPage() {
       const proposalData = (row as any)?.data;
       if (proposalData?.brand) {
         setBrandData(proposalData.brand as BrandColors);
+      }
+      if (proposalData?.agent) {
+        setAgentData({
+          agencyName: proposalData.agent.agencyName,
+          logoUrl: proposalData.brand?.logoUrl,
+          showAgencyNameWithLogo: proposalData.brand?.showAgencyNameWithLogo,
+        });
       }
       setBrandLoading(false);
     };
@@ -123,10 +133,8 @@ export default function RevisionsPage() {
 
     return (
       <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
+        {!isEmbeddedInEditor && <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />}
         <div className="max-w-3xl mx-auto px-6 py-8">
-          <button onClick={goBack} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors font-body mb-6">
-            <ArrowLeft className="h-4 w-4" /> Back to Proposal
-          </button>
           <iframe
             src={iframeSrc}
             className="w-full border-0 rounded-xl"
@@ -141,29 +149,30 @@ export default function RevisionsPage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-6" style={brandStyles as React.CSSProperties}>
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md">
-          <div className="w-20 h-20 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="h-10 w-10 text-secondary" />
-          </div>
-          <h1 className="font-display text-3xl font-bold text-foreground mb-3">Revision Request Sent!</h1>
-          <p className="text-muted-foreground font-body mb-8">
-            Your travel advisor has received your feedback and will update the proposal shortly. You'll receive an email when the revised version is ready.
-          </p>
-          <Button variant="travel-ghost" onClick={goBack} className="text-sm">
-            <ArrowLeft className="h-4 w-4 mr-1" /> Back to Proposal
-          </Button>
-        </motion.div>
+      <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
+        {!isEmbeddedInEditor && <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />}
+        <div className="flex items-center justify-center px-6" style={{ minHeight: isEmbeddedInEditor ? "100%" : "calc(100vh - 56px)" }}>
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md">
+            <div className="w-20 h-20 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 className="h-10 w-10 text-secondary" />
+            </div>
+            <h1 className="font-display text-3xl font-bold text-foreground mb-3">Revision Request Sent!</h1>
+            <p className="text-muted-foreground font-body mb-8">
+              Your travel advisor has received your feedback and will update the proposal shortly. You'll receive an email when the revised version is ready.
+            </p>
+            <Button variant="travel-ghost" onClick={goBack} className="text-sm">
+              <ArrowLeft className="h-4 w-4 mr-1" /> Back to Proposal
+            </Button>
+          </motion.div>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
+      {!isEmbeddedInEditor && <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />}
       <div className="max-w-xl mx-auto px-6 py-16">
-        <button onClick={goBack} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors font-body mb-8">
-          <ArrowLeft className="h-4 w-4" /> Back to Proposal
-        </button>
 
         <div className="text-center mb-10">
           <div className="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center mx-auto mb-4">

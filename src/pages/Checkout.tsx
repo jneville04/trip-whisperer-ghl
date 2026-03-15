@@ -74,8 +74,9 @@ export default function CheckoutPage() {
   const resolvedTripName = tripName || proposalData?.clientName || proposalData?.destination || "";
 
   // Editable form height with drag-to-resize
-  // Only show resize handle when navigated from the editor (not client view)
-  const isEditorContext = !!navState.returnTo && navState.returnTo.includes("/editor");
+  // Detect if embedded inside editor (URL contains /editor or nav state has returnTo with /editor)
+  const isEmbeddedInEditor = location.pathname.includes("/editor") || (!!navState.returnTo && navState.returnTo.includes("/editor"));
+  const isEditorContext = isEmbeddedInEditor;
   const [localFormHeight, setLocalFormHeight] = useState(checkout.formHeight || 1200);
   const [isResizing, setIsResizing] = useState(false);
   const isDragging = useRef(false);
@@ -188,12 +189,14 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
 
-      <ClientNav
-        logoUrl={brandData.logoUrl}
-        agencyName={agent.agencyName}
-        showAgencyNameWithLogo={brandData.showAgencyNameWithLogo ?? true}
-        onBack={goBack}
-      />
+      {!isEmbeddedInEditor && (
+        <ClientNav
+          logoUrl={brandData.logoUrl}
+          agencyName={agent.agencyName}
+          showAgencyNameWithLogo={brandData.showAgencyNameWithLogo ?? true}
+          onBack={goBack}
+        />
+      )}
 
       {/* ── Page header ── */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0} className="max-w-[1400px] mx-auto px-4 md:px-6 pt-4 pb-2 text-center">
