@@ -623,6 +623,7 @@ export const defaultProposal: ProposalData = {
   pricing: [
     { id: crypto.randomUUID(), label: "Air & Hotel Package", amount: "Contact for pricing" },
   ],
+  pricingOptions: [],
   paymentTerms: "Deposit secures your booking — flexible payment options available.",
   validUntil: "",
   agent: {
