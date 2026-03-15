@@ -344,8 +344,13 @@ export default function ProposalEditor({ data, onChange }: Props) {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <FieldLabel>Destination</FieldLabel>
-              <Input value={data.destination} onChange={(e) => update("destination", e.target.value)} placeholder="e.g. Portugal" />
+              <LocationAutocomplete value={data.destination} onChange={(val) => update("destination", val)} placeholder="e.g. Portugal" />
             </div>
+            <div>
+              <FieldLabel>Subtitle</FieldLabel>
+              <Input value={data.subtitle} onChange={(e) => update("subtitle", e.target.value)} placeholder="e.g. Lisbon · Porto · Algarve" />
+            </div>
+          </div>
             <div>
               <FieldLabel>Subtitle</FieldLabel>
               <Input value={data.subtitle} onChange={(e) => update("subtitle", e.target.value)} placeholder="e.g. Lisbon · Porto · Algarve" />
