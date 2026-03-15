@@ -634,12 +634,12 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     <TabsContent value="general" className="p-3 space-y-2 mt-0">
                                       <div>
                                         <FieldLabel>Hotel Name</FieldLabel>
-                                        <Input value={acc.hotelName} onChange={(e) => updateAccommodation(i, "hotelName", e.target.value)} placeholder="Four Seasons Hotel" className="h-8 text-xs" />
+                                        <LocationAutocomplete value={acc.hotelName} onChange={(val) => updateAccommodation(i, "hotelName", val)} placeholder="Four Seasons Hotel" className="h-8 text-xs" suggestions={[]} />
                                       </div>
                                       <div className="grid grid-cols-2 gap-2">
                                         <div>
                                           <FieldLabel>Location</FieldLabel>
-                                          <Input value={acc.location} onChange={(e) => updateAccommodation(i, "location", e.target.value)} placeholder="Lisbon" className="h-8 text-xs" />
+                                          <LocationAutocomplete value={acc.location} onChange={(val) => updateAccommodation(i, "location", val)} placeholder="Lisbon" className="h-8 text-xs" />
                                         </div>
                                         <div>
                                           <FieldLabel>Room Type</FieldLabel>
