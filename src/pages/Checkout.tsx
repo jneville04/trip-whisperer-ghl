@@ -279,31 +279,13 @@ export default function CheckoutPage() {
       {/* ── SECTION 2: Booking Form ── */}
       <motion.section variants={fadeUp} initial="hidden" animate="visible" custom={2} className="max-w-[1400px] mx-auto px-4 md:px-6 pb-6">
         {iframeUrl ? (
-          <div className="bg-background rounded-xl border border-border/30 overflow-hidden">
-            <div className="px-4 md:px-6 pt-3 pb-2 border-b border-border/20">
-              <h2 className="font-display text-lg md:text-xl font-bold text-foreground">Traveler Information</h2>
-              <p className="text-xs text-muted-foreground font-body mt-1">Please fill in your details below to complete your booking.</p>
-            </div>
-            <iframe
-              src={iframeUrl}
-              className="w-full bg-transparent"
-              style={{ height: `${iframeHeight}px`, border: "none", transition: "height 0.3s ease" }}
-              title="Booking Form"
-              allow="payment"
-              onLoad={(e) => {
-                // Try to read content height from same-origin iframes
-                try {
-                  const doc = (e.target as HTMLIFrameElement).contentDocument;
-                  if (doc?.body) {
-                    const h = doc.body.scrollHeight;
-                    if (h > 100) setIframeHeight(h + 32);
-                  }
-                } catch {
-                  // Cross-origin — rely on postMessage or default
-                }
-              }}
-            />
-          </div>
+          <iframe
+            src={iframeUrl}
+            className="w-full bg-transparent rounded-xl"
+            style={{ height: "2400px", border: "none" }}
+            title="Booking Form"
+            allow="payment"
+          />
         ) : (
           <div className="bg-card rounded-xl border border-border/30 px-6 py-12 text-center">
             <h2 className="font-display text-2xl font-bold text-foreground mb-3">Ready to Book?</h2>
