@@ -1068,24 +1068,22 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                     </motion.div>
                   )}
 
-                  {/* Book Now CTA for group trips */}
+                  {/* Book Now CTA for group trips — always visible */}
                   <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={3} className="text-center">
-                    {(bookingUrl || checkoutEnabled || selectedPricingOption) && (
-                      <Button
-                        variant="travel"
-                        size="lg"
-                        className="text-lg px-12 py-6 h-auto"
-                        onClick={() => {
-                          if (checkoutEnabled) {
-                            goToCheckout();
-                          } else if (bookingUrl) {
-                            openModal(bookingUrl, "Book Now");
-                          }
-                        }}
-                      >
-                        <ShoppingCart className="h-5 w-5 mr-2" /> Book Now
-                      </Button>
-                    )}
+                    <Button
+                      variant="travel"
+                      size="lg"
+                      className="text-lg px-12 py-6 h-auto"
+                      onClick={() => {
+                        if (checkoutEnabled) {
+                          goToCheckout();
+                        } else if (bookingUrl) {
+                          openModal(bookingUrl, "Book Now");
+                        }
+                      }}
+                    >
+                      <ShoppingCart className="h-5 w-5 mr-2" /> Book Now
+                    </Button>
                     {data.validUntil && <p className="text-sm text-muted-foreground mt-4 font-body">This proposal is valid until {data.validUntil}</p>}
                   </motion.div>
                 </div>
