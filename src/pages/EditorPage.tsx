@@ -27,6 +27,7 @@ export default function EditorPage() {
   const [publishing, setPublishing] = useState(false);
   const [shareId, setShareId] = useState("");
   const [dirty, setDirty] = useState(false);
+  const [hasUserSaved, setHasUserSaved] = useState(false);
   const [currentStatus, setCurrentStatus] = useState("draft");
   const [editorSubPage, setEditorSubPage] = useState<EditorSubPage | null>(null);
   const [, setSearchParams] = useSearchParams();
