@@ -117,17 +117,30 @@ function CollapsibleSection({
   );
 }
 
-function SortableSection({ id, children }: { id: string; children: (dragHandleProps: Record<string, any>) => ReactNode }) {
+function SortableSection({ id, children }: { id: string; children: ReactNode }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
     zIndex: isDragging ? 10 : undefined,
   };
   return (
-    <div ref={setNodeRef} style={style}>
-      {children({ ...attributes, ...listeners })}
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      className={`relative group/sortable touch-none transition-shadow duration-200 rounded-xl ${
+        isDragging
+          ? "shadow-xl ring-2 ring-primary/20 opacity-90 scale-[1.01] bg-background"
+          : "hover:shadow-md"
+      }`}
+    >
+      {/* Drag handle — visible on hover */}
+      <div className="absolute left-0 top-0 bottom-0 w-6 flex items-center justify-center opacity-0 group-hover/sortable:opacity-100 transition-opacity z-10 pointer-events-none">
+        <GripVertical className="h-4 w-4 text-muted-foreground/60" />
+      </div>
+      {children}
     </div>
   );
 }
