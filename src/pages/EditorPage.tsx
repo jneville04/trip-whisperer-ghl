@@ -4,7 +4,7 @@ import { Eye, EyeOff, PenLine, ArrowLeft, Save, ExternalLink, PanelLeftClose, Pa
 import { Button } from "@/components/ui/button";
 import ProposalEditor from "@/components/ProposalEditor";
 import ProposalPreview, { type EditorSubPage } from "@/components/ProposalPreview";
-import { defaultProposal, type ProposalData } from "@/types/proposal";
+import { defaultProposal, createDefaultCheckout, type ProposalData } from "@/types/proposal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { buildBrandCssVars } from "@/lib/brand";
