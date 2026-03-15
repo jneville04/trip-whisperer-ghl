@@ -25,6 +25,16 @@ export interface PricingLine {
   amount: string;
 }
 
+export interface PricingOption {
+  id: string;
+  name: string;
+  totalPrice: string;
+  deposit: string;
+  paymentNote: string;
+  finalPaymentDate: string;
+  availabilityNote: string;
+}
+
 export interface AgentPricing {
   cost: string;
   commission: string;
