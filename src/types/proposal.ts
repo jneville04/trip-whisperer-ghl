@@ -220,6 +220,7 @@ export interface CheckoutSettings {
   message: string;
   paymentOptions: PaymentOption[];
   customFormUrl: string;
+  formHeight: number;
   showTripSummary: boolean;
   confirmationMessage: string;
 }
