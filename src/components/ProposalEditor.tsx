@@ -6,6 +6,9 @@ import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } 
 import { CSS } from "@dnd-kit/utilities";
 
 import DatePickerField from "@/components/DatePickerField";
+import TimePickerDropdown from "@/components/TimePickerDropdown";
+import LocationAutocomplete from "@/components/LocationAutocomplete";
+import AddressFields, { type AddressData } from "@/components/AddressFields";
 import ImageUploadField from "@/components/ImageUploadField";
 import SortableImageGrid from "@/components/SortableImageGrid";
 import HotelSearchDialog from "@/components/HotelSearchDialog";
@@ -17,7 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import RichTextEditor from "@/components/RichTextEditor";
 import AgentPricingFields from "@/components/AgentPricingFields";
-import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, SectionKey, CheckoutSettings, PaymentOption } from "@/types/proposal";
+import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, BusStop, SectionKey, CheckoutSettings, PaymentOption, LocationAddress } from "@/types/proposal";
 import { createActivity, createDay, createPricingLine, createFlightLeg, createFlightOption, createAccommodation, createCruiseShip, createBusTrip, createBusStop, defaultSectionOrder, createDefaultCheckout } from "@/types/proposal";
 import { normalizeHexInput } from "@/lib/brand";
 import { useAgentSettings } from "@/hooks/useAgentSettings";
