@@ -132,7 +132,9 @@ export default function ApprovePage() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-6" style={brandStyles as React.CSSProperties}>
+      <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
+        <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />
+        <div className="flex items-center justify-center px-6" style={{ minHeight: "calc(100vh - 56px)" }}>
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md">
           <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 className="h-10 w-10 text-primary" />
