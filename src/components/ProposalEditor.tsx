@@ -1362,7 +1362,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
                   case "itinerary":
                     return (
-                      <CollapsibleSection title={sectionTitles.itinerary} sectionKey="itinerary" visible={vis.itinerary} onToggleVisible={() => toggleSection("itinerary")} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.itinerary} sectionKey="itinerary" visible={vis.itinerary} onToggleVisible={() => toggleSection("itinerary")} sectionCustomTitle={customTitles.itinerary?.title} sectionCustomSubtitle={customTitles.itinerary?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("itinerary", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("itinerary", v)}>
                         <div className="space-y-6">
                           {data.days.map((day, dayIdx) => (
                             <CollapsibleHotel key={day.id} defaultOpen={dayIdx === 0} hotelName={`Day ${dayIdx + 1}${day.title ? `: ${day.title}` : ""}`} location={day.location} onDelete={() => removeDay(dayIdx)}>
