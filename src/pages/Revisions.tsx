@@ -40,6 +40,7 @@ export default function RevisionsPage() {
   const isEmbeddedInEditor = location.pathname.includes("/editor");
 
   const [brandData, setBrandData] = useState<BrandColors>(initialBrand || {});
+  const [agentData, setAgentData] = useState<{ agencyName?: string; logoUrl?: string; showAgencyNameWithLogo?: boolean }>({});
   const [brandLoading, setBrandLoading] = useState(Boolean(shareId) && !initialBrand);
 
   useEffect(() => {
