@@ -70,6 +70,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
   const accommodations = data.accommodations || [];
   const cruiseShips = data.cruiseShips || [];
   const busTrips = data.busTrips || [];
+  const pricingOptions = data.pricingOptions || [];
   const agent = data.agent || { name: "", title: "", phone: "", email: "", website: "", agencyName: "", logoUrl: "", photoUrl: "" };
   const essentials = data.essentials || { visaRequirements: "", passportInfo: "", currency: "", language: "", timeZone: "", weatherInfo: "", packingTips: "", emergencyContacts: "" };
   const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
