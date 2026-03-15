@@ -135,30 +135,27 @@ export default function ApprovePage() {
       <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
         <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />
         <div className="flex items-center justify-center px-6" style={{ minHeight: "calc(100vh - 56px)" }}>
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md">
-          <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="h-10 w-10 text-primary" />
-          </div>
-          <h1 className="font-display text-3xl font-bold text-foreground mb-3">Itinerary Approved!</h1>
-          <p className="text-muted-foreground font-body mb-8">
-            Thank you for approving your trip. Your travel advisor will be in touch shortly with next steps and booking confirmation.
-          </p>
-          <Button variant="travel-ghost" onClick={goBack} className="text-sm">
-            <ArrowLeft className="h-4 w-4 mr-1" /> Back to Proposal
-          </Button>
-        </motion.div>
-      </div>
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md">
+            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 className="h-10 w-10 text-primary" />
+            </div>
+            <h1 className="font-display text-3xl font-bold text-foreground mb-3">Itinerary Approved!</h1>
+            <p className="text-muted-foreground font-body mb-8">
+              Thank you for approving your trip. Your travel advisor will be in touch shortly with next steps and booking confirmation.
+            </p>
+            <Button variant="travel-ghost" onClick={goBack} className="text-sm">
+              <ArrowLeft className="h-4 w-4 mr-1" /> Back to Proposal
+            </Button>
+          </motion.div>
         </div>
       </div>
     );
+  }
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
+      <ClientNav logoUrl={agentData.logoUrl} agencyName={agentData.agencyName} showAgencyNameWithLogo={agentData.showAgencyNameWithLogo} onBack={goBack} />
       <div className="max-w-xl mx-auto px-6 py-16">
-        <button onClick={goBack} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors font-body mb-8">
-          <ArrowLeft className="h-4 w-4" /> Back to Proposal
-        </button>
-
         <div className="text-center mb-10">
           <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="h-8 w-8 text-primary" />
