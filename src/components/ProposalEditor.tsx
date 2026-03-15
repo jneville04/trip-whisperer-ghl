@@ -120,7 +120,7 @@ function CollapsibleSection({
 function SortableSection({ id, children }: { id: string; children: ReactNode }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Transform.toString(transform ? { ...transform, x: 0 } : null),
     transition,
     zIndex: isDragging ? 10 : undefined,
   };
