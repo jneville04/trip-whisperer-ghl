@@ -42,10 +42,6 @@ export default function Dashboard() {
     }
   }, [profileStatus, isAdmin]);
 
-  if (!authLoading && profileStatus && profileStatus !== "approved" && !isAdmin) {
-    return <PendingApproval status={profileStatus as "pending" | "rejected"} />;
-  }
-
   const loadProposals = async () => {
     const { data, error } = await supabase
       .from("proposals")
