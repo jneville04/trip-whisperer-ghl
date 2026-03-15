@@ -128,8 +128,16 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
 
   const checkoutEnabled = data.checkout?.enabled;
   const goToCheckout = useCallback(() => {
-    navigate(`/checkout${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
-  }, [navigate, shareId, brandData, returnTo]);
+    const selectedOpt = pricingOptions.find(o => o.id === selectedPricingOption) || null;
+    navigate(`/checkout${shareId ? `?share=${shareId}` : ""}`, {
+      state: {
+        brand: brandData,
+        returnTo,
+        selectedPricingOption: selectedOpt,
+        tripName: data.clientName || data.destination || "",
+      },
+    });
+  }, [navigate, shareId, brandData, returnTo, pricingOptions, selectedPricingOption, data.clientName, data.destination]);
 
   const goToApprove = useCallback(() => {
     if (checkoutEnabled) {
