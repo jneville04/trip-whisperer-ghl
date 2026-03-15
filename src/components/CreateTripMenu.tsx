@@ -152,8 +152,8 @@ export default function CreateTripMenu() {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="travel" size="sm">
-            <Plus className="h-4 w-4 mr-1" /> Create Trip <ChevronDown className="h-3 w-3 ml-1" />
+          <Button variant="travel" size="sm" className="px-5 font-medium">
+            <Plus className="h-4 w-4 mr-1.5" /> Create Trip <ChevronDown className="h-3 w-3 ml-2 opacity-70" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
