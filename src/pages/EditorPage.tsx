@@ -258,7 +258,7 @@ export default function EditorPage() {
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden" style={appBrandVars as React.CSSProperties}>
       {/* Top Bar */}
-      <div className="h-14 border-b border-border/50 flex items-center justify-between px-4 sm:px-6 bg-card shrink-0">
+      <div className="h-16 border-b border-border flex items-center justify-between px-4 sm:px-6 bg-card shadow-sm shrink-0">
         <div className="flex items-center gap-3">
           <Button variant="travel-ghost" size="sm" onClick={() => navigate("/dashboard")}>
             <ArrowLeft className="h-3.5 w-3.5 mr-1" /> Library
@@ -270,8 +270,10 @@ export default function EditorPage() {
           )}
           <span className="text-xs text-muted-foreground font-body hidden sm:inline">
             — {data.destination || "New Trip"} for {data.clientName || "Client"}
-            <span className={`ml-2 text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded-full ${
-              (statusMeta[currentStatus] || statusMeta.draft).badgeClassName
+            <span className={`ml-3 text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full ${
+              currentStatus === "draft" ? "bg-amber-100 text-amber-700" :
+              currentStatus === "published" ? "bg-emerald-100 text-emerald-700" :
+              "bg-muted text-muted-foreground"
             }`}>
               {(statusMeta[currentStatus] || statusMeta.draft).label}
             </span>
@@ -294,7 +296,7 @@ export default function EditorPage() {
             <PenLine className="h-3.5 w-3.5 mr-1" /> Edit
           </Button>
           <Button
-            variant={mode === "preview" ? "travel" : "travel-ghost"}
+            variant={mode === "preview" ? "travel" : "travel-outline"}
             size="sm"
             onClick={() => setMode("preview")}
           >
@@ -320,11 +322,12 @@ export default function EditorPage() {
           ) : (
             <Button
               variant="travel"
-              size="sm"
+              size="default"
               onClick={handlePublish}
               disabled={publishing}
+              className="px-5 font-semibold shadow-md"
             >
-              <Send className="h-3.5 w-3.5 mr-1" /> {publishing ? "Publishing..." : "Save & Publish"}
+              <Send className="h-4 w-4 mr-1.5" /> {publishing ? "Publishing..." : "Save & Publish"}
             </Button>
           )}
         </div>
