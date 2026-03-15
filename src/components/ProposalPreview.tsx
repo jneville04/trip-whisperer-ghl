@@ -2460,7 +2460,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
         <footer className="py-16 px-6 border-t border-border/50 bg-card">
           <div className="max-w-3xl mx-auto text-center">
             <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
-              Your Travel Advisor
+              {ct.agent?.subtitle || "Your Travel Advisor"}
             </p>
             <div className="flex flex-col items-center gap-4 mb-6">
               {agent.photoUrl && (
