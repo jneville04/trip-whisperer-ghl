@@ -572,32 +572,28 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
 
           return (
             <section className="w-full overflow-hidden">
-              {/* ——— Mobile: stack all images vertically ——— */}
-              <div className="flex flex-col gap-1.5 md:hidden">
-                {allReal.map((url, i) => (
-                  <div key={i} className="relative overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i)}>
-                    {i === 0 && isVideo ? (
-                      <VideoEmbed
-                        url={data.heroVideoUrl!}
-                        title={data.destination}
-                        thumbnailUrl={data.heroVideoThumbnailUrl}
-                        className="!rounded-none !aspect-auto w-full"
-                        autoplay={!!data.heroAutoplay}
-                        muted={!!data.heroMuted}
-                      />
-                    ) : (
-                      <img
-                        src={url}
-                        alt={`${data.destination} ${i + 1}`}
-                        className="w-full object-cover object-center"
-                        style={{ height: i === 0 ? "45vh" : "30vh" }}
-                        loading={i === 0 ? "eager" : "lazy"}
-                        decoding="async"
-                      />
-                    )}
-                    {i === 0 && heroMediaBadge}
-                  </div>
-                ))}
+              {/* ——— Mobile: main image only ——— */}
+              <div className="md:hidden relative overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
+                {isVideo ? (
+                  <VideoEmbed
+                    url={data.heroVideoUrl!}
+                    title={data.destination}
+                    thumbnailUrl={data.heroVideoThumbnailUrl}
+                    className="!rounded-none !aspect-auto w-full"
+                    autoplay={!!data.heroAutoplay}
+                    muted={!!data.heroMuted}
+                  />
+                ) : (
+                  <img
+                    src={allReal[0]}
+                    alt={data.destination}
+                    className="w-full object-cover object-center"
+                    style={{ height: "45vh" }}
+                    loading="eager"
+                    decoding="async"
+                  />
+                )}
+                {heroMediaBadge}
               </div>
 
               {/* ——— Desktop: 1 large left + 2 stacked right ——— */}
