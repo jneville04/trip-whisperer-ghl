@@ -291,25 +291,25 @@ export default function CheckoutPage() {
 
       {/* ── SECTION 3: Travel Advisor ── */}
       {agent.name && (
-        <motion.footer variants={fadeUp} initial="hidden" animate="visible" custom={3} className="border-t border-border/40 bg-card/50">
-          <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-10">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-6 max-w-2xl mx-auto">
+        <motion.footer variants={fadeUp} initial="hidden" animate="visible" custom={3} className="border-t border-border/50 bg-card">
+          <div className="max-w-3xl mx-auto px-4 md:px-6 py-16 text-center">
+            <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Your Travel Advisor</p>
+            <div className="flex flex-col items-center gap-4 mb-6">
               {agent.photoUrl && (
-                <img src={agent.photoUrl} alt={agent.name} className="w-24 h-24 rounded-full object-cover border-2 border-primary/20 shrink-0" />
+                <img src={agent.photoUrl} alt={agent.name} className="w-24 h-24 rounded-full object-cover border-2 border-primary/20" />
               )}
-              <div className="text-center md:text-left">
-                <p className="text-xs tracking-[0.2em] uppercase text-muted-foreground font-body mb-2">Your Travel Advisor</p>
+              <div>
                 <h3 className="font-display text-2xl font-bold text-foreground">{agent.name}</h3>
                 {agent.title && <p className="text-muted-foreground font-body mt-0.5">{agent.title}</p>}
                 {agent.agencyName && <p className="text-sm text-muted-foreground font-body">{agent.agencyName}</p>}
-                <div className="flex items-center gap-5 mt-4 text-sm font-body text-muted-foreground flex-wrap justify-center md:justify-start">
-                  {agent.phone && <a href={`tel:${agent.phone}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Phone className="h-4 w-4" /> {agent.phone}</a>}
-                  {agent.email && <a href={`mailto:${agent.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-4 w-4" /> {agent.email}</a>}
-                  {agent.website && <a href={agent.website.startsWith('http') ? agent.website : `https://${agent.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Globe className="h-4 w-4" /> {agent.website}</a>}
-                </div>
               </div>
             </div>
-            <p className="text-xs text-muted-foreground/60 mt-12 text-center font-body">© 2026 {agent.agencyName} · All prices in USD · Subject to availability</p>
+            <div className="flex items-center justify-center gap-5 text-sm font-body text-muted-foreground flex-wrap">
+              {agent.phone && <a href={`tel:${agent.phone}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Phone className="h-4 w-4" /> {agent.phone}</a>}
+              {agent.email && <a href={`mailto:${agent.email}`} className="flex items-center gap-1.5 hover:text-primary transition-colors"><Mail className="h-4 w-4" /> {agent.email}</a>}
+              {agent.website && <a href={agent.website.startsWith('http') ? agent.website : `https://${agent.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-primary transition-colors"><Globe className="h-4 w-4" /> {agent.website}</a>}
+            </div>
+            <p className="text-xs text-muted-foreground/60 mt-12 font-body">© 2026 {agent.agencyName} · All prices in USD · Subject to availability</p>
           </div>
         </motion.footer>
       )}
