@@ -48,7 +48,7 @@ interface Props {
   onEditorSubPage?: (page: EditorSubPage) => void;
 }
 
-export default function ProposalPreview({ data, shareId, isEditor }: Props) {
+export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPage }: Props) {
   const isGroupBooking = (data as any).proposalType !== "proposal";
   const navigate = useNavigate();
   const heroImage = data.heroImageUrl || "";
