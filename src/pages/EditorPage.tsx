@@ -27,6 +27,7 @@ export default function EditorPage() {
   const [publishing, setPublishing] = useState(false);
   const [shareId, setShareId] = useState("");
   const [dirty, setDirty] = useState(false);
+  const [hasUserSaved, setHasUserSaved] = useState(false);
   const [currentStatus, setCurrentStatus] = useState("draft");
   const [editorSubPage, setEditorSubPage] = useState<EditorSubPage | null>(null);
   const [, setSearchParams] = useSearchParams();
@@ -135,6 +136,8 @@ export default function EditorPage() {
     setData(merged);
     setShareId(r.share_id || "");
     setCurrentStatus(normalizeProposalStatus(r.status));
+    // If updated_at differs from created_at, user has saved before
+    setHasUserSaved(r.updated_at !== r.created_at || r.status !== "draft");
     setLoading(false);
   };
 
@@ -195,6 +198,7 @@ export default function EditorPage() {
       const msg = isPublish ? "Published!" : isUnpublish ? "Unpublished!" : "Saved!";
       toast({ title: msg });
       setDirty(false);
+      setHasUserSaved(true);
     }
 
     setSaving(false);
@@ -284,9 +288,11 @@ export default function EditorPage() {
           )}
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="travel-ghost" size="sm" onClick={copyShareLink} disabled={!shareId}>
-            <ExternalLink className="h-3.5 w-3.5 mr-1" /> Client Link
-          </Button>
+          {hasUserSaved && (
+            <Button variant="travel-ghost" size="sm" onClick={copyShareLink}>
+              <ExternalLink className="h-3.5 w-3.5 mr-1" /> Client Link
+            </Button>
+          )}
           <Button
             variant={mode === "split" ? "travel" : "travel-ghost"}
             size="sm"
@@ -294,14 +300,15 @@ export default function EditorPage() {
           >
             <PenLine className="h-3.5 w-3.5 mr-1" /> Edit
           </Button>
-          <Button
-            variant={mode === "preview" ? "travel" : "travel-outline"}
-            size="sm"
-            onClick={() => !shareId ? toast({ title: "Please save the trip first." }) : setMode("preview")}
-            disabled={!shareId}
-          >
-            <Eye className="h-3.5 w-3.5 mr-1" /> Preview
-          </Button>
+          {hasUserSaved && (
+            <Button
+              variant={mode === "preview" ? "travel" : "travel-outline"}
+              size="sm"
+              onClick={() => setMode("preview")}
+            >
+              <Eye className="h-3.5 w-3.5 mr-1" /> Preview
+            </Button>
+          )}
           <Button
             variant="travel-outline"
             size="sm"
@@ -310,25 +317,27 @@ export default function EditorPage() {
           >
             <Save className="h-3.5 w-3.5 mr-1" /> {saving ? "Saving..." : "Save Draft"}
           </Button>
-          {currentStatus === "published" ? (
-            <Button
-              variant="travel-outline"
-              size="sm"
-              onClick={handleUnpublish}
-              disabled={saving || publishing}
-            >
-              <EyeOff className="h-3.5 w-3.5 mr-1" /> Unpublish
-            </Button>
-          ) : (
-            <Button
-              variant="travel"
-              size="default"
-              onClick={() => !shareId ? toast({ title: "Please save the trip first." }) : handlePublish()}
-              disabled={publishing || !shareId}
-              className="px-5 font-semibold shadow-md"
-            >
-              <Send className="h-4 w-4 mr-1.5" /> {publishing ? "Publishing..." : "Save & Publish"}
-            </Button>
+          {hasUserSaved && (
+            currentStatus === "published" ? (
+              <Button
+                variant="travel-outline"
+                size="sm"
+                onClick={handleUnpublish}
+                disabled={saving || publishing}
+              >
+                <EyeOff className="h-3.5 w-3.5 mr-1" /> Unpublish
+              </Button>
+            ) : (
+              <Button
+                variant="travel"
+                size="default"
+                onClick={handlePublish}
+                disabled={publishing}
+                className="px-5 font-semibold shadow-md"
+              >
+                <Send className="h-4 w-4 mr-1.5" /> {publishing ? "Publishing..." : "Save & Publish"}
+              </Button>
+            )
           )}
         </div>
       </div>
