@@ -270,7 +270,7 @@ export default function CheckoutPage() {
           <iframe
             src={iframeUrl}
             className="w-full bg-transparent rounded-xl"
-            style={{ height: "2400px", border: "none" }}
+            style={{ height: `${checkout.formHeight || 1200}px`, border: "none" }}
             title="Booking Form"
             allow="payment"
           />
