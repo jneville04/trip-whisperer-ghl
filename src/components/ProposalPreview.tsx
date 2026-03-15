@@ -377,9 +377,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
         };
 
         return (
-          <section className="relative" style={{ width: "100vw", marginLeft: "calc(50% - 50vw)", padding: 0 }}>
+          <section className="relative" style={{ width: "100%", marginLeft: 0, padding: 0 }}>
             {/* Mobile: single asset + badge */}
-            <div className="md:hidden relative" style={{ aspectRatio: "5/2", maxHeight: 480 }}>
+            <div className="md:hidden relative" style={{ width: "100%", aspectRatio: "5/2", maxHeight: 480 }}>
               {renderFirstAsset("w-full h-full overflow-hidden", () => openLightbox(allHeroImgs, 0))}
               {heroMediaBadge}
             </div>
@@ -389,7 +389,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
               {count === 1 ? (
                 <div
                   className="overflow-hidden bg-muted cursor-pointer"
-                  style={{ aspectRatio: "5/2", maxHeight: 480 }}
+                  style={{ width: "100%", aspectRatio: "5/2", maxHeight: 480 }}
                   onClick={() => openLightbox(allHeroImgs, 0)}
                 >
                   {renderFirstAsset("w-full h-full", () => openLightbox(allHeroImgs, 0))}
@@ -397,7 +397,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
               ) : count === 2 ? (
                 <div
                   className="overflow-hidden bg-muted"
-                  style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, aspectRatio: "5/2", maxHeight: 480 }}
+                  style={{ width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, aspectRatio: "5/2", maxHeight: 480 }}
                 >
                   {allReal.map((url, i) => {
                     if (i === 0 && isVideo) {
