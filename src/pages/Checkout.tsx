@@ -93,18 +93,19 @@ export default function CheckoutPage() {
     isDragging.current = true;
     dragStartY.current = e.clientY;
     dragStartHeight.current = localFormHeight;
+    let latestHeight = localFormHeight;
 
     const handleMove = (ev: MouseEvent) => {
       if (!isDragging.current) return;
       const delta = ev.clientY - dragStartY.current;
-      const newHeight = Math.max(400, Math.min(5000, dragStartHeight.current + delta));
-      setLocalFormHeight(newHeight);
+      latestHeight = Math.max(400, Math.min(5000, dragStartHeight.current + delta));
+      setLocalFormHeight(latestHeight);
     };
     const handleUp = () => {
       isDragging.current = false;
       document.removeEventListener("mousemove", handleMove);
       document.removeEventListener("mouseup", handleUp);
-      saveFormHeight(localFormHeight);
+      saveFormHeight(latestHeight);
     };
     document.addEventListener("mousemove", handleMove);
     document.addEventListener("mouseup", handleUp);
