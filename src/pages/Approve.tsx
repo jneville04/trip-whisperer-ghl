@@ -26,6 +26,7 @@ export default function ApprovePage() {
   const navState = location.state as { brand?: BrandColors; returnTo?: string } | null;
   const initialBrand = navState?.brand;
   const returnTo = navState?.returnTo;
+  const isEmbeddedInEditor = location.pathname.includes("/editor");
 
   const [brandData, setBrandData] = useState<BrandColors>(initialBrand || {});
   const [agentData, setAgentData] = useState<{ agencyName?: string; logoUrl?: string; showAgencyNameWithLogo?: boolean }>({});
