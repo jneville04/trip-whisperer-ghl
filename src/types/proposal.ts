@@ -248,6 +248,8 @@ export const defaultSectionOrder: SectionKey[] = [
 
 export type ProposalType = "group_booking" | "proposal";
 
+export type SectionTitles = Partial<Record<SectionKey, { title?: string; subtitle?: string }>>;
+
 export interface ProposalData {
   proposalType: ProposalType;
   destination: string;
