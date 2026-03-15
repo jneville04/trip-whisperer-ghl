@@ -1887,14 +1887,35 @@ function CheckoutEditorSection({ data, onChange }: { data: ProposalData; onChang
                         <Input value={opt.description} onChange={(e) => updatePaymentOption(opt.id, { description: e.target.value })} placeholder="Description" className="h-7 text-xs" />
                         {opt.type === "deposit" && (
                           <div className="flex items-center gap-2">
-                            <Input type="number" value={opt.depositPercent || ""} onChange={(e) => updatePaymentOption(opt.id, { depositPercent: parseInt(e.target.value) || 0 })} placeholder="30" className="h-7 text-xs w-20" />
-                            <span className="text-xs text-muted-foreground">% deposit</span>
+                            <span className="text-xs text-muted-foreground">$</span>
+                            <Input type="number" value={opt.depositPercent || ""} onChange={(e) => updatePaymentOption(opt.id, { depositPercent: parseInt(e.target.value) || 0 })} placeholder="300" className="h-7 text-xs w-24" />
+                            <span className="text-xs text-muted-foreground">deposit amount</span>
                           </div>
                         )}
                         {opt.type === "installments" && (
-                          <div className="flex items-center gap-2">
-                            <Input type="number" value={opt.installmentCount || ""} onChange={(e) => updatePaymentOption(opt.id, { installmentCount: parseInt(e.target.value) || 0 })} placeholder="3" className="h-7 text-xs w-20" />
-                            <span className="text-xs text-muted-foreground">payments</span>
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Input type="number" value={opt.installmentCount || ""} onChange={(e) => updatePaymentOption(opt.id, { installmentCount: parseInt(e.target.value) || 0 })} placeholder="3" className="h-7 text-xs w-20" />
+                              <span className="text-xs text-muted-foreground">payments</span>
+                            </div>
+                            {opt.installmentCount && opt.installmentCount > 0 && (() => {
+                              // Auto-calculate from first pricing option's total
+                              const firstOpt = (data as any).pricingOptions?.[0];
+                              const total = firstOpt?.totalPrice ? parseFloat(firstOpt.totalPrice.replace(/[^0-9.-]/g, "")) : 0;
+                              const deposit = firstOpt?.deposit ? parseFloat(firstOpt.deposit.replace(/[^0-9.-]/g, "")) : 0;
+                              const remaining = total - deposit;
+                              if (remaining > 0) {
+                                const per = remaining / opt.installmentCount;
+                                return (
+                                  <div className="text-[10px] text-muted-foreground bg-muted/50 rounded p-2 space-y-0.5">
+                                    {deposit > 0 && <div>Deposit: <span className="font-semibold text-foreground">${deposit.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span></div>}
+                                    <div>{opt.installmentCount}× <span className="font-semibold text-foreground">${per.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span> each</div>
+                                    <div>Total: <span className="font-semibold text-foreground">${total.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span></div>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })()}
                           </div>
                         )}
                       </>
