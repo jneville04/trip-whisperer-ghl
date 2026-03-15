@@ -1864,9 +1864,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                     className="text-center mb-12"
                   >
                     <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
-                      Investment
+                      {ct.pricing?.subtitle || "Investment"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">Choose Your Package</h2>
+                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.pricing?.title || "Choose Your Package"}</h2>
                     {pricingOptions.length > 1 && (
                       <p className="text-muted-foreground font-body mt-2">Select the option that works best for you</p>
                     )}
