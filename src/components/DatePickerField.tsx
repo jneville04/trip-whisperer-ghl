@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { format, parse } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -35,7 +35,6 @@ function tryParseDate(value: string): Date | undefined {
       if (!isNaN(d.getTime())) return d;
     } catch {}
   }
-  // Try native Date parse as fallback
   const d = new Date(value);
   if (!isNaN(d.getTime())) return d;
   return undefined;
@@ -45,6 +44,12 @@ export default function DatePickerField({ value, onChange, placeholder = "Pick a
   const [open, setOpen] = useState(false);
   const parsed = tryParseDate(value);
 
+  const handleClear = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onChange("");
+    setOpen(false);
+  };
+
   return (
     <div className="space-y-1">
       <Popover open={open} onOpenChange={setOpen}>
@@ -52,13 +57,23 @@ export default function DatePickerField({ value, onChange, placeholder = "Pick a
           <Button
             variant="outline"
             className={cn(
-              "w-full justify-start text-left font-normal h-8 text-xs",
+              "w-full justify-start text-left font-normal h-8 text-xs group",
               !value && "text-muted-foreground",
               className
             )}
           >
-            <CalendarIcon className="mr-1.5 h-3 w-3" />
-            {value || <span>{placeholder}</span>}
+            <CalendarIcon className="mr-1.5 h-3 w-3 shrink-0" />
+            <span className="flex-1 truncate">{value || placeholder}</span>
+            {value && (
+              <span
+                role="button"
+                tabIndex={-1}
+                onClick={handleClear}
+                className="shrink-0 rounded-sm p-0.5 hover:bg-muted text-muted-foreground hover:text-foreground transition-colors opacity-0 group-hover:opacity-100 ml-1"
+              >
+                <X className="h-3 w-3" />
+              </span>
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
