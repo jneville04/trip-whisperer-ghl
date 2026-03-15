@@ -785,7 +785,7 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                                   {stops.map((stop, si) => (
                                     <div key={stop.id || si} className="relative pl-6 py-2">
                                       <div className="absolute left-0 top-3 w-3 h-3 rounded-full bg-primary border-2 border-background" />
-                                      <p className="text-sm font-body font-semibold text-foreground">{stop.location}</p>
+                                      <p className="text-sm font-body font-semibold text-foreground">{stop.locationAddress ? [stop.locationAddress.name, stop.locationAddress.address, stop.locationAddress.city, [stop.locationAddress.state, stop.locationAddress.zip].filter(Boolean).join(" ")].filter(Boolean).join(", ") : stop.location}</p>
                                       <div className="flex gap-3 text-xs text-muted-foreground font-body mt-0.5">
                                         {stop.arrivalTime && <span>Arrive: {stop.arrivalTime}</span>}
                                         {stop.departureTime && <span>Depart: {stop.departureTime}</span>}
