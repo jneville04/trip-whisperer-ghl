@@ -1001,35 +1001,36 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
             if (data.pricing.length === 0 && pricingOptions.length === 0) return null;
             return (
               <section key="pricing" id="pricing" className="py-20 bg-card">
-                <div className="max-w-3xl mx-auto px-6 text-center">
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0}>
+                <div className="max-w-4xl mx-auto px-6">
+                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={0} className="text-center mb-12">
                     <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Investment</p>
-                    <h2 className="font-display text-4xl font-bold text-foreground mb-8">Trip Pricing</h2>
+                    <h2 className="font-display text-4xl font-bold text-foreground">Choose Your Package</h2>
+                    {pricingOptions.length > 1 && <p className="text-muted-foreground font-body mt-2">Select the option that works best for you</p>}
                   </motion.div>
 
-                  {/* Pricing Options Cards */}
+                  {/* Pricing Options Cards — large & prominent */}
                   {pricingOptions.length > 0 && (
-                    <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 text-left">
+                    <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className={`grid gap-6 mb-10 ${pricingOptions.length === 1 ? "max-w-lg mx-auto" : pricingOptions.length === 2 ? "grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"}`}>
                       {pricingOptions.map((opt) => {
                         const isSelected = selectedPricingOption === opt.id;
                         return (
                           <div
                             key={opt.id}
                             onClick={() => setSelectedPricingOption(isSelected ? "" : opt.id)}
-                            className={`relative bg-background rounded-xl border-2 p-6 cursor-pointer transition-all ${
-                              isSelected ? "border-primary ring-2 ring-primary/20 shadow-lg" : "border-border/50 hover:border-primary/40"
+                            className={`relative bg-background rounded-2xl border-2 p-8 cursor-pointer transition-all text-left ${
+                              isSelected ? "border-primary ring-2 ring-primary/20 shadow-xl scale-[1.02]" : "border-border/50 hover:border-primary/40 hover:shadow-md"
                             }`}
                           >
                             {isSelected && (
-                              <div className="absolute top-3 right-3 h-6 w-6 rounded-full bg-primary flex items-center justify-center">
-                                <Check className="h-3.5 w-3.5 text-primary-foreground" />
+                              <div className="absolute top-4 right-4 h-7 w-7 rounded-full bg-primary flex items-center justify-center">
+                                <Check className="h-4 w-4 text-primary-foreground" />
                               </div>
                             )}
-                            <h3 className="font-display text-lg font-bold text-foreground mb-2">{opt.name || "Untitled Option"}</h3>
+                            <h3 className="font-display text-xl font-bold text-foreground mb-3">{opt.name || "Untitled Option"}</h3>
                             {opt.totalPrice && (
-                              <p className="font-display text-2xl font-bold text-primary mb-3">{fmtCurrency(opt.totalPrice)}<span className="text-sm font-normal text-muted-foreground ml-1">total</span></p>
+                              <p className="font-display text-3xl font-bold text-primary mb-4">{fmtCurrency(opt.totalPrice)}</p>
                             )}
-                            <div className="space-y-1.5">
+                            <div className="space-y-2">
                               {opt.deposit && (
                                 <p className="text-sm text-muted-foreground font-body">Deposit due today: <span className="font-semibold text-foreground">{fmtCurrency(opt.deposit)}</span></p>
                               )}
@@ -1037,10 +1038,10 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                                 <p className="text-sm text-muted-foreground font-body">Final payment due by {opt.finalPaymentDate}</p>
                               )}
                               {opt.paymentNote && (
-                                <p className="text-sm text-muted-foreground font-body italic">{opt.paymentNote}</p>
+                                <p className="text-sm text-muted-foreground font-body italic mt-1">{opt.paymentNote}</p>
                               )}
                               {opt.availabilityNote && (
-                                <p className="text-xs font-semibold text-accent font-body mt-2">{opt.availabilityNote}</p>
+                                <p className="text-xs font-semibold text-accent font-body mt-3">{opt.availabilityNote}</p>
                               )}
                             </div>
                           </div>
@@ -1051,8 +1052,8 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
 
                   {/* Legacy pricing lines */}
                   {data.pricing.length > 0 && (
-                    <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2} className="bg-background rounded-2xl border border-border/50 shadow-lg p-10">
-                      <div className="space-y-4 mb-8">
+                    <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={2} className="bg-background rounded-2xl border border-border/50 shadow-lg p-10 max-w-2xl mx-auto mb-10">
+                      <div className="space-y-4">
                         {data.pricing.map((line) => (
                           <div key={line.id} className="flex justify-between items-center py-2 border-b border-border/30 font-body">
                             <span className="text-muted-foreground">{line.label}</span>
@@ -1060,18 +1061,28 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                           </div>
                         ))}
                       </div>
-                      {data.paymentTerms && <p className="text-xs text-muted-foreground mt-3 font-body">{data.paymentTerms}</p>}
+                      {data.paymentTerms && <p className="text-xs text-muted-foreground mt-4 font-body">{data.paymentTerms}</p>}
                     </motion.div>
                   )}
 
-                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={3} className="mt-10">
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                      {bookingUrl && (
-                        <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={() => openModal(bookingUrl, "Book Now")}>
-                          <CheckCircle2 className="h-5 w-5 mr-2" /> Book Now
-                        </Button>
-                      )}
-                    </div>
+                  {/* Book Now CTA for group trips */}
+                  <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={3} className="text-center">
+                    {(bookingUrl || checkoutEnabled || selectedPricingOption) && (
+                      <Button
+                        variant="travel"
+                        size="lg"
+                        className="text-lg px-12 py-6 h-auto"
+                        onClick={() => {
+                          if (checkoutEnabled) {
+                            goToCheckout();
+                          } else if (bookingUrl) {
+                            openModal(bookingUrl, "Book Now");
+                          }
+                        }}
+                      >
+                        <ShoppingCart className="h-5 w-5 mr-2" /> Book Now
+                      </Button>
+                    )}
                     {data.validUntil && <p className="text-sm text-muted-foreground mt-4 font-body">This proposal is valid until {data.validUntil}</p>}
                   </motion.div>
                 </div>
@@ -1171,29 +1182,29 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
               <h2 className="font-display text-4xl font-bold text-foreground">Trip Pricing</h2>
             </motion.div>
 
-            {/* Pricing Options Cards */}
+            {/* Pricing Options Cards — large & prominent */}
             {pricingOptions.length > 0 && (
-              <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+              <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} custom={1} className={`grid gap-6 mb-10 ${pricingOptions.length === 1 ? "max-w-lg mx-auto" : pricingOptions.length === 2 ? "grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"}`}>
                 {pricingOptions.map((opt) => {
                   const isSelected = selectedPricingOption === opt.id;
                   return (
                     <div
                       key={opt.id}
                       onClick={() => setSelectedPricingOption(isSelected ? "" : opt.id)}
-                      className={`relative bg-background rounded-xl border-2 p-6 cursor-pointer transition-all text-left ${
-                        isSelected ? "border-primary ring-2 ring-primary/20 shadow-lg" : "border-border/50 hover:border-primary/40"
+                      className={`relative bg-background rounded-2xl border-2 p-8 cursor-pointer transition-all text-left ${
+                        isSelected ? "border-primary ring-2 ring-primary/20 shadow-xl scale-[1.02]" : "border-border/50 hover:border-primary/40 hover:shadow-md"
                       }`}
                     >
                       {isSelected && (
-                        <div className="absolute top-3 right-3 h-6 w-6 rounded-full bg-primary flex items-center justify-center">
-                          <Check className="h-3.5 w-3.5 text-primary-foreground" />
+                        <div className="absolute top-4 right-4 h-7 w-7 rounded-full bg-primary flex items-center justify-center">
+                          <Check className="h-4 w-4 text-primary-foreground" />
                         </div>
                       )}
-                      <h3 className="font-display text-lg font-bold text-foreground mb-2">{opt.name || "Untitled Option"}</h3>
+                      <h3 className="font-display text-xl font-bold text-foreground mb-3">{opt.name || "Untitled Option"}</h3>
                       {opt.totalPrice && (
-                        <p className="font-display text-2xl font-bold text-primary mb-3">{fmtCurrency(opt.totalPrice)}</p>
+                        <p className="font-display text-3xl font-bold text-primary mb-4">{fmtCurrency(opt.totalPrice)}</p>
                       )}
-                      <div className="space-y-1.5">
+                      <div className="space-y-2">
                         {opt.deposit && (
                           <p className="text-sm text-muted-foreground font-body">Deposit due today: <span className="font-semibold text-foreground">{fmtCurrency(opt.deposit)}</span></p>
                         )}
@@ -1201,10 +1212,10 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                           <p className="text-sm text-muted-foreground font-body">Final payment due by {opt.finalPaymentDate}</p>
                         )}
                         {opt.paymentNote && (
-                          <p className="text-sm text-muted-foreground font-body italic">{opt.paymentNote}</p>
+                          <p className="text-sm text-muted-foreground font-body italic mt-1">{opt.paymentNote}</p>
                         )}
                         {opt.availabilityNote && (
-                          <p className="text-xs font-semibold text-accent font-body mt-2">{opt.availabilityNote}</p>
+                          <p className="text-xs font-semibold text-accent font-body mt-3">{opt.availabilityNote}</p>
                         )}
                       </div>
                     </div>
