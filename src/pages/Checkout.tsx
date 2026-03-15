@@ -152,12 +152,12 @@ export default function CheckoutPage() {
       </div>
 
       {/* ── Page header ── */}
-      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0} className="max-w-[1400px] mx-auto px-4 md:px-6 pt-4 pb-2">
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0} className="max-w-[1400px] mx-auto px-4 md:px-6 pt-4 pb-2 text-center">
         <h1 className="font-display text-xl md:text-2xl font-bold text-foreground tracking-tight">
           {checkout.headline || "Complete Your Booking"}
         </h1>
         {checkout.message && (
-          <p className="text-muted-foreground font-body mt-1 text-sm max-w-3xl">{checkout.message}</p>
+          <p className="text-muted-foreground font-body mt-1 text-sm max-w-3xl mx-auto">{checkout.message}</p>
         )}
       </motion.div>
 
