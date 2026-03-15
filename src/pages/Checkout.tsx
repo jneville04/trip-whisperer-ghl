@@ -56,7 +56,8 @@ export default function CheckoutPage() {
   const agent = proposalData?.agent || ({} as any);
 
   const goBack = () => {
-    if (shareId) navigate(`/view/${shareId}`);
+    if (navState.returnTo) navigate(navState.returnTo);
+    else if (shareId) navigate(`/view/${shareId}`);
     else navigate(-1);
   };
 
