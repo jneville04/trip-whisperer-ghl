@@ -1342,16 +1342,8 @@ export default function ProposalPreview({ data, shareId, isEditor }: Props) {
                 if (selectedPricingOption) return null; // pricing option deposit takes precedence
                 const depositOpt = checkout.paymentOptions.find(o => o.enabled && o.type === "deposit");
                 if (!depositOpt || !depositOpt.depositPercent) return null;
-                const totalForDeposit = (() => {
-                  const selectedFlightPrice = selectedFlight ? parseFloat(flightOptions.find(o => o.id === selectedFlight)?.price || "0") : 0;
-                  const selectedAccPrice = selectedAccommodation ? parseFloat(accommodations.find(a => a.id === selectedAccommodation)?.price || "0") : 0;
-                  const selectedCruisePrice = selectedCruise ? parseFloat(cruiseShips.find(s => s.id === selectedCruise)?.price || "0") : 0;
-                  const selectedBusPrice = selectedBusTrip ? parseFloat(busTrips.find(b => b.id === selectedBusTrip)?.price || "0") : 0;
-                  const pricingLinesTotal = data.pricing.reduce((sum, line) => sum + (parseFloat(line.amount.replace(/[^0-9.-]/g, "")) || 0), 0);
-                  return selectedFlightPrice + selectedAccPrice + selectedCruisePrice + selectedBusPrice + pricingLinesTotal;
-                })();
-                if (totalForDeposit <= 0) return null;
-                const depositAmount = Math.round(totalForDeposit * (depositOpt.depositPercent / 100));
+                // depositPercent now stores dollar amount directly
+                const depositAmount = depositOpt.depositPercent;
                 return (
                   <div className="flex justify-between items-center pt-2 mb-4">
                     <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
