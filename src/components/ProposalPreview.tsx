@@ -157,7 +157,7 @@ function ItinerarySection({ data, fadeUp, openLightbox }: { data: ProposalData; 
   );
 }
 
-
+export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPage }: Props) {
   const isGroupBooking = (data as any).proposalType !== "proposal";
   const navigate = useNavigate();
   const heroImage = data.heroImageUrl || "";
