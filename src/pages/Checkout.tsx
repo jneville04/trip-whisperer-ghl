@@ -137,27 +137,27 @@ export default function CheckoutPage() {
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
 
       {/* ── Compact top bar ── */}
-      <div className="border-b border-border/40 bg-card/60 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between">
+      <div className="border-b border-border/30 bg-background sticky top-0 z-10">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-6 py-2.5 flex items-center justify-between gap-3">
           <button onClick={goBack} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors font-body">
             <ArrowLeft className="h-4 w-4" /> Back to Proposal
           </button>
           {brandData.logoUrl && (
-            <img src={brandData.logoUrl} alt="Agency logo" className="h-7 object-contain" />
+            <img src={brandData.logoUrl} alt="Agency logo" className="h-6 object-contain" />
           )}
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground font-body">
+          <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground font-body">
             <Shield className="h-3.5 w-3.5" /> Secure Booking
           </div>
         </div>
       </div>
 
       {/* ── Page header ── */}
-      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0} className="max-w-6xl mx-auto px-6 pt-12 pb-6">
-        <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground tracking-tight">
+      <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0} className="max-w-[1400px] mx-auto px-4 md:px-6 pt-5 pb-3">
+        <h1 className="font-display text-2xl md:text-3xl font-bold text-foreground tracking-tight">
           {checkout.headline || "Complete Your Booking"}
         </h1>
         {checkout.message && (
-          <p className="text-muted-foreground font-body mt-3 text-lg max-w-2xl">{checkout.message}</p>
+          <p className="text-muted-foreground font-body mt-1.5 text-sm md:text-base max-w-3xl">{checkout.message}</p>
         )}
       </motion.div>
 
