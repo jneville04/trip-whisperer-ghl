@@ -29,6 +29,16 @@ export default function EditorPage() {
   const [dirty, setDirty] = useState(false);
   const [currentStatus, setCurrentStatus] = useState("draft");
   const [editorSubPage, setEditorSubPage] = useState<EditorSubPage | null>(null);
+  const [, setSearchParams] = useSearchParams();
+
+  const handleEditorSubPage = useCallback((page: EditorSubPage | null) => {
+    setEditorSubPage(page);
+    if (page && shareId) {
+      setSearchParams({ share: shareId, subpage: page }, { replace: true });
+    } else {
+      setSearchParams({}, { replace: true });
+    }
+  }, [shareId, setSearchParams]);
 
   const statusMeta: Record<string, { label: string; badgeClassName: string }> = {
     draft: { label: "Draft", badgeClassName: "text-muted-foreground bg-muted/80" },
