@@ -529,11 +529,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
         <SortableContext items={sectionOrder} strategy={verticalListSortingStrategy}>
           {sectionOrder.map((key) => (
             <SortableSection key={key} id={key}>
-              {(dragHandleProps) => {
+              {(() => {
                 switch (key) {
                   case "overview":
                     return (
-                      <CollapsibleSection title={sectionTitles.overview} sectionKey="overview" visible={vis.overview} onToggleVisible={() => toggleSection("overview")} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.overview} sectionKey="overview" visible={vis.overview} onToggleVisible={() => toggleSection("overview")} sectionCustomTitle={customTitles.overview?.title} sectionCustomSubtitle={customTitles.overview?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("overview", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("overview", v)}>
                         <div className="space-y-3">
                           <div>
                             <FieldLabel>Client Name</FieldLabel>
