@@ -265,25 +265,23 @@ export default function CheckoutPage() {
       )}
 
       {/* ── SECTION 2: Booking Form ── */}
-      <motion.section variants={fadeUp} initial="hidden" animate="visible" custom={2} className="max-w-6xl mx-auto px-6 pb-10">
+      <motion.section variants={fadeUp} initial="hidden" animate="visible" custom={2} className="max-w-[1400px] mx-auto px-4 md:px-6 pb-6">
         {iframeUrl ? (
-          <div className="bg-card rounded-2xl border border-border/40 overflow-hidden">
-            <div className="px-8 pt-6 pb-4 border-b border-border/30">
-              <h2 className="font-display text-2xl font-bold text-foreground">Traveler Information</h2>
-              <p className="text-sm text-muted-foreground font-body mt-1">Please fill in your details below to complete your booking.</p>
+          <div className="bg-card rounded-xl border border-border/30 overflow-hidden">
+            <div className="px-4 md:px-6 pt-4 pb-3 border-b border-border/20">
+              <h2 className="font-display text-xl md:text-2xl font-bold text-foreground">Traveler Information</h2>
+              <p className="text-xs md:text-sm text-muted-foreground font-body mt-1">Please fill in your details below to complete your booking.</p>
             </div>
-            <div className="px-2 py-2">
-              <iframe
-                src={iframeUrl}
-                className="w-full bg-transparent"
-                style={{ minHeight: "800px", border: "none" }}
-                title="Booking Form"
-                allow="payment"
-              />
-            </div>
+            <iframe
+              src={iframeUrl}
+              className="w-full bg-transparent"
+              style={{ height: "calc(100vh - 170px)", minHeight: "620px", border: "none" }}
+              title="Booking Form"
+              allow="payment"
+            />
           </div>
         ) : (
-          <div className="bg-card rounded-2xl border border-border/40 px-8 py-16 text-center">
+          <div className="bg-card rounded-xl border border-border/30 px-6 py-12 text-center">
             <h2 className="font-display text-2xl font-bold text-foreground mb-3">Ready to Book?</h2>
             <p className="text-muted-foreground font-body max-w-md mx-auto">
               Your travel advisor will provide booking instructions. Please contact them directly to complete your reservation.
