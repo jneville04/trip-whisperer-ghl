@@ -1721,8 +1721,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       </CollapsibleSection>
                     );
 
-                  case "agent":
-                    return null;
+                  default:
 
                   default:
                     return null;
