@@ -131,6 +131,10 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
 
   const checkoutEnabled = data.checkout?.enabled;
   const goToCheckout = useCallback(() => {
+    if (isEditor && onEditorSubPage) {
+      onEditorSubPage("checkout");
+      return;
+    }
     const selectedOpt = pricingOptions.find(o => o.id === selectedPricingOption) || null;
     navigate(`/checkout${shareId ? `?share=${shareId}` : ""}`, {
       state: {
@@ -140,7 +144,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
         tripName: data.clientName || data.destination || "",
       },
     });
-  }, [navigate, shareId, brandData, returnTo, pricingOptions, selectedPricingOption, data.clientName, data.destination]);
+  }, [navigate, shareId, brandData, returnTo, pricingOptions, selectedPricingOption, data.clientName, data.destination, isEditor, onEditorSubPage]);
 
   const goToApprove = useCallback(() => {
     if (checkoutEnabled) {
