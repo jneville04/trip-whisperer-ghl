@@ -571,103 +571,97 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
           };
 
           return (
-            <section className="relative overflow-hidden" style={{ width: "100%", marginLeft: 0, padding: 0 }}>
-              {/* Mobile: single asset + badge */}
-              <div className="md:hidden relative" style={{ width: "100%", aspectRatio: "5/2", maxHeight: 480 }}>
-                {renderFirstAsset("w-full h-full overflow-hidden", () => openLightbox(allHeroImgs, 0))}
-                {heroMediaBadge}
+            <section className="w-full overflow-hidden">
+              {/* ——— Mobile: stack all images vertically ——— */}
+              <div className="flex flex-col gap-1.5 md:hidden">
+                {allReal.map((url, i) => (
+                  <div key={i} className="relative overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, i)}>
+                    {i === 0 && isVideo ? (
+                      <VideoEmbed
+                        url={data.heroVideoUrl!}
+                        title={data.destination}
+                        thumbnailUrl={data.heroVideoThumbnailUrl}
+                        className="!rounded-none !aspect-auto w-full"
+                        autoplay={!!data.heroAutoplay}
+                        muted={!!data.heroMuted}
+                      />
+                    ) : (
+                      <img
+                        src={url}
+                        alt={`${data.destination} ${i + 1}`}
+                        className="w-full object-cover object-center"
+                        style={{ height: i === 0 ? "45vh" : "30vh" }}
+                        loading={i === 0 ? "eager" : "lazy"}
+                        decoding="async"
+                      />
+                    )}
+                    {i === 0 && heroMediaBadge}
+                  </div>
+                ))}
               </div>
 
-              {/* Desktop */}
-              <div className="hidden md:block">
-                {count === 1 ? (
+              {/* ——— Desktop: 1 large left + 2 stacked right ——— */}
+              <div
+                className="hidden md:grid overflow-hidden"
+                style={{
+                  gridTemplateColumns: count >= 3 ? "2fr 1fr" : count === 2 ? "1fr 1fr" : "1fr",
+                  gap: 6,
+                  height: "55vh",
+                }}
+              >
+                {/* Main / left image */}
+                <div
+                  className="overflow-hidden cursor-pointer"
+                  style={{ minHeight: 0 }}
+                  onClick={() => openLightbox(allHeroImgs, 0)}
+                >
+                  {isVideo ? (
+                    <VideoEmbed
+                      url={data.heroVideoUrl!}
+                      title={data.destination}
+                      thumbnailUrl={data.heroVideoThumbnailUrl}
+                      className="!rounded-none !aspect-auto h-full w-full"
+                      autoplay={!!data.heroAutoplay}
+                      muted={!!data.heroMuted}
+                    />
+                  ) : (
+                    <img
+                      src={allReal[0]}
+                      alt={data.destination}
+                      className="w-full h-full object-cover object-center"
+                      loading="eager"
+                      decoding="async"
+                    />
+                  )}
+                </div>
+
+                {/* Right column: 2 stacked images, 50/50 split */}
+                {count >= 2 && (
                   <div
-                    className="overflow-hidden bg-muted cursor-pointer"
-                    style={{ width: "100%", aspectRatio: "5/2", maxHeight: 480 }}
-                    onClick={() => openLightbox(allHeroImgs, 0)}
+                    className="overflow-hidden"
+                    style={{
+                      display: "grid",
+                      gridTemplateRows: count >= 3 ? "1fr 1fr" : "1fr",
+                      gap: 6,
+                      minHeight: 0,
+                    }}
                   >
-                    {renderFirstAsset("w-full h-full", () => openLightbox(allHeroImgs, 0))}
-                  </div>
-                ) : count === 2 ? (
-                  <div
-                    className="overflow-hidden bg-muted"
-                    style={{ width: "100%", display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, height: "70vh" }}
-                  >
-                    {allReal.map((url, i) => {
-                      if (i === 0 && isVideo) {
-                        return (
-                          <div key={i} className="overflow-hidden h-full">
-                            <VideoEmbed
-                              url={data.heroVideoUrl!}
-                              title={data.destination}
-                              thumbnailUrl={data.heroVideoThumbnailUrl}
-                              className="!rounded-none !aspect-auto h-full w-full"
-                              autoplay={!!data.heroAutoplay}
-                              muted={!!data.heroMuted}
-                            />
-                          </div>
-                        );
-                      }
-                      return (
-                        <div
-                          key={i}
-                          className="overflow-hidden cursor-pointer h-full"
-                          onClick={() => openLightbox(allHeroImgs, i)}
-                        >
-                          <img
-                            src={url}
-                            alt={`${data.destination} ${i + 1}`}
-                            className="w-full h-full object-cover"
-                            loading={i === 0 ? "eager" : "lazy"}
-                            decoding="async"
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  /* 3+ assets: 2fr 1fr grid */
-                  <div
-                    className="overflow-hidden bg-muted"
-                    style={{ width: "100%", display: "grid", gridTemplateColumns: "2fr 1fr", gap: 4, height: "70vh" }}
-                  >
-                    <div className="overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
-                      {isVideo ? (
-                        <VideoEmbed
-                          url={data.heroVideoUrl!}
-                          title={data.destination}
-                          thumbnailUrl={data.heroVideoThumbnailUrl}
-                          className="!rounded-none !aspect-auto h-full w-full"
-                          autoplay={!!data.heroAutoplay}
-                          muted={!!data.heroMuted}
-                        />
-                      ) : (
+                    {allReal.slice(1, 3).map((url, i) => (
+                      <div
+                        key={i}
+                        className="overflow-hidden cursor-pointer"
+                        style={{ minHeight: 0 }}
+                        onClick={() => openLightbox(allHeroImgs, i + 1)}
+                      >
                         <img
-                          src={allReal[0]}
-                          alt={data.destination}
-                          className="w-full h-full object-cover"
-                          loading="eager"
+                          src={url}
+                          alt={`${data.destination} ${i + 2}`}
+                          className="w-full h-full object-cover object-center"
+                          loading="lazy"
                           decoding="async"
                         />
-                      )}
-                    </div>
-                    <div style={{ display: "grid", gridTemplateRows: "1fr 1fr", gap: 4 }}>
-                      {allReal.slice(1, 3).map((url, i) => (
-                        <div
-                          key={i}
-                          className="overflow-hidden cursor-pointer"
-                          onClick={() => openLightbox(allHeroImgs, i + 1)}
-                        >
-                          <img
-                            src={url}
-                            alt={`${data.destination} ${i + 2}`}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                            decoding="async"
-                          />
-                        </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
