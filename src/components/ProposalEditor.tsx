@@ -549,7 +549,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
                    case "flights":
                     return (
-                      <CollapsibleSection title={sectionTitles.flights} sectionKey="flights" visible={vis.flights} onToggleVisible={() => toggleSection("flights")} defaultOpen={false} dragHandleProps={dragHandleProps}>
+                      <CollapsibleSection title={sectionTitles.flights} sectionKey="flights" visible={vis.flights} onToggleVisible={() => toggleSection("flights")} defaultOpen={false} sectionCustomTitle={customTitles.flights?.title} sectionCustomSubtitle={customTitles.flights?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("flights", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("flights", v)}>
                         <div className="space-y-4">
                           {flightOptions.map((opt, oi) => (
                             <div key={opt.id} className="border border-border/40 rounded-lg p-3 bg-muted/20 space-y-3">
