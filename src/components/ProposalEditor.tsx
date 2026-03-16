@@ -1,4 +1,5 @@
 import { useState, useRef, ReactNode } from "react";
+import { format, parse } from "date-fns";
 import { uploadImage, uploadImages } from "@/lib/uploadImage";
 import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, ChevronRight, Eye, EyeOff, ImagePlus, X, ArrowUp, ArrowDown, Search, Upload } from "lucide-react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
@@ -31,6 +32,19 @@ import { useAppSettings } from "@/hooks/useAppSettings";
 interface Props {
   data: ProposalData;
   onChange: (data: ProposalData) => void;
+}
+const PARSE_FMTS = ["MMMM d, yyyy", "MMM d, yyyy", "yyyy-MM-dd", "MM/dd/yyyy"];
+function tryParse(v: string): Date | undefined {
+  if (!v) return undefined;
+  for (const f of PARSE_FMTS) { try { const d = parse(v.trim(), f, new Date()); if (!isNaN(d.getTime())) return d; } catch {} }
+  const d = new Date(v); return isNaN(d.getTime()) ? undefined : d;
+}
+function deriveTravelDates(startStr: string, endStr: string): string {
+  const s = tryParse(startStr), e = tryParse(endStr);
+  if (!s && !e) return "";
+  if (s && e) return `${format(s, "MMM d")}–${format(e, "d, yyyy")}`;
+  if (s) return format(s, "MMM d, yyyy");
+  return "";
 }
 
 const activityTypes: { value: Activity["type"]; label: string }[] = [
@@ -395,10 +409,14 @@ export default function ProposalEditor({ data, onChange }: Props) {
           <div>
             <FieldLabel>Hero Media</FieldLabel>
             <div className="flex gap-2 mt-1 mb-2">
-              <Button type="button" size="sm" variant={(!data.heroMediaType || data.heroMediaType === "photos") ? "default" : "outline"} className="text-xs h-7" onClick={() => update("heroMediaType", "photos")}>
+              <Button type="button" size="sm" variant={(!data.heroMediaType || data.heroMediaType === "photos") ? "default" : "outline"} className="text-xs h-7" onClick={() => {
+                onChange({ ...data, heroMediaType: "photos", heroVideoUrl: "", heroVideoThumbnailUrl: "", heroAutoplay: false, heroMuted: false });
+              }}>
                 📷 Photos
               </Button>
-              <Button type="button" size="sm" variant={data.heroMediaType === "video" ? "default" : "outline"} className="text-xs h-7" onClick={() => update("heroMediaType", "video")}>
+              <Button type="button" size="sm" variant={data.heroMediaType === "video" ? "default" : "outline"} className="text-xs h-7" onClick={() => {
+                onChange({ ...data, heroMediaType: "video", heroImageUrl: "", heroImageUrls: [] });
+              }}>
                 🎬 Video
               </Button>
             </div>
@@ -498,16 +516,24 @@ export default function ProposalEditor({ data, onChange }: Props) {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <FieldLabel>Start Date</FieldLabel>
-              <Input value={(data as any).startDate || ""} onChange={(e) => update("startDate" as any, e.target.value)} placeholder="e.g. Sep 15, 2026" />
+              <DatePickerField value={(data as any).startDate || ""} onChange={(val) => {
+                const updated = { ...data, startDate: val } as any;
+                updated.travelDates = deriveTravelDates(val, (data as any).endDate || "");
+                onChange(updated);
+              }} placeholder="Pick start date" showTime={false} />
             </div>
             <div>
               <FieldLabel>End Date</FieldLabel>
-              <Input value={(data as any).endDate || ""} onChange={(e) => update("endDate" as any, e.target.value)} placeholder="e.g. Sep 19, 2026" />
+              <DatePickerField value={(data as any).endDate || ""} onChange={(val) => {
+                const updated = { ...data, endDate: val } as any;
+                updated.travelDates = deriveTravelDates((data as any).startDate || "", val);
+                onChange(updated);
+              }} placeholder="Pick end date" showTime={false} />
             </div>
           </div>
           <div>
-            <FieldLabel>Travel Dates <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(displayed on proposal)</span></FieldLabel>
-            <Input value={data.travelDates} onChange={(e) => update("travelDates", e.target.value)} placeholder="Sep 15–19, 2026" />
+            <FieldLabel>Travel Dates <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(auto-generated)</span></FieldLabel>
+            <Input value={data.travelDates} readOnly className="bg-muted/30" placeholder="Auto-generated from dates above" />
           </div>
           <div>
             <FieldLabel>Number of Travelers <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(optional)</span></FieldLabel>
