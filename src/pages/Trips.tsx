@@ -34,6 +34,7 @@ export default function Trips() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
   const [sort, setSort] = useState<SortType>("newest");
+  const [dupModal, setDupModal] = useState<{ open: boolean; proposal: ProposalRow | null }>({ open: false, proposal: null });
 
   useEffect(() => {
     loadProposals();
