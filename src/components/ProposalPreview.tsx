@@ -37,6 +37,21 @@ import type { ProposalData, Activity, SectionKey } from "@/types/proposal";
 import { defaultSectionOrder } from "@/types/proposal";
 import { buildBrandCssVars } from "@/lib/brand";
 
+const PARSE_FMTS = ["MMMM d, yyyy", "MMM d, yyyy", "yyyy-MM-dd", "MM/dd/yyyy"];
+function tryParseDate(v: string): Date | undefined {
+  if (!v) return undefined;
+  for (const f of PARSE_FMTS) { try { const d = parse(v.trim(), f, new Date()); if (!isNaN(d.getTime())) return d; } catch {} }
+  const d = new Date(v); return isNaN(d.getTime()) ? undefined : d;
+}
+function formatDateRange(startStr?: string, endStr?: string): string {
+  const s = startStr ? tryParseDate(startStr) : undefined;
+  const e = endStr ? tryParseDate(endStr) : undefined;
+  if (s && e) return `${format(s, "MMM d")}–${format(e, "d, yyyy")}`;
+  if (s) return format(s, "MMM d, yyyy");
+  if (e) return format(e, "MMM d, yyyy");
+  return "";
+}
+
 const fallbackImages: string[] = [];
 
 const fmtCurrency = (val: string) => {
