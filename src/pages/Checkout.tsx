@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { format, parse } from "date-fns";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { motion, type Easing } from "framer-motion";
 import { ArrowLeft, CheckCircle2, Loader2, Calendar, Users, Phone, Mail, Globe, CreditCard, MapPin, GripHorizontal } from "lucide-react";
@@ -7,6 +8,21 @@ import { buildBrandCssVars } from "@/lib/brand";
 import type { ProposalData, CheckoutSettings, PricingOption } from "@/types/proposal";
 import { createDefaultCheckout } from "@/types/proposal";
 import ClientNav from "@/components/ClientNav";
+
+const PARSE_FMTS_CO = ["MMMM d, yyyy", "MMM d, yyyy", "yyyy-MM-dd", "MM/dd/yyyy"];
+function tryParseDateCO(v: string): Date | undefined {
+  if (!v) return undefined;
+  for (const f of PARSE_FMTS_CO) { try { const d = parse(v.trim(), f, new Date()); if (!isNaN(d.getTime())) return d; } catch {} }
+  const d = new Date(v); return isNaN(d.getTime()) ? undefined : d;
+}
+function formatCheckoutDateRange(startStr?: string, endStr?: string): string {
+  const s = startStr ? tryParseDateCO(startStr) : undefined;
+  const e = endStr ? tryParseDateCO(endStr) : undefined;
+  if (s && e) return `${format(s, "MMM d")}–${format(e, "d, yyyy")}`;
+  if (s) return format(s, "MMM d, yyyy");
+  if (e) return format(e, "MMM d, yyyy");
+  return "";
+}
 
 const fmtCurrency = (val: string) => {
   const num = parseFloat(val.replace(/[^0-9.-]/g, ""));
@@ -139,12 +155,10 @@ export default function CheckoutPage() {
     const count = installmentOption?.installmentCount || 3;
     const perInstallment = remaining / count;
 
-    const travelDates = proposalData?.travelDates || "";
+    const startDateStr = (proposalData as any)?.startDate || "";
     let startDate: Date | null = null;
-    const dateMatch = travelDates.match(/(\w+\s+\d+).+?(\w+\s+\d+)/);
-    if (dateMatch) {
-      const year = new Date().getFullYear();
-      startDate = new Date(`${dateMatch[1]}, ${year}`);
+    if (startDateStr) {
+      startDate = new Date(startDateStr);
       if (isNaN(startDate.getTime())) startDate = null;
     }
 
@@ -166,7 +180,7 @@ export default function CheckoutPage() {
       payments.push({ label: `Installment ${i + 1} of ${count}`, amount: perInstallment, dueDate });
     }
     return payments;
-  }, [selectedOption, checkout, proposalData?.travelDates]);
+  }, [selectedOption, checkout, proposalData]);
 
   if (loading) {
     return (
@@ -223,8 +237,8 @@ export default function CheckoutPage() {
                 {proposalData?.destination && (
                   <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {proposalData.destination}</span>
                 )}
-                {proposalData?.travelDates && (
-                  <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> {proposalData.travelDates}</span>
+                {formatCheckoutDateRange((proposalData as any)?.startDate, (proposalData as any)?.endDate) && (
+                  <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> {formatCheckoutDateRange((proposalData as any)?.startDate, (proposalData as any)?.endDate)}</span>
                 )}
                 {proposalData?.travelerCount && (
                   <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5" /> {proposalData.travelerCount} travelers</span>
@@ -299,8 +313,8 @@ export default function CheckoutPage() {
         <motion.section variants={fadeUp} initial="hidden" animate="visible" custom={1} className="max-w-[1400px] mx-auto px-4 md:px-6 pb-5">
           <div className="bg-card rounded-2xl border border-border/40 px-8 py-6 text-center">
             <h2 className="font-display text-2xl font-bold text-foreground">{resolvedTripName}</h2>
-            {proposalData?.travelDates && (
-              <p className="text-sm text-muted-foreground font-body mt-2 flex items-center justify-center gap-1"><Calendar className="h-3.5 w-3.5" />{proposalData.travelDates}</p>
+            {formatCheckoutDateRange((proposalData as any)?.startDate, (proposalData as any)?.endDate) && (
+              <p className="text-sm text-muted-foreground font-body mt-2 flex items-center justify-center gap-1"><Calendar className="h-3.5 w-3.5" />{formatCheckoutDateRange((proposalData as any)?.startDate, (proposalData as any)?.endDate)}</p>
             )}
           </div>
         </motion.section>

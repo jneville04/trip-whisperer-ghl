@@ -131,7 +131,6 @@ export default function CreateTripMenu() {
       destination: destination.trim(),
       startDate: startDate ? format(startDate, "MMMM d, yyyy") : "",
       endDate: endDate ? format(endDate, "MMMM d, yyyy") : "",
-      travelDates: formatDateRange(startDate, endDate),
     };
 
     const { data, error } = await supabase
@@ -170,7 +169,6 @@ export default function CreateTripMenu() {
       destination: groupDestination.trim(),
       startDate: groupStartDate ? format(groupStartDate, "MMMM d, yyyy") : "",
       endDate: groupEndDate ? format(groupEndDate, "MMMM d, yyyy") : "",
-      travelDates: formatDateRange(groupStartDate, groupEndDate),
     };
 
     const { data, error } = await supabase
