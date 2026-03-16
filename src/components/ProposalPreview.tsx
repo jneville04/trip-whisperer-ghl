@@ -591,7 +591,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
           return (
             <section className="w-full overflow-hidden">
               {/* ——— Mobile: main image only ——— */}
-              <div className="md:hidden relative overflow-hidden cursor-pointer" onClick={() => openLightbox(allHeroImgs, 0)}>
+              <div className={`md:hidden relative overflow-hidden ${isVideo ? "" : "cursor-pointer"}`} onClick={isVideo ? undefined : () => openLightbox(allHeroImgs, 0)}>
                 {isVideo ? (
                   <VideoEmbed
                     url={data.heroVideoUrl!}
@@ -611,7 +611,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                     decoding="async"
                   />
                 )}
-                {heroMediaBadge}
+                {!isVideo && heroMediaBadge}
               </div>
 
               {/* ——— Desktop: 1 large left + 2 stacked right ——— */}
