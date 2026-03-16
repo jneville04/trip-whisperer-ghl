@@ -693,9 +693,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
             transition={{ duration: 0.8, delay: 0.4 }}
             className="flex items-center justify-center gap-4 mt-6 flex-wrap"
           >
-            {data.travelDates && (
+            {((data as any).startDate || (data as any).endDate) && (
               <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body">
-                <Calendar className="h-4 w-4 text-primary" /> {data.travelDates}
+                <Calendar className="h-4 w-4 text-primary" /> {formatDateRange((data as any).startDate, (data as any).endDate)}
               </span>
             )}
             {data.travelerCount && (
