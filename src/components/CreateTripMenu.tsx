@@ -163,6 +163,7 @@ export default function CreateTripMenu() {
     const proposalData: ProposalData = {
       ...blankProposal,
       proposalType: "group_booking",
+      tripName: groupTripTitle.trim(),
       clientName: groupName.trim() || groupTripTitle.trim(),
       destination: groupDestination.trim(),
       travelDates: formatDateRange(groupStartDate, groupEndDate),
