@@ -164,7 +164,7 @@ export default function CheckoutPage() {
       payments.push({ label: `Installment ${i + 1} of ${count}`, amount: perInstallment, dueDate });
     }
     return payments;
-  }, [selectedOption, checkout, proposalData?.travelDates]);
+  }, [selectedOption, checkout, proposalData]);
 
   if (loading) {
     return (
