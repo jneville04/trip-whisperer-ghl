@@ -5,6 +5,58 @@ import { Copy, Trash2, ExternalLink, MapPin, Calendar, Eye, Clock } from "lucide
 import { type ProposalData } from "@/types/proposal";
 import { format } from "date-fns";
 
+/** Captures a frame from a direct video URL or fetches Vimeo thumbnail */
+function VideoFrameThumb({ videoUrl, vimeoId, alt }: { videoUrl: string; vimeoId?: string; alt: string }) {
+  const [thumb, setThumb] = useState<string | null>(null);
+  const attempted = useRef(false);
+
+  useEffect(() => {
+    if (attempted.current) return;
+    attempted.current = true;
+
+    if (vimeoId) {
+      fetch(`https://vimeo.com/api/oembed.json?url=https://vimeo.com/${vimeoId}`)
+        .then((r) => r.json())
+        .then((d) => { if (d.thumbnail_url) setThumb(d.thumbnail_url); })
+        .catch(() => {});
+      return;
+    }
+
+    const video = document.createElement("video");
+    video.crossOrigin = "anonymous";
+    video.muted = true;
+    video.preload = "auto";
+    video.playsInline = true;
+    video.src = videoUrl;
+
+    const capture = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 360;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          setThumb(canvas.toDataURL("image/jpeg", 0.8));
+        }
+      } catch {
+        // CORS error — leave as null
+      }
+      video.remove();
+    };
+
+    video.addEventListener("loadeddata", () => { video.currentTime = 0.5; });
+    video.addEventListener("seeked", capture);
+    video.addEventListener("error", () => video.remove());
+    video.load();
+  }, [videoUrl, vimeoId]);
+
+  if (thumb) {
+    return <img src={thumb} alt={alt} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />;
+  }
+  return <div className="w-full h-full bg-muted animate-pulse" />;
+}
+
 interface ProposalRow {
   id: string;
   title: string;
