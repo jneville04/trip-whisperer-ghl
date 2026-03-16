@@ -102,11 +102,8 @@ export default function TripCard({ proposal, onOpen, onDuplicate, onDelete, onCo
 
       {/* Card Body */}
       <div className="p-4 flex flex-col flex-1 gap-3">
-        {/* Badges */}
+        {/* Status Badge */}
         <div className="flex items-center gap-2">
-          <span className={`text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full ${proposalType === "proposal" ? "bg-secondary/10 text-secondary" : "bg-primary/10 text-primary"}`}>
-            {proposalType === "proposal" ? "Proposal" : "Group Trip"}
-          </span>
           <span className={`text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full ${sc.className}`}>
             {sc.label}
           </span>
