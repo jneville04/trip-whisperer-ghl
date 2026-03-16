@@ -415,6 +415,7 @@ export const createBusTrip = (): BusTrip => ({
 
 export const blankProposal: ProposalData = {
   proposalType: "proposal",
+  tripName: "",
   destination: "",
   subtitle: "",
   heroImageUrl: "",
