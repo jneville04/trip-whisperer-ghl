@@ -140,6 +140,7 @@ export default function EditorPage() {
     setData(merged);
     setShareId(r.share_id || "");
     setCurrentStatus(normalizeProposalStatus(r.status));
+    setLastSavedAt(new Date());
     setLoading(false);
   };
 
