@@ -221,10 +221,21 @@ export default function EditorPage() {
   const copyShareLink = () => {
     const url = `${window.location.origin}/view/${shareId}`;
     navigator.clipboard.writeText(url);
-    toast({ title: "Client link copied!", description: url });
+    setLinkCopiedAlert(true);
+    setSendMenuOpen(false);
+    setTimeout(() => setLinkCopiedAlert(false), 2500);
   };
 
-  // Agent settings is the PRIMARY source for agent info; proposal-level data is ignored
+  // Close send menu on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (sendMenuRef.current && !sendMenuRef.current.contains(e.target as Node)) {
+        setSendMenuOpen(false);
+      }
+    };
+    if (sendMenuOpen) document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [sendMenuOpen]);
   // Brand colors: proposal overrides take priority, then agent settings, then app defaults
   const previewData = useMemo<ProposalData>(() => {
     const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
