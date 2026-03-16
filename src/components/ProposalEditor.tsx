@@ -306,32 +306,13 @@ export default function ProposalEditor({ data, onChange }: Props) {
       <div className="mb-6">
         <h2 className="font-display text-2xl font-bold text-foreground">{builderTitle}</h2>
         <p className="text-sm text-muted-foreground font-body mt-1">Fill in the details below — preview updates live. Drag sections to reorder.</p>
-        <div className="flex gap-2 mt-3">
-          <Button
-            size="sm"
-            variant={(data as any).proposalType !== "proposal" ? "travel" : "travel-outline"}
-            className="text-xs h-7"
-            onClick={() => update("proposalType" as any, "group_booking")}
-          >
-            📋 Group Booking
-          </Button>
-          <Button
-            size="sm"
-            variant={(data as any).proposalType === "proposal" ? "travel" : "travel-outline"}
-            className="text-xs h-7"
-            onClick={() => update("proposalType" as any, "proposal")}
-          >
-            📄 Proposal
-          </Button>
-        </div>
       </div>
 
       {/* Brand Settings — pulled from global Settings */}
       <Card className="border-border/50">
         <CardHeader className="py-4">
-          <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between">
             <CardTitle className="text-base font-display">🎨 Brand & Colors</CardTitle>
-            <a href="/settings" target="_blank" className="text-xs text-primary hover:underline font-body">Edit in Settings →</a>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
@@ -465,7 +446,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                     <Button type="button" size="sm" variant="outline" className="text-xs h-7" asChild><span>Upload</span></Button>
                   </label>
                 </div>
-                {data.heroVideoUrl && (
+                {data.heroVideoUrl && !data.heroAutoplay && (
                   <div>
                     <FieldLabel>Custom Thumbnail</FieldLabel>
                     <div className="flex gap-1.5 items-center mt-1">
