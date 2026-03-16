@@ -299,10 +299,12 @@ export default function ProposalEditor({ data, onChange }: Props) {
     agent: "💼 Agent Info",
   };
 
+  const builderTitle = (data as any).proposalType === "proposal" ? "Proposal Builder" : "Group Trip Builder";
+
   return (
     <div className="space-y-4 p-4 sm:p-6 overflow-y-auto h-full">
       <div className="mb-6">
-        <h2 className="font-display text-2xl font-bold text-foreground">Proposal Builder</h2>
+        <h2 className="font-display text-2xl font-bold text-foreground">{builderTitle}</h2>
         <p className="text-sm text-muted-foreground font-body mt-1">Fill in the details below — preview updates live. Drag sections to reorder.</p>
         <div className="flex gap-2 mt-3">
           <Button
