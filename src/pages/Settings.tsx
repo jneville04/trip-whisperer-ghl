@@ -74,31 +74,23 @@ export default function SettingsPage() {
 
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center text-muted-foreground font-body" style={cssVars as React.CSSProperties}>
-        Loading settings...
-      </div>
+      <AppLayout>
+        <div className="h-full flex items-center justify-center text-muted-foreground font-body py-20">
+          Loading settings...
+        </div>
+      </AppLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background" style={cssVars as React.CSSProperties}>
-      {/* Header */}
-      <div className="border-b border-border/50 bg-card">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="travel-ghost" size="sm" onClick={() => navigate("/dashboard")}>
-              <ArrowLeft className="h-3.5 w-3.5 mr-1" /> Dashboard
-            </Button>
-            <span className="text-sm font-display font-semibold text-foreground">Settings</span>
-          </div>
+    <AppLayout>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="font-display text-lg font-semibold text-foreground">Settings</h2>
           <Button variant="travel" size="sm" onClick={handleSave} disabled={!dirty || isSaving}>
             <Save className="h-3.5 w-3.5 mr-1" /> {isSaving ? "Saving..." : "Save Settings"}
           </Button>
         </div>
-      </div>
-
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         <Tabs defaultValue="brand" className="space-y-6">
           <TabsList className="grid grid-cols-4 w-full max-w-lg">
             <TabsTrigger value="brand" className="text-xs"><Palette className="h-3.5 w-3.5 mr-1" /> Brand</TabsTrigger>
