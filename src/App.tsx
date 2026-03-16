@@ -6,6 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import AuthPage from "./pages/Auth.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
+import Trips from "./pages/Trips.tsx";
+import SectionLibrary from "./pages/SectionLibrary.tsx";
 import AdminPage from "./pages/Admin.tsx";
 import EditorPage from "./pages/EditorPage.tsx";
 import ClientView from "./pages/ClientView.tsx";
@@ -29,6 +31,8 @@ function AppContent() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/trips" element={<Trips />} />
+          <Route path="/section-library" element={<SectionLibrary />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="/editor/:id" element={<EditorPage />} />
           <Route path="/view/:shareId" element={<ClientView />} />
