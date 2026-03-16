@@ -59,38 +59,15 @@ export default function TripCard({ proposal, onOpen, onDuplicate, onDelete, onCo
           const heroMediaType = (proposal.data as any)?.heroMediaType;
           const isVideo = heroMediaType === "video" && videoUrl;
 
-          if (isVideo && videoThumb) {
-            return (
-              <div className="w-full h-full relative">
-                <img src={videoThumb} alt={proposal.destination || "Proposal"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-10 h-10 rounded-full bg-foreground/60 backdrop-blur-sm flex items-center justify-center">
-                    <Play className="h-4 w-4 text-background ml-0.5" />
-                  </div>
-                </div>
-              </div>
-            );
-          }
-          if (isVideo && !videoThumb) {
+          if (isVideo) {
+            // Try custom thumbnail first, then YouTube auto-thumb
             const ytMatch = videoUrl.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-            const vimeoMatch = !ytMatch && videoUrl.match(/vimeo\.com\/(\d+)/);
-            const autoThumb = ytMatch
-              ? `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`
-              : null;
-            return (
-              <div className="w-full h-full relative">
-                {autoThumb ? (
-                  <img src={autoThumb} alt={proposal.destination || "Proposal"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                ) : (
-                  <div className="w-full h-full bg-muted flex items-center justify-center">
-                    <Play className="h-8 w-8 text-muted-foreground/40" />
-                  </div>
-                )}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-10 h-10 rounded-full bg-foreground/60 backdrop-blur-sm flex items-center justify-center">
-                    <Play className="h-4 w-4 text-background ml-0.5" />
-                  </div>
-                </div>
+            const thumb = videoThumb || (ytMatch ? `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg` : null);
+            return thumb ? (
+              <img src={thumb} alt={proposal.destination || "Proposal"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            ) : (
+              <div className="w-full h-full bg-muted flex items-center justify-center">
+                <MapPin className="h-8 w-8 text-muted-foreground/30" />
               </div>
             );
           }
