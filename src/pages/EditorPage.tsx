@@ -22,6 +22,9 @@ export default function EditorPage() {
   const [data, setData] = useState<ProposalData>(defaultProposal);
   const [mode, setMode] = useState<"split" | "preview">("split");
   const [panelOpen, setPanelOpen] = useState(true);
+  const [sendMenuOpen, setSendMenuOpen] = useState(false);
+  const [linkCopiedAlert, setLinkCopiedAlert] = useState(false);
+  const sendMenuRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
