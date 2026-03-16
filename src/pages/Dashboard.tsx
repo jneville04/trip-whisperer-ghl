@@ -123,7 +123,7 @@ export default function Dashboard() {
                 key={proposal.id}
                 proposal={proposal}
                 onOpen={() => navigate(`/editor/${proposal.id}`)}
-                onDuplicate={() => duplicateProposal(proposal)}
+                onDuplicate={() => setDupModal({ open: true, proposal })}
                 onDelete={() => deleteProposal(proposal.id)}
                 onCopyLink={() => copyShareLink(proposal.share_id)}
               />
