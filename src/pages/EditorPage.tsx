@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Eye, ArrowLeft, PanelLeftClose, PanelLeft, Send, HelpCircle, Mail, Phone, X, Pencil, Link2, FileDown, ChevronDown, Check, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import ProposalEditor from "@/components/ProposalEditor";
 import ProposalPreview, { type EditorSubPage } from "@/components/ProposalPreview";
 import { defaultProposal, createDefaultCheckout, type ProposalData } from "@/types/proposal";
