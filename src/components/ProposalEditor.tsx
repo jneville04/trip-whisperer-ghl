@@ -502,16 +502,24 @@ export default function ProposalEditor({ data, onChange }: Props) {
           <div className="grid grid-cols-2 gap-3">
             <div>
               <FieldLabel>Start Date</FieldLabel>
-              <Input value={(data as any).startDate || ""} onChange={(e) => update("startDate" as any, e.target.value)} placeholder="e.g. Sep 15, 2026" />
+              <DatePickerField value={(data as any).startDate || ""} onChange={(val) => {
+                const updated = { ...data, startDate: val } as any;
+                updated.travelDates = deriveTravelDates(val, (data as any).endDate || "");
+                onChange(updated);
+              }} placeholder="Pick start date" showTime={false} />
             </div>
             <div>
               <FieldLabel>End Date</FieldLabel>
-              <Input value={(data as any).endDate || ""} onChange={(e) => update("endDate" as any, e.target.value)} placeholder="e.g. Sep 19, 2026" />
+              <DatePickerField value={(data as any).endDate || ""} onChange={(val) => {
+                const updated = { ...data, endDate: val } as any;
+                updated.travelDates = deriveTravelDates((data as any).startDate || "", val);
+                onChange(updated);
+              }} placeholder="Pick end date" showTime={false} />
             </div>
           </div>
           <div>
-            <FieldLabel>Travel Dates <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(displayed on proposal)</span></FieldLabel>
-            <Input value={data.travelDates} onChange={(e) => update("travelDates", e.target.value)} placeholder="Sep 15–19, 2026" />
+            <FieldLabel>Travel Dates <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(auto-generated)</span></FieldLabel>
+            <Input value={data.travelDates} readOnly className="bg-muted/30" placeholder="Auto-generated from dates above" />
           </div>
           <div>
             <FieldLabel>Number of Travelers <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(optional)</span></FieldLabel>

@@ -168,6 +168,8 @@ export default function CreateTripMenu() {
       tripName: groupTripTitle.trim(),
       clientName: groupName.trim() || groupTripTitle.trim(),
       destination: groupDestination.trim(),
+      startDate: groupStartDate ? format(groupStartDate, "MMMM d, yyyy") : "",
+      endDate: groupEndDate ? format(groupEndDate, "MMMM d, yyyy") : "",
       travelDates: formatDateRange(groupStartDate, groupEndDate),
     };
 
