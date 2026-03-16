@@ -1,8 +1,61 @@
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Copy, Trash2, ExternalLink, MapPin, Calendar, Eye, Clock } from "lucide-react";
 import { type ProposalData } from "@/types/proposal";
 import { format } from "date-fns";
+
+/** Captures a frame from a direct video URL or fetches Vimeo thumbnail */
+function VideoFrameThumb({ videoUrl, vimeoId, alt }: { videoUrl: string; vimeoId?: string; alt: string }) {
+  const [thumb, setThumb] = useState<string | null>(null);
+  const attempted = useRef(false);
+
+  useEffect(() => {
+    if (attempted.current) return;
+    attempted.current = true;
+
+    if (vimeoId) {
+      fetch(`https://vimeo.com/api/oembed.json?url=https://vimeo.com/${vimeoId}`)
+        .then((r) => r.json())
+        .then((d) => { if (d.thumbnail_url) setThumb(d.thumbnail_url); })
+        .catch(() => {});
+      return;
+    }
+
+    const video = document.createElement("video");
+    video.crossOrigin = "anonymous";
+    video.muted = true;
+    video.preload = "auto";
+    video.playsInline = true;
+    video.src = videoUrl;
+
+    const capture = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth || 640;
+        canvas.height = video.videoHeight || 360;
+        const ctx = canvas.getContext("2d");
+        if (ctx) {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          setThumb(canvas.toDataURL("image/jpeg", 0.8));
+        }
+      } catch {
+        // CORS error — leave as null
+      }
+      video.remove();
+    };
+
+    video.addEventListener("loadeddata", () => { video.currentTime = 0.5; });
+    video.addEventListener("seeked", capture);
+    video.addEventListener("error", () => video.remove());
+    video.load();
+  }, [videoUrl, vimeoId]);
+
+  if (thumb) {
+    return <img src={thumb} alt={alt} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />;
+  }
+  return <div className="w-full h-full bg-muted animate-pulse" />;
+}
 
 interface ProposalRow {
   id: string;
@@ -60,16 +113,17 @@ export default function TripCard({ proposal, onOpen, onDuplicate, onDelete, onCo
           const isVideo = heroMediaType === "video" && videoUrl;
 
           if (isVideo) {
-            // Try custom thumbnail first, then YouTube auto-thumb
             const ytMatch = videoUrl.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-            const thumb = videoThumb || (ytMatch ? `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg` : null);
-            return thumb ? (
-              <img src={thumb} alt={proposal.destination || "Proposal"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-            ) : (
-              <div className="w-full h-full bg-muted flex items-center justify-center">
-                <MapPin className="h-8 w-8 text-muted-foreground/30" />
-              </div>
-            );
+            const vimeoMatch = !ytMatch && videoUrl.match(/vimeo\.com\/(\d+)/);
+            const autoThumb = videoThumb
+              || (ytMatch ? `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg` : null)
+              || (vimeoMatch ? `vimeo:${vimeoMatch[1]}` : null);
+
+            if (autoThumb && !autoThumb.startsWith("vimeo:")) {
+              return <img src={autoThumb} alt={proposal.destination || "Proposal"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />;
+            }
+            // Vimeo or direct video — use VideoFrameThumb
+            return <VideoFrameThumb videoUrl={videoUrl} vimeoId={vimeoMatch ? vimeoMatch[1] : undefined} alt={proposal.destination || "Proposal"} />;
           }
           if (heroImg) {
             return <img src={heroImg} alt={proposal.destination || "Proposal"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />;
