@@ -11,6 +11,7 @@ import CreateTripMenu from "@/components/CreateTripMenu";
 import { MapPin, FileText } from "lucide-react";
 import { type ProposalData } from "@/types/proposal";
 import { format } from "date-fns";
+import DuplicateTripModal from "@/components/DuplicateTripModal";
 
 interface ProposalRow {
   id: string;
