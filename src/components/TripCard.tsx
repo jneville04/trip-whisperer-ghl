@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Copy, Trash2, ExternalLink, MapPin, Calendar, Play, Eye, Clock } from "lucide-react";
+import { Copy, Trash2, ExternalLink, MapPin, Calendar, Eye, Clock } from "lucide-react";
 import { type ProposalData } from "@/types/proposal";
 import { format } from "date-fns";
 
