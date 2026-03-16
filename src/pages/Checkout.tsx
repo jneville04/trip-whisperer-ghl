@@ -298,9 +298,8 @@ export default function CheckoutPage() {
         <motion.section variants={fadeUp} initial="hidden" animate="visible" custom={1} className="max-w-[1400px] mx-auto px-4 md:px-6 pb-5">
           <div className="bg-card rounded-2xl border border-border/40 px-8 py-6 text-center">
             <h2 className="font-display text-2xl font-bold text-foreground">{resolvedTripName}</h2>
-            {(() => { const s = (proposalData as any)?.startDate, e = (proposalData as any)?.endDate; return (s || e) ? (
-              <p className="text-sm text-muted-foreground font-body mt-2 flex items-center justify-center gap-1"><Calendar className="h-3.5 w-3.5" />{formatCheckoutDateRange(s, e)}</p>
-            ) : null; })()}
+            {formatCheckoutDateRange((proposalData as any)?.startDate, (proposalData as any)?.endDate) && (
+              <p className="text-sm text-muted-foreground font-body mt-2 flex items-center justify-center gap-1"><Calendar className="h-3.5 w-3.5" />{formatCheckoutDateRange((proposalData as any)?.startDate, (proposalData as any)?.endDate)}</p>
             )}
           </div>
         </motion.section>
