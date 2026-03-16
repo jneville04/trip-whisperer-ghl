@@ -11,6 +11,7 @@ import CreateTripMenu from "@/components/CreateTripMenu";
 import { MapPin, FileText } from "lucide-react";
 import { type ProposalData } from "@/types/proposal";
 import { format } from "date-fns";
+import DuplicateTripModal from "@/components/DuplicateTripModal";
 
 interface ProposalRow {
   id: string;
@@ -31,6 +32,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [proposals, setProposals] = useState<ProposalRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dupModal, setDupModal] = useState<{ open: boolean; proposal: ProposalRow | null }>({ open: false, proposal: null });
 
   useEffect(() => {
     if (profileStatus === "approved" || isAdmin) {
@@ -52,16 +54,17 @@ export default function Dashboard() {
     setLoading(false);
   };
 
-  const duplicateProposal = async (proposal: ProposalRow) => {
+  const duplicateProposal = async (tripName: string, clientName: string, proposal: ProposalRow) => {
     const user = (await supabase.auth.getUser()).data.user;
     if (!user) return;
     const { error } = await supabase
       .from("proposals")
       .insert({
         user_id: user.id,
-        title: `${proposal.title} (Copy)`,
-        client_name: proposal.client_name,
+        title: tripName,
+        client_name: clientName,
         destination: proposal.destination,
+        status: "draft",
         data: proposal.data as any,
       })
       .select()
@@ -120,12 +123,21 @@ export default function Dashboard() {
                 key={proposal.id}
                 proposal={proposal}
                 onOpen={() => navigate(`/editor/${proposal.id}`)}
-                onDuplicate={() => duplicateProposal(proposal)}
+                onDuplicate={() => setDupModal({ open: true, proposal })}
                 onDelete={() => deleteProposal(proposal.id)}
                 onCopyLink={() => copyShareLink(proposal.share_id)}
               />
             ))}
           </div>
+        )}
+        {dupModal.proposal && (
+          <DuplicateTripModal
+            open={dupModal.open}
+            onOpenChange={(open) => setDupModal((prev) => ({ ...prev, open }))}
+            tripName={`${dupModal.proposal.title} (Copy)`}
+            clientName={dupModal.proposal.client_name || ""}
+            onConfirm={(name, client) => duplicateProposal(name, client, dupModal.proposal!)}
+          />
         )}
       </div>
     </AppLayout>
