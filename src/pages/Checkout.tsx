@@ -139,12 +139,10 @@ export default function CheckoutPage() {
     const count = installmentOption?.installmentCount || 3;
     const perInstallment = remaining / count;
 
-    const travelDates = proposalData?.travelDates || "";
+    const startDateStr = (proposalData as any)?.startDate || "";
     let startDate: Date | null = null;
-    const dateMatch = travelDates.match(/(\w+\s+\d+).+?(\w+\s+\d+)/);
-    if (dateMatch) {
-      const year = new Date().getFullYear();
-      startDate = new Date(`${dateMatch[1]}, ${year}`);
+    if (startDateStr) {
+      startDate = new Date(startDateStr);
       if (isNaN(startDate.getTime())) startDate = null;
     }
 
