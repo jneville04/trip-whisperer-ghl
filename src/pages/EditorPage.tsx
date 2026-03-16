@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { Eye, EyeOff, PenLine, ArrowLeft, Save, ExternalLink, PanelLeftClose, PanelLeft, Send, HelpCircle, Mail, Phone, X } from "lucide-react";
+import { Eye, EyeOff, PenLine, ArrowLeft, Save, ExternalLink, PanelLeftClose, PanelLeft, Send, HelpCircle, Mail, Phone, X, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProposalEditor from "@/components/ProposalEditor";
 import ProposalPreview, { type EditorSubPage } from "@/components/ProposalPreview";
@@ -29,6 +29,9 @@ export default function EditorPage() {
   const [dirty, setDirty] = useState(false);
   const [currentStatus, setCurrentStatus] = useState("draft");
   const [editorSubPage, setEditorSubPage] = useState<EditorSubPage | null>(null);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const [editingTripName, setEditingTripName] = useState(false);
+  const tripNameInputRef = useRef<HTMLInputElement>(null);
   const [, setSearchParams] = useSearchParams();
 
   const handleEditorSubPage = useCallback((page: EditorSubPage | null) => {
@@ -137,6 +140,7 @@ export default function EditorPage() {
     setData(merged);
     setShareId(r.share_id || "");
     setCurrentStatus(normalizeProposalStatus(r.status));
+    setLastSavedAt(new Date());
     setLoading(false);
   };
 
@@ -197,6 +201,7 @@ export default function EditorPage() {
       toast({ title: "Save failed", description: error.message, variant: "destructive" });
     } else {
       setCurrentStatus(targetStatus);
+      setLastSavedAt(new Date());
       const msg = isPublish ? "Published!" : isUnpublish ? "Unpublished!" : "Saved!";
       toast({ title: msg });
       setDirty(false);
@@ -262,9 +267,9 @@ export default function EditorPage() {
 
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden" style={appBrandVars as React.CSSProperties}>
-      {/* Top Bar */}
-      <div className="h-16 border-b border-border flex items-center justify-between px-4 sm:px-6 bg-card shadow-sm shrink-0">
-        <div className="flex items-center gap-3">
+      {/* ROW 1 – Top Controls */}
+      <div className="h-12 border-b border-border flex items-center justify-between px-4 sm:px-6 bg-card shrink-0 sticky top-0 z-30">
+        <div className="flex items-center gap-2">
           <Button variant="travel-ghost" size="sm" onClick={() => navigate("/dashboard")}>
             <ArrowLeft className="h-3.5 w-3.5 mr-1" /> Library
           </Button>
@@ -273,14 +278,10 @@ export default function EditorPage() {
               {panelOpen ? <PanelLeftClose className="h-4 w-4" /> : <PanelLeft className="h-4 w-4" />}
             </Button>
           )}
-          <span className="text-xs text-muted-foreground font-body hidden sm:inline">
-            — {(data as any).tripName || data.destination || "New Trip"} for {data.clientName || "Client"}
-             <span className={`ml-3 text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full ${
-              currentStatus === "published" ? "bg-emerald-100 text-emerald-700" :
-              "bg-amber-100 text-amber-700"
-            }`}>
-              {(statusMeta[currentStatus] || statusMeta.draft).label}
-            </span>
+          <span className={`text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full ${
+            currentStatus === "published" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+          }`}>
+            {(statusMeta[currentStatus] || statusMeta.draft).label}
           </span>
           {editorSubPage && (
             <Button variant="travel-outline" size="sm" onClick={() => handleEditorSubPage(null)} className="ml-2">
@@ -288,6 +289,12 @@ export default function EditorPage() {
             </Button>
           )}
         </div>
+
+        <div className="hidden sm:flex items-center text-xs text-muted-foreground font-body">
+          {lastSavedAt ? `Last saved ${lastSavedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : "Not saved yet"}
+          {dirty && <span className="ml-1.5 text-amber-500">• Unsaved changes</span>}
+        </div>
+
         <div className="flex items-center gap-2">
           <Button variant="travel-ghost" size="sm" onClick={copyShareLink} disabled={!shareId}>
             <ExternalLink className="h-3.5 w-3.5 mr-1" /> Client Link
@@ -332,10 +339,38 @@ export default function EditorPage() {
               disabled={publishing || !shareId}
               className="px-5 font-semibold shadow-md"
             >
-              <Send className="h-4 w-4 mr-1.5" /> {publishing ? "Publishing..." : "Save & Publish"}
+              <Send className="h-4 w-4 mr-1.5" /> {publishing ? "Publishing..." : "Send Proposal"}
             </Button>
           )}
         </div>
+      </div>
+
+      {/* ROW 2 – Trip Identity */}
+      <div className="h-12 border-b border-border/50 flex items-center px-4 sm:px-6 bg-card shrink-0 sticky top-12 z-30">
+        {editingTripName ? (
+          <input
+            ref={tripNameInputRef}
+            className="text-lg font-bold font-display bg-transparent border-b-2 border-primary outline-none text-foreground py-0.5 pr-2 min-w-[200px]"
+            value={(data as any).tripName || ""}
+            onChange={(e) => handleChange({ ...data, tripName: e.target.value } as any)}
+            onBlur={() => setEditingTripName(false)}
+            onKeyDown={(e) => { if (e.key === "Enter") setEditingTripName(false); }}
+            autoFocus
+          />
+        ) : (
+          <button
+            className="flex items-center gap-2 group cursor-pointer text-left"
+            onClick={() => {
+              setEditingTripName(true);
+              setTimeout(() => tripNameInputRef.current?.focus(), 0);
+            }}
+          >
+            <h2 className="text-lg font-bold font-display text-foreground tracking-tight">
+              {(data as any).tripName || data.destination || "Untitled Trip"}
+            </h2>
+            <Pencil className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+          </button>
+        )}
       </div>
 
       {/* Content */}
