@@ -395,10 +395,14 @@ export default function ProposalEditor({ data, onChange }: Props) {
           <div>
             <FieldLabel>Hero Media</FieldLabel>
             <div className="flex gap-2 mt-1 mb-2">
-              <Button type="button" size="sm" variant={(!data.heroMediaType || data.heroMediaType === "photos") ? "default" : "outline"} className="text-xs h-7" onClick={() => update("heroMediaType", "photos")}>
+              <Button type="button" size="sm" variant={(!data.heroMediaType || data.heroMediaType === "photos") ? "default" : "outline"} className="text-xs h-7" onClick={() => {
+                onChange({ ...data, heroMediaType: "photos", heroVideoUrl: "", heroVideoThumbnailUrl: "", heroAutoplay: false, heroMuted: false });
+              }}>
                 📷 Photos
               </Button>
-              <Button type="button" size="sm" variant={data.heroMediaType === "video" ? "default" : "outline"} className="text-xs h-7" onClick={() => update("heroMediaType", "video")}>
+              <Button type="button" size="sm" variant={data.heroMediaType === "video" ? "default" : "outline"} className="text-xs h-7" onClick={() => {
+                onChange({ ...data, heroMediaType: "video", heroImageUrl: "", heroImageUrls: [] });
+              }}>
                 🎬 Video
               </Button>
             </div>
