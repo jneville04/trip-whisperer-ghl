@@ -675,7 +675,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
             transition={{ duration: 0.8 }}
             className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight"
           >
-            {data.destination || "Your Destination"}
+            {(data as any).tripName || data.destination || "Your Destination"}
           </motion.h1>
           {data.subtitle && (
             <motion.p
@@ -703,9 +703,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                 <Users className="h-4 w-4 text-primary" /> {data.travelerCount}
               </span>
             )}
-            {data.destinationCount && (
+            {data.destination && (
               <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body">
-                <MapPin className="h-4 w-4 text-primary" /> {data.destinationCount}
+                <MapPin className="h-4 w-4 text-primary" /> {data.destination}
               </span>
             )}
           </motion.div>

@@ -272,7 +272,7 @@ export default function EditorPage() {
             </Button>
           )}
           <span className="text-xs text-muted-foreground font-body hidden sm:inline">
-            — {data.destination || "New Trip"} for {data.clientName || "Client"}
+            — {(data as any).tripName || data.destination || "New Trip"} for {data.clientName || "Client"}
              <span className={`ml-3 text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full ${
               currentStatus === "published" ? "bg-emerald-100 text-emerald-700" :
               "bg-amber-100 text-amber-700"
