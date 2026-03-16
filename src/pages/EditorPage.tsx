@@ -103,6 +103,8 @@ export default function EditorPage() {
     const merged: ProposalData = {
       ...defaultProposal,
       ...saved,
+      // Backward compat: if no tripName, use destination as tripName
+      tripName: (saved as any).tripName || saved.destination || r.title || "",
       sectionVisibility: { ...defaultProposal.sectionVisibility, ...(saved.sectionVisibility || {}) },
       sectionOrder: (() => {
         let order = saved.sectionOrder || defaultProposal.sectionOrder;
