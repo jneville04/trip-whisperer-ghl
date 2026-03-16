@@ -1122,34 +1122,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       </CollapsibleSection>
                     );
 
-const PARSE_FMTS = ["MMMM d, yyyy", "MMM d, yyyy", "yyyy-MM-dd", "MM/dd/yyyy"];
-function tryParse(v: string): Date | undefined {
-  if (!v) return undefined;
-  for (const f of PARSE_FMTS) { try { const d = parse(v.trim(), f, new Date()); if (!isNaN(d.getTime())) return d; } catch {} }
-  const d = new Date(v); return isNaN(d.getTime()) ? undefined : d;
-}
-function deriveTravelDates(startStr: string, endStr: string): string {
-  const s = tryParse(startStr), e = tryParse(endStr);
-  if (!s && !e) return "";
-  if (s && e) return `${format(s, "MMM d")}–${format(e, "d, yyyy")}`;
-  if (s) return format(s, "MMM d, yyyy");
-  return "";
-}
-
-const PARSE_FMTS = ["MMMM d, yyyy", "MMM d, yyyy", "yyyy-MM-dd", "MM/dd/yyyy"];
-function tryParse(v: string): Date | undefined {
-  if (!v) return undefined;
-  for (const f of PARSE_FMTS) { try { const d = parse(v.trim(), f, new Date()); if (!isNaN(d.getTime())) return d; } catch {} }
-  const d = new Date(v); return isNaN(d.getTime()) ? undefined : d;
-}
-function deriveTravelDates(startStr: string, endStr: string): string {
-  const s = tryParse(startStr), e = tryParse(endStr);
-  if (!s && !e) return "";
-  if (s && e) return `${format(s, "MMM d")}–${format(e, "d, yyyy")}`;
-  if (s) return format(s, "MMM d, yyyy");
-  return "";
-}
-
 
                   case "busTrips":
                     return (
