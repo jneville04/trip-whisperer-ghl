@@ -446,7 +446,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                     <Button type="button" size="sm" variant="outline" className="text-xs h-7" asChild><span>Upload</span></Button>
                   </label>
                 </div>
-                {data.heroVideoUrl && (
+                {data.heroVideoUrl && !data.heroAutoplay && (
                   <div>
                     <FieldLabel>Custom Thumbnail</FieldLabel>
                     <div className="flex gap-1.5 items-center mt-1">
