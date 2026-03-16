@@ -61,16 +61,17 @@ export default function TripCard({ proposal, onOpen, onDuplicate, onDelete, onCo
           const isVideo = heroMediaType === "video" && videoUrl;
 
           if (isVideo) {
-            // Try custom thumbnail first, then YouTube auto-thumb
             const ytMatch = videoUrl.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-            const thumb = videoThumb || (ytMatch ? `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg` : null);
-            return thumb ? (
-              <img src={thumb} alt={proposal.destination || "Proposal"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-            ) : (
-              <div className="w-full h-full bg-muted flex items-center justify-center">
-                <MapPin className="h-8 w-8 text-muted-foreground/30" />
-              </div>
-            );
+            const vimeoMatch = !ytMatch && videoUrl.match(/vimeo\.com\/(\d+)/);
+            const autoThumb = videoThumb
+              || (ytMatch ? `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg` : null)
+              || (vimeoMatch ? `vimeo:${vimeoMatch[1]}` : null);
+
+            if (autoThumb && !autoThumb.startsWith("vimeo:")) {
+              return <img src={autoThumb} alt={proposal.destination || "Proposal"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />;
+            }
+            // Vimeo or direct video — use VideoFrameThumb
+            return <VideoFrameThumb videoUrl={videoUrl} vimeoId={vimeoMatch ? vimeoMatch[1] : undefined} alt={proposal.destination || "Proposal"} />;
           }
           if (heroImg) {
             return <img src={heroImg} alt={proposal.destination || "Proposal"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />;
