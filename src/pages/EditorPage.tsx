@@ -176,10 +176,13 @@ export default function EditorPage() {
       },
     };
 
+    const tripName = (data as any).tripName || data.destination || "Untitled";
+    const displayTitle = data.clientName ? `${tripName} — ${data.clientName}` : tripName;
+
     const { error } = await supabase
       .from("proposals")
       .update({
-        title: data.destination ? `${data.destination} — ${data.clientName}` : "Untitled",
+        title: displayTitle,
         client_name: data.clientName || "",
         destination: data.destination || "",
         data: dataToSave as any,
