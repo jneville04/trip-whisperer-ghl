@@ -11,6 +11,7 @@ import TripCard from "@/components/TripCard";
 import AppLayout from "@/components/AppLayout";
 import { Search, FileText } from "lucide-react";
 import { type ProposalData } from "@/types/proposal";
+import DuplicateTripModal from "@/components/DuplicateTripModal";
 
 interface ProposalRow {
   id: string;
