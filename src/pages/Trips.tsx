@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useAdminCheck } from "@/hooks/useAdminCheck";
-import { useAppSettings } from "@/hooks/useAppSettings";
-import AppLayout from "@/components/AppLayout";
+import ProposalFilters, { type FilterType, type SortType } from "@/components/ProposalFilters";
 import TripCard from "@/components/TripCard";
-import CreateTripMenu from "@/components/CreateTripMenu";
-import { MapPin, FileText } from "lucide-react";
+import AppLayout from "@/components/AppLayout";
+import { Search, FileText } from "lucide-react";
 import { type ProposalData } from "@/types/proposal";
-import { format } from "date-fns";
 
 interface ProposalRow {
   id: string;
@@ -24,19 +24,51 @@ interface ProposalRow {
   updated_at: string;
 }
 
-export default function Dashboard() {
-  const { user, loading: authLoading, profileStatus } = useAuth();
+export default function Trips() {
+  const { user } = useAuth();
   const { data: isAdmin } = useAdminCheck(user?.id);
-  const { settings } = useAppSettings();
   const navigate = useNavigate();
   const [proposals, setProposals] = useState<ProposalRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<FilterType>("all");
+  const [sort, setSort] = useState<SortType>("newest");
 
   useEffect(() => {
-    if (profileStatus === "approved" || isAdmin) {
-      loadProposals();
-    }
-  }, [profileStatus, isAdmin]);
+    loadProposals();
+  }, []);
+
+  const filtered = useMemo(() => {
+    let result = proposals.filter((p) => {
+      const q = search.toLowerCase();
+      const matchesSearch =
+        !q ||
+        p.title.toLowerCase().includes(q) ||
+        p.client_name.toLowerCase().includes(q) ||
+        p.destination.toLowerCase().includes(q);
+      if (!matchesSearch) return false;
+
+      const proposalType = (p.data as any)?.proposalType || "group_booking";
+      switch (filter) {
+        case "proposals": return proposalType === "proposal";
+        case "group_trips": return proposalType === "group_booking";
+        case "drafts": return p.status === "draft";
+        case "published": return ["published", "sent", "approved"].includes(p.status);
+        default: return true;
+      }
+    });
+
+    result.sort((a, b) => {
+      switch (sort) {
+        case "oldest": return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+        case "az": return (a.title || "").localeCompare(b.title || "");
+        case "za": return (b.title || "").localeCompare(a.title || "");
+        default: return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+      }
+    });
+
+    return result;
+  }, [proposals, search, filter, sort]);
 
   const loadProposals = async () => {
     const { data, error } = await supabase
@@ -95,27 +127,34 @@ export default function Dashboard() {
   return (
     <AppLayout>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        <div className="space-y-4 mb-8">
+          <div className="relative max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search by client, destination, or title..."
+              className="pl-10"
+            />
+          </div>
+          <ProposalFilters filter={filter} sort={sort} onFilterChange={setFilter} onSortChange={setSort} />
+        </div>
+
         {loading ? (
           <div className="text-center py-20 text-muted-foreground font-body">Loading...</div>
-        ) : proposals.length === 0 ? (
-          /* Welcome empty state */
+        ) : filtered.length === 0 ? (
           <div className="text-center py-20">
-            <MapPin className="h-12 w-12 text-primary/30 mx-auto mb-4" />
-            <h2 className="font-display text-2xl font-semibold text-foreground mb-2">
-              Welcome to {settings.app_name}
-            </h2>
-            <p className="text-muted-foreground font-body text-sm leading-relaxed mb-1">
-              Create and manage trip proposals for your clients.
+            <FileText className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" />
+            <h3 className="font-display text-lg font-semibold text-foreground mb-2">
+              {search || filter !== "all" ? "No trips found" : "No trips yet"}
+            </h3>
+            <p className="text-muted-foreground font-body text-sm leading-relaxed mb-6">
+              {search || filter !== "all" ? "Try a different search or filter" : "Click \"Create Trip\" above to get started."}
             </p>
-            <p className="text-muted-foreground font-body text-sm leading-relaxed mb-8">
-              Start by creating your first trip proposal or group itinerary.
-            </p>
-            <CreateTripMenu />
           </div>
         ) : (
-          /* Dashboard with trip cards */
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {proposals.map((proposal) => (
+            {filtered.map((proposal) => (
               <TripCard
                 key={proposal.id}
                 proposal={proposal}
