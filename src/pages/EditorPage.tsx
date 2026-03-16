@@ -29,6 +29,9 @@ export default function EditorPage() {
   const [dirty, setDirty] = useState(false);
   const [currentStatus, setCurrentStatus] = useState("draft");
   const [editorSubPage, setEditorSubPage] = useState<EditorSubPage | null>(null);
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const [editingTripName, setEditingTripName] = useState(false);
+  const tripNameInputRef = useRef<HTMLInputElement>(null);
   const [, setSearchParams] = useSearchParams();
 
   const handleEditorSubPage = useCallback((page: EditorSubPage | null) => {
