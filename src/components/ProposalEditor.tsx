@@ -517,23 +517,15 @@ export default function ProposalEditor({ data, onChange }: Props) {
             <div>
               <FieldLabel>Start Date</FieldLabel>
               <DatePickerField value={(data as any).startDate || ""} onChange={(val) => {
-                const updated = { ...data, startDate: val } as any;
-                updated.travelDates = deriveTravelDates(val, (data as any).endDate || "");
-                onChange(updated);
+                onChange({ ...data, startDate: val } as any);
               }} placeholder="Pick start date" showTime={false} />
             </div>
             <div>
               <FieldLabel>End Date</FieldLabel>
               <DatePickerField value={(data as any).endDate || ""} onChange={(val) => {
-                const updated = { ...data, endDate: val } as any;
-                updated.travelDates = deriveTravelDates((data as any).startDate || "", val);
-                onChange(updated);
+                onChange({ ...data, endDate: val } as any);
               }} placeholder="Pick end date" showTime={false} />
             </div>
-          </div>
-          <div>
-            <FieldLabel>Travel Dates <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(auto-generated)</span></FieldLabel>
-            <Input value={data.travelDates} readOnly className="bg-muted/30" placeholder="Auto-generated from dates above" />
           </div>
           <div>
             <FieldLabel>Number of Travelers <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(optional)</span></FieldLabel>
