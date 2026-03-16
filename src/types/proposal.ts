@@ -252,6 +252,7 @@ export type SectionTitles = Partial<Record<SectionKey, { title?: string; subtitl
 
 export interface ProposalData {
   proposalType: ProposalType;
+  tripName: string;
   destination: string;
   subtitle: string;
   bookingUrl?: string;
@@ -265,6 +266,8 @@ export interface ProposalData {
   heroAutoplay?: boolean;
   heroMuted?: boolean;
   travelDates: string;
+  startDate?: string;
+  endDate?: string;
   travelerCount: string;
   destinationCount: string;
   clientName: string;
@@ -412,6 +415,7 @@ export const createBusTrip = (): BusTrip => ({
 
 export const blankProposal: ProposalData = {
   proposalType: "proposal",
+  tripName: "",
   destination: "",
   subtitle: "",
   heroImageUrl: "",

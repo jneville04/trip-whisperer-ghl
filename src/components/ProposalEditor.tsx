@@ -299,10 +299,12 @@ export default function ProposalEditor({ data, onChange }: Props) {
     agent: "💼 Agent Info",
   };
 
+  const builderTitle = (data as any).proposalType === "proposal" ? "Proposal Builder" : "Group Trip Builder";
+
   return (
     <div className="space-y-4 p-4 sm:p-6 overflow-y-auto h-full">
       <div className="mb-6">
-        <h2 className="font-display text-2xl font-bold text-foreground">Proposal Builder</h2>
+        <h2 className="font-display text-2xl font-bold text-foreground">{builderTitle}</h2>
         <p className="text-sm text-muted-foreground font-body mt-1">Fill in the details below — preview updates live. Drag sections to reorder.</p>
         <div className="flex gap-2 mt-3">
           <Button
@@ -393,15 +395,19 @@ export default function ProposalEditor({ data, onChange }: Props) {
         </CardContent>
       </Card>
 
-      <CollapsibleSection title="🌍 Trip Overview" sectionKey="hero" visible={vis.hero} onToggleVisible={() => toggleSection("hero")}>
+      <CollapsibleSection title="📋 Trip Details" sectionKey="hero" visible={vis.hero} onToggleVisible={() => toggleSection("hero")}>
         <div className="space-y-3">
+          <div>
+            <FieldLabel>Trip Name</FieldLabel>
+            <Input value={(data as any).tripName || ""} onChange={(e) => update("tripName" as any, e.target.value)} placeholder="e.g. Italy Adventure 2026" />
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <FieldLabel>Destination</FieldLabel>
               <LocationAutocomplete value={data.destination} onChange={(val) => update("destination", val)} placeholder="e.g. Portugal" />
             </div>
             <div>
-              <FieldLabel>Subtitle</FieldLabel>
+              <FieldLabel>Subtitle <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(optional)</span></FieldLabel>
               <Input value={data.subtitle} onChange={(e) => update("subtitle", e.target.value)} placeholder="e.g. Lisbon · Porto · Algarve" />
             </div>
           </div>
@@ -508,19 +514,23 @@ export default function ProposalEditor({ data, onChange }: Props) {
               </div>
             )}
           </div>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <FieldLabel>Travel Dates</FieldLabel>
-              <Input value={data.travelDates} onChange={(e) => update("travelDates", e.target.value)} placeholder="Sep 15–19, 2026" />
+              <FieldLabel>Start Date</FieldLabel>
+              <Input value={(data as any).startDate || ""} onChange={(e) => update("startDate" as any, e.target.value)} placeholder="e.g. Sep 15, 2026" />
             </div>
             <div>
-              <FieldLabel>Travelers</FieldLabel>
-              <Input value={data.travelerCount} onChange={(e) => update("travelerCount", e.target.value)} placeholder="2 Travelers" />
+              <FieldLabel>End Date</FieldLabel>
+              <Input value={(data as any).endDate || ""} onChange={(e) => update("endDate" as any, e.target.value)} placeholder="e.g. Sep 19, 2026" />
             </div>
-            <div>
-              <FieldLabel>Destinations</FieldLabel>
-              <Input value={data.destinationCount} onChange={(e) => update("destinationCount", e.target.value)} placeholder="4 Destinations" />
-            </div>
+          </div>
+          <div>
+            <FieldLabel>Travel Dates <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(displayed on proposal)</span></FieldLabel>
+            <Input value={data.travelDates} onChange={(e) => update("travelDates", e.target.value)} placeholder="Sep 15–19, 2026" />
+          </div>
+          <div>
+            <FieldLabel>Number of Travelers <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(optional)</span></FieldLabel>
+            <Input value={data.travelerCount} onChange={(e) => update("travelerCount", e.target.value)} placeholder="2 Travelers" />
           </div>
         </div>
       </CollapsibleSection>

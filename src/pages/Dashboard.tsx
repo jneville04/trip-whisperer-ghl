@@ -57,15 +57,24 @@ export default function Dashboard() {
   const duplicateProposal = async (tripName: string, clientName: string, proposal: ProposalRow) => {
     const user = (await supabase.auth.getUser()).data.user;
     if (!user) return;
+
+    const dupData = {
+      ...(proposal.data as any),
+      tripName: tripName,
+      clientName: clientName,
+    };
+
+    const displayTitle = clientName ? `${tripName} — ${clientName}` : tripName;
+
     const { error } = await supabase
       .from("proposals")
       .insert({
         user_id: user.id,
-        title: tripName,
+        title: displayTitle,
         client_name: clientName,
         destination: proposal.destination,
         status: "draft",
-        data: proposal.data as any,
+        data: dupData as any,
       })
       .select()
       .single();
@@ -134,7 +143,7 @@ export default function Dashboard() {
           <DuplicateTripModal
             open={dupModal.open}
             onOpenChange={(open) => setDupModal((prev) => ({ ...prev, open }))}
-            tripName={`${dupModal.proposal.title} (Copy)`}
+            tripName={`${(dupModal.proposal.data as any)?.tripName || dupModal.proposal.title || ""} (Copy)`}
             clientName={dupModal.proposal.client_name || ""}
             onConfirm={(name, client) => duplicateProposal(name, client, dupModal.proposal!)}
           />
