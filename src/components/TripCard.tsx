@@ -73,13 +73,18 @@ export default function TripCard({ proposal, onOpen, onDuplicate, onDelete, onCo
           }
           if (isVideo && !videoThumb) {
             const ytMatch = videoUrl.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-            const autoThumb = ytMatch ? `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg` : null;
+            const vimeoMatch = !ytMatch && videoUrl.match(/vimeo\.com\/(\d+)/);
+            const autoThumb = ytMatch
+              ? `https://img.youtube.com/vi/${ytMatch[1]}/hqdefault.jpg`
+              : null;
             return (
               <div className="w-full h-full relative">
                 {autoThumb ? (
                   <img src={autoThumb} alt={proposal.destination || "Proposal"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 ) : (
-                  <div className="w-full h-full bg-muted" />
+                  <div className="w-full h-full bg-muted flex items-center justify-center">
+                    <Play className="h-8 w-8 text-muted-foreground/40" />
+                  </div>
                 )}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="w-10 h-10 rounded-full bg-foreground/60 backdrop-blur-sm flex items-center justify-center">
