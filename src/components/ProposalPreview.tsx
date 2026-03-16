@@ -522,12 +522,13 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
       {/* HERO */}
       {vis.hero &&
         (() => {
-          // Collect all hero media assets
+          // Collect all hero media assets — modes are mutually exclusive
           const isVideo = data.heroMediaType === "video" && !!data.heroVideoUrl;
           const mainImg = data.heroImageUrl;
           const sideImgs = (data.heroImageUrls || []).filter(Boolean);
+          // In video mode, only show the video — no side images from photos mode
           const allReal = isVideo
-            ? [data.heroVideoUrl!, ...sideImgs].filter(Boolean)
+            ? [data.heroVideoUrl!]
             : ([mainImg, ...sideImgs].filter(Boolean) as string[]);
           const allHeroImgs = allReal.map((u, i) => ({
             src: u,
