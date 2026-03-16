@@ -311,9 +311,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
       {/* Brand Settings — pulled from global Settings */}
       <Card className="border-border/50">
         <CardHeader className="py-4">
-          <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between">
             <CardTitle className="text-base font-display">🎨 Brand & Colors</CardTitle>
-            <a href="/settings" target="_blank" className="text-xs text-primary hover:underline font-body">Edit in Settings →</a>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
