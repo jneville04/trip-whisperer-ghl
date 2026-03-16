@@ -182,7 +182,7 @@ export default function Trips() {
           <DuplicateTripModal
             open={dupModal.open}
             onOpenChange={(open) => setDupModal((prev) => ({ ...prev, open }))}
-            tripName={`${dupModal.proposal.title} (Copy)`}
+            tripName={`${(dupModal.proposal.data as any)?.tripName || dupModal.proposal.title || ""} (Copy)`}
             clientName={dupModal.proposal.client_name || ""}
             onConfirm={(name, client) => duplicateProposal(name, client, dupModal.proposal!)}
           />
