@@ -201,6 +201,7 @@ export default function EditorPage() {
       toast({ title: "Save failed", description: error.message, variant: "destructive" });
     } else {
       setCurrentStatus(targetStatus);
+      setLastSavedAt(new Date());
       const msg = isPublish ? "Published!" : isUnpublish ? "Unpublished!" : "Saved!";
       toast({ title: msg });
       setDirty(false);
