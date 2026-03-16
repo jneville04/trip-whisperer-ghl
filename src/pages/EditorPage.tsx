@@ -281,6 +281,12 @@ export default function EditorPage() {
 
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden" style={appBrandVars as React.CSSProperties}>
+      {/* Link Copied Alert */}
+      {linkCopiedAlert && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2 bg-card border border-border shadow-lg rounded-lg px-4 py-2.5 text-sm font-medium text-foreground animate-in fade-in slide-in-from-top-2 duration-200">
+          <Check className="h-4 w-4 text-emerald-600" /> Link Copied!
+        </div>
+      )}
       {/* ROW 1 – Top Controls */}
       <div className="h-12 border-b border-border flex items-center justify-between px-4 sm:px-6 bg-card shrink-0 sticky top-0 z-30">
         <div className="flex items-center gap-2">
