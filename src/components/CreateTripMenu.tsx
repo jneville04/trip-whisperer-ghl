@@ -129,6 +129,8 @@ export default function CreateTripMenu() {
       tripName: tripTitle.trim(),
       clientName: clientName.trim(),
       destination: destination.trim(),
+      startDate: startDate ? format(startDate, "MMMM d, yyyy") : "",
+      endDate: endDate ? format(endDate, "MMMM d, yyyy") : "",
       travelDates: formatDateRange(startDate, endDate),
     };
 
