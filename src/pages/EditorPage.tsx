@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { Eye, EyeOff, PenLine, ArrowLeft, Save, ExternalLink, PanelLeftClose, PanelLeft, Send, HelpCircle, Mail, Phone, X, Pencil } from "lucide-react";
+import { Eye, ArrowLeft, PanelLeftClose, PanelLeft, Send, HelpCircle, Mail, Phone, X, Pencil, Link2, FileDown, ChevronDown, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ProposalEditor from "@/components/ProposalEditor";
 import ProposalPreview, { type EditorSubPage } from "@/components/ProposalPreview";
@@ -22,6 +22,9 @@ export default function EditorPage() {
   const [data, setData] = useState<ProposalData>(defaultProposal);
   const [mode, setMode] = useState<"split" | "preview">("split");
   const [panelOpen, setPanelOpen] = useState(true);
+  const [sendMenuOpen, setSendMenuOpen] = useState(false);
+  const [linkCopiedAlert, setLinkCopiedAlert] = useState(false);
+  const sendMenuRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
@@ -218,10 +221,21 @@ export default function EditorPage() {
   const copyShareLink = () => {
     const url = `${window.location.origin}/view/${shareId}`;
     navigator.clipboard.writeText(url);
-    toast({ title: "Client link copied!", description: url });
+    setLinkCopiedAlert(true);
+    setSendMenuOpen(false);
+    setTimeout(() => setLinkCopiedAlert(false), 2500);
   };
 
-  // Agent settings is the PRIMARY source for agent info; proposal-level data is ignored
+  // Close send menu on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (sendMenuRef.current && !sendMenuRef.current.contains(e.target as Node)) {
+        setSendMenuOpen(false);
+      }
+    };
+    if (sendMenuOpen) document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [sendMenuOpen]);
   // Brand colors: proposal overrides take priority, then agent settings, then app defaults
   const previewData = useMemo<ProposalData>(() => {
     const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
@@ -267,6 +281,12 @@ export default function EditorPage() {
 
   return (
     <div className="h-screen flex flex-col bg-background overflow-hidden" style={appBrandVars as React.CSSProperties}>
+      {/* Link Copied Alert */}
+      {linkCopiedAlert && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-2 bg-card border border-border shadow-lg rounded-lg px-4 py-2.5 text-sm font-medium text-foreground animate-in fade-in slide-in-from-top-2 duration-200">
+          <Check className="h-4 w-4 text-emerald-600" /> Link Copied!
+        </div>
+      )}
       {/* ROW 1 – Top Controls */}
       <div className="h-12 border-b border-border flex items-center justify-between px-4 sm:px-6 bg-card shrink-0 sticky top-0 z-30">
         <div className="flex items-center gap-2">
@@ -296,52 +316,56 @@ export default function EditorPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="travel-ghost" size="sm" onClick={copyShareLink} disabled={!shareId}>
-            <ExternalLink className="h-3.5 w-3.5 mr-1" /> Client Link
-          </Button>
-          <Button
-            variant={mode === "split" ? "travel" : "travel-ghost"}
-            size="sm"
-            onClick={() => setMode("split")}
-          >
-            <PenLine className="h-3.5 w-3.5 mr-1" /> Edit
-          </Button>
-          <Button
-            variant={mode === "preview" ? "travel" : "travel-outline"}
-            size="sm"
-            onClick={() => !shareId ? toast({ title: "Please save the trip first." }) : setMode("preview")}
-            disabled={!shareId}
-          >
-            <Eye className="h-3.5 w-3.5 mr-1" /> Preview
-          </Button>
-          <Button
-            variant="travel-outline"
-            size="sm"
-            onClick={handleSave}
-            disabled={saving}
-          >
-            <Save className="h-3.5 w-3.5 mr-1" /> {saving ? "Saving..." : "Save Draft"}
-          </Button>
-          {currentStatus === "published" ? (
+          {mode === "preview" ? (
             <Button
               variant="travel-outline"
               size="sm"
-              onClick={handleUnpublish}
-              disabled={saving || publishing}
+              onClick={() => setMode("split")}
             >
-              <EyeOff className="h-3.5 w-3.5 mr-1" /> Unpublish
+              <ArrowLeft className="h-3.5 w-3.5 mr-1" /> Back to Editor
             </Button>
           ) : (
             <Button
+              variant="travel-outline"
+              size="sm"
+              onClick={() => setMode("preview")}
+            >
+              <Eye className="h-3.5 w-3.5 mr-1" /> Preview
+            </Button>
+          )}
+          <div className="relative" ref={sendMenuRef}>
+            <Button
               variant="travel"
               size="default"
-              onClick={() => !shareId ? toast({ title: "Please save the trip first." }) : handlePublish()}
+              onClick={() => {
+                if (!shareId) {
+                  toast({ title: "Please save the trip first." });
+                  return;
+                }
+                setSendMenuOpen(!sendMenuOpen);
+              }}
               disabled={publishing || !shareId}
               className="px-5 font-semibold shadow-md"
             >
-              <Send className="h-4 w-4 mr-1.5" /> {publishing ? "Publishing..." : "Send Proposal"}
+              <Send className="h-4 w-4 mr-1.5" /> Send Proposal <ChevronDown className="h-3.5 w-3.5 ml-1" />
             </Button>
-          )}
+            {sendMenuOpen && (
+              <div className="absolute right-0 top-full mt-1.5 w-48 bg-card border border-border rounded-lg shadow-lg z-50 py-1">
+                <button
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-foreground hover:bg-muted/60 transition-colors text-left"
+                  onClick={copyShareLink}
+                >
+                  <Link2 className="h-4 w-4 text-muted-foreground" /> Copy Link
+                </button>
+                <button
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground/50 cursor-not-allowed text-left"
+                  disabled
+                >
+                  <FileDown className="h-4 w-4" /> Download PDF
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -368,7 +392,7 @@ export default function EditorPage() {
             <h2 className="text-lg font-bold font-display text-foreground tracking-tight">
               {(data as any).tripName || data.destination || "Untitled Trip"}
             </h2>
-            <Pencil className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
           </button>
         )}
       </div>
