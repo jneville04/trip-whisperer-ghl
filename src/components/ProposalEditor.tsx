@@ -437,7 +437,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                 <div className="flex gap-1.5">
                   <Input placeholder="YouTube, Vimeo, or direct video URL..." className="h-7 text-xs flex-1" value={data.heroVideoUrl || ""} onChange={(e) => update("heroVideoUrl", e.target.value)} />
                   <label className="cursor-pointer">
-                    <input type="file" accept="video/*,audio/*" className="hidden" onChange={async (e) => {
+                    <input type="file" accept="video/*" className="hidden" onChange={async (e) => {
                       const f = e.target.files?.[0];
                       if (!f) return;
                       const url = await uploadImage(f);
