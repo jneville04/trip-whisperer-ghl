@@ -130,6 +130,15 @@ export default function Dashboard() {
             ))}
           </div>
         )}
+        {dupModal.proposal && (
+          <DuplicateTripModal
+            open={dupModal.open}
+            onOpenChange={(open) => setDupModal((prev) => ({ ...prev, open }))}
+            tripName={`${dupModal.proposal.title} (Copy)`}
+            clientName={dupModal.proposal.client_name || ""}
+            onConfirm={(name, client) => duplicateProposal(name, client, dupModal.proposal!)}
+          />
+        )}
       </div>
     </AppLayout>
   );
