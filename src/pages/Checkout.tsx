@@ -222,9 +222,8 @@ export default function CheckoutPage() {
                 {proposalData?.destination && (
                   <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {proposalData.destination}</span>
                 )}
-                {(() => { const s = (proposalData as any)?.startDate, e = (proposalData as any)?.endDate; return (s || e) ? (
-                  <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> {formatCheckoutDateRange(s, e)}</span>
-                ) : null; })()}
+                {formatCheckoutDateRange((proposalData as any)?.startDate, (proposalData as any)?.endDate) && (
+                  <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" /> {formatCheckoutDateRange((proposalData as any)?.startDate, (proposalData as any)?.endDate)}</span>
                 )}
                 {proposalData?.travelerCount && (
                   <span className="flex items-center gap-1"><Users className="h-3.5 w-3.5" /> {proposalData.travelerCount} travelers</span>
