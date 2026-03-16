@@ -310,52 +310,56 @@ export default function EditorPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="travel-ghost" size="sm" onClick={copyShareLink} disabled={!shareId}>
-            <ExternalLink className="h-3.5 w-3.5 mr-1" /> Client Link
-          </Button>
-          <Button
-            variant={mode === "split" ? "travel" : "travel-ghost"}
-            size="sm"
-            onClick={() => setMode("split")}
-          >
-            <PenLine className="h-3.5 w-3.5 mr-1" /> Edit
-          </Button>
-          <Button
-            variant={mode === "preview" ? "travel" : "travel-outline"}
-            size="sm"
-            onClick={() => !shareId ? toast({ title: "Please save the trip first." }) : setMode("preview")}
-            disabled={!shareId}
-          >
-            <Eye className="h-3.5 w-3.5 mr-1" /> Preview
-          </Button>
-          <Button
-            variant="travel-outline"
-            size="sm"
-            onClick={handleSave}
-            disabled={saving}
-          >
-            <Save className="h-3.5 w-3.5 mr-1" /> {saving ? "Saving..." : "Save Draft"}
-          </Button>
-          {currentStatus === "published" ? (
+          {mode === "preview" ? (
             <Button
               variant="travel-outline"
               size="sm"
-              onClick={handleUnpublish}
-              disabled={saving || publishing}
+              onClick={() => setMode("split")}
             >
-              <EyeOff className="h-3.5 w-3.5 mr-1" /> Unpublish
+              <ArrowLeft className="h-3.5 w-3.5 mr-1" /> Back to Editor
             </Button>
           ) : (
             <Button
+              variant="travel-outline"
+              size="sm"
+              onClick={() => setMode("preview")}
+            >
+              <Eye className="h-3.5 w-3.5 mr-1" /> Preview
+            </Button>
+          )}
+          <div className="relative" ref={sendMenuRef}>
+            <Button
               variant="travel"
               size="default"
-              onClick={() => !shareId ? toast({ title: "Please save the trip first." }) : handlePublish()}
+              onClick={() => {
+                if (!shareId) {
+                  toast({ title: "Please save the trip first." });
+                  return;
+                }
+                setSendMenuOpen(!sendMenuOpen);
+              }}
               disabled={publishing || !shareId}
               className="px-5 font-semibold shadow-md"
             >
-              <Send className="h-4 w-4 mr-1.5" /> {publishing ? "Publishing..." : "Send Proposal"}
+              <Send className="h-4 w-4 mr-1.5" /> Send Proposal <ChevronDown className="h-3.5 w-3.5 ml-1" />
             </Button>
-          )}
+            {sendMenuOpen && (
+              <div className="absolute right-0 top-full mt-1.5 w-48 bg-card border border-border rounded-lg shadow-lg z-50 py-1">
+                <button
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-foreground hover:bg-muted/60 transition-colors text-left"
+                  onClick={copyShareLink}
+                >
+                  <Link2 className="h-4 w-4 text-muted-foreground" /> Copy Link
+                </button>
+                <button
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-muted-foreground/50 cursor-not-allowed text-left"
+                  disabled
+                >
+                  <FileDown className="h-4 w-4" /> Download PDF
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
