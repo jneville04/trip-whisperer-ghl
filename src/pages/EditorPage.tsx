@@ -386,7 +386,7 @@ export default function EditorPage() {
             <h2 className="text-lg font-bold font-display text-foreground tracking-tight">
               {(data as any).tripName || data.destination || "Untitled Trip"}
             </h2>
-            <Pencil className="h-3.5 w-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
           </button>
         )}
       </div>
