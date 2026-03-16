@@ -54,16 +54,17 @@ export default function Dashboard() {
     setLoading(false);
   };
 
-  const duplicateProposal = async (proposal: ProposalRow) => {
+  const duplicateProposal = async (tripName: string, clientName: string, proposal: ProposalRow) => {
     const user = (await supabase.auth.getUser()).data.user;
     if (!user) return;
     const { error } = await supabase
       .from("proposals")
       .insert({
         user_id: user.id,
-        title: `${proposal.title} (Copy)`,
-        client_name: proposal.client_name,
+        title: tripName,
+        client_name: clientName,
         destination: proposal.destination,
+        status: "draft",
         data: proposal.data as any,
       })
       .select()
