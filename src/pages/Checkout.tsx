@@ -9,6 +9,21 @@ import type { ProposalData, CheckoutSettings, PricingOption } from "@/types/prop
 import { createDefaultCheckout } from "@/types/proposal";
 import ClientNav from "@/components/ClientNav";
 
+const PARSE_FMTS_CO = ["MMMM d, yyyy", "MMM d, yyyy", "yyyy-MM-dd", "MM/dd/yyyy"];
+function tryParseDateCO(v: string): Date | undefined {
+  if (!v) return undefined;
+  for (const f of PARSE_FMTS_CO) { try { const d = parse(v.trim(), f, new Date()); if (!isNaN(d.getTime())) return d; } catch {} }
+  const d = new Date(v); return isNaN(d.getTime()) ? undefined : d;
+}
+function formatCheckoutDateRange(startStr?: string, endStr?: string): string {
+  const s = startStr ? tryParseDateCO(startStr) : undefined;
+  const e = endStr ? tryParseDateCO(endStr) : undefined;
+  if (s && e) return `${format(s, "MMM d")}–${format(e, "d, yyyy")}`;
+  if (s) return format(s, "MMM d, yyyy");
+  if (e) return format(e, "MMM d, yyyy");
+  return "";
+}
+
 const fmtCurrency = (val: string) => {
   const num = parseFloat(val.replace(/[^0-9.-]/g, ""));
   if (isNaN(num)) return val;
