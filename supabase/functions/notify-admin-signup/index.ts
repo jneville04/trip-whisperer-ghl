@@ -12,6 +12,7 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  const resendApiKey = Deno.env.get('RESEND_API_KEY')
 
   const supabase = createClient(supabaseUrl, serviceKey)
 
@@ -21,6 +22,14 @@ Deno.serve(async (req) => {
     if (!agentEmail) {
       return new Response(JSON.stringify({ error: 'Missing agentEmail' }), {
         status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    if (!resendApiKey) {
+      console.error('RESEND_API_KEY not configured — cannot send admin notification')
+      return new Response(JSON.stringify({ error: 'Email service not configured' }), {
+        status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
@@ -38,7 +47,6 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Get admin emails from profiles
     const adminIds = adminRoles.map((r) => r.user_id)
     const { data: adminProfiles } = await supabase
       .from('profiles')
@@ -56,7 +64,6 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Get app settings for branding
     const { data: appSettings } = await supabase
       .from('app_settings')
       .select('app_name')
@@ -66,10 +73,8 @@ Deno.serve(async (req) => {
     const appName = appSettings?.app_name || 'Proposal Builder'
     const displayName = agentName || 'Unknown'
 
-    // Enqueue notification email for each admin
     let notified = 0
     for (const adminEmail of adminEmails) {
-      const messageId = crypto.randomUUID()
       const html = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
           <h2 style="color: #333; margin-bottom: 16px;">New Agent Signup</h2>
@@ -96,27 +101,30 @@ Deno.serve(async (req) => {
         </div>
       `
 
-      const { error } = await supabase.rpc('enqueue_email', {
-        queue_name: 'transactional_emails',
-        payload: {
-          run_id: messageId,
-          message_id: messageId,
-          to: adminEmail,
-          from: `${appName} <noreply@notify.journeyswithjoi.com>`,
-          sender_domain: 'notify.journeyswithjoi.com',
-          subject: `New Agent Signup: ${displayName} (${agentEmail})`,
-          html,
-          text: `New agent signup on ${appName}.\n\nName: ${displayName}\nEmail: ${agentEmail}\nStatus: Pending Approval\n\nLog in to the Admin Panel to approve or reject this agent.`,
-          purpose: 'transactional',
-          label: 'admin_new_signup',
-          queued_at: new Date().toISOString(),
-        },
-      })
+      try {
+        const res = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: `${appName} <noreply@notify.journeyswithjoi.com>`,
+            to: [adminEmail],
+            subject: `New Agent Signup: ${displayName} (${agentEmail})`,
+            html,
+          }),
+        })
 
-      if (error) {
-        console.error('Failed to enqueue admin notification', { adminEmail, error })
-      } else {
-        notified++
+        if (!res.ok) {
+          const errText = await res.text()
+          console.error('Resend error', { status: res.status, body: errText })
+        } else {
+          notified++
+          console.log('Admin notification sent', { adminEmail })
+        }
+      } catch (err) {
+        console.error('Failed to send admin notification', { adminEmail, error: err })
       }
     }
 

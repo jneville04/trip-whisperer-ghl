@@ -12,6 +12,7 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  const resendApiKey = Deno.env.get('RESEND_API_KEY')
   const supabase = createClient(supabaseUrl, serviceKey)
 
   try {
@@ -24,7 +25,14 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Get app settings for dynamic branding
+    if (!resendApiKey) {
+      console.error('RESEND_API_KEY not configured — cannot send approval email')
+      return new Response(JSON.stringify({ error: 'Email service not configured' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
     const { data: appSettings } = await supabase
       .from('app_settings')
       .select('app_name, primary_color, logo_url')
@@ -36,8 +44,6 @@ Deno.serve(async (req) => {
     const logoUrl = appSettings?.logo_url || ''
     const displayName = agentName || 'there'
     const signInUrl = loginUrl || ''
-
-    const messageId = crypto.randomUUID()
 
     const logoHtml = logoUrl
       ? `<img src="${logoUrl}" alt="${appName}" style="max-height: 48px; margin-bottom: 16px;" /><br/>`
@@ -66,25 +72,33 @@ Deno.serve(async (req) => {
       </div>
     `
 
-    const { error } = await supabase.rpc('enqueue_email', {
-      queue_name: 'transactional_emails',
-      payload: {
-        run_id: messageId,
-        message_id: messageId,
-        to: agentEmail,
-        from: `${appName} <noreply@notify.journeyswithjoi.com>`,
-        sender_domain: 'notify.journeyswithjoi.com',
-        subject: `Welcome to ${appName} — Your Account is Approved`,
-        html,
-        text: `Hi ${displayName},\n\nGreat news! Your account on ${appName} has been approved. You can now sign in and start creating proposals.\n\n${signInUrl ? `Sign in here: ${signInUrl}` : ''}\n\nIf you have any questions, simply reply to this email or contact support.`,
-        purpose: 'transactional',
-        label: 'agent_approval',
-        queued_at: new Date().toISOString(),
-      },
-    })
+    try {
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${resendApiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: `${appName} <noreply@notify.journeyswithjoi.com>`,
+          to: [agentEmail],
+          subject: `Welcome to ${appName} — Your Account is Approved`,
+          html,
+        }),
+      })
 
-    if (error) {
-      console.error('Failed to enqueue approval email', { error })
+      if (!res.ok) {
+        const errText = await res.text()
+        console.error('Resend error', { status: res.status, body: errText })
+        return new Response(JSON.stringify({ error: 'Failed to send email' }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        })
+      }
+
+      console.log('Approval email sent', { agentEmail })
+    } catch (sendErr) {
+      console.error('Failed to send approval email', { agentEmail, error: sendErr })
       return new Response(JSON.stringify({ error: 'Failed to send email' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

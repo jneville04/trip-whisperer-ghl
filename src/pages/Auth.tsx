@@ -69,6 +69,7 @@ export default function AuthPage() {
           options: {
             data: {
               full_name: form.fullName,
+              agency_name: form.agencyName,
             },
             emailRedirectTo: window.location.origin,
           },
@@ -87,14 +88,6 @@ export default function AuthPage() {
           });
           setLoading(false);
           return;
-        }
-
-        // Update agency_name on the profile
-        if (signUpData.user && form.agencyName.trim()) {
-          await supabase
-            .from("profiles")
-            .update({ agency_name: form.agencyName.trim() })
-            .eq("id", signUpData.user.id);
         }
 
         // Notify admin in background
@@ -124,10 +117,7 @@ export default function AuthPage() {
           description: "We sent you a confirmation link to verify your account.",
         });
 
-        // Redirect to pending page after short delay so toast is visible
-        setTimeout(() => {
-          navigate("/pending");
-        }, 1500);
+        navigate("/pending");
       }
     } catch (err: any) {
       toast({
