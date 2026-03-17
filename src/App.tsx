@@ -16,6 +16,7 @@ import RevisionsPage from "./pages/Revisions.tsx";
 import CheckoutPage from "./pages/Checkout.tsx";
 import SettingsPage from "./pages/Settings.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import PendingPage from "./pages/Pending.tsx";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ function AppContent() {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/pending" element={<PendingPage />} />
         </Routes>
       </BrowserRouter>
     </div>

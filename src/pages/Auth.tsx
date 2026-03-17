@@ -7,11 +7,16 @@ import { toast } from "@/hooks/use-toast";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import { Plane, Mail, Lock, User, Building2 } from "lucide-react";
 
+function RequiredAsterisk() {
+  return <span className="text-destructive ml-0.5">*</span>;
+}
+
 export default function AuthPage() {
   const navigate = useNavigate();
   const { settings } = useAppSettings();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -19,8 +24,21 @@ export default function AuthPage() {
     agencyName: "",
   });
 
+  const validateSignupFields = () => {
+    const errors: Record<string, string> = {};
+    if (!isLogin) {
+      if (!form.fullName.trim()) errors.fullName = "Full name is required";
+      if (!form.agencyName.trim()) errors.agencyName = "Agency name is required";
+    }
+    if (!form.email.trim()) errors.email = "Email is required";
+    if (!form.password || form.password.length < 6) errors.password = "Password must be at least 6 characters";
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateSignupFields()) return;
     setLoading(true);
 
     try {
@@ -39,7 +57,7 @@ export default function AuthPage() {
             .single();
           const status = (profile as any)?.status;
           if (status === "pending" || status === "rejected") {
-            navigate("/dashboard");
+            navigate("/pending");
           } else {
             navigate("/dashboard");
           }
@@ -57,8 +75,6 @@ export default function AuthPage() {
         });
         if (error) throw error;
 
-        // Supabase returns an empty identities array when email already exists
-        // (with email confirmation enabled). Detect this and show a clear message.
         if (
           signUpData.user &&
           signUpData.user.identities &&
@@ -73,14 +89,26 @@ export default function AuthPage() {
           return;
         }
 
-        // Successful new signup — notify admin in background
+        // Update agency_name on the profile
+        if (signUpData.user && form.agencyName.trim()) {
+          await supabase
+            .from("profiles")
+            .update({ agency_name: form.agencyName.trim() })
+            .eq("id", signUpData.user.id);
+        }
+
+        // Notify admin in background
         try {
           const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+          const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
           await fetch(
             `https://${projectId}.supabase.co/functions/v1/notify-admin-signup`,
             {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: {
+                "Content-Type": "application/json",
+                "apikey": anonKey,
+              },
               body: JSON.stringify({
                 agentName: form.fullName,
                 agentEmail: form.email,
@@ -88,13 +116,18 @@ export default function AuthPage() {
             }
           );
         } catch {
-          // Non-blocking — don't fail signup if notification fails
+          // Non-blocking
         }
 
         toast({
           title: "Check your email",
           description: "We sent you a confirmation link to verify your account.",
         });
+
+        // Redirect to pending page after short delay so toast is visible
+        setTimeout(() => {
+          navigate("/pending");
+        }, 1500);
       }
     } catch (err: any) {
       toast({
@@ -118,6 +151,9 @@ export default function AuthPage() {
   const buttonStyle: React.CSSProperties = buttonColor
     ? { backgroundColor: buttonColor, borderColor: buttonColor }
     : {};
+
+  const inputClass = (field: string) =>
+    `pl-10 ${fieldErrors[field] ? "border-destructive ring-destructive" : ""}`;
 
   const formContent = (
     <div className="w-full max-w-md mx-auto">
@@ -147,69 +183,86 @@ export default function AuthPage() {
           <>
             <div>
               <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
-                Full Name
+                Full Name <RequiredAsterisk />
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   value={form.fullName}
-                  onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                  onChange={(e) => {
+                    setForm({ ...form, fullName: e.target.value });
+                    if (fieldErrors.fullName) setFieldErrors(prev => ({ ...prev, fullName: "" }));
+                  }}
                   placeholder="Jane Smith"
-                  className="pl-10"
+                  className={inputClass("fullName")}
                   required
                 />
               </div>
+              {fieldErrors.fullName && <p className="text-xs text-destructive mt-1">{fieldErrors.fullName}</p>}
             </div>
             <div>
               <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
-                Agency Name
+                Agency Name <RequiredAsterisk />
               </label>
               <div className="relative">
                 <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   value={form.agencyName}
-                  onChange={(e) => setForm({ ...form, agencyName: e.target.value })}
+                  onChange={(e) => {
+                    setForm({ ...form, agencyName: e.target.value });
+                    if (fieldErrors.agencyName) setFieldErrors(prev => ({ ...prev, agencyName: "" }));
+                  }}
                   placeholder="Your Travel Agency"
-                  className="pl-10"
+                  className={inputClass("agencyName")}
+                  required
                 />
               </div>
+              {fieldErrors.agencyName && <p className="text-xs text-destructive mt-1">{fieldErrors.agencyName}</p>}
             </div>
           </>
         )}
 
         <div>
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
-            Email Address
+            Email Address {!isLogin && <RequiredAsterisk />}
           </label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="email"
               value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              onChange={(e) => {
+                setForm({ ...form, email: e.target.value });
+                if (fieldErrors.email) setFieldErrors(prev => ({ ...prev, email: "" }));
+              }}
               placeholder="you@agency.com"
-              className="pl-10"
+              className={inputClass("email")}
               required
             />
           </div>
+          {fieldErrors.email && <p className="text-xs text-destructive mt-1">{fieldErrors.email}</p>}
         </div>
 
         <div>
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
-            Password
+            Password {!isLogin && <RequiredAsterisk />}
           </label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="password"
               value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              onChange={(e) => {
+                setForm({ ...form, password: e.target.value });
+                if (fieldErrors.password) setFieldErrors(prev => ({ ...prev, password: "" }));
+              }}
               placeholder="••••••••"
-              className="pl-10"
+              className={inputClass("password")}
               required
               minLength={6}
             />
           </div>
+          {fieldErrors.password && <p className="text-xs text-destructive mt-1">{fieldErrors.password}</p>}
         </div>
 
         <Button
@@ -227,7 +280,7 @@ export default function AuthPage() {
       <p className="text-center text-sm text-muted-foreground font-body mt-6">
         {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
         <button
-          onClick={() => setIsLogin(!isLogin)}
+          onClick={() => { setIsLogin(!isLogin); setFieldErrors({}); }}
           className="text-primary font-medium hover:underline"
         >
           {isLogin ? "Sign up" : "Sign in"}
@@ -264,7 +317,6 @@ export default function AuthPage() {
     );
   }
 
-  // Default: no hero
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-6" style={brandVars}>
       {formContent}
