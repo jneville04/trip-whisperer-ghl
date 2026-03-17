@@ -11,3 +11,6 @@ verify_jwt = true
 
 [functions.notify-admin-signup]
 verify_jwt = false
+
+[functions.notify-agent-approval]
+verify_jwt = false

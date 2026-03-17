@@ -507,9 +507,24 @@ function AgentsTab() {
       .eq("id", id);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: `Agent ${status}` });
-      setProfiles((prev) => prev.map((p) => (p.id === id ? { ...p, status } : p)));
+      return;
+    }
+    toast({ title: `Agent ${status}` });
+    setProfiles((prev) => prev.map((p) => (p.id === id ? { ...p, status } : p)));
+
+    // Send approval email after successful status update
+    if (status === "approved") {
+      const profile = profiles.find((p) => p.id === id);
+      if (profile?.email) {
+        const loginUrl = `${window.location.origin}/auth`;
+        supabase.functions.invoke("notify-agent-approval", {
+          body: {
+            agentEmail: profile.email,
+            agentName: profile.full_name || "",
+            loginUrl,
+          },
+        }).catch((err) => console.error("Approval email failed:", err));
+      }
     }
   };
 
