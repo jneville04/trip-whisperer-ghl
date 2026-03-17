@@ -117,10 +117,7 @@ export default function AuthPage() {
           description: "We sent you a confirmation link to verify your account.",
         });
 
-        // Redirect to pending page after short delay so toast is visible
-        setTimeout(() => {
-          navigate("/pending");
-        }, 1500);
+        navigate("/pending");
       }
     } catch (err: any) {
       toast({
