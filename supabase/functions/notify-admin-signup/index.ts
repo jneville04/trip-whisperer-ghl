@@ -5,56 +5,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-async function createEmailRun(apiKey: string): Promise<string | null> {
-  try {
-    const response = await fetch('https://api.lovable.dev/v1/messaging/email/runs', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({}),
-    })
-    if (response.ok) {
-      const data = await response.json()
-      console.log('Created email run', data)
-      return data.run_id || data.id || null
-    }
-    const text = await response.text()
-    console.error('Failed to create email run', { status: response.status, body: text })
-    return null
-  } catch (err) {
-    console.error('Error creating email run', err)
-    return null
-  }
-}
-
-async function sendEmailDirect(apiKey: string, runId: string, params: {
-  to: string
-  from: string
-  sender_domain: string
-  subject: string
-  html: string
-  text: string
-  purpose: string
-  label: string
-  message_id: string
-}) {
-  const response = await fetch('https://api.lovable.dev/v1/messaging/email/send', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ run_id: runId, ...params }),
-  })
-  if (!response.ok) {
-    const text = await response.text()
-    throw new Error(`Email API error: ${response.status} ${text}`)
-  }
-  return response.json()
-}
-
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
@@ -62,7 +12,7 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-  const apiKey = Deno.env.get('LOVABLE_API_KEY')!
+  const resendApiKey = Deno.env.get('RESEND_API_KEY')
 
   const supabase = createClient(supabaseUrl, serviceKey)
 
@@ -72,6 +22,14 @@ Deno.serve(async (req) => {
     if (!agentEmail) {
       return new Response(JSON.stringify({ error: 'Missing agentEmail' }), {
         status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      })
+    }
+
+    if (!resendApiKey) {
+      console.error('RESEND_API_KEY not configured — cannot send admin notification')
+      return new Response(JSON.stringify({ error: 'Email service not configured' }), {
+        status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       })
     }
@@ -89,7 +47,6 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Get admin emails from profiles
     const adminIds = adminRoles.map((r) => r.user_id)
     const { data: adminProfiles } = await supabase
       .from('profiles')
@@ -107,7 +64,6 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Get app settings for branding
     const { data: appSettings } = await supabase
       .from('app_settings')
       .select('app_name')
@@ -117,20 +73,8 @@ Deno.serve(async (req) => {
     const appName = appSettings?.app_name || 'Proposal Builder'
     const displayName = agentName || 'Unknown'
 
-    // Create an email run first
-    const runId = await createEmailRun(apiKey)
-    if (!runId) {
-      console.error('Could not create email run — cannot send notification')
-      return new Response(JSON.stringify({ error: 'Email run creation failed' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
-    // Send notification email directly to each admin
     let notified = 0
     for (const adminEmail of adminEmails) {
-      const messageId = crypto.randomUUID()
       const html = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
           <h2 style="color: #333; margin-bottom: 16px;">New Agent Signup</h2>
@@ -158,19 +102,27 @@ Deno.serve(async (req) => {
       `
 
       try {
-        await sendEmailDirect(apiKey, runId, {
-          to: adminEmail,
-          from: `${appName} <noreply@notify.journeyswithjoi.com>`,
-          sender_domain: 'notify.journeyswithjoi.com',
-          subject: `New Agent Signup: ${displayName} (${agentEmail})`,
-          html,
-          text: `New agent signup on ${appName}.\n\nName: ${displayName}\nEmail: ${agentEmail}\nStatus: Pending Approval\n\nLog in to the Admin Panel to approve or reject this agent.`,
-          purpose: 'transactional',
-          label: 'admin_new_signup',
-          message_id: messageId,
+        const res = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${resendApiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            from: `${appName} <noreply@notify.journeyswithjoi.com>`,
+            to: [adminEmail],
+            subject: `New Agent Signup: ${displayName} (${agentEmail})`,
+            html,
+          }),
         })
-        notified++
-        console.log('Admin notification sent', { adminEmail, messageId })
+
+        if (!res.ok) {
+          const errText = await res.text()
+          console.error('Resend error', { status: res.status, body: errText })
+        } else {
+          notified++
+          console.log('Admin notification sent', { adminEmail })
+        }
       } catch (err) {
         console.error('Failed to send admin notification', { adminEmail, error: err })
       }
