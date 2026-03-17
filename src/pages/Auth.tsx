@@ -90,14 +90,6 @@ export default function AuthPage() {
           return;
         }
 
-        // Update agency_name on the profile
-        if (signUpData.user && form.agencyName.trim()) {
-          await supabase
-            .from("profiles")
-            .update({ agency_name: form.agencyName.trim() })
-            .eq("id", signUpData.user.id);
-        }
-
         // Notify admin in background
         try {
           const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
