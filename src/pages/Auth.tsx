@@ -69,6 +69,7 @@ export default function AuthPage() {
           options: {
             data: {
               full_name: form.fullName,
+              agency_name: form.agencyName,
             },
             emailRedirectTo: window.location.origin,
           },
