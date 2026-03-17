@@ -45,7 +45,7 @@ export default function AuthPage() {
           }
         }
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data: signUpData, error } = await supabase.auth.signUp({
           email: form.email,
           password: form.password,
           options: {
@@ -56,6 +56,41 @@ export default function AuthPage() {
           },
         });
         if (error) throw error;
+
+        // Supabase returns an empty identities array when email already exists
+        // (with email confirmation enabled). Detect this and show a clear message.
+        if (
+          signUpData.user &&
+          signUpData.user.identities &&
+          signUpData.user.identities.length === 0
+        ) {
+          toast({
+            title: "Account already exists",
+            description:
+              "An account with this email already exists. Please sign in instead, or use the password recovery option.",
+          });
+          setLoading(false);
+          return;
+        }
+
+        // Successful new signup — notify admin in background
+        try {
+          const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+          await fetch(
+            `https://${projectId}.supabase.co/functions/v1/notify-admin-signup`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                agentName: form.fullName,
+                agentEmail: form.email,
+              }),
+            }
+          );
+        } catch {
+          // Non-blocking — don't fail signup if notification fails
+        }
+
         toast({
           title: "Check your email",
           description: "We sent you a confirmation link to verify your account.",
