@@ -42,6 +42,7 @@ function AppContent() {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<NotFound />} />
+          <Route path="/pending" element={<PendingPage />} />
         </Routes>
       </BrowserRouter>
     </div>
