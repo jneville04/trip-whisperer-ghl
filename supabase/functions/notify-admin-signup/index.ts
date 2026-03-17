@@ -1,3 +1,4 @@
+import { sendLovableEmail } from 'npm:@lovable.dev/email-js'
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
 const corsHeaders = {
@@ -12,6 +13,7 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  const apiKey = Deno.env.get('LOVABLE_API_KEY')!
 
   const supabase = createClient(supabaseUrl, serviceKey)
 
@@ -66,7 +68,7 @@ Deno.serve(async (req) => {
     const appName = appSettings?.app_name || 'Proposal Builder'
     const displayName = agentName || 'Unknown'
 
-    // Enqueue notification email for each admin
+    // Send notification email directly to each admin
     let notified = 0
     for (const adminEmail of adminEmails) {
       const messageId = crypto.randomUUID()
@@ -96,27 +98,25 @@ Deno.serve(async (req) => {
         </div>
       `
 
-      const { error } = await supabase.rpc('enqueue_email', {
-        queue_name: 'transactional_emails',
-        payload: {
-          run_id: messageId,
-          message_id: messageId,
-          to: adminEmail,
-          from: `${appName} <noreply@notify.journeyswithjoi.com>`,
-          sender_domain: 'notify.journeyswithjoi.com',
-          subject: `New Agent Signup: ${displayName} (${agentEmail})`,
-          html,
-          text: `New agent signup on ${appName}.\n\nName: ${displayName}\nEmail: ${agentEmail}\nStatus: Pending Approval\n\nLog in to the Admin Panel to approve or reject this agent.`,
-          purpose: 'transactional',
-          label: 'admin_new_signup',
-          queued_at: new Date().toISOString(),
-        },
-      })
-
-      if (error) {
-        console.error('Failed to enqueue admin notification', { adminEmail, error })
-      } else {
+      try {
+        await sendLovableEmail(
+          {
+            to: adminEmail,
+            from: `${appName} <noreply@notify.journeyswithjoi.com>`,
+            sender_domain: 'notify.journeyswithjoi.com',
+            subject: `New Agent Signup: ${displayName} (${agentEmail})`,
+            html,
+            text: `New agent signup on ${appName}.\n\nName: ${displayName}\nEmail: ${agentEmail}\nStatus: Pending Approval\n\nLog in to the Admin Panel to approve or reject this agent.`,
+            purpose: 'transactional',
+            label: 'admin_new_signup',
+            message_id: messageId,
+          },
+          { apiKey }
+        )
         notified++
+        console.log('Admin notification sent', { adminEmail, messageId })
+      } catch (err) {
+        console.error('Failed to send admin notification', { adminEmail, error: err })
       }
     }
 

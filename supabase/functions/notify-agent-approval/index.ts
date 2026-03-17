@@ -1,3 +1,4 @@
+import { sendLovableEmail } from 'npm:@lovable.dev/email-js'
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
 const corsHeaders = {
@@ -12,6 +13,7 @@ Deno.serve(async (req) => {
 
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!
   const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+  const apiKey = Deno.env.get('LOVABLE_API_KEY')!
   const supabase = createClient(supabaseUrl, serviceKey)
 
   try {
@@ -66,25 +68,24 @@ Deno.serve(async (req) => {
       </div>
     `
 
-    const { error } = await supabase.rpc('enqueue_email', {
-      queue_name: 'transactional_emails',
-      payload: {
-        run_id: messageId,
-        message_id: messageId,
-        to: agentEmail,
-        from: `${appName} <noreply@notify.journeyswithjoi.com>`,
-        sender_domain: 'notify.journeyswithjoi.com',
-        subject: `Welcome to ${appName} — Your Account is Approved`,
-        html,
-        text: `Hi ${displayName},\n\nGreat news! Your account on ${appName} has been approved. You can now sign in and start creating proposals.\n\n${signInUrl ? `Sign in here: ${signInUrl}` : ''}\n\nIf you have any questions, simply reply to this email or contact support.`,
-        purpose: 'transactional',
-        label: 'agent_approval',
-        queued_at: new Date().toISOString(),
-      },
-    })
-
-    if (error) {
-      console.error('Failed to enqueue approval email', { error })
+    try {
+      await sendLovableEmail(
+        {
+          to: agentEmail,
+          from: `${appName} <noreply@notify.journeyswithjoi.com>`,
+          sender_domain: 'notify.journeyswithjoi.com',
+          subject: `Welcome to ${appName} — Your Account is Approved`,
+          html,
+          text: `Hi ${displayName},\n\nGreat news! Your account on ${appName} has been approved. You can now sign in and start creating proposals.\n\n${signInUrl ? `Sign in here: ${signInUrl}` : ''}\n\nIf you have any questions, simply reply to this email or contact support.`,
+          purpose: 'transactional',
+          label: 'agent_approval',
+          message_id: messageId,
+        },
+        { apiKey }
+      )
+      console.log('Approval email sent', { agentEmail, messageId })
+    } catch (sendErr) {
+      console.error('Failed to send approval email', { agentEmail, error: sendErr })
       return new Response(JSON.stringify({ error: 'Failed to send email' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
