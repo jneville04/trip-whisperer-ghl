@@ -1033,6 +1033,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                 galleryUrls: hotelData.galleryUrls || [],
                               };
                               update("accommodations", [...accommodations, newAcc]);
+                              setOpenAccIdx(accommodations.length);
                             }}>
                               <Button variant="travel-outline" size="sm" className="text-xs h-7">
                                 <Search className="h-3 w-3 mr-1" /> Search Hotels
