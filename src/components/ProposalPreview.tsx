@@ -132,7 +132,7 @@ function ItinerarySection({
           <h2 className="font-display text-4xl font-bold text-foreground">{data.sectionCustomTitles?.itinerary?.title || "Day-by-Day Itinerary"}</h2>
         </motion.div>
         <div className="space-y-4">
-          {data.days.map((day, dayIdx) => {
+          {data.days.filter(d => !d.hidden).map((day, dayIdx) => {
             const isOpen = expandedDays[day.id] ?? false;
             return (
               <motion.div
@@ -311,10 +311,10 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
   };
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
   const ct = data.sectionCustomTitles || {};
-  const flightOptions = data.flightOptions || [];
-  const accommodations = data.accommodations || [];
-  const cruiseShips = data.cruiseShips || [];
-  const busTrips = data.busTrips || [];
+  const flightOptions = (data.flightOptions || []).filter(o => !o.hidden);
+  const accommodations = (data.accommodations || []).filter(a => !a.hidden);
+  const cruiseShips = (data.cruiseShips || []).filter(s => !s.hidden);
+  const busTrips = (data.busTrips || []).filter(t => !(t as any).hidden);
   const pricingOptions = data.pricingOptions || [];
   const agent = data.agent || {
     name: "",
@@ -371,7 +371,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
       accommodations: accommodations.length > 0,
       cruiseShips: cruiseShips.length > 0,
       busTrips: busTrips.length > 0,
-      itinerary: (data.days || []).length > 0,
+      itinerary: (data.days || []).filter(d => !d.hidden).length > 0,
       inclusions: (data.inclusions || []).length > 0,
       pricing: (data.pricing || []).length > 0 || (data.pricingOptions || []).length > 0,
       essentials: !!(
@@ -1823,7 +1823,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
             );
 
           case "itinerary":
-            if (data.days.length === 0) return null;
+            if (data.days.filter(d => !d.hidden).length === 0) return null;
             return <ItinerarySection key="itinerary" data={data} fadeUp={fadeUp} openLightbox={openLightbox} />;
 
           case "inclusions":

@@ -1,7 +1,7 @@
 import { useState, useRef, ReactNode } from "react";
 import { format, parse } from "date-fns";
 import { uploadImage, uploadImages } from "@/lib/uploadImage";
-import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, ChevronRight, Eye, EyeOff, ImagePlus, X, ArrowUp, ArrowDown, Search, Upload } from "lucide-react";
+import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, ChevronRight, Eye, EyeOff, ImagePlus, X, ArrowUp, ArrowDown, Search, Upload, Copy, Minus } from "lucide-react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -47,6 +47,21 @@ const activityTypes: { value: Activity["type"]; label: string }[] = [
   { value: "activity", label: "🎯 Activity" },
   { value: "sightseeing", label: "📸 Sightseeing" },
 ];
+
+// Default section titles/subtitles used in client-facing output
+const sectionDefaults: Record<string, { title: string; subtitle: string }> = {
+  overview: { title: "Introduction", subtitle: "Prepared Exclusively For" },
+  flights: { title: "Air Travel", subtitle: "Your Flights" },
+  accommodations: { title: "Accommodations", subtitle: "Where You'll Stay" },
+  cruiseShips: { title: "Cruise Ship & Cabin", subtitle: "Your Vessel" },
+  busTrips: { title: "Bus Trips", subtitle: "Ground Transport" },
+  itinerary: { title: "Day-by-Day Itinerary", subtitle: "Your Journey" },
+  inclusions: { title: "What's Included", subtitle: "Everything Taken Care Of" },
+  pricing: { title: "Choose Your Package", subtitle: "Investment" },
+  essentials: { title: "Travel Essentials", subtitle: "Good to Know" },
+  terms: { title: "Terms & Conditions", subtitle: "Important Information" },
+  agent: { title: "Your Advisor", subtitle: "Let's Connect" },
+};
 
 function CollapsibleSection({
   title,
@@ -102,7 +117,7 @@ function CollapsibleSection({
                 <Input
                   value={sectionCustomTitle || ""}
                   onChange={(e) => onCustomTitleChange(e.target.value)}
-                  placeholder="Default title"
+                  placeholder={sectionKey ? sectionDefaults[sectionKey]?.title || "Default title" : "Default title"}
                   className="h-7 text-xs"
                 />
               </div>
@@ -111,7 +126,7 @@ function CollapsibleSection({
                 <Input
                   value={sectionCustomSubtitle || ""}
                   onChange={(e) => onCustomSubtitleChange?.(e.target.value)}
-                  placeholder="Optional subtitle"
+                  placeholder={sectionKey ? sectionDefaults[sectionKey]?.subtitle || "Optional subtitle" : "Optional subtitle"}
                   className="h-7 text-xs"
                 />
               </div>
@@ -152,31 +167,68 @@ function SortableSection({ id, children }: { id: string; children: ReactNode }) 
   );
 }
 
+function ItemControls({
+  hidden,
+  onHide,
+  onCopy,
+  onDelete,
+}: {
+  hidden?: boolean;
+  onHide?: () => void;
+  onCopy?: () => void;
+  onDelete?: () => void;
+}) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {onHide && (
+        <button onClick={(e) => { e.stopPropagation(); onHide(); }} className={`p-1 rounded transition-colors ${hidden ? "text-muted-foreground/40" : "text-muted-foreground hover:text-foreground"}`} title={hidden ? "Show in proposal" : "Hide from proposal"}>
+          {hidden ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+        </button>
+      )}
+      {onCopy && (
+        <button onClick={(e) => { e.stopPropagation(); onCopy(); }} className="p-1 rounded text-muted-foreground hover:text-foreground transition-colors" title="Duplicate">
+          <Copy className="h-3.5 w-3.5" />
+        </button>
+      )}
+      {onDelete && (
+        <Button variant="travel-ghost" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(); }} className="h-7 w-7 text-destructive/60 hover:text-destructive">
+          <Trash2 className="h-3.5 w-3.5" />
+        </Button>
+      )}
+    </div>
+  );
+}
+
 function CollapsibleHotel({
   defaultOpen = false,
   hotelName,
   location,
   onDelete,
+  hidden,
+  onHide,
+  onCopy,
   children,
 }: {
   defaultOpen?: boolean;
   hotelName: string;
   location?: string;
   onDelete: () => void;
+  hidden?: boolean;
+  onHide?: () => void;
+  onCopy?: () => void;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border border-border/40 rounded-lg bg-muted/20 overflow-hidden">
+    <div className={`border border-border/40 rounded-lg bg-muted/20 overflow-hidden ${hidden ? "opacity-50" : ""}`}>
       <div className="flex items-center justify-between px-3 py-2.5 bg-muted/40">
         <button className="flex items-center gap-2 flex-1 text-left" onClick={() => setOpen(!open)}>
           {open ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
           <span className="font-body font-semibold text-sm text-foreground">{hotelName}</span>
           {location && <span className="text-xs text-muted-foreground">· {location}</span>}
+          {hidden && <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 rounded">Hidden</span>}
         </button>
-        <Button variant="travel-ghost" size="icon" onClick={onDelete} className="h-7 w-7 text-destructive/60 hover:text-destructive">
-          <Trash2 className="h-3.5 w-3.5" />
-        </Button>
+        <ItemControls hidden={hidden} onHide={onHide} onCopy={onCopy} onDelete={onDelete} />
       </div>
       {open && children}
     </div>
@@ -423,7 +475,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       onChange({ ...data, heroImageUrl: primary, heroImageUrls: gallery });
                     }}
                     onUpload={async (files) => {
-                      const urls = await uploadImages(files);
+                      const currentTotal = (data.heroImageUrl ? 1 : 0) + (data.heroImageUrls || []).length;
+                      const slotsLeft = 3 - currentTotal;
+                      if (slotsLeft <= 0) return;
+                      const capped = Array.from(files).slice(0, slotsLeft);
+                      const urls = await uploadImages(capped);
                       urls.forEach((url) => {
                         if (!data.heroImageUrl) { update("heroImageUrl", url); }
                         else { update("heroImageUrls", [...(data.heroImageUrls || []), url]); }
@@ -522,14 +578,44 @@ export default function ProposalEditor({ data, onChange }: Props) {
           </div>
           <div>
             <FieldLabel>Number of Travelers <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(optional)</span></FieldLabel>
-            <Input value={data.travelerCount} onChange={(e) => update("travelerCount", e.target.value)} placeholder="2 Travelers" />
+            <div className="flex items-center gap-2">
+              <Button type="button" variant="outline" size="icon" className="h-8 w-8 shrink-0" onClick={() => {
+                const cur = parseInt(data.travelerCount) || 0;
+                if (cur > 0) update("travelerCount", String(cur - 1));
+              }} disabled={!data.travelerCount || parseInt(data.travelerCount) <= 0}>
+                <Minus className="h-3.5 w-3.5" />
+              </Button>
+              <Input
+                type="number"
+                min="0"
+                value={data.travelerCount}
+                onChange={(e) => update("travelerCount", e.target.value)}
+                placeholder="0"
+                className="h-8 w-20 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+              <Button type="button" variant="outline" size="icon" className="h-8 w-8 shrink-0" onClick={() => {
+                const cur = parseInt(data.travelerCount) || 0;
+                update("travelerCount", String(cur + 1));
+              }}>
+                <Plus className="h-3.5 w-3.5" />
+              </Button>
+              {data.travelerCount && parseInt(data.travelerCount) > 0 && (
+                <span className="text-xs text-muted-foreground font-body ml-1">
+                  {parseInt(data.travelerCount) === 1 ? "1 Traveler" : `${parseInt(data.travelerCount)} Travelers`}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </CollapsibleSection>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={sectionOrder} strategy={verticalListSortingStrategy}>
-          {sectionOrder.filter((k) => k !== "agent").map((key) => (
+          {sectionOrder.filter((k) => {
+            if (k === "agent") return false;
+            if (k === "busTrips" && (data as any).proposalType === "proposal") return false;
+            return true;
+          }).map((key) => (
             <SortableSection key={key} id={key}>
               {(() => {
                 switch (key) {
@@ -554,12 +640,25 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       <CollapsibleSection title={sectionTitles.flights} sectionKey="flights" visible={vis.flights} onToggleVisible={() => toggleSection("flights")} defaultOpen={false} sectionCustomTitle={customTitles.flights?.title} sectionCustomSubtitle={customTitles.flights?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("flights", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("flights", v)}>
                         <div className="space-y-4">
                           {flightOptions.map((opt, oi) => (
-                            <div key={opt.id} className="border border-border/40 rounded-lg p-3 bg-muted/20 space-y-3">
+                            <div key={opt.id} className={`border border-border/40 rounded-lg p-3 bg-muted/20 space-y-3 ${opt.hidden ? "opacity-50" : ""}`}>
                               <div className="flex items-center justify-between">
-                                <span className="font-body font-semibold text-sm text-foreground">✈️ Option {oi + 1}</span>
-                                <Button variant="travel-ghost" size="icon" onClick={() => update("flightOptions", flightOptions.filter((_, idx) => idx !== oi))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </Button>
+                                <span className="font-body font-semibold text-sm text-foreground">
+                                  ✈️ Option {oi + 1}
+                                  {opt.hidden && <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 rounded ml-2">Hidden</span>}
+                                </span>
+                                <ItemControls
+                                  hidden={opt.hidden}
+                                  onHide={() => {
+                                    const opts = [...flightOptions];
+                                    opts[oi] = { ...opts[oi], hidden: !opts[oi].hidden };
+                                    update("flightOptions", opts);
+                                  }}
+                                  onCopy={() => {
+                                    const clone = { ...opt, id: crypto.randomUUID(), hidden: false };
+                                    update("flightOptions", [...flightOptions.slice(0, oi + 1), clone, ...flightOptions.slice(oi + 1)]);
+                                  }}
+                                  onDelete={() => update("flightOptions", flightOptions.filter((_, idx) => idx !== oi))}
+                                />
                               </div>
                               {opt.legs.map((leg, li) => (
                                 <div key={leg.id} className="border border-border/30 rounded-md p-2.5 bg-background/50">
@@ -690,7 +789,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                             };
 
                             return (
-                              <CollapsibleHotel key={acc.id} defaultOpen={i === 0} hotelName={acc.hotelName || `Hotel ${i + 1}`} location={acc.location} onDelete={() => update("accommodations", accommodations.filter((_, idx) => idx !== i))}>
+                              <CollapsibleHotel key={acc.id} defaultOpen={i === 0} hotelName={acc.hotelName || `Hotel ${i + 1}`} location={acc.location} onDelete={() => update("accommodations", accommodations.filter((_, idx) => idx !== i))} hidden={acc.hidden} onHide={() => { const a = [...accommodations]; a[i] = { ...a[i], hidden: !a[i].hidden }; update("accommodations", a); }} onCopy={() => { const clone = { ...acc, id: crypto.randomUUID(), hidden: false }; update("accommodations", [...accommodations.slice(0, i + 1), clone, ...accommodations.slice(i + 1)]); }}>
                                 <div className="border-t border-border/30">
                                   <Tabs defaultValue="general" className="w-full">
                                     <TabsList className="w-full justify-start rounded-none border-b border-border/30 bg-transparent h-9 px-3">
@@ -912,7 +1011,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                             };
 
                             return (
-                              <CollapsibleHotel key={ship.id} defaultOpen={i === 0} hotelName={ship.shipName || `Ship ${i + 1}`} location={ship.cruiseLine} onDelete={() => update("cruiseShips", cruiseShips.filter((_, idx) => idx !== i))}>
+                              <CollapsibleHotel key={ship.id} defaultOpen={i === 0} hotelName={ship.shipName || `Ship ${i + 1}`} location={ship.cruiseLine} onDelete={() => update("cruiseShips", cruiseShips.filter((_, idx) => idx !== i))} hidden={ship.hidden} onHide={() => { const s = [...cruiseShips]; s[i] = { ...s[i], hidden: !s[i].hidden }; update("cruiseShips", s); }} onCopy={() => { const clone = { ...ship, id: crypto.randomUUID(), hidden: false }; update("cruiseShips", [...cruiseShips.slice(0, i + 1), clone, ...cruiseShips.slice(i + 1)]); }}>
                                 <div className="border-t border-border/30">
                                   <Tabs defaultValue="general" className="w-full">
                                     <TabsList className="w-full justify-start rounded-none border-b border-border/30 bg-transparent h-9 px-3">
@@ -1367,7 +1466,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       <CollapsibleSection title={sectionTitles.itinerary} sectionKey="itinerary" visible={vis.itinerary} onToggleVisible={() => toggleSection("itinerary")} sectionCustomTitle={customTitles.itinerary?.title} sectionCustomSubtitle={customTitles.itinerary?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("itinerary", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("itinerary", v)}>
                         <div className="space-y-6">
                           {data.days.map((day, dayIdx) => (
-                            <CollapsibleHotel key={day.id} defaultOpen={dayIdx === 0} hotelName={`Day ${dayIdx + 1}${day.title ? `: ${day.title}` : ""}`} location={day.location} onDelete={() => removeDay(dayIdx)}>
+                            <CollapsibleHotel key={day.id} defaultOpen={dayIdx === 0} hotelName={`Day ${dayIdx + 1}${day.title ? `: ${day.title}` : ""}`} location={day.location} onDelete={() => removeDay(dayIdx)} hidden={day.hidden} onHide={() => { const days = [...data.days]; days[dayIdx] = { ...days[dayIdx], hidden: !days[dayIdx].hidden }; update("days", days); }} onCopy={() => { const clone = { ...day, id: crypto.randomUUID(), hidden: false }; update("days", [...data.days.slice(0, dayIdx + 1), clone, ...data.days.slice(dayIdx + 1)]); }}>
                               <div className="p-4 space-y-3">
                               <div className="grid grid-cols-2 gap-2 mb-2">
                                 <div>

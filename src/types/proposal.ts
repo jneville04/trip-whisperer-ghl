@@ -17,6 +17,7 @@ export interface ItineraryDay {
   imageUrl: string;
   imageUrls: string[];
   activities: Activity[];
+  hidden?: boolean;
 }
 
 export interface PricingLine {
@@ -73,6 +74,7 @@ export interface FlightOption {
   legs: FlightLeg[];
   price?: string;
   agentPricing?: AgentPricing;
+  hidden?: boolean;
 }
 
 export interface Accommodation {
@@ -94,6 +96,7 @@ export interface Accommodation {
   mediaType?: "photos" | "video";
   price?: string;
   agentPricing?: AgentPricing;
+  hidden?: boolean;
 }
 
 export interface CruiseShip {
@@ -118,6 +121,7 @@ export interface CruiseShip {
   mediaType?: "photos" | "video";
   price?: string;
   agentPricing?: AgentPricing;
+  hidden?: boolean;
 }
 
 export interface LocationAddress {
