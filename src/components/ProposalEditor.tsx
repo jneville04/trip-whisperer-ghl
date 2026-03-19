@@ -1140,10 +1140,9 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                             value={ship.shipName}
                                             cruiseLine={ship.cruiseLine}
                                             onChange={(val, detectedLine) => {
-                                              updateShipField("shipName", val);
-                                              if (detectedLine && !ship.cruiseLine) {
-                                                updateShipField("cruiseLine", detectedLine);
-                                              }
+                                              const s = [...(data.cruiseShips || [])];
+                                              s[i] = { ...s[i], shipName: val, ...(detectedLine && !ship.cruiseLine ? { cruiseLine: detectedLine } : {}) };
+                                              update("cruiseShips", s);
                                             }}
                                             placeholder="Symphony of the Seas"
                                             className="h-8 text-xs"
