@@ -1396,7 +1396,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                             namePlaceholder="Coimbra Bus Station"
                                             compact
                                           />
-                                          <div className="grid grid-cols-3 gap-2">
+                                          <div className="grid grid-cols-2 gap-2">
                                             <div>
                                               <FieldLabel>Arrival</FieldLabel>
                                               <InlineTimePicker value={stop.arrivalTime} onChange={(val) => {
