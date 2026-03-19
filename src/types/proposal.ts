@@ -17,6 +17,7 @@ export interface ItineraryDay {
   imageUrl: string;
   imageUrls: string[];
   activities: Activity[];
+  hidden?: boolean;
 }
 
 export interface PricingLine {
