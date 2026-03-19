@@ -96,6 +96,8 @@ interface Props {
   tripId?: string;
   isEditor?: boolean;
   onEditorSubPage?: (page: EditorSubPage) => void;
+  remainingSpots?: number | null;
+  showExactSpots?: boolean;
 }
 
 function ItinerarySection({
