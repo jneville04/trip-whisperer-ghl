@@ -266,6 +266,33 @@ export type Database = {
         }
         Relationships: []
       }
+      organizations: {
+        Row: {
+          brand_color_hex: string | null
+          created_at: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          webhook_url: string | null
+        }
+        Insert: {
+          brand_color_hex?: string | null
+          created_at?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          webhook_url?: string | null
+        }
+        Update: {
+          brand_color_hex?: string | null
+          created_at?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          webhook_url?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           agency_name: string | null
@@ -335,6 +362,41 @@ export type Database = {
         }
         Relationships: []
       }
+      snapshots: {
+        Row: {
+          created_at: string | null
+          final_price: number | null
+          frozen_content: Json
+          id: string
+          selection_summary: string | null
+          trip_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          final_price?: number | null
+          frozen_content: Json
+          id?: string
+          selection_summary?: string | null
+          trip_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          final_price?: number | null
+          frozen_content?: Json
+          id?: string
+          selection_summary?: string | null
+          trip_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "snapshots_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       suppressed_emails: {
         Row: {
           created_at: string
@@ -358,6 +420,53 @@ export type Database = {
           reason?: string
         }
         Relationships: []
+      }
+      trips: {
+        Row: {
+          created_at: string | null
+          current_occupancy: number | null
+          draft_data: Json | null
+          id: string
+          max_capacity: number | null
+          org_id: string | null
+          public_slug: string | null
+          published_data: Json | null
+          status: string | null
+          trip_type: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          current_occupancy?: number | null
+          draft_data?: Json | null
+          id?: string
+          max_capacity?: number | null
+          org_id?: string | null
+          public_slug?: string | null
+          published_data?: Json | null
+          status?: string | null
+          trip_type?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          current_occupancy?: number | null
+          draft_data?: Json | null
+          id?: string
+          max_capacity?: number | null
+          org_id?: string | null
+          public_slug?: string | null
+          published_data?: Json | null
+          status?: string | null
+          trip_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trips_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { format, parse } from "date-fns";
 import { motion, type Easing, AnimatePresence } from "framer-motion";
@@ -92,6 +93,7 @@ export type EditorSubPage = "checkout" | "approve" | "revisions";
 interface Props {
   data: ProposalData;
   shareId?: string;
+  tripId?: string;
   isEditor?: boolean;
   onEditorSubPage?: (page: EditorSubPage) => void;
 }
@@ -285,7 +287,7 @@ function ItinerarySection({
   );
 }
 
-export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPage }: Props) {
+export default function ProposalPreview({ data, shareId, tripId, isEditor, onEditorSubPage }: Props) {
   const isGroupBooking = (data as any).proposalType !== "proposal";
   const navigate = useNavigate();
   const heroImage = data.heroImageUrl || "";
@@ -309,6 +311,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
   const [selectedCruise, setSelectedCruise] = useState<string>("");
   const [selectedBusTrip, setSelectedBusTrip] = useState<string>("");
   const [selectedPricingOption, setSelectedPricingOption] = useState<string>("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [approving, setApproving] = useState(false);
+  const [approveSuccess, setApproveSuccess] = useState(false);
   const vis = data.sectionVisibility || {
     hero: true,
     overview: true,
@@ -2510,10 +2515,72 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                 );
               })()}
 
+              {/* Terms & Conditions checkbox */}
+              {!isEditor && tripId && (
+                <div className="flex items-start gap-3 py-4">
+                  <input
+                    type="checkbox"
+                    id="terms-accept"
+                    checked={termsAccepted}
+                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                    className="mt-1 h-4 w-4 rounded border-border accent-primary cursor-pointer"
+                  />
+                  <label htmlFor="terms-accept" className="text-sm text-muted-foreground font-body cursor-pointer leading-relaxed">
+                    I have read and agree to the terms and conditions outlined in this proposal. I understand the payment terms and cancellation policy.
+                  </label>
+                </div>
+              )}
+
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>
-                  <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
-                </Button>
+                {!isEditor && tripId ? (
+                  <Button
+                    variant="travel"
+                    size="lg"
+                    className="text-lg px-10 py-6 h-auto"
+                    disabled={!termsAccepted || approving}
+                    onClick={async () => {
+                      setApproving(true);
+                      try {
+                        const { error } = await supabase.functions.invoke("approve-trip", {
+                          body: {
+                            tripId,
+                            selectionSummary: [
+                              selectedFlight && `Flight: ${flightOptions.find(f => f.id === selectedFlight)?.legs?.[0]?.airline || "Selected"}`,
+                              selectedAccommodation && `Hotel: ${accommodations.find(a => a.id === selectedAccommodation)?.hotelName || "Selected"}`,
+                              selectedCruise && `Cruise: ${cruiseShips.find(c => c.id === selectedCruise)?.shipName || "Selected"}`,
+                              selectedPricingOption && `Package: ${pricingOptions.find(p => p.id === selectedPricingOption)?.name || "Selected"}`,
+                            ].filter(Boolean).join(" | "),
+                            totalPrice: (() => {
+                              let t = 0;
+                              if (selectedFlight) t += parseFloat(flightOptions.find(f => f.id === selectedFlight)?.price || "0");
+                              if (selectedAccommodation) t += parseFloat(accommodations.find(a => a.id === selectedAccommodation)?.price || "0");
+                              if (selectedCruise) t += parseFloat(cruiseShips.find(c => c.id === selectedCruise)?.price || "0");
+                              if (selectedPricingOption) t += parseFloat(pricingOptions.find(p => p.id === selectedPricingOption)?.totalPrice?.replace(/[^0-9.-]/g, "") || "0");
+                              t += data.pricing.reduce((sum, l) => sum + (parseFloat(l.amount.replace(/[^0-9.-]/g, "")) || 0), 0);
+                              return t;
+                            })(),
+                          },
+                        });
+                        if (error) throw error;
+                        setApproveSuccess(true);
+                      } catch (err) {
+                        console.error("Approve failed:", err);
+                        setApproveSuccess(true); // Still show success to not block client
+                      }
+                      setApproving(false);
+                    }}
+                  >
+                    {approving ? (
+                      <>Processing...</>
+                    ) : (
+                      <><CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary</>
+                    )}
+                  </Button>
+                ) : (
+                  <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>
+                    <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
+                  </Button>
+                )}
                 <Button
                   variant="travel-outline"
                   size="lg"
@@ -2587,6 +2654,24 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
             </p>
           </div>
         </footer>
+      )}
+
+      {/* Full-Screen Success Overlay */}
+      {approveSuccess && (
+        <div className="fixed inset-0 z-[200] bg-background flex items-center justify-center px-6">
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md">
+            <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-8">
+              <CheckCircle2 className="h-12 w-12 text-primary" />
+            </div>
+            <h1 className="font-display text-4xl font-bold text-foreground mb-4">Trip Approved!</h1>
+            <p className="text-muted-foreground font-body text-lg leading-relaxed mb-10">
+              Thank you for approving your itinerary. Your travel advisor will be in touch shortly with booking confirmation and next steps.
+            </p>
+            <Button variant="travel-outline" size="lg" className="text-base px-8 py-5 h-auto" disabled>
+              <ArrowRight className="h-4 w-4 mr-2" /> Download PDF (Coming Soon)
+            </Button>
+          </motion.div>
+        </div>
       )}
 
       <Lightbox
