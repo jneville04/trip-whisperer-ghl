@@ -184,7 +184,9 @@ function ItinerarySection({
                               <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-6`}>
                                 <div className="flex-1">
                                   <div className="flex items-start gap-3">
-                                    <div className="relative z-10 mt-1.5 w-[13px] h-[13px] shrink-0 rounded-full border-2 border-primary bg-background" />
+                                    <div className="relative z-10 mt-1 w-7 h-7 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                      {getActivityIcon(act.type)}
+                                    </div>
                                     <div className="flex-1">
                                       {act.time && (
                                         <span className="text-xs font-semibold text-primary font-body flex items-center gap-1 mb-1">
