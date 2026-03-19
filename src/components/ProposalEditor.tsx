@@ -746,7 +746,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                       </div>
                                       <div>
                                         <FieldLabel>Arrive</FieldLabel>
-                                        <TimePickerDropdown value={leg.arrivalTime} onChange={(val) => updateFlightLeg(oi, li, "arrivalTime", val)} />
+                                        <InlineTimePicker value={leg.arrivalTime} onChange={(val) => updateFlightLeg(oi, li, "arrivalTime", val)} />
                                       </div>
                                     </div>
                                   </div>
