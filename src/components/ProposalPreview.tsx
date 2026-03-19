@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { format, parse } from "date-fns";
 import { motion, type Easing, AnimatePresence } from "framer-motion";
