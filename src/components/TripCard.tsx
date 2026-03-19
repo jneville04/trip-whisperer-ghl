@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Copy, Trash2, ExternalLink, MapPin, Calendar, Eye, Clock } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Copy, Trash2, ExternalLink, MapPin, Calendar, Eye, Clock, MoreVertical } from "lucide-react";
 import { type ProposalData } from "@/types/proposal";
 import { format } from "date-fns";
 
