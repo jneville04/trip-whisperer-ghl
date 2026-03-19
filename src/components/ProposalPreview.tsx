@@ -313,6 +313,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
   const ct = data.sectionCustomTitles || {};
   const flightOptions = (data.flightOptions || []).filter(o => !o.hidden);
   const accommodations = (data.accommodations || []).filter(a => !a.hidden);
+  const accommodationsMode = ((data as any).accommodationsMode || "client_selects_one") as "informational_only" | "client_selects_one";
+  const accommodationSelectionEnabled = !isGroupBooking && accommodationsMode === "client_selects_one";
+  const effectiveSelectedAccommodation = accommodationSelectionEnabled ? selectedAccommodation : "";
   const cruiseShips = (data.cruiseShips || []).filter(s => !s.hidden);
   const busTrips = (data.busTrips || []).filter(t => !(t as any).hidden);
   const pricingOptions = data.pricingOptions || [];
