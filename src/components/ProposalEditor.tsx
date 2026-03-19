@@ -1536,9 +1536,9 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                 <FieldLabel>Activities</FieldLabel>
                                 {day.activities.map((act, actIdx) => (
                                   <div key={act.id} className="bg-background rounded-lg p-3 border border-border/30 space-y-2">
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center gap-1.5">
-                                        <select value={act.type} onChange={(e) => updateActivity(dayIdx, actIdx, "type", e.target.value)} className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body">
+                                    <div className="flex items-center justify-between flex-wrap gap-1.5">
+                                      <div className="flex items-center gap-1.5 flex-wrap">
+                                        <select value={act.type} onChange={(e) => updateActivity(dayIdx, actIdx, "type", e.target.value)} className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body shrink-0">
                                           {activityTypes.map((t) => (
                                             <option key={t.value} value={t.value}>{t.label}</option>
                                           ))}
