@@ -1259,7 +1259,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                               </CollapsibleHotel>
                             );
                           })}
-                          <Button variant="travel-ghost" size="sm" onClick={() => update("cruiseShips", [...cruiseShips, createCruiseShip()])} className="text-primary text-xs h-7">
+                          <Button variant="travel-ghost" size="sm" onClick={() => { update("cruiseShips", [...cruiseShips, createCruiseShip()]); setOpenCruiseIdx(cruiseShips.length); }} className="text-primary text-xs h-7">
                             <Plus className="h-3 w-3 mr-1" /> Add Ship
                           </Button>
                         </div>
