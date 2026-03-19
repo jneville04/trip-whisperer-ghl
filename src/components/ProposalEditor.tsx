@@ -749,15 +749,15 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                       <FieldLabel>Date</FieldLabel>
                                       <DatePickerField value={leg.date} onChange={(val) => updateFlightLeg(oi, li, "date", val)} placeholder="Select date" />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-1">
-                                      <div>
-                                        <FieldLabel>Depart</FieldLabel>
-                                        <InlineTimePicker value={leg.departureTime} onChange={(val) => updateFlightLeg(oi, li, "departureTime", val)} />
-                                      </div>
-                                      <div>
-                                        <FieldLabel>Arrive</FieldLabel>
-                                        <InlineTimePicker value={leg.arrivalTime} onChange={(val) => updateFlightLeg(oi, li, "arrivalTime", val)} />
-                                      </div>
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-2 mt-2">
+                                    <div>
+                                      <FieldLabel>Depart</FieldLabel>
+                                      <InlineTimePicker value={leg.departureTime} onChange={(val) => updateFlightLeg(oi, li, "departureTime", val)} />
+                                    </div>
+                                    <div>
+                                      <FieldLabel>Arrive</FieldLabel>
+                                      <InlineTimePicker value={leg.arrivalTime} onChange={(val) => updateFlightLeg(oi, li, "arrivalTime", val)} />
                                     </div>
                                   </div>
                                 </div>
@@ -1395,7 +1395,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                             namePlaceholder="Coimbra Bus Station"
                                             compact
                                           />
-                                          <div className="grid grid-cols-3 gap-2">
+                                          <div className="grid grid-cols-2 gap-2">
                                             <div>
                                               <FieldLabel>Arrival</FieldLabel>
                                               <InlineTimePicker value={stop.arrivalTime} onChange={(val) => {
@@ -1408,12 +1408,12 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                                 const s = [...tripStops]; s[si] = { ...s[si], departureTime: val }; updateTripField("stops", s);
                                               }} />
                                             </div>
-                                            <div>
-                                              <FieldLabel>Notes</FieldLabel>
-                                              <Input value={stop.notes} onChange={(e) => {
-                                                const s = [...tripStops]; s[si] = { ...s[si], notes: e.target.value }; updateTripField("stops", s);
-                                              }} placeholder="15 min rest stop" className="h-7 text-xs" />
-                                            </div>
+                                          </div>
+                                          <div>
+                                            <FieldLabel>Notes</FieldLabel>
+                                            <Input value={stop.notes} onChange={(e) => {
+                                              const s = [...tripStops]; s[si] = { ...s[si], notes: e.target.value }; updateTripField("stops", s);
+                                            }} placeholder="15 min rest stop" className="h-7 text-xs" />
                                           </div>
                                         </div>
                                       ))}
@@ -1536,9 +1536,9 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                 <FieldLabel>Activities</FieldLabel>
                                 {day.activities.map((act, actIdx) => (
                                   <div key={act.id} className="bg-background rounded-lg p-3 border border-border/30 space-y-2">
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center gap-1.5">
-                                        <select value={act.type} onChange={(e) => updateActivity(dayIdx, actIdx, "type", e.target.value)} className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body">
+                                    <div className="flex items-center justify-between flex-wrap gap-1.5">
+                                      <div className="flex items-center gap-1.5 flex-wrap">
+                                        <select value={act.type} onChange={(e) => updateActivity(dayIdx, actIdx, "type", e.target.value)} className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body shrink-0">
                                           {activityTypes.map((t) => (
                                             <option key={t.value} value={t.value}>{t.label}</option>
                                           ))}

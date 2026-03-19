@@ -91,7 +91,7 @@ export default function InlineTimePicker({ value, onChange, className }: InlineT
   const hasValue = !!(hour && minute);
 
   return (
-    <div className={`flex items-center gap-1 ${className || ""}`}>
+    <div className={`flex items-center gap-1 flex-wrap ${className || ""}`}>
       <div className="flex items-center h-8 rounded-md border border-input bg-background px-1.5 gap-0.5">
         <Clock className="h-3 w-3 text-muted-foreground shrink-0" />
         <input
