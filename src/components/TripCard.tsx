@@ -174,7 +174,7 @@ export default function TripCard({ proposal, onOpen, onDuplicate, onDelete, onCo
         <div className="flex-1" />
 
         {/* Actions */}
-        <div className="flex items-center gap-1 pt-3 border-t border-border mt-1">
+        <div className="flex items-center flex-wrap gap-1 pt-3 border-t border-border mt-1">
           <Button variant="travel-ghost" size="sm" className="h-7 text-xs px-2 font-medium" onClick={(e) => { e.stopPropagation(); onOpen(); }}>
             Open
           </Button>
