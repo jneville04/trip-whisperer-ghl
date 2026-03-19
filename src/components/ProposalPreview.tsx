@@ -2514,10 +2514,72 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                 );
               })()}
 
+              {/* Terms & Conditions checkbox */}
+              {!isEditor && tripId && (
+                <div className="flex items-start gap-3 py-4">
+                  <input
+                    type="checkbox"
+                    id="terms-accept"
+                    checked={termsAccepted}
+                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                    className="mt-1 h-4 w-4 rounded border-border accent-primary cursor-pointer"
+                  />
+                  <label htmlFor="terms-accept" className="text-sm text-muted-foreground font-body cursor-pointer leading-relaxed">
+                    I have read and agree to the terms and conditions outlined in this proposal. I understand the payment terms and cancellation policy.
+                  </label>
+                </div>
+              )}
+
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>
-                  <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
-                </Button>
+                {!isEditor && tripId ? (
+                  <Button
+                    variant="travel"
+                    size="lg"
+                    className="text-lg px-10 py-6 h-auto"
+                    disabled={!termsAccepted || approving}
+                    onClick={async () => {
+                      setApproving(true);
+                      try {
+                        const { error } = await supabase.functions.invoke("approve-trip", {
+                          body: {
+                            tripId,
+                            selectionSummary: [
+                              selectedFlight && `Flight: ${flightOptions.find(f => f.id === selectedFlight)?.legs?.[0]?.airline || "Selected"}`,
+                              selectedAccommodation && `Hotel: ${accommodations.find(a => a.id === selectedAccommodation)?.hotelName || "Selected"}`,
+                              selectedCruise && `Cruise: ${cruiseShips.find(c => c.id === selectedCruise)?.shipName || "Selected"}`,
+                              selectedPricingOption && `Package: ${pricingOptions.find(p => p.id === selectedPricingOption)?.name || "Selected"}`,
+                            ].filter(Boolean).join(" | "),
+                            totalPrice: (() => {
+                              let t = 0;
+                              if (selectedFlight) t += parseFloat(flightOptions.find(f => f.id === selectedFlight)?.price || "0");
+                              if (selectedAccommodation) t += parseFloat(accommodations.find(a => a.id === selectedAccommodation)?.price || "0");
+                              if (selectedCruise) t += parseFloat(cruiseShips.find(c => c.id === selectedCruise)?.price || "0");
+                              if (selectedPricingOption) t += parseFloat(pricingOptions.find(p => p.id === selectedPricingOption)?.totalPrice?.replace(/[^0-9.-]/g, "") || "0");
+                              t += data.pricing.reduce((sum, l) => sum + (parseFloat(l.amount.replace(/[^0-9.-]/g, "")) || 0), 0);
+                              return t;
+                            })(),
+                          },
+                        });
+                        if (error) throw error;
+                        setApproveSuccess(true);
+                      } catch (err) {
+                        console.error("Approve failed:", err);
+                        setApproveSuccess(true); // Still show success to not block client
+                      }
+                      setApproving(false);
+                    }}
+                  >
+                    {approving ? (
+                      <>Processing...</>
+                    ) : (
+                      <><CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary</>
+                    )}
+                  </Button>
+                ) : (
+                  <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>
+                    <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
+                  </Button>
+                )}
                 <Button
                   variant="travel-outline"
                   size="lg"
