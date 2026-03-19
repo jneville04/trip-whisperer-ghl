@@ -19,6 +19,10 @@ export default function ClientView() {
   }, [shareId]);
 
   const loadProposal = async () => {
+    // Get session first so we know if an agent is logged in
+    const { data: { session } } = await supabase.auth.getSession();
+    const currentUserId = session?.user?.id;
+
     const { data: row, error: err } = await supabase
       .from("proposals")
       .select("data, status, user_id")
@@ -35,20 +39,18 @@ export default function ClientView() {
     const status = r.status;
     const isPublic = status === "published" || status === "sent" || status === "approved";
 
-    if (isPublic) {
+    // 1. Agent preview: logged-in owner with ?preview=agent can see any status
+    if (isAgentPreview && currentUserId && currentUserId === r.user_id) {
       setData(r.data as ProposalData);
       setLoading(false);
       return;
     }
 
-    // Not public — check if this is an agent preview by the owner
-    if (isAgentPreview) {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user?.id && session.user.id === r.user_id) {
-        setData(r.data as ProposalData);
-        setLoading(false);
-        return;
-      }
+    // 2. Public access: only published/sent/approved
+    if (isPublic) {
+      setData(r.data as ProposalData);
+      setLoading(false);
+      return;
     }
 
     setError("This proposal is not yet available. Please check back later or contact your travel advisor.");
