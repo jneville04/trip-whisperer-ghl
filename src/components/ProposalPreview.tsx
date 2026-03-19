@@ -936,13 +936,15 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           {/* Footer: price (if single option) + selection */}
                           {(opt.price || !isGroupBooking) && (
                             <div className="bg-muted/30 border-t border-border/30 px-6 py-4 flex items-center justify-between">
-                              {opt.price && flightOptions.length <= 1 && (
+                              {opt.price && flightOptions.length <= 1 && (opt.pricingDisplay || "total") !== "hide" && (
                                 <span className="font-display text-xl font-bold text-foreground">
-                                  ${opt.price}
-                                  <span className="text-xs text-muted-foreground font-body ml-1">/ person</span>
+                                  {fmtCurrency(opt.price)}
+                                  <span className="text-xs text-muted-foreground font-body ml-1">
+                                    {(opt.pricingDisplay || "total") === "per_person" ? "per person" : "total"}
+                                  </span>
                                 </span>
                               )}
-                              {(!opt.price || flightOptions.length > 1) && <span />}
+                              {(!opt.price || flightOptions.length > 1 || (opt.pricingDisplay || "total") === "hide") && <span />}
                               {!isGroupBooking && (
                                 <div className="flex items-center gap-2">
                                   {isSelected ? (
