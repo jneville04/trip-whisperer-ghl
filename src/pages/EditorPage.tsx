@@ -287,8 +287,8 @@ export default function EditorPage() {
       {/* ROW 1 – Top Controls */}
       <div className="h-12 border-b border-border flex items-center justify-between px-4 sm:px-6 bg-card shrink-0 sticky top-0 z-30">
         <div className="flex items-center gap-2">
-          <Button variant="travel-ghost" size="sm" onClick={() => navigate("/dashboard")}>
-            <ArrowLeft className="h-3.5 w-3.5 mr-1" /> Library
+           <Button variant="travel-ghost" size="sm" onClick={() => navigate("/trips")}>
+             <ArrowLeft className="h-3.5 w-3.5 mr-1" /> Back to Trips
           </Button>
           {mode === "split" && (
             <Button variant="travel-ghost" size="icon" className="h-8 w-8" onClick={() => setPanelOpen(!panelOpen)} title={panelOpen ? "Collapse editor panel" : "Open editor panel"}>
