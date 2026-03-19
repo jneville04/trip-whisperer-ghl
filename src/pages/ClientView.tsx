@@ -44,6 +44,18 @@ export default function ClientView() {
       const status = r.status || "draft";
       setTripId(r.id);
 
+      // Calculate remaining spots for group trips
+      if (r.trip_type === "group" && r.max_capacity != null) {
+        const { count } = await supabase
+          .from("snapshots")
+          .select("id", { count: "exact", head: true })
+          .eq("trip_id", r.id);
+        const approvedCount = count || 0;
+        setRemainingSpots(Math.max(0, r.max_capacity - approvedCount));
+        const pubData = (r.published_data || r.draft_data || {}) as any;
+        setShowExactSpots(pubData.showExactSpots === true);
+      }
+
       // Agent preview: show draft_data regardless of status
       if (isAgentPreview) {
         setData((r.draft_data || r.published_data) as ProposalData);
