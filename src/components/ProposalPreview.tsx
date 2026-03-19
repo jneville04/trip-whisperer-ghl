@@ -132,7 +132,7 @@ function ItinerarySection({
           <h2 className="font-display text-4xl font-bold text-foreground">{data.sectionCustomTitles?.itinerary?.title || "Day-by-Day Itinerary"}</h2>
         </motion.div>
         <div className="space-y-4">
-          {data.days.map((day, dayIdx) => {
+          {data.days.filter(d => !d.hidden).map((day, dayIdx) => {
             const isOpen = expandedDays[day.id] ?? false;
             return (
               <motion.div
