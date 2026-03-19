@@ -121,6 +121,7 @@ export interface CruiseShip {
   mediaType?: "photos" | "video";
   price?: string;
   agentPricing?: AgentPricing;
+  hidden?: boolean;
 }
 
 export interface LocationAddress {
