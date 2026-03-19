@@ -925,11 +925,20 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                         </div>
                                       </div>
                                       {(data as any).proposalType === "proposal" && (
-                                        <div className="mt-2">
-                                          <FieldLabel>Price (Proposal Option)</FieldLabel>
-                                          <div className="relative w-32">
-                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
-                                            <Input value={acc.price || ""} onChange={(e) => updateAccField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
+                                        <div className="mt-2 space-y-2">
+                                          <div className="flex items-end gap-3">
+                                            <div>
+                                              <FieldLabel>Price (Proposal Option)</FieldLabel>
+                                              <div className="relative w-32">
+                                                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
+                                                <Input value={acc.price || ""} onChange={(e) => updateAccField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
+                                              </div>
+                                            </div>
+                                            <PricingDisplaySelect
+                                              value={acc.pricingDisplay as PricingDisplayMode | undefined}
+                                              onChange={(v) => updateAccField("pricingDisplay", v)}
+                                              showPerNight
+                                            />
                                           </div>
                                         </div>
                                       )}
