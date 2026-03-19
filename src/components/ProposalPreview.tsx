@@ -105,16 +105,13 @@ function ItinerarySection({
   fadeUp: any;
   openLightbox: (images: { src: string; alt?: string }[], index?: number) => void;
 }) {
-  const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>(() => {
-    const initial: Record<string, boolean> = {};
-    data.days.forEach((day, i) => {
-      initial[day.id] = i === 0;
-    });
-    return initial;
+  const [openDayId, setOpenDayId] = useState<string | null>(() => {
+    const visibleDays = data.days.filter(d => !d.hidden);
+    return visibleDays.length > 0 ? visibleDays[0].id : null;
   });
 
   const toggleDay = (dayId: string) => {
-    setExpandedDays((prev) => ({ ...prev, [dayId]: !prev[dayId] }));
+    setOpenDayId((prev) => prev === dayId ? null : dayId);
   };
 
   return (
