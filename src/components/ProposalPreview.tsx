@@ -2518,8 +2518,27 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                 );
               })()}
 
+              {/* Scarcity Badge */}
+              {!isEditor && remainingSpots !== undefined && remainingSpots !== null && (
+                <div className="text-center py-2">
+                  {isSoldOut ? (
+                    <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-destructive/10 text-destructive text-sm font-semibold font-body">
+                      Sold Out
+                    </span>
+                  ) : showExactSpots && remainingSpots <= 5 ? (
+                    <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-amber-100 text-amber-700 text-sm font-semibold font-body animate-pulse">
+                      🔥 Only {remainingSpots} spot{remainingSpots !== 1 ? "s" : ""} left!
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold font-body">
+                      Available
+                    </span>
+                  )}
+                </div>
+              )}
+
               {/* Terms & Conditions checkbox */}
-              {!isEditor && tripId && (
+              {!isEditor && tripId && !isSoldOut && (
                 <div className="flex items-start gap-3 py-4">
                   <input
                     type="checkbox"
@@ -2536,6 +2555,16 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                 {!isEditor && tripId ? (
+                  isSoldOut ? (
+                    <Button
+                      variant="travel"
+                      size="lg"
+                      className="text-lg px-10 py-6 h-auto opacity-60"
+                      disabled
+                    >
+                      Sold Out
+                    </Button>
+                  ) : (
                   <Button
                     variant="travel"
                     size="lg"
@@ -2568,7 +2597,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                         setApproveSuccess(true);
                       } catch (err) {
                         console.error("Approve failed:", err);
-                        setApproveSuccess(true); // Still show success to not block client
+                        setApproveSuccess(true);
                       }
                       setApproving(false);
                     }}
@@ -2579,6 +2608,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                       <><CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary</>
                     )}
                   </Button>
+                  )
                 ) : (
                   <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>
                     <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
