@@ -453,6 +453,19 @@ export default function EditorPage() {
                     className="max-w-[140px]"
                   />
                 </div>
+                <div className="flex items-center justify-between pt-3">
+                  <div>
+                    <Label htmlFor="showExactSpots" className="text-xs">Show exact remaining spots to client</Label>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">When enabled and 5 or fewer spots remain, clients see "Only X spots left!"</p>
+                  </div>
+                  <Switch
+                    id="showExactSpots"
+                    checked={(data as any).showExactSpots === true}
+                    onCheckedChange={(checked) => {
+                      handleChange({ ...data, showExactSpots: checked } as any);
+                    }}
+                  />
+                </div>
               </div>
             )}
             <ProposalEditor data={data} onChange={handleChange} />
