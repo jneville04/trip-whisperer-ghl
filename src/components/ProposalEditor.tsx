@@ -936,18 +936,28 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                           <Input value={acc.roomType} onChange={(e) => updateAccommodation(i, "roomType", e.target.value)} placeholder="Superior Suite" className="h-8 text-xs" />
                                         </div>
                                       </div>
-                                      <div className="grid grid-cols-3 gap-2">
+                                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                         <div>
-                                          <FieldLabel>Check-in</FieldLabel>
-                                          <DatePickerField value={acc.checkIn} onChange={(val) => updateAccommodation(i, "checkIn", val)} placeholder="Check-in" />
+                                          <FieldLabel>Check-in Date (Optional)</FieldLabel>
+                                          <DatePickerField value={acc.checkIn} onChange={(val) => updateAccommodation(i, "checkIn", val)} placeholder="Check-in date" />
                                         </div>
                                         <div>
-                                          <FieldLabel>Check-out</FieldLabel>
-                                          <DatePickerField value={acc.checkOut} onChange={(val) => updateAccommodation(i, "checkOut", val)} placeholder="Check-out" />
+                                          <FieldLabel>Check-out Date (Optional)</FieldLabel>
+                                          <DatePickerField value={acc.checkOut} onChange={(val) => updateAccommodation(i, "checkOut", val)} placeholder="Check-out date" />
                                         </div>
                                         <div>
                                           <FieldLabel>Nights</FieldLabel>
                                           <Input value={acc.nights} onChange={(e) => updateAccommodation(i, "nights", e.target.value)} placeholder="2" className="h-8 text-xs" />
+                                        </div>
+                                      </div>
+                                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        <div>
+                                          <FieldLabel>Check-in Time (Optional)</FieldLabel>
+                                          <InlineTimePicker value={(acc as any).checkInTime || ""} onChange={(val) => updateAccField("checkInTime", val)} />
+                                        </div>
+                                        <div>
+                                          <FieldLabel>Check-out Time (Optional)</FieldLabel>
+                                          <InlineTimePicker value={(acc as any).checkOutTime || ""} onChange={(val) => updateAccField("checkOutTime", val)} />
                                         </div>
                                       </div>
                                       {(data as any).proposalType === "proposal" && (
