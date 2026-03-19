@@ -992,7 +992,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                             };
 
                             return (
-                              <CollapsibleHotel key={ship.id} defaultOpen={i === 0} hotelName={ship.shipName || `Ship ${i + 1}`} location={ship.cruiseLine} onDelete={() => update("cruiseShips", cruiseShips.filter((_, idx) => idx !== i))}>
+                              <CollapsibleHotel key={ship.id} defaultOpen={i === 0} hotelName={ship.shipName || `Ship ${i + 1}`} location={ship.cruiseLine} onDelete={() => update("cruiseShips", cruiseShips.filter((_, idx) => idx !== i))} hidden={ship.hidden} onHide={() => { const s = [...cruiseShips]; s[i] = { ...s[i], hidden: !s[i].hidden }; update("cruiseShips", s); }} onCopy={() => { const clone = { ...ship, id: crypto.randomUUID(), hidden: false }; update("cruiseShips", [...cruiseShips.slice(0, i + 1), clone, ...cruiseShips.slice(i + 1)]); }}>
                                 <div className="border-t border-border/30">
                                   <Tabs defaultValue="general" className="w-full">
                                     <TabsList className="w-full justify-start rounded-none border-b border-border/30 bg-transparent h-9 px-3">
