@@ -16,20 +16,27 @@ export default function ClientView() {
   useEffect(() => {
     if (!shareId) return;
 
-    // When opening in a new tab, the Supabase client needs a moment to
-    // restore the session from localStorage. We listen for the auth state
-    // to be resolved before loading the proposal.
-    let resolved = false;
+    let cancelled = false;
+    let timeoutId: number | undefined;
+    let authSub: { unsubscribe: () => void } | undefined;
 
-    const loadWithSession = async (userId?: string) => {
-      if (resolved) return;
-      resolved = true;
+    const notYetAvailable = () => {
+      setError("This proposal is not yet available. Please check back later or contact your travel advisor.");
+      setLoading(false);
+    };
+
+    const run = async () => {
+      setLoading(true);
+      setError("");
+      setData(null);
 
       const { data: row, error: err } = await supabase
         .from("proposals")
         .select("data, status, user_id")
         .eq("share_id", shareId)
         .single();
+
+      if (cancelled) return;
 
       if (err || !row) {
         setError("Proposal not found or link has expired.");
@@ -41,41 +48,70 @@ export default function ClientView() {
       const status = r.status;
       const isPublic = status === "published" || status === "sent" || status === "approved";
 
-      // 1. Agent preview: logged-in owner with ?preview=agent can see any status
-      if (isAgentPreview && userId && userId === r.user_id) {
-        setData(r.data as ProposalData);
-        setLoading(false);
+      // Public behavior unchanged
+      if (!isAgentPreview) {
+        if (isPublic) {
+          setData(r.data as ProposalData);
+          setLoading(false);
+          return;
+        }
+        notYetAvailable();
         return;
       }
 
-      // 2. Public access: only published/sent/approved
+      // Agent preview: if already public, no auth needed
       if (isPublic) {
         setData(r.data as ProposalData);
         setLoading(false);
         return;
       }
 
-      setError("This proposal is not yet available. Please check back later or contact your travel advisor.");
-      setLoading(false);
+      // Agent preview for non-public statuses requires authenticated owner context.
+      const decide = (userId: string | null | undefined, isFinal: boolean) => {
+        if (cancelled) return;
+
+        if (userId && userId === r.user_id) {
+          setData(r.data as ProposalData);
+          setLoading(false);
+          return;
+        }
+
+        if (isFinal) {
+          notYetAvailable();
+        }
+      };
+
+      // First: attempt to read the restored session directly.
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (cancelled) return;
+
+      if (sessionData.session?.user?.id) {
+        decide(sessionData.session.user.id, true);
+        return;
+      }
+
+      // Then: wait for the auth library to finish its initial session restore.
+      const { data } = supabase.auth.onAuthStateChange((event, session) => {
+        if (event === "INITIAL_SESSION") {
+          decide(session?.user?.id ?? null, true);
+        }
+        if (event === "SIGNED_IN") {
+          decide(session?.user?.id ?? null, true);
+        }
+      });
+      authSub = data.subscription;
+
+      // Final fallback: if auth never resolves, treat as unauthenticated.
+      timeoutId = window.setTimeout(() => decide(null, true), 800);
     };
 
-    if (!isAgentPreview) {
-      // Public access — no need to wait for auth
-      loadWithSession(undefined);
-      return;
-    }
+    run();
 
-    // For agent preview, listen for auth state to resolve
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      loadWithSession(session?.user?.id);
-    });
-
-    // Also check immediately in case the session is already available
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      loadWithSession(session?.user?.id);
-    });
-
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      authSub?.unsubscribe();
+      if (timeoutId) window.clearTimeout(timeoutId);
+    };
   }, [shareId, isAgentPreview]);
 
   const brandStyles = buildBrandCssVars(data?.brand);
