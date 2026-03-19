@@ -92,6 +92,7 @@ export type EditorSubPage = "checkout" | "approve" | "revisions";
 interface Props {
   data: ProposalData;
   shareId?: string;
+  tripId?: string;
   isEditor?: boolean;
   onEditorSubPage?: (page: EditorSubPage) => void;
 }
