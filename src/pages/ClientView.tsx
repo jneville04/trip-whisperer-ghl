@@ -28,7 +28,7 @@ export default function ClientView() {
 
       const { data: row, error: err } = await supabase
         .from("trips")
-        .select("id, status, published_data, draft_data, org_id")
+        .select("id, status, published_data, draft_data, org_id, trip_type, max_capacity")
         .eq("public_slug", shareId)
         .single();
 
