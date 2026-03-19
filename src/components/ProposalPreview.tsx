@@ -311,10 +311,10 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
   };
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
   const ct = data.sectionCustomTitles || {};
-  const flightOptions = data.flightOptions || [];
-  const accommodations = data.accommodations || [];
-  const cruiseShips = data.cruiseShips || [];
-  const busTrips = data.busTrips || [];
+  const flightOptions = (data.flightOptions || []).filter(o => !o.hidden);
+  const accommodations = (data.accommodations || []).filter(a => !a.hidden);
+  const cruiseShips = (data.cruiseShips || []).filter(s => !s.hidden);
+  const busTrips = (data.busTrips || []).filter(t => !(t as any).hidden);
   const pricingOptions = data.pricingOptions || [];
   const agent = data.agent || {
     name: "",
