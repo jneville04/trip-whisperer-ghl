@@ -151,15 +151,17 @@ function SortableSection({ id, children }: { id: string; children: ReactNode }) 
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...listeners}
-      className={`relative group/sortable touch-none transition-shadow duration-200 rounded-xl ${
+      className={`relative group/sortable transition-shadow duration-200 rounded-xl ${
         isDragging
           ? "shadow-xl ring-2 ring-primary/20 opacity-90 scale-[1.01] bg-background"
           : "hover:shadow-md"
       }`}
     >
-      {/* Drag handle — visible on hover */}
-      <div className="absolute left-0 top-0 bottom-0 w-6 flex items-center justify-center z-10 pointer-events-none">
+      {/* Drag handle — visible on hover, listeners only here */}
+      <div
+        className="absolute left-0 top-0 bottom-0 w-6 flex items-center justify-center z-10 cursor-grab touch-none"
+        {...listeners}
+      >
         <GripVertical className="h-4 w-4 text-muted-foreground/40" />
       </div>
       {children}

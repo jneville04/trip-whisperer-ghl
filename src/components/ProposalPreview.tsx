@@ -717,7 +717,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
             )}
             {data.travelerCount && (
               <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body">
-                <Users className="h-4 w-4 text-primary" /> {data.travelerCount}
+                <Users className="h-4 w-4 text-primary" /> {parseInt(data.travelerCount) === 1 ? "1 Traveler" : `${parseInt(data.travelerCount)} Travelers`}
               </span>
             )}
             {data.destination && (
