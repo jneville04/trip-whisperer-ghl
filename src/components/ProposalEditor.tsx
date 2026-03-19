@@ -152,31 +152,68 @@ function SortableSection({ id, children }: { id: string; children: ReactNode }) 
   );
 }
 
+function ItemControls({
+  hidden,
+  onHide,
+  onCopy,
+  onDelete,
+}: {
+  hidden?: boolean;
+  onHide?: () => void;
+  onCopy?: () => void;
+  onDelete?: () => void;
+}) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {onHide && (
+        <button onClick={(e) => { e.stopPropagation(); onHide(); }} className={`p-1 rounded transition-colors ${hidden ? "text-muted-foreground/40" : "text-muted-foreground hover:text-foreground"}`} title={hidden ? "Show in proposal" : "Hide from proposal"}>
+          {hidden ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+        </button>
+      )}
+      {onCopy && (
+        <button onClick={(e) => { e.stopPropagation(); onCopy(); }} className="p-1 rounded text-muted-foreground hover:text-foreground transition-colors" title="Duplicate">
+          <Copy className="h-3.5 w-3.5" />
+        </button>
+      )}
+      {onDelete && (
+        <Button variant="travel-ghost" size="icon" onClick={(e) => { e.stopPropagation(); onDelete(); }} className="h-7 w-7 text-destructive/60 hover:text-destructive">
+          <Trash2 className="h-3.5 w-3.5" />
+        </Button>
+      )}
+    </div>
+  );
+}
+
 function CollapsibleHotel({
   defaultOpen = false,
   hotelName,
   location,
   onDelete,
+  hidden,
+  onHide,
+  onCopy,
   children,
 }: {
   defaultOpen?: boolean;
   hotelName: string;
   location?: string;
   onDelete: () => void;
+  hidden?: boolean;
+  onHide?: () => void;
+  onCopy?: () => void;
   children: React.ReactNode;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="border border-border/40 rounded-lg bg-muted/20 overflow-hidden">
+    <div className={`border border-border/40 rounded-lg bg-muted/20 overflow-hidden ${hidden ? "opacity-50" : ""}`}>
       <div className="flex items-center justify-between px-3 py-2.5 bg-muted/40">
         <button className="flex items-center gap-2 flex-1 text-left" onClick={() => setOpen(!open)}>
           {open ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
           <span className="font-body font-semibold text-sm text-foreground">{hotelName}</span>
           {location && <span className="text-xs text-muted-foreground">· {location}</span>}
+          {hidden && <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 rounded">Hidden</span>}
         </button>
-        <Button variant="travel-ghost" size="icon" onClick={onDelete} className="h-7 w-7 text-destructive/60 hover:text-destructive">
-          <Trash2 className="h-3.5 w-3.5" />
-        </Button>
+        <ItemControls hidden={hidden} onHide={onHide} onCopy={onCopy} onDelete={onDelete} />
       </div>
       {open && children}
     </div>
