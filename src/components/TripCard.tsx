@@ -102,7 +102,7 @@ export default function TripCard({ proposal, onOpen, onDuplicate, onDelete, onCo
 
   return (
     <div
-      className="group bg-card border border-border/60 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer flex flex-col"
+      className="group bg-card border border-border rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer flex flex-col"
       onClick={onOpen}
     >
       {/* Image */}
