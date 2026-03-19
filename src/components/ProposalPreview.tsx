@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { format, parse } from "date-fns";
 import { motion, type Easing, AnimatePresence } from "framer-motion";
@@ -105,13 +105,35 @@ function ItinerarySection({
   fadeUp: any;
   openLightbox: (images: { src: string; alt?: string }[], index?: number) => void;
 }) {
+  const itineraryDisplayMode = (((data as any).itineraryDisplayMode || "single_open") as "collapsed" | "single_open" | "all_open");
+  const visibleDays = useMemo(() => data.days.filter((d) => !d.hidden), [data.days]);
   const [openDayId, setOpenDayId] = useState<string | null>(() => {
-    const visibleDays = data.days.filter(d => !d.hidden);
-    return visibleDays.length > 0 ? visibleDays[0].id : null;
+    if (itineraryDisplayMode === "single_open") return visibleDays[0]?.id ?? null;
+    return null;
   });
 
+  useEffect(() => {
+    if (itineraryDisplayMode === "all_open") {
+      setOpenDayId(null);
+      return;
+    }
+    if (itineraryDisplayMode === "single_open") {
+      setOpenDayId((prev) => {
+        if (prev && visibleDays.some((day) => day.id === prev)) return prev;
+        return visibleDays[0]?.id ?? null;
+      });
+      return;
+    }
+    setOpenDayId(null);
+  }, [itineraryDisplayMode, visibleDays]);
+
   const toggleDay = (dayId: string) => {
-    setOpenDayId((prev) => prev === dayId ? null : dayId);
+    if (itineraryDisplayMode === "all_open") return;
+    if (itineraryDisplayMode === "single_open") {
+      setOpenDayId(dayId);
+      return;
+    }
+    setOpenDayId((prev) => (prev === dayId ? null : dayId));
   };
 
   return (
@@ -129,8 +151,8 @@ function ItinerarySection({
           <h2 className="font-display text-4xl font-bold text-foreground">{data.sectionCustomTitles?.itinerary?.title || "Day-by-Day Itinerary"}</h2>
         </motion.div>
         <div className="space-y-4">
-          {data.days.filter(d => !d.hidden).map((day, dayIdx) => {
-            const isOpen = openDayId === day.id;
+          {visibleDays.map((day, dayIdx) => {
+            const isOpen = itineraryDisplayMode === "all_open" ? true : openDayId === day.id;
             return (
               <motion.div
                 key={day.id}

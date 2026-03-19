@@ -18,7 +18,7 @@ function formatTime(hour: string, minute: string, period: string): string {
   const m = parseInt(minute);
   if (isNaN(h) || h < 1 || h > 12) return "";
   if (isNaN(m) || m < 0 || m > 59) return "";
-  return `${h}:${String(m).padStart(2, "0")} ${period}`;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")} ${period}`;
 }
 
 export default function InlineTimePicker({ value, onChange, className }: InlineTimePickerProps) {
@@ -47,16 +47,6 @@ export default function InlineTimePicker({ value, onChange, className }: InlineT
   const handleHourChange = (raw: string) => {
     const digits = raw.replace(/\D/g, "").slice(0, 2);
     setHour(digits);
-    // Only auto-advance when user has typed a complete 2-digit hour,
-    // or typed a digit > 1 (meaning it can only be 2-9, so hour is done)
-    const num = parseInt(digits);
-    if (digits.length === 2 && num >= 1 && num <= 12) {
-      minuteRef.current?.focus();
-      minuteRef.current?.select();
-    } else if (digits.length === 1 && num > 1) {
-      minuteRef.current?.focus();
-      minuteRef.current?.select();
-    }
   };
 
   const handleMinuteChange = (raw: string) => {
@@ -68,7 +58,7 @@ export default function InlineTimePicker({ value, onChange, className }: InlineT
     let h = parseInt(hour);
     if (isNaN(h) || h < 1) { setHour(""); return; }
     if (h > 12) h = 12;
-    const padded = String(h);
+    const padded = String(h).padStart(2, "0");
     setHour(padded);
     commit(padded, minute, period);
   };
@@ -106,11 +96,12 @@ export default function InlineTimePicker({ value, onChange, className }: InlineT
           inputMode="numeric"
           value={hour}
           onChange={(e) => handleHourChange(e.target.value)}
+          onFocus={(e) => e.target.select()}
           onBlur={handleHourBlur}
           onKeyDown={(e) => {
             if (e.key === "Enter") (e.target as HTMLInputElement).blur();
-            if (e.key === ":" || e.key === "Tab") {
-              if (e.key === ":") e.preventDefault();
+            if (e.key === ":") {
+              e.preventDefault();
               minuteRef.current?.focus();
               minuteRef.current?.select();
             }
@@ -126,6 +117,7 @@ export default function InlineTimePicker({ value, onChange, className }: InlineT
           inputMode="numeric"
           value={minute}
           onChange={(e) => handleMinuteChange(e.target.value)}
+          onFocus={(e) => e.target.select()}
           onBlur={handleMinuteBlur}
           onKeyDown={(e) => {
             if (e.key === "Enter") (e.target as HTMLInputElement).blur();

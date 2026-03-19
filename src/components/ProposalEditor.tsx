@@ -1629,12 +1629,91 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       </CollapsibleSection>
                     );
 
-                  case "itinerary":
+                  case "itinerary": {
+                    const itineraryDisplayMode = (((data as any).itineraryDisplayMode || "single_open") as "collapsed" | "single_open" | "all_open");
                     return (
                       <CollapsibleSection title={sectionTitles.itinerary} sectionKey="itinerary" visible={vis.itinerary} onToggleVisible={() => toggleSection("itinerary")} sectionCustomTitle={customTitles.itinerary?.title} sectionCustomSubtitle={customTitles.itinerary?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("itinerary", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("itinerary", v)}>
                         <div className="space-y-6">
+                          {(data as any).proposalType === "proposal" && (
+                            <div className="rounded-lg border border-border/40 bg-muted/20 p-3 space-y-2">
+                              <FieldLabel>Itinerary Day Behavior</FieldLabel>
+                              <div className="flex flex-wrap gap-1.5">
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant={itineraryDisplayMode === "collapsed" ? "travel" : "travel-outline"}
+                                  className="h-7 text-xs"
+                                  onClick={() => {
+                                    onChange({ ...(data as any), itineraryDisplayMode: "collapsed" } as ProposalData);
+                                    setOpenDayIdx(-1);
+                                  }}
+                                >
+                                  Collapsed
+                                </Button>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant={itineraryDisplayMode === "single_open" ? "travel" : "travel-outline"}
+                                  className="h-7 text-xs"
+                                  onClick={() => {
+                                    onChange({ ...(data as any), itineraryDisplayMode: "single_open" } as ProposalData);
+                                    setOpenDayIdx(data.days.length > 0 ? 0 : -1);
+                                  }}
+                                >
+                                  Open one day
+                                </Button>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant={itineraryDisplayMode === "all_open" ? "travel" : "travel-outline"}
+                                  className="h-7 text-xs"
+                                  onClick={() => {
+                                    onChange({ ...(data as any), itineraryDisplayMode: "all_open" } as ProposalData);
+                                    setOpenDayIdx(-1);
+                                  }}
+                                >
+                                  Open all days
+                                </Button>
+                              </div>
+                              <p className="text-[10px] text-muted-foreground font-body leading-snug mt-1">
+                                {itineraryDisplayMode === "collapsed"
+                                  ? "Proposal itinerary starts collapsed; clients can expand days as needed."
+                                  : itineraryDisplayMode === "all_open"
+                                    ? "Proposal itinerary shows every day expanded by default."
+                                    : "Proposal itinerary keeps one day open at a time for cleaner browsing."}
+                              </p>
+                            </div>
+                          )}
                           {data.days.map((day, dayIdx) => (
-                            <CollapsibleHotel key={day.id} hotelName={`Day ${dayIdx + 1}${day.title ? `: ${day.title}` : ""}`} location={day.location} isOpen={openDayIdx === dayIdx} onToggle={() => setOpenDayIdx(openDayIdx === dayIdx ? -1 : dayIdx)} onDelete={() => { removeDay(dayIdx); if (openDayIdx === dayIdx) setOpenDayIdx(-1); }} hidden={day.hidden} onHide={() => { const days = [...data.days]; days[dayIdx] = { ...days[dayIdx], hidden: !days[dayIdx].hidden }; update("days", days); }} onCopy={() => { const clone = { ...day, id: crypto.randomUUID(), hidden: false }; update("days", [...data.days.slice(0, dayIdx + 1), clone, ...data.days.slice(dayIdx + 1)]); setOpenDayIdx(dayIdx + 1); }}>
+                            <CollapsibleHotel
+                              key={day.id}
+                              hotelName={`Day ${dayIdx + 1}${day.title ? `: ${day.title}` : ""}`}
+                              location={day.location}
+                              isOpen={itineraryDisplayMode === "all_open" ? true : openDayIdx === dayIdx}
+                              onToggle={() => {
+                                if (itineraryDisplayMode === "all_open") return;
+                                if (itineraryDisplayMode === "single_open") {
+                                  if (openDayIdx !== dayIdx) setOpenDayIdx(dayIdx);
+                                  return;
+                                }
+                                setOpenDayIdx(openDayIdx === dayIdx ? -1 : dayIdx);
+                              }}
+                              onDelete={() => {
+                                removeDay(dayIdx);
+                                if (openDayIdx === dayIdx) setOpenDayIdx(-1);
+                              }}
+                              hidden={day.hidden}
+                              onHide={() => {
+                                const days = [...data.days];
+                                days[dayIdx] = { ...days[dayIdx], hidden: !days[dayIdx].hidden };
+                                update("days", days);
+                              }}
+                              onCopy={() => {
+                                const clone = { ...day, id: crypto.randomUUID(), hidden: false };
+                                update("days", [...data.days.slice(0, dayIdx + 1), clone, ...data.days.slice(dayIdx + 1)]);
+                                if (itineraryDisplayMode !== "all_open") setOpenDayIdx(dayIdx + 1);
+                              }}
+                            >
                               <div className="p-4 space-y-3">
                               <div className="grid grid-cols-2 gap-2 mb-2">
                                 <div>
@@ -1794,12 +1873,22 @@ export default function ProposalEditor({ data, onChange }: Props) {
                               </div>
                             </CollapsibleHotel>
                           ))}
-                          <Button variant="travel-outline" size="sm" onClick={addDay} className="w-full">
+                          <Button
+                            variant="travel-outline"
+                            size="sm"
+                            onClick={() => {
+                              const nextIndex = data.days.length;
+                              update("days", [...data.days, createDay(nextIndex + 1)]);
+                              if (itineraryDisplayMode !== "all_open") setOpenDayIdx(nextIndex);
+                            }}
+                            className="w-full"
+                          >
                             <Plus className="h-4 w-4 mr-1" /> Add Day
                           </Button>
                         </div>
                       </CollapsibleSection>
                     );
+                  }
 
                   case "inclusions":
                     return (
