@@ -1131,12 +1131,23 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     <TabsContent value="general" className="p-3 space-y-2 mt-0">
                                       <div className="grid grid-cols-2 gap-2">
                                         <div>
-                                          <FieldLabel>Ship Name</FieldLabel>
-                                          <Input value={ship.shipName} onChange={(e) => updateShipField("shipName", e.target.value)} placeholder="Symphony of the Seas" className="h-8 text-xs" />
+                                          <FieldLabel>Cruise Line</FieldLabel>
+                                          <CruiseLineAutocomplete value={ship.cruiseLine} onChange={(val) => updateShipField("cruiseLine", val)} placeholder="Royal Caribbean" className="h-8 text-xs" />
                                         </div>
                                         <div>
-                                          <FieldLabel>Cruise Line</FieldLabel>
-                                          <Input value={ship.cruiseLine} onChange={(e) => updateShipField("cruiseLine", e.target.value)} placeholder="Royal Caribbean" className="h-8 text-xs" />
+                                          <FieldLabel>Ship Name</FieldLabel>
+                                          <ShipNameAutocomplete
+                                            value={ship.shipName}
+                                            cruiseLine={ship.cruiseLine}
+                                            onChange={(val, detectedLine) => {
+                                              updateShipField("shipName", val);
+                                              if (detectedLine && !ship.cruiseLine) {
+                                                updateShipField("cruiseLine", detectedLine);
+                                              }
+                                            }}
+                                            placeholder="Symphony of the Seas"
+                                            className="h-8 text-xs"
+                                          />
                                         </div>
                                       </div>
                                       <div className="grid grid-cols-3 gap-2">
@@ -1158,11 +1169,19 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                         <RichTextEditor content={ship.description} onChange={(html) => updateShipField("description", html)} placeholder="Describe the ship, cabin features, onboard experience..." minHeight="150px" />
                                       </div>
                                       {(data as any).proposalType === "proposal" && (
-                                        <div className="mt-2">
-                                          <FieldLabel>Price (Proposal Option)</FieldLabel>
-                                          <div className="relative w-32">
-                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
-                                            <Input value={ship.price || ""} onChange={(e) => updateShipField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
+                                        <div className="mt-2 space-y-2">
+                                          <div className="flex items-end gap-3">
+                                            <div>
+                                              <FieldLabel>Price (Proposal Option)</FieldLabel>
+                                              <div className="relative w-32">
+                                                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
+                                                <Input value={ship.price || ""} onChange={(e) => updateShipField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
+                                              </div>
+                                            </div>
+                                            <PricingDisplaySelect
+                                              value={ship.pricingDisplay as PricingDisplayMode | undefined}
+                                              onChange={(v) => updateShipField("pricingDisplay", v)}
+                                            />
                                           </div>
                                         </div>
                                       )}
