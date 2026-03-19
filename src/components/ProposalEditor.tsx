@@ -315,6 +315,30 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const customTitles = data.sectionCustomTitles || {};
   const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
 
+  // Auto-create first starter item when a proposal section is enabled with zero items
+  useEffect(() => {
+    if ((data as any).proposalType !== "proposal") return;
+    let updated = false;
+    const next = { ...data };
+    if (vis.flights && (!next.flightOptions || next.flightOptions.length === 0)) {
+      next.flightOptions = [createFlightOption()];
+      updated = true;
+    }
+    if (vis.accommodations && (!next.accommodations || next.accommodations.length === 0)) {
+      next.accommodations = [createAccommodation()];
+      updated = true;
+    }
+    if (vis.cruiseShips && (!next.cruiseShips || next.cruiseShips.length === 0)) {
+      next.cruiseShips = [createCruiseShip()];
+      updated = true;
+    }
+    if (vis.itinerary && (!next.days || next.days.length === 0)) {
+      next.days = [createDay(1)];
+      updated = true;
+    }
+    if (updated) onChange(next);
+  }, [vis.flights, vis.accommodations, vis.cruiseShips, vis.itinerary]);
+
   const updateCustomTitle = (key: SectionKey, title: string) => {
     const cur = data.sectionCustomTitles || {};
     update("sectionCustomTitles" as any, { ...cur, [key]: { ...cur[key], title } });
