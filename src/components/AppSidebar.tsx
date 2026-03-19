@@ -1,4 +1,4 @@
-import { LayoutDashboard, Map, Library, Settings } from "lucide-react";
+import { LayoutDashboard, Map, Library } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { useAppSettings } from "@/hooks/useAppSettings";
@@ -17,7 +17,6 @@ const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Trips", url: "/trips", icon: Map },
   { title: "Section Library", url: "/section-library", icon: Library },
-  { title: "Settings", url: "/settings", icon: Settings },
 ];
 
 export function AppSidebar() {

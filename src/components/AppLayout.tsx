@@ -6,7 +6,7 @@ import { useAppSettings } from "@/hooks/useAppSettings";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, Shield } from "lucide-react";
+import { LogOut, Shield, Settings } from "lucide-react";
 import CreateTripMenu from "@/components/CreateTripMenu";
 import PendingApproval from "@/components/PendingApproval";
 
@@ -48,6 +48,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
                   </Button>
                 )}
                 <CreateTripMenu />
+                <Button variant="travel-ghost" size="sm" onClick={() => navigate("/settings")}>
+                  <Settings className="h-4 w-4 mr-1" /> Settings
+                </Button>
                 <Button variant="travel-ghost" size="sm" onClick={handleLogout}>
                   <LogOut className="h-4 w-4 mr-1" /> Sign Out
                 </Button>
