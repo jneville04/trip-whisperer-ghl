@@ -621,12 +621,25 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       <CollapsibleSection title={sectionTitles.flights} sectionKey="flights" visible={vis.flights} onToggleVisible={() => toggleSection("flights")} defaultOpen={false} sectionCustomTitle={customTitles.flights?.title} sectionCustomSubtitle={customTitles.flights?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("flights", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("flights", v)}>
                         <div className="space-y-4">
                           {flightOptions.map((opt, oi) => (
-                            <div key={opt.id} className="border border-border/40 rounded-lg p-3 bg-muted/20 space-y-3">
+                            <div key={opt.id} className={`border border-border/40 rounded-lg p-3 bg-muted/20 space-y-3 ${opt.hidden ? "opacity-50" : ""}`}>
                               <div className="flex items-center justify-between">
-                                <span className="font-body font-semibold text-sm text-foreground">✈️ Option {oi + 1}</span>
-                                <Button variant="travel-ghost" size="icon" onClick={() => update("flightOptions", flightOptions.filter((_, idx) => idx !== oi))} className="h-7 w-7 text-destructive/60 hover:text-destructive">
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </Button>
+                                <span className="font-body font-semibold text-sm text-foreground">
+                                  ✈️ Option {oi + 1}
+                                  {opt.hidden && <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 rounded ml-2">Hidden</span>}
+                                </span>
+                                <ItemControls
+                                  hidden={opt.hidden}
+                                  onHide={() => {
+                                    const opts = [...flightOptions];
+                                    opts[oi] = { ...opts[oi], hidden: !opts[oi].hidden };
+                                    update("flightOptions", opts);
+                                  }}
+                                  onCopy={() => {
+                                    const clone = { ...opt, id: crypto.randomUUID(), hidden: false };
+                                    update("flightOptions", [...flightOptions.slice(0, oi + 1), clone, ...flightOptions.slice(oi + 1)]);
+                                  }}
+                                  onDelete={() => update("flightOptions", flightOptions.filter((_, idx) => idx !== oi))}
+                                />
                               </div>
                               {opt.legs.map((leg, li) => (
                                 <div key={leg.id} className="border border-border/30 rounded-md p-2.5 bg-background/50">
