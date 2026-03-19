@@ -1408,12 +1408,12 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                                 const s = [...tripStops]; s[si] = { ...s[si], departureTime: val }; updateTripField("stops", s);
                                               }} />
                                             </div>
-                                            <div>
-                                              <FieldLabel>Notes</FieldLabel>
-                                              <Input value={stop.notes} onChange={(e) => {
-                                                const s = [...tripStops]; s[si] = { ...s[si], notes: e.target.value }; updateTripField("stops", s);
-                                              }} placeholder="15 min rest stop" className="h-7 text-xs" />
-                                            </div>
+                                          </div>
+                                          <div>
+                                            <FieldLabel>Notes</FieldLabel>
+                                            <Input value={stop.notes} onChange={(e) => {
+                                              const s = [...tripStops]; s[si] = { ...s[si], notes: e.target.value }; updateTripField("stops", s);
+                                            }} placeholder="15 min rest stop" className="h-7 text-xs" />
                                           </div>
                                         </div>
                                       ))}
