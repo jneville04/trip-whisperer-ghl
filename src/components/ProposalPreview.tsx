@@ -1185,7 +1185,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                                   <span className="font-display text-xl font-bold text-foreground">${acc.price}</span>
                                 )}
                                 {!acc.price && <span />}
-                                {!isGroupBooking && (
+                                {accommodationSelectionEnabled && (
                                   <div className="flex items-center gap-2">
                                     {accommodations.length > 1 && (
                                       <span className="text-[10px] text-muted-foreground font-body">
