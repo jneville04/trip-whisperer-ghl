@@ -32,6 +32,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [proposals, setProposals] = useState<ProposalRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [firstName, setFirstName] = useState<string | null>(null);
   const [dupModal, setDupModal] = useState<{ open: boolean; proposal: ProposalRow | null }>({ open: false, proposal: null });
 
   useEffect(() => {
