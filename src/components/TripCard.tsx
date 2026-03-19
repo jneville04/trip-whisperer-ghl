@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Copy, Trash2, ExternalLink, MapPin, Calendar, Eye, Clock } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Copy, Trash2, ExternalLink, MapPin, Calendar, Eye, Clock, MoreVertical } from "lucide-react";
 import { type ProposalData } from "@/types/proposal";
 import { format } from "date-fns";
 
@@ -174,22 +175,33 @@ export default function TripCard({ proposal, onOpen, onDuplicate, onDelete, onCo
         <div className="flex-1" />
 
         {/* Actions */}
-        <div className="flex items-center flex-wrap gap-1 pt-3 border-t border-border mt-1">
-          <Button variant="travel-ghost" size="sm" className="h-7 text-xs px-2 font-medium" onClick={(e) => { e.stopPropagation(); onOpen(); }}>
-            Open
-          </Button>
-          <Button variant="travel-ghost" size="sm" className="h-7 text-xs px-2 font-medium" onClick={(e) => { e.stopPropagation(); window.open(`/view/${proposal.share_id}`, "_blank"); }}>
-            <Eye className="h-3 w-3 mr-1" /> Preview
-          </Button>
-          <Button variant="travel-ghost" size="sm" className="h-7 text-xs px-2 font-medium" onClick={(e) => { e.stopPropagation(); onCopyLink(); }}>
-            <ExternalLink className="h-3 w-3 mr-1" /> Share
-          </Button>
-          <Button variant="travel-ghost" size="sm" className="h-7 text-xs px-2 font-medium" onClick={(e) => { e.stopPropagation(); onDuplicate(); }}>
-            <Copy className="h-3 w-3 mr-1" /> Copy
-          </Button>
-          <Button variant="travel-ghost" size="sm" className="h-7 text-xs px-2 text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); onDelete(); }}>
-            <Trash2 className="h-3 w-3" />
-          </Button>
+        <div className="flex items-center justify-between pt-3 border-t border-border mt-1">
+          <div className="flex items-center gap-1">
+            <Button variant="travel-ghost" size="sm" className="h-7 text-xs px-2 font-medium" onClick={(e) => { e.stopPropagation(); onOpen(); }}>
+              Open
+            </Button>
+            <Button variant="travel-ghost" size="sm" className="h-7 text-xs px-2 font-medium" onClick={(e) => { e.stopPropagation(); window.open(`/view/${proposal.share_id}`, "_blank"); }}>
+              <Eye className="h-3 w-3 mr-1" /> Preview
+            </Button>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="travel-ghost" size="sm" className="h-7 w-7 p-0" onClick={(e) => e.stopPropagation()}>
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onCopyLink(); }}>
+                <ExternalLink className="h-3.5 w-3.5 mr-2" /> Share
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDuplicate(); }}>
+                <Copy className="h-3.5 w-3.5 mr-2" /> Copy
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={(e) => { e.stopPropagation(); onDelete(); }}>
+                <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </div>
