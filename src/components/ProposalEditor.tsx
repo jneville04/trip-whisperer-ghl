@@ -1017,7 +1017,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                             );
                           })}
                           <div className="flex gap-2">
-                            <Button variant="travel-ghost" size="sm" onClick={() => update("accommodations", [...accommodations, createAccommodation()])} className="text-primary text-xs h-7">
+                            <Button variant="travel-ghost" size="sm" onClick={() => { update("accommodations", [...accommodations, createAccommodation()]); setOpenAccIdx(accommodations.length); }} className="text-primary text-xs h-7">
                               <Plus className="h-3 w-3 mr-1" /> Add Hotel
                             </Button>
                             <HotelSearchDialog onSelect={(hotelData) => {
