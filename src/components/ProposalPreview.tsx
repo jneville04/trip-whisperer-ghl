@@ -830,10 +830,12 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                               <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary font-body">
                                 Option {optIdx + 1} of {flightOptions.length}
                               </span>
-                              {opt.price && (
+                              {opt.price && (opt.pricingDisplay || "total") !== "hide" && (
                                 <span className="font-display text-lg font-bold text-foreground">
-                                  ${opt.price}
-                                  <span className="text-xs text-muted-foreground font-body ml-1">/ person</span>
+                                  {fmtCurrency(opt.price)}
+                                  <span className="text-xs text-muted-foreground font-body ml-1">
+                                    {(opt.pricingDisplay || "total") === "per_person" ? "per person" : "total"}
+                                  </span>
                                 </span>
                               )}
                             </div>
