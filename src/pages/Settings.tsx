@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Palette, User, Link2, CreditCard, Globe, Save, Check, ExternalLink, RotateCcw } from "lucide-react";
+import { Palette, User, Link2, CreditCard, Globe, Save, Check, ExternalLink, RotateCcw, X } from "lucide-react";
 import AppLayout from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -191,52 +191,111 @@ export default function SettingsPage() {
 
           {/* Agent Tab */}
           <TabsContent value="agent">
-            <Card>
-              <CardHeader>
-                <CardTitle className="font-display text-lg">Agent Information</CardTitle>
-                <CardDescription className="font-body text-sm">Your contact details that appear on proposals and the "Your Travel Advisor" footer.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <FieldLabel>Full Name</FieldLabel>
-                    <Input value={form.agent_name || ""} onChange={(e) => updateField("agent_name", e.target.value)} className="h-9 text-sm" placeholder="Jane Smith" />
+            <div className="space-y-6">
+              {/* Agent Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="font-display text-lg">Agent Information</CardTitle>
+                  <CardDescription className="font-body text-sm">Your personal details that appear on proposals and the advisor footer.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <FieldLabel>Full Name</FieldLabel>
+                      <Input value={form.agent_name || ""} onChange={(e) => updateField("agent_name", e.target.value)} className="h-9 text-sm" placeholder="Jane Smith" />
+                    </div>
+                    <div>
+                      <FieldLabel>Title</FieldLabel>
+                      <Input value={form.agent_title || ""} onChange={(e) => updateField("agent_title", e.target.value)} className="h-9 text-sm" placeholder="Travel Advisor" />
+                    </div>
                   </div>
                   <div>
-                    <FieldLabel>Title</FieldLabel>
-                    <Input value={form.agent_title || ""} onChange={(e) => updateField("agent_title", e.target.value)} className="h-9 text-sm" placeholder="Travel Advisor" />
+                    <FieldLabel>Agent Photo</FieldLabel>
+                    <div className="flex items-start gap-4">
+                      {form.agent_photo_url ? (
+                        <div className="relative group shrink-0">
+                          <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-border bg-muted">
+                            <img src={form.agent_photo_url} alt="Agent photo" className="w-full h-full object-cover" />
+                          </div>
+                          <div className="absolute inset-0 rounded-full bg-foreground/0 group-hover:bg-foreground/40 transition-colors flex items-center justify-center">
+                            <button
+                              onClick={() => updateField("agent_photo_url", "")}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity bg-destructive text-destructive-foreground rounded-full p-1"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        </div>
+                      ) : null}
+                      <div className="flex-1">
+                        <ImageUploadField value={form.agent_photo_url || ""} onChange={(url) => updateField("agent_photo_url", url)} placeholder="Upload or paste photo URL" showPreview={false} />
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <FieldLabel>Phone</FieldLabel>
-                    <Input value={form.agent_phone || ""} onChange={(e) => updateField("agent_phone", e.target.value)} className="h-9 text-sm" placeholder="+1 (555) 123-4567" />
+                </CardContent>
+              </Card>
+
+              {/* Contact Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="font-display text-lg">Contact Information</CardTitle>
+                  <CardDescription className="font-body text-sm">How clients can reach you. Shown in the advisor block on proposals.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <FieldLabel>Phone</FieldLabel>
+                      <Input value={form.agent_phone || ""} onChange={(e) => updateField("agent_phone", e.target.value)} className="h-9 text-sm" placeholder="+1 (555) 123-4567" />
+                    </div>
+                    <div>
+                      <FieldLabel>Email</FieldLabel>
+                      <Input value={form.agent_email || ""} onChange={(e) => updateField("agent_email", e.target.value)} className="h-9 text-sm" placeholder="agent@agency.com" />
+                    </div>
                   </div>
-                  <div>
-                    <FieldLabel>Email</FieldLabel>
-                    <Input value={form.agent_email || ""} onChange={(e) => updateField("agent_email", e.target.value)} className="h-9 text-sm" placeholder="agent@agency.com" />
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <FieldLabel>Website</FieldLabel>
                     <Input value={form.agent_website || ""} onChange={(e) => updateField("agent_website", e.target.value)} className="h-9 text-sm" placeholder="https://agency.com" />
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Agency Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="font-display text-lg">Agency Information</CardTitle>
+                  <CardDescription className="font-body text-sm">Your agency name and logo for proposal footers.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <div>
                     <FieldLabel>Agency Name</FieldLabel>
                     <Input value={form.agency_name || ""} onChange={(e) => updateField("agency_name", e.target.value)} className="h-9 text-sm" placeholder="Dream Travel Co." />
                   </div>
-                </div>
-                <div>
-                  <FieldLabel>Agent Photo</FieldLabel>
-                  <ImageUploadField value={form.agent_photo_url || ""} onChange={(url) => updateField("agent_photo_url", url)} placeholder="Upload or paste photo URL" />
-                </div>
-                <div>
-                  <FieldLabel>Agency Logo</FieldLabel>
-                  <ImageUploadField value={form.agency_logo_url || ""} onChange={(url) => updateField("agency_logo_url", url)} placeholder="Upload or paste logo URL" />
-                </div>
-              </CardContent>
-            </Card>
+                  <div>
+                    <FieldLabel>Agency Logo</FieldLabel>
+                    <div className="flex items-start gap-4">
+                      {form.agency_logo_url ? (
+                        <div className="relative group shrink-0">
+                          <div className="w-20 h-14 rounded-lg overflow-hidden border border-border bg-muted flex items-center justify-center p-1">
+                            <img src={form.agency_logo_url} alt="Agency logo" className="max-w-full max-h-full object-contain" />
+                          </div>
+                          <div className="absolute inset-0 rounded-lg bg-foreground/0 group-hover:bg-foreground/40 transition-colors flex items-center justify-center">
+                            <button
+                              onClick={() => updateField("agency_logo_url", "")}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity bg-destructive text-destructive-foreground rounded-full p-1"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        </div>
+                      ) : null}
+                      <div className="flex-1">
+                        <ImageUploadField value={form.agency_logo_url || ""} onChange={(url) => updateField("agency_logo_url", url)} placeholder="Upload or paste logo URL" showPreview={false} />
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
 
           {/* Integrations Tab */}
