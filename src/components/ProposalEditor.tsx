@@ -1132,14 +1132,15 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                       <div className="grid grid-cols-2 gap-2">
                                         <div>
                                           <FieldLabel>Cruise Line</FieldLabel>
-                                          <CruiseLineAutocomplete value={ship.cruiseLine} onChange={(val) => updateShipField("cruiseLine", val)} placeholder="Royal Caribbean" className="h-8 text-xs" />
+                                          <Input value={ship.cruiseLine} onChange={(e) => updateShipField("cruiseLine", e.target.value)} placeholder="Royal Caribbean" className="h-8 text-xs" />
                                         </div>
                                         <div>
                                           <FieldLabel>Ship Name</FieldLabel>
-                                          <ShipNameAutocomplete
+                                          <Input
                                             value={ship.shipName}
-                                            cruiseLine={ship.cruiseLine}
-                                            onChange={(val, detectedLine) => {
+                                            onChange={(e) => {
+                                              const val = e.target.value;
+                                              const detectedLine = findCruiseLineForShip(val);
                                               const s = [...(data.cruiseShips || [])];
                                               s[i] = { ...s[i], shipName: val, ...(detectedLine && !ship.cruiseLine ? { cruiseLine: detectedLine } : {}) };
                                               update("cruiseShips", s);
