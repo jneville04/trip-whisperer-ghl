@@ -1385,7 +1385,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                           <div className="grid grid-cols-3 gap-2">
                                             <div>
                                               <FieldLabel>Arrival</FieldLabel>
-                                              <TimePickerDropdown value={stop.arrivalTime} onChange={(val) => {
+                                              <InlineTimePicker value={stop.arrivalTime} onChange={(val) => {
                                                 const s = [...tripStops]; s[si] = { ...s[si], arrivalTime: val }; updateTripField("stops", s);
                                               }} />
                                             </div>
