@@ -424,12 +424,12 @@ export default function EditorPage() {
       {/* Content */}
       <div className="flex-1 flex overflow-hidden">
         {mode === "split" && panelOpen && !editorSubPage && (
-          <div className="w-full max-w-lg border-r border-border/50 overflow-y-auto bg-background">
+          <div className="w-full max-w-lg border-r border-border/50 overflow-y-auto overscroll-contain bg-background">
             <ProposalEditor data={data} onChange={handleChange} />
             <HelpdeskFooter />
           </div>
         )}
-        <div className="flex-1 overflow-y-auto" style={builderBrandStyles as React.CSSProperties}>
+        <div className="flex-1 overflow-y-auto overscroll-contain" style={builderBrandStyles as React.CSSProperties}>
           {editorSubPage === "checkout" && (
             <CheckoutPage />
           )}

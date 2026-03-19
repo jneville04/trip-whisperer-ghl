@@ -1406,28 +1406,43 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                                 </div>
                               </div>
                             )}
-                            <div className="flex items-center gap-6 mt-5 pt-4 border-t border-border/30 text-sm text-muted-foreground font-body flex-wrap">
-                              {ship.embarkationPort && (
-                                <span className="flex items-center gap-1.5">
-                                  <Anchor className="h-3.5 w-3.5" /> Embark: {ship.embarkationPort}
-                                </span>
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-3 mt-5 pt-4 border-t border-border/30 text-sm text-muted-foreground font-body">
+                              {(ship.embarkationPort || ship.embarkationDate) && (
+                                <div className="space-y-0.5">
+                                  <p className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/70">Embarkation</p>
+                                  {ship.embarkationPort && (
+                                    <span className="flex items-center gap-1.5">
+                                      <Anchor className="h-3.5 w-3.5 text-primary/70" /> {ship.embarkationPort}
+                                    </span>
+                                  )}
+                                  {ship.embarkationDate && (
+                                    <span className="flex items-center gap-1.5">
+                                      <Calendar className="h-3.5 w-3.5 text-primary/70" /> {ship.embarkationDate}
+                                    </span>
+                                  )}
+                                </div>
                               )}
-                              {ship.embarkationDate && (
-                                <span className="flex items-center gap-1.5">
-                                  <Calendar className="h-3.5 w-3.5" /> {ship.embarkationDate}
-                                </span>
+                              {(ship.disembarkationPort || ship.disembarkationDate) && (
+                                <div className="space-y-0.5">
+                                  <p className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/70">Disembarkation</p>
+                                  {ship.disembarkationPort && (
+                                    <span className="flex items-center gap-1.5">
+                                      <Anchor className="h-3.5 w-3.5 text-primary/70" /> {ship.disembarkationPort}
+                                    </span>
+                                  )}
+                                  {ship.disembarkationDate && (
+                                    <span className="flex items-center gap-1.5">
+                                      <Calendar className="h-3.5 w-3.5 text-primary/70" /> {ship.disembarkationDate}
+                                    </span>
+                                  )}
+                                </div>
                               )}
-                              {ship.disembarkationPort && (
-                                <span className="flex items-center gap-1.5">
-                                  <Anchor className="h-3.5 w-3.5" /> Disembark: {ship.disembarkationPort}
-                                </span>
+                              {ship.nights && (
+                                <div className="space-y-0.5">
+                                  <p className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/70">Duration</p>
+                                  <span className="text-primary font-semibold">{ship.nights} Nights</span>
+                                </div>
                               )}
-                              {ship.disembarkationDate && (
-                                <span className="flex items-center gap-1.5">
-                                  <Calendar className="h-3.5 w-3.5" /> {ship.disembarkationDate}
-                                </span>
-                              )}
-                              {ship.nights && <span className="text-primary font-semibold">{ship.nights} Nights</span>}
                             </div>
                             {(ship.price || !isGroupBooking) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">

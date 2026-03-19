@@ -12,7 +12,7 @@ import LocationAutocomplete from "@/components/LocationAutocomplete";
 import AirportAutocomplete from "@/components/AirportAutocomplete";
 import AirlineAutocomplete, { findAirlineCode } from "@/components/AirlineAutocomplete";
 import AddressFields, { type AddressData } from "@/components/AddressFields";
-import { CruiseLineAutocomplete, ShipNameAutocomplete, findCruiseLineForShip } from "@/components/CruiseLineAutocomplete";
+import { findCruiseLineForShip } from "@/components/CruiseLineAutocomplete";
 import ImageUploadField from "@/components/ImageUploadField";
 import SortableImageGrid from "@/components/SortableImageGrid";
 import HotelSearchDialog from "@/components/HotelSearchDialog";
@@ -445,8 +445,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const builderTitle = (data as any).proposalType === "proposal" ? "Proposal Builder" : "Group Trip Builder";
 
   return (
-    <div className="proposal-builder space-y-4 p-4 sm:p-6 overflow-y-auto h-full relative">
-      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 mb-4 border-b border-border/30">
+    <div className="proposal-builder space-y-4 p-4 sm:p-6 overflow-y-auto h-full relative overscroll-contain">
+      <div className="sticky -top-4 sm:-top-6 z-20 bg-background/95 backdrop-blur-sm -mx-4 sm:-mx-6 px-4 sm:px-6 pt-4 sm:pt-6 pb-3 border-b border-border/30">
         <h2 className="font-display text-2xl font-bold text-foreground">{builderTitle}</h2>
         <p className="text-sm text-muted-foreground font-body mt-0.5">Fill in the details below — preview updates live. Drag sections to reorder.</p>
       </div>
@@ -1132,14 +1132,15 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                       <div className="grid grid-cols-2 gap-2">
                                         <div>
                                           <FieldLabel>Cruise Line</FieldLabel>
-                                          <CruiseLineAutocomplete value={ship.cruiseLine} onChange={(val) => updateShipField("cruiseLine", val)} placeholder="Royal Caribbean" className="h-8 text-xs" />
+                                          <Input value={ship.cruiseLine} onChange={(e) => updateShipField("cruiseLine", e.target.value)} placeholder="Royal Caribbean" className="h-8 text-xs" />
                                         </div>
                                         <div>
                                           <FieldLabel>Ship Name</FieldLabel>
-                                          <ShipNameAutocomplete
+                                          <Input
                                             value={ship.shipName}
-                                            cruiseLine={ship.cruiseLine}
-                                            onChange={(val, detectedLine) => {
+                                            onChange={(e) => {
+                                              const val = e.target.value;
+                                              const detectedLine = findCruiseLineForShip(val);
                                               const s = [...(data.cruiseShips || [])];
                                               s[i] = { ...s[i], shipName: val, ...(detectedLine && !ship.cruiseLine ? { cruiseLine: detectedLine } : {}) };
                                               update("cruiseShips", s);
