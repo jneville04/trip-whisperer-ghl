@@ -445,10 +445,10 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const builderTitle = (data as any).proposalType === "proposal" ? "Proposal Builder" : "Group Trip Builder";
 
   return (
-    <div className="space-y-4 p-4 sm:p-6 overflow-y-auto h-full">
-      <div className="mb-6">
+    <div className="space-y-4 p-4 sm:p-6 overflow-y-auto h-full relative">
+      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 mb-4 border-b border-border/30">
         <h2 className="font-display text-2xl font-bold text-foreground">{builderTitle}</h2>
-        <p className="text-sm text-muted-foreground font-body mt-1">Fill in the details below — preview updates live. Drag sections to reorder.</p>
+        <p className="text-sm text-muted-foreground font-body mt-0.5">Fill in the details below — preview updates live. Drag sections to reorder.</p>
       </div>
 
       {/* Brand Settings — pulled from global Settings */}
