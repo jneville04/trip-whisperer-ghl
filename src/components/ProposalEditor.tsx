@@ -367,6 +367,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, cruiseShips: true, busTrips: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
   const flightOptions = data.flightOptions || [];
   const accommodations = data.accommodations || [];
+  const accommodationsMode = ((data as any).accommodationsMode || "client_selects_one") as "informational_only" | "client_selects_one";
   const cruiseShips = data.cruiseShips || [];
   const busTrips = data.busTrips || [];
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
@@ -861,6 +862,31 @@ export default function ProposalEditor({ data, onChange }: Props) {
                     return (
                       <CollapsibleSection title={sectionTitles.accommodations} sectionKey="accommodations" visible={vis.accommodations} onToggleVisible={() => toggleSection("accommodations")} defaultOpen={false} sectionCustomTitle={customTitles.accommodations?.title} sectionCustomSubtitle={customTitles.accommodations?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("accommodations", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("accommodations", v)}>
                         <div className="space-y-4">
+                          {(data as any).proposalType === "proposal" && (
+                            <div className="rounded-lg border border-border/40 bg-muted/20 p-3 space-y-2">
+                              <FieldLabel>Accommodations Mode</FieldLabel>
+                              <div className="flex flex-wrap gap-1.5">
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant={accommodationsMode === "informational_only" ? "travel" : "travel-outline"}
+                                  className="h-7 text-xs"
+                                  onClick={() => onChange({ ...(data as any), accommodationsMode: "informational_only" } as ProposalData)}
+                                >
+                                  Informational only
+                                </Button>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant={accommodationsMode === "client_selects_one" ? "travel" : "travel-outline"}
+                                  className="h-7 text-xs"
+                                  onClick={() => onChange({ ...(data as any), accommodationsMode: "client_selects_one" } as ProposalData)}
+                                >
+                                  Client selects one
+                                </Button>
+                              </div>
+                            </div>
+                          )}
                           {accommodations.map((acc, i) => {
                             const accAmenities = acc.amenities || [];
                             const accHighlights = acc.highlights || [];
@@ -910,18 +936,28 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                           <Input value={acc.roomType} onChange={(e) => updateAccommodation(i, "roomType", e.target.value)} placeholder="Superior Suite" className="h-8 text-xs" />
                                         </div>
                                       </div>
-                                      <div className="grid grid-cols-3 gap-2">
+                                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                         <div>
-                                          <FieldLabel>Check-in</FieldLabel>
-                                          <DatePickerField value={acc.checkIn} onChange={(val) => updateAccommodation(i, "checkIn", val)} placeholder="Check-in" />
+                                          <FieldLabel>Check-in Date (Optional)</FieldLabel>
+                                          <DatePickerField value={acc.checkIn} onChange={(val) => updateAccommodation(i, "checkIn", val)} placeholder="Check-in date" />
                                         </div>
                                         <div>
-                                          <FieldLabel>Check-out</FieldLabel>
-                                          <DatePickerField value={acc.checkOut} onChange={(val) => updateAccommodation(i, "checkOut", val)} placeholder="Check-out" />
+                                          <FieldLabel>Check-out Date (Optional)</FieldLabel>
+                                          <DatePickerField value={acc.checkOut} onChange={(val) => updateAccommodation(i, "checkOut", val)} placeholder="Check-out date" />
                                         </div>
                                         <div>
                                           <FieldLabel>Nights</FieldLabel>
                                           <Input value={acc.nights} onChange={(e) => updateAccommodation(i, "nights", e.target.value)} placeholder="2" className="h-8 text-xs" />
+                                        </div>
+                                      </div>
+                                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        <div>
+                                          <FieldLabel>Check-in Time (Optional)</FieldLabel>
+                                          <InlineTimePicker value={(acc as any).checkInTime || ""} onChange={(val) => updateAccField("checkInTime", val)} />
+                                        </div>
+                                        <div>
+                                          <FieldLabel>Check-out Time (Optional)</FieldLabel>
+                                          <InlineTimePicker value={(acc as any).checkOutTime || ""} onChange={(val) => updateAccField("checkOutTime", val)} />
                                         </div>
                                       </div>
                                       {(data as any).proposalType === "proposal" && (

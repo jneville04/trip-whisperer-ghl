@@ -313,6 +313,9 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
   const ct = data.sectionCustomTitles || {};
   const flightOptions = (data.flightOptions || []).filter(o => !o.hidden);
   const accommodations = (data.accommodations || []).filter(a => !a.hidden);
+  const accommodationsMode = ((data as any).accommodationsMode || "client_selects_one") as "informational_only" | "client_selects_one";
+  const accommodationSelectionEnabled = !isGroupBooking && accommodationsMode === "client_selects_one";
+  const effectiveSelectedAccommodation = accommodationSelectionEnabled ? selectedAccommodation : "";
   const cruiseShips = (data.cruiseShips || []).filter(s => !s.hidden);
   const busTrips = (data.busTrips || []).filter(t => !(t as any).hidden);
   const pricingOptions = data.pricingOptions || [];
@@ -1005,13 +1008,13 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                       {ct.accommodations?.subtitle || "Where You'll Stay"}
                     </p>
                     <h2 className="font-display text-4xl font-bold text-foreground">{ct.accommodations?.title || "Accommodations"}</h2>
-                    {!isGroupBooking && accommodations.length > 1 && (
+                    {accommodationSelectionEnabled && accommodations.length > 1 && (
                       <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>
                     )}
                   </motion.div>
                   <div className="space-y-10">
                     {accommodations.map((acc) => {
-                      const isSelected = selectedAccommodation === acc.id;
+                      const isSelected = effectiveSelectedAccommodation === acc.id;
                       const amenities = (acc.amenities || []).filter(Boolean);
                       const highlights = (acc.highlights || []).filter(Boolean);
                       const galleryUrls = acc.galleryUrls || [];
@@ -1030,15 +1033,19 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           viewport={{ once: true }}
                           custom={0}
                           className={`bg-card rounded-2xl border-2 shadow-lg overflow-hidden transition-all ${
-                            !isGroupBooking
+                            accommodationSelectionEnabled
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
                                 : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
-                          onClick={() => !isGroupBooking && setSelectedAccommodation(isSelected ? "" : acc.id)}
+                          onClick={() => {
+                            if (accommodationSelectionEnabled) {
+                              setSelectedAccommodation(isSelected ? "" : acc.id);
+                            }
+                          }}
                         >
-                          {!isGroupBooking && accommodations.length > 1 && (
+                          {accommodationSelectionEnabled && accommodations.length > 1 && (
                             <div className="absolute top-4 right-4 z-10">
                               <span className="inline-block bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-[0.15em] font-body px-2.5 py-1 rounded-full">
                                 Option {accommodations.indexOf(acc) + 1}
@@ -1178,7 +1185,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                                   <span className="font-display text-xl font-bold text-foreground">${acc.price}</span>
                                 )}
                                 {!acc.price && <span />}
-                                {!isGroupBooking && (
+                                {accommodationSelectionEnabled && (
                                   <div className="flex items-center gap-2">
                                     {accommodations.length > 1 && (
                                       <span className="text-[10px] text-muted-foreground font-body">
@@ -2289,9 +2296,11 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                       <span className="font-body text-foreground font-medium">Accommodation</span>
                     </div>
                     <span className="font-body text-sm">
-                      {selectedAccommodation ? (
+                      {!accommodationSelectionEnabled ? (
+                        <span className="text-muted-foreground italic text-xs">Informational only</span>
+                      ) : effectiveSelectedAccommodation ? (
                         (() => {
-                          const a = accommodations.find((a) => a.id === selectedAccommodation);
+                          const a = accommodations.find((a) => a.id === effectiveSelectedAccommodation);
                           return (
                             <span className="text-foreground">
                               {a?.hotelName || "Selected"}
@@ -2387,8 +2396,8 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                 const selectedFlightPrice = selectedFlight
                   ? parseFloat(flightOptions.find((o) => o.id === selectedFlight)?.price || "0")
                   : 0;
-                const selectedAccPrice = selectedAccommodation
-                  ? parseFloat(accommodations.find((a) => a.id === selectedAccommodation)?.price || "0")
+                const selectedAccPrice = effectiveSelectedAccommodation
+                  ? parseFloat(accommodations.find((a) => a.id === effectiveSelectedAccommodation)?.price || "0")
                   : 0;
                 const selectedCruisePrice = selectedCruise
                   ? parseFloat(cruiseShips.find((s) => s.id === selectedCruise)?.price || "0")
