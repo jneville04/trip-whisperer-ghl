@@ -7,7 +7,7 @@ import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } 
 import { CSS } from "@dnd-kit/utilities";
 
 import DatePickerField from "@/components/DatePickerField";
-import TimePickerDropdown from "@/components/TimePickerDropdown";
+import InlineTimePicker from "@/components/InlineTimePicker";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
 import AirportAutocomplete from "@/components/AirportAutocomplete";
 import AirlineAutocomplete, { findAirlineCode } from "@/components/AirlineAutocomplete";
@@ -202,7 +202,6 @@ function ItemControls({
 }
 
 function CollapsibleHotel({
-  defaultOpen = false,
   hotelName,
   location,
   onDelete,
@@ -210,8 +209,11 @@ function CollapsibleHotel({
   onHide,
   onCopy,
   children,
+  isOpen,
+  onToggle,
+  summaryExtra,
+  defaultOpen = false,
 }: {
-  defaultOpen?: boolean;
   hotelName: string;
   location?: string;
   onDelete: () => void;
@@ -219,16 +221,23 @@ function CollapsibleHotel({
   onHide?: () => void;
   onCopy?: () => void;
   children: React.ReactNode;
+  isOpen?: boolean;
+  onToggle?: () => void;
+  summaryExtra?: string;
+  defaultOpen?: boolean;
 }) {
-  const [open, setOpen] = useState(defaultOpen);
+  const [internalOpen, setInternalOpen] = useState(defaultOpen);
+  const open = isOpen !== undefined ? isOpen : internalOpen;
+  const toggle = onToggle || (() => setInternalOpen(!internalOpen));
   return (
     <div className={`border border-border/40 rounded-lg bg-muted/20 overflow-hidden ${hidden ? "opacity-50" : ""}`}>
       <div className="flex items-center justify-between px-3 py-2.5 bg-muted/40">
-        <button className="flex items-center gap-2 flex-1 text-left" onClick={() => setOpen(!open)}>
-          {open ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
-          <span className="font-body font-semibold text-sm text-foreground">{hotelName}</span>
-          {location && <span className="text-xs text-muted-foreground">· {location}</span>}
-          {hidden && <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 rounded">Hidden</span>}
+        <button className="flex items-center gap-2 flex-1 text-left min-w-0" onClick={toggle}>
+          {open ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground shrink-0" />}
+          <span className="font-body font-semibold text-sm text-foreground truncate">{hotelName}</span>
+          {!open && location && <span className="text-xs text-muted-foreground truncate">· {location}</span>}
+          {!open && summaryExtra && <span className="text-[10px] text-muted-foreground truncate ml-1">{summaryExtra}</span>}
+          {hidden && <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 rounded shrink-0">Hidden</span>}
         </button>
         <ItemControls hidden={hidden} onHide={onHide} onCopy={onCopy} onDelete={onDelete} />
       </div>
@@ -259,7 +268,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
     update("days", days);
   };
 
-  const addDay = () => update("days", [...data.days, createDay(data.days.length + 1)]);
+  const addDay = () => { update("days", [...data.days, createDay(data.days.length + 1)]); setOpenDayIdx(data.days.length); };
   const removeDay = (index: number) => update("days", data.days.filter((_, i) => i !== index));
 
   const updateActivity = (dayIndex: number, actIndex: number, field: keyof Activity, value: any) => {
@@ -302,6 +311,12 @@ export default function ProposalEditor({ data, onChange }: Props) {
     a[index] = { ...a[index], [field]: value };
     update("accommodations", a);
   };
+
+  // Accordion state: only one item open at a time per section
+  const [openFlightIdx, setOpenFlightIdx] = useState<number>(0);
+  const [openAccIdx, setOpenAccIdx] = useState<number>(0);
+  const [openCruiseIdx, setOpenCruiseIdx] = useState<number>(0);
+  const [openDayIdx, setOpenDayIdx] = useState<number>(0);
 
   const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "", showAgencyNameWithLogo: true };
   const resolvedPrimaryColor = agentSettings.primary_color || appSettings.primary_color;
@@ -665,27 +680,31 @@ export default function ProposalEditor({ data, onChange }: Props) {
                     return (
                       <CollapsibleSection title={sectionTitles.flights} sectionKey="flights" visible={vis.flights} onToggleVisible={() => toggleSection("flights")} defaultOpen={false} sectionCustomTitle={customTitles.flights?.title} sectionCustomSubtitle={customTitles.flights?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("flights", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("flights", v)}>
                         <div className="space-y-4">
-                          {flightOptions.map((opt, oi) => (
-                            <div key={opt.id} className={`border border-border/40 rounded-lg p-3 bg-muted/20 space-y-3 ${opt.hidden ? "opacity-50" : ""}`}>
-                              <div className="flex items-center justify-between">
-                                <span className="font-body font-semibold text-sm text-foreground">
-                                  ✈️ Option {oi + 1}
-                                  {opt.hidden && <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 rounded ml-2">Hidden</span>}
-                                </span>
-                                <ItemControls
-                                  hidden={opt.hidden}
-                                  onHide={() => {
-                                    const opts = [...flightOptions];
-                                    opts[oi] = { ...opts[oi], hidden: !opts[oi].hidden };
-                                    update("flightOptions", opts);
-                                  }}
-                                  onCopy={() => {
-                                    const clone = { ...opt, id: crypto.randomUUID(), hidden: false };
-                                    update("flightOptions", [...flightOptions.slice(0, oi + 1), clone, ...flightOptions.slice(oi + 1)]);
-                                  }}
-                                  onDelete={() => update("flightOptions", flightOptions.filter((_, idx) => idx !== oi))}
-                                />
-                              </div>
+                          {flightOptions.map((opt, oi) => {
+                            // Build summary for collapsed state
+                            const routeParts = opt.legs.map(l => [l.departureAirport, l.arrivalAirport].filter(Boolean).join(" → ")).filter(Boolean);
+                            const flightSummary = [routeParts.join(" · "), opt.price ? `$${opt.price}` : ""].filter(Boolean).join(" · ");
+                            return (
+                            <CollapsibleHotel
+                              key={opt.id}
+                              hotelName={`✈️ Option ${oi + 1}`}
+                              summaryExtra={flightSummary}
+                              isOpen={openFlightIdx === oi}
+                              onToggle={() => setOpenFlightIdx(openFlightIdx === oi ? -1 : oi)}
+                              onDelete={() => { update("flightOptions", flightOptions.filter((_, idx) => idx !== oi)); if (openFlightIdx === oi) setOpenFlightIdx(-1); }}
+                              hidden={opt.hidden}
+                              onHide={() => {
+                                const opts = [...flightOptions];
+                                opts[oi] = { ...opts[oi], hidden: !opts[oi].hidden };
+                                update("flightOptions", opts);
+                              }}
+                              onCopy={() => {
+                                const clone = { ...opt, id: crypto.randomUUID(), hidden: false };
+                                update("flightOptions", [...flightOptions.slice(0, oi + 1), clone, ...flightOptions.slice(oi + 1)]);
+                                setOpenFlightIdx(oi + 1);
+                              }}
+                            >
+                              <div className="p-3 space-y-3">
                               {opt.legs.map((leg, li) => (
                                 <div key={leg.id} className="border border-border/30 rounded-md p-2.5 bg-background/50">
                                   <div className="flex items-center justify-between mb-2">
@@ -733,11 +752,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     <div className="grid grid-cols-2 gap-1">
                                       <div>
                                         <FieldLabel>Depart</FieldLabel>
-                                        <TimePickerDropdown value={leg.departureTime} onChange={(val) => updateFlightLeg(oi, li, "departureTime", val)} />
+                                        <InlineTimePicker value={leg.departureTime} onChange={(val) => updateFlightLeg(oi, li, "departureTime", val)} />
                                       </div>
                                       <div>
                                         <FieldLabel>Arrive</FieldLabel>
-                                        <TimePickerDropdown value={leg.arrivalTime} onChange={(val) => updateFlightLeg(oi, li, "arrivalTime", val)} />
+                                        <InlineTimePicker value={leg.arrivalTime} onChange={(val) => updateFlightLeg(oi, li, "arrivalTime", val)} />
                                       </div>
                                     </div>
                                   </div>
@@ -776,9 +795,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                 pricing={opt.agentPricing}
                                 onChange={(ap) => { const opts = [...flightOptions]; opts[oi] = { ...opts[oi], agentPricing: ap }; update("flightOptions", opts); }}
                               />
-                            </div>
-                          ))}
-                          <Button variant="travel-ghost" size="sm" onClick={() => update("flightOptions", [...flightOptions, createFlightOption()])} className="text-primary text-xs h-7">
+                              </div>
+                            </CollapsibleHotel>
+                            );
+                          })}
+                          <Button variant="travel-ghost" size="sm" onClick={() => { update("flightOptions", [...flightOptions, createFlightOption()]); setOpenFlightIdx(flightOptions.length); }} className="text-primary text-xs h-7">
                             <Plus className="h-3 w-3 mr-1" /> Add Flight Option
                           </Button>
                         </div>
@@ -815,7 +836,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                             };
 
                             return (
-                              <CollapsibleHotel key={acc.id} defaultOpen={i === 0} hotelName={acc.hotelName || `Hotel ${i + 1}`} location={acc.location} onDelete={() => update("accommodations", accommodations.filter((_, idx) => idx !== i))} hidden={acc.hidden} onHide={() => { const a = [...accommodations]; a[i] = { ...a[i], hidden: !a[i].hidden }; update("accommodations", a); }} onCopy={() => { const clone = { ...acc, id: crypto.randomUUID(), hidden: false }; update("accommodations", [...accommodations.slice(0, i + 1), clone, ...accommodations.slice(i + 1)]); }}>
+                              <CollapsibleHotel key={acc.id} hotelName={acc.hotelName || `Hotel ${i + 1}`} location={acc.location} summaryExtra={[acc.roomType, acc.nights ? `${acc.nights}n` : "", acc.price ? `$${acc.price}` : ""].filter(Boolean).join(" · ")} isOpen={openAccIdx === i} onToggle={() => setOpenAccIdx(openAccIdx === i ? -1 : i)} onDelete={() => { update("accommodations", accommodations.filter((_, idx) => idx !== i)); if (openAccIdx === i) setOpenAccIdx(-1); }} hidden={acc.hidden} onHide={() => { const a = [...accommodations]; a[i] = { ...a[i], hidden: !a[i].hidden }; update("accommodations", a); }} onCopy={() => { const clone = { ...acc, id: crypto.randomUUID(), hidden: false }; update("accommodations", [...accommodations.slice(0, i + 1), clone, ...accommodations.slice(i + 1)]); setOpenAccIdx(i + 1); }}>
                                 <div className="border-t border-border/30">
                                   <Tabs defaultValue="general" className="w-full">
                                     <TabsList className="w-full justify-start rounded-none border-b border-border/30 bg-transparent h-9 px-3">
@@ -996,7 +1017,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                             );
                           })}
                           <div className="flex gap-2">
-                            <Button variant="travel-ghost" size="sm" onClick={() => update("accommodations", [...accommodations, createAccommodation()])} className="text-primary text-xs h-7">
+                            <Button variant="travel-ghost" size="sm" onClick={() => { update("accommodations", [...accommodations, createAccommodation()]); setOpenAccIdx(accommodations.length); }} className="text-primary text-xs h-7">
                               <Plus className="h-3 w-3 mr-1" /> Add Hotel
                             </Button>
                             <HotelSearchDialog onSelect={(hotelData) => {
@@ -1012,6 +1033,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                 galleryUrls: hotelData.galleryUrls || [],
                               };
                               update("accommodations", [...accommodations, newAcc]);
+                              setOpenAccIdx(accommodations.length);
                             }}>
                               <Button variant="travel-outline" size="sm" className="text-xs h-7">
                                 <Search className="h-3 w-3 mr-1" /> Search Hotels
@@ -1037,7 +1059,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                             };
 
                             return (
-                              <CollapsibleHotel key={ship.id} defaultOpen={i === 0} hotelName={ship.shipName || `Ship ${i + 1}`} location={ship.cruiseLine} onDelete={() => update("cruiseShips", cruiseShips.filter((_, idx) => idx !== i))} hidden={ship.hidden} onHide={() => { const s = [...cruiseShips]; s[i] = { ...s[i], hidden: !s[i].hidden }; update("cruiseShips", s); }} onCopy={() => { const clone = { ...ship, id: crypto.randomUUID(), hidden: false }; update("cruiseShips", [...cruiseShips.slice(0, i + 1), clone, ...cruiseShips.slice(i + 1)]); }}>
+                              <CollapsibleHotel key={ship.id} hotelName={ship.shipName || `Ship ${i + 1}`} location={ship.cruiseLine} summaryExtra={[ship.cabinType, ship.nights ? `${ship.nights}n` : "", ship.price ? `$${ship.price}` : ""].filter(Boolean).join(" · ")} isOpen={openCruiseIdx === i} onToggle={() => setOpenCruiseIdx(openCruiseIdx === i ? -1 : i)} onDelete={() => { update("cruiseShips", cruiseShips.filter((_, idx) => idx !== i)); if (openCruiseIdx === i) setOpenCruiseIdx(-1); }} hidden={ship.hidden} onHide={() => { const s = [...cruiseShips]; s[i] = { ...s[i], hidden: !s[i].hidden }; update("cruiseShips", s); }} onCopy={() => { const clone = { ...ship, id: crypto.randomUUID(), hidden: false }; update("cruiseShips", [...cruiseShips.slice(0, i + 1), clone, ...cruiseShips.slice(i + 1)]); setOpenCruiseIdx(i + 1); }}>
                                 <div className="border-t border-border/30">
                                   <Tabs defaultValue="general" className="w-full">
                                     <TabsList className="w-full justify-start rounded-none border-b border-border/30 bg-transparent h-9 px-3">
@@ -1238,7 +1260,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                               </CollapsibleHotel>
                             );
                           })}
-                          <Button variant="travel-ghost" size="sm" onClick={() => update("cruiseShips", [...cruiseShips, createCruiseShip()])} className="text-primary text-xs h-7">
+                          <Button variant="travel-ghost" size="sm" onClick={() => { update("cruiseShips", [...cruiseShips, createCruiseShip()]); setOpenCruiseIdx(cruiseShips.length); }} className="text-primary text-xs h-7">
                             <Plus className="h-3 w-3 mr-1" /> Add Ship
                           </Button>
                         </div>
@@ -1376,13 +1398,13 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                           <div className="grid grid-cols-3 gap-2">
                                             <div>
                                               <FieldLabel>Arrival</FieldLabel>
-                                              <TimePickerDropdown value={stop.arrivalTime} onChange={(val) => {
+                                              <InlineTimePicker value={stop.arrivalTime} onChange={(val) => {
                                                 const s = [...tripStops]; s[si] = { ...s[si], arrivalTime: val }; updateTripField("stops", s);
                                               }} />
                                             </div>
                                             <div>
                                               <FieldLabel>Departure</FieldLabel>
-                                              <TimePickerDropdown value={stop.departureTime} onChange={(val) => {
+                                              <InlineTimePicker value={stop.departureTime} onChange={(val) => {
                                                 const s = [...tripStops]; s[si] = { ...s[si], departureTime: val }; updateTripField("stops", s);
                                               }} />
                                             </div>
@@ -1492,7 +1514,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       <CollapsibleSection title={sectionTitles.itinerary} sectionKey="itinerary" visible={vis.itinerary} onToggleVisible={() => toggleSection("itinerary")} sectionCustomTitle={customTitles.itinerary?.title} sectionCustomSubtitle={customTitles.itinerary?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("itinerary", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("itinerary", v)}>
                         <div className="space-y-6">
                           {data.days.map((day, dayIdx) => (
-                            <CollapsibleHotel key={day.id} defaultOpen={dayIdx === 0} hotelName={`Day ${dayIdx + 1}${day.title ? `: ${day.title}` : ""}`} location={day.location} onDelete={() => removeDay(dayIdx)} hidden={day.hidden} onHide={() => { const days = [...data.days]; days[dayIdx] = { ...days[dayIdx], hidden: !days[dayIdx].hidden }; update("days", days); }} onCopy={() => { const clone = { ...day, id: crypto.randomUUID(), hidden: false }; update("days", [...data.days.slice(0, dayIdx + 1), clone, ...data.days.slice(dayIdx + 1)]); }}>
+                            <CollapsibleHotel key={day.id} hotelName={`Day ${dayIdx + 1}${day.title ? `: ${day.title}` : ""}`} location={day.location} isOpen={openDayIdx === dayIdx} onToggle={() => setOpenDayIdx(openDayIdx === dayIdx ? -1 : dayIdx)} onDelete={() => { removeDay(dayIdx); if (openDayIdx === dayIdx) setOpenDayIdx(-1); }} hidden={day.hidden} onHide={() => { const days = [...data.days]; days[dayIdx] = { ...days[dayIdx], hidden: !days[dayIdx].hidden }; update("days", days); }} onCopy={() => { const clone = { ...day, id: crypto.randomUUID(), hidden: false }; update("days", [...data.days.slice(0, dayIdx + 1), clone, ...data.days.slice(dayIdx + 1)]); setOpenDayIdx(dayIdx + 1); }}>
                               <div className="p-4 space-y-3">
                               <div className="grid grid-cols-2 gap-2 mb-2">
                                 <div>
@@ -1521,7 +1543,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                             <option key={t.value} value={t.value}>{t.label}</option>
                                           ))}
                                         </select>
-                                        <TimePickerDropdown value={act.time} onChange={(val) => updateActivity(dayIdx, actIdx, "time", val)} />
+                                        <InlineTimePicker value={act.time} onChange={(val) => updateActivity(dayIdx, actIdx, "time", val)} />
                                       </div>
                                       <div className="flex items-center gap-0.5">
                                         <button onClick={() => {
