@@ -312,6 +312,12 @@ export default function ProposalEditor({ data, onChange }: Props) {
     update("accommodations", a);
   };
 
+  // Accordion state: only one item open at a time per section
+  const [openFlightIdx, setOpenFlightIdx] = useState<number>(0);
+  const [openAccIdx, setOpenAccIdx] = useState<number>(0);
+  const [openCruiseIdx, setOpenCruiseIdx] = useState<number>(0);
+  const [openDayIdx, setOpenDayIdx] = useState<number>(0);
+
   const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "", showAgencyNameWithLogo: true };
   const resolvedPrimaryColor = agentSettings.primary_color || appSettings.primary_color;
   const resolvedSecondaryColor = agentSettings.secondary_color || appSettings.secondary_color;
