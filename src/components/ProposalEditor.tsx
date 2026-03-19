@@ -202,7 +202,6 @@ function ItemControls({
 }
 
 function CollapsibleHotel({
-  defaultOpen = false,
   hotelName,
   location,
   onDelete,
@@ -210,8 +209,11 @@ function CollapsibleHotel({
   onHide,
   onCopy,
   children,
+  isOpen,
+  onToggle,
+  summaryExtra,
+  defaultOpen = false,
 }: {
-  defaultOpen?: boolean;
   hotelName: string;
   location?: string;
   onDelete: () => void;
@@ -219,16 +221,23 @@ function CollapsibleHotel({
   onHide?: () => void;
   onCopy?: () => void;
   children: React.ReactNode;
+  isOpen?: boolean;
+  onToggle?: () => void;
+  summaryExtra?: string;
+  defaultOpen?: boolean;
 }) {
-  const [open, setOpen] = useState(defaultOpen);
+  const [internalOpen, setInternalOpen] = useState(defaultOpen);
+  const open = isOpen !== undefined ? isOpen : internalOpen;
+  const toggle = onToggle || (() => setInternalOpen(!internalOpen));
   return (
     <div className={`border border-border/40 rounded-lg bg-muted/20 overflow-hidden ${hidden ? "opacity-50" : ""}`}>
       <div className="flex items-center justify-between px-3 py-2.5 bg-muted/40">
-        <button className="flex items-center gap-2 flex-1 text-left" onClick={() => setOpen(!open)}>
-          {open ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
-          <span className="font-body font-semibold text-sm text-foreground">{hotelName}</span>
-          {location && <span className="text-xs text-muted-foreground">· {location}</span>}
-          {hidden && <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 rounded">Hidden</span>}
+        <button className="flex items-center gap-2 flex-1 text-left min-w-0" onClick={toggle}>
+          {open ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground shrink-0" />}
+          <span className="font-body font-semibold text-sm text-foreground truncate">{hotelName}</span>
+          {!open && location && <span className="text-xs text-muted-foreground truncate">· {location}</span>}
+          {!open && summaryExtra && <span className="text-[10px] text-muted-foreground truncate ml-1">{summaryExtra}</span>}
+          {hidden && <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 rounded shrink-0">Hidden</span>}
         </button>
         <ItemControls hidden={hidden} onHide={onHide} onCopy={onCopy} onDelete={onDelete} />
       </div>
