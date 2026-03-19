@@ -98,6 +98,7 @@ export interface Accommodation {
   videoThumbnailUrl?: string;
   mediaType?: "photos" | "video";
   price?: string;
+  pricingDisplay?: PricingDisplayMode;
   agentPricing?: AgentPricing;
   hidden?: boolean;
 }
