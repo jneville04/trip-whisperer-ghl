@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { Eye, ArrowLeft, PanelLeftClose, PanelLeft, Send, HelpCircle, Mail, Phone, X, Pencil, Link2, FileDown, ChevronDown, Check, EyeOff } from "lucide-react";
+import { Eye, ArrowLeft, PanelLeftClose, PanelLeft, Send, HelpCircle, Mail, Phone, X, Pencil, Link2, FileDown, ChevronDown, Check, EyeOff, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import ProposalEditor from "@/components/ProposalEditor";
 import ProposalPreview, { type EditorSubPage } from "@/components/ProposalPreview";
@@ -21,13 +23,15 @@ export default function EditorPage() {
   const { settings: appSettings, cssVars: appBrandVars } = useAppSettings();
   const { settings: agentSettings } = useAgentSettings();
   const [data, setData] = useState<ProposalData>(defaultProposal);
+  const [tripType, setTripType] = useState<string>("individual");
+  const [maxCapacity, setMaxCapacity] = useState<number | null>(null);
   const [mode, setMode] = useState<"split" | "preview">("split");
   const [panelOpen, setPanelOpen] = useState(true);
   const [linkCopiedAlert, setLinkCopiedAlert] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
-  const [shareId, setShareId] = useState("");
+  const [publicSlug, setPublicSlug] = useState("");
   const [dirty, setDirty] = useState(false);
   const [currentStatus, setCurrentStatus] = useState("draft");
   const [editorSubPage, setEditorSubPage] = useState<EditorSubPage | null>(null);
@@ -42,12 +46,12 @@ export default function EditorPage() {
 
   const handleEditorSubPage = useCallback((page: EditorSubPage | null) => {
     setEditorSubPage(page);
-    if (page && shareId) {
-      setSearchParams({ share: shareId, subpage: page }, { replace: true });
+    if (page && publicSlug) {
+      setSearchParams({ share: publicSlug, subpage: page }, { replace: true });
     } else {
       setSearchParams({}, { replace: true });
     }
-  }, [shareId, setSearchParams]);
+  }, [publicSlug, setSearchParams]);
 
   useEffect(() => {
     const handleCheckoutHeightUpdated = (event: Event) => {
@@ -55,7 +59,7 @@ export default function EditorPage() {
       const updatedShareId = custom.detail?.shareId;
       const updatedHeight = custom.detail?.height;
       if (!updatedHeight) return;
-      if (shareId && updatedShareId && updatedShareId !== shareId) return;
+      if (publicSlug && updatedShareId && updatedShareId !== publicSlug) return;
 
       setData((prev) => {
         const currentHeight = prev.checkout?.formHeight || 1200;
@@ -74,16 +78,17 @@ export default function EditorPage() {
     return () => {
       window.removeEventListener("checkout-form-height-updated", handleCheckoutHeightUpdated);
     };
-  }, [shareId]);
+  }, [publicSlug]);
 
   const statusMeta: Record<string, { label: string; badgeClassName: string }> = {
     draft: { label: "Draft", badgeClassName: "text-muted-foreground bg-muted/80" },
     published: { label: "Published", badgeClassName: "text-primary-foreground bg-primary/90" },
     sent: { label: "Published", badgeClassName: "text-primary-foreground bg-primary/90" },
-    unpublished: { label: "Draft", badgeClassName: "text-muted-foreground bg-muted/80" },
+    unpublished: { label: "Unpublished", badgeClassName: "text-muted-foreground bg-muted/80" },
+    approved: { label: "Approved", badgeClassName: "text-primary-foreground bg-primary/90" },
   };
 
-  const normalizeProposalStatus = (status?: string | null) => {
+  const normalizeStatus = (status?: string | null) => {
     if (!status) return "draft";
     if (status === "sent") return "published";
     return status;
@@ -91,29 +96,27 @@ export default function EditorPage() {
 
   useEffect(() => {
     if (!id) return;
-    loadProposal();
+    loadTrip();
   }, [id]);
 
-  const loadProposal = async () => {
+  const loadTrip = async () => {
     const { data: row, error } = await supabase
-      .from("proposals")
+      .from("trips")
       .select("*")
       .eq("id", id)
       .single();
 
     if (error || !row) {
-      toast({ title: "Proposal not found", variant: "destructive" });
+      toast({ title: "Trip not found", variant: "destructive" });
       navigate("/dashboard");
       return;
     }
     const r = row as any;
-    const saved = r.data as ProposalData;
-    // Merge with defaults so new fields are available on old proposals
+    const saved = (r.draft_data || {}) as ProposalData;
     const merged: ProposalData = {
       ...defaultProposal,
       ...saved,
-      // Backward compat: if no tripName, use destination as tripName
-      tripName: (saved as any).tripName || saved.destination || r.title || "",
+      tripName: (saved as any).tripName || saved.destination || "",
       sectionVisibility: { ...defaultProposal.sectionVisibility, ...(saved.sectionVisibility || {}) },
       sectionOrder: (() => {
         let order = saved.sectionOrder || defaultProposal.sectionOrder;
@@ -129,7 +132,6 @@ export default function EditorPage() {
         }
         return order;
       })(),
-      // Migrate old flights[] to flightOptions[] for backward compat
       flightOptions: saved.flightOptions || (saved.flights && saved.flights.length > 0
         ? [{
             id: crypto.randomUUID(),
@@ -144,8 +146,10 @@ export default function EditorPage() {
       checkout: saved.checkout || undefined,
     };
     setData(merged);
-    setShareId(r.share_id || "");
-    setCurrentStatus(normalizeProposalStatus(r.status));
+    setTripType(r.trip_type || "individual");
+    setMaxCapacity(r.max_capacity ?? null);
+    setPublicSlug(r.public_slug || "");
+    setCurrentStatus(normalizeStatus(r.status));
     setLastSavedAt(new Date());
     setLoading(false);
   };
@@ -156,8 +160,8 @@ export default function EditorPage() {
     setSaveFailed(false);
   }, []);
 
-  // Core save function – returns true on success, false on failure
-  const saveProposal = async (status?: string, dataOverride?: ProposalData): Promise<boolean> => {
+  // Core save function
+  const saveTrip = async (status?: string, dataOverride?: ProposalData): Promise<boolean> => {
     if (!id) return false;
     const saveData = dataOverride || dataRef.current;
     const targetStatus = status ?? currentStatus;
@@ -175,7 +179,7 @@ export default function EditorPage() {
       logoUrl: agentSettings.logo_url || "",
       showAgencyNameWithLogo: currentBrand.showAgencyNameWithLogo ?? agentSettings.show_agency_name_with_logo,
     };
-    const dataToSave = {
+    const dataToSave: ProposalData = {
       ...saveData,
       brand: resolvedBrand,
       agent: {
@@ -190,19 +194,25 @@ export default function EditorPage() {
       },
     };
 
-    const tripName = (saveData as any).tripName || saveData.destination || "Untitled";
-    const displayTitle = saveData.clientName ? `${tripName} — ${saveData.clientName}` : tripName;
+    // Build the update payload
+    const updatePayload: Record<string, any> = {
+      draft_data: dataToSave as any,
+      status: targetStatus,
+    };
+
+    // On publish: copy draft_data into published_data
+    if (isPublish) {
+      updatePayload.published_data = dataToSave as any;
+    }
+
+    // Update max_capacity for group trips
+    if (tripType === "group") {
+      updatePayload.max_capacity = maxCapacity;
+    }
 
     const { error } = await supabase
-      .from("proposals")
-      .update({
-        title: displayTitle,
-        client_name: saveData.clientName || "",
-        destination: saveData.destination || "",
-        data: dataToSave as any,
-        status: targetStatus,
-        updated_at: new Date().toISOString(),
-      })
+      .from("trips")
+      .update(updatePayload)
       .eq("id", id);
 
     if (error) {
@@ -228,24 +238,24 @@ export default function EditorPage() {
     return true;
   };
 
-  // Debounced autosave: triggers 2s after last change
+  // Debounced autosave
   useEffect(() => {
     if (!dirty || !id) return;
     if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
     autosaveTimerRef.current = setTimeout(() => {
-      saveProposal();
+      saveTrip();
     }, 2000);
     return () => {
       if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
     };
   }, [dirty, data, id]);
 
-  const handleSave = () => saveProposal();
-  const handlePublish = () => saveProposal("published");
-  const handleUnpublish = () => saveProposal("draft");
+  const handleSave = () => saveTrip();
+  const handlePublish = () => saveTrip("published");
+  const handleUnpublish = () => saveTrip("unpublished");
 
   const copyShareLink = () => {
-    const url = `${window.location.origin}/view/${shareId}`;
+    const url = `${window.location.origin}/view/${publicSlug}`;
     navigator.clipboard.writeText(url);
     setLinkCopiedAlert(true);
     setTimeout(() => setLinkCopiedAlert(false), 2500);
@@ -253,21 +263,18 @@ export default function EditorPage() {
 
   const handlePublishAndCopy = () => {
     if (currentStatus !== "published") {
-      saveProposal("published").then(() => {
+      saveTrip("published").then(() => {
         copyShareLink();
       });
     } else {
       copyShareLink();
     }
   };
-  // Brand colors: proposal overrides take priority, then agent settings, then app defaults
+
   const previewData = useMemo<ProposalData>(() => {
     const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
-
     const fallbackPrimary = agentSettings.primary_color || appSettings.primary_color;
     const fallbackSecondary = agentSettings.secondary_color || appSettings.secondary_color;
-
-    // Only use logo_url if it's actually set (non-empty string)
     const agentLogoUrl = agentSettings.logo_url || "";
     const agentPhotoUrl = agentSettings.agent_photo_url || "";
     const agentAgencyLogoUrl = agentSettings.agency_logo_url || "";
@@ -295,10 +302,11 @@ export default function EditorPage() {
   }, [data, agentSettings, appSettings.primary_color, appSettings.secondary_color]);
 
   const builderBrandStyles = useMemo(() => buildBrandCssVars(previewData.brand), [previewData.brand]);
+
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center text-muted-foreground font-body">
-        Loading proposal...
+        Loading trip...
       </div>
     );
   }
@@ -323,7 +331,7 @@ export default function EditorPage() {
             </Button>
           )}
           <span className={`text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded-full ${
-            currentStatus === "published" ? "bg-emerald-100 text-emerald-700" : "bg-amber-100 text-amber-700"
+            currentStatus === "published" ? "bg-emerald-100 text-emerald-700" : currentStatus === "approved" ? "bg-blue-100 text-blue-700" : "bg-amber-100 text-amber-700"
           }`}>
             {(statusMeta[currentStatus] || statusMeta.draft).label}
           </span>
@@ -346,19 +354,11 @@ export default function EditorPage() {
 
         <div className="flex items-center gap-2">
           {mode === "preview" ? (
-            <Button
-              variant="travel-outline"
-              size="sm"
-              onClick={() => setMode("split")}
-            >
+            <Button variant="travel-outline" size="sm" onClick={() => setMode("split")}>
               <ArrowLeft className="h-3.5 w-3.5 mr-1" /> Back to Editor
             </Button>
           ) : (
-            <Button
-              variant="travel-outline"
-              size="sm"
-              onClick={() => setMode("preview")}
-            >
+            <Button variant="travel-outline" size="sm" onClick={() => setMode("preview")}>
               <Eye className="h-3.5 w-3.5 mr-1" /> Preview
             </Button>
           )}
@@ -367,7 +367,7 @@ export default function EditorPage() {
               <Button
                 variant="travel"
                 size="default"
-                disabled={publishing || !shareId}
+                disabled={publishing || !publicSlug}
                 className="px-5 font-semibold shadow-md"
               >
                 <Send className="h-4 w-4 mr-1.5" /> Send Proposal <ChevronDown className="h-3.5 w-3.5 ml-1" />
@@ -419,12 +419,41 @@ export default function EditorPage() {
             <Pencil className="h-3.5 w-3.5 text-muted-foreground" />
           </button>
         )}
+        {tripType === "group" && (
+          <span className="ml-3 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-travel-ocean text-white">
+            Group Trip
+          </span>
+        )}
       </div>
 
       {/* Content */}
       <div className="flex-1 flex overflow-hidden">
         {mode === "split" && panelOpen && !editorSubPage && (
           <div className="w-full max-w-lg border-r border-border/50 overflow-y-auto overscroll-contain bg-background">
+            {/* Inventory Settings for Group Trips */}
+            {tripType === "group" && (
+              <div className="px-6 py-4 border-b border-border/50 bg-muted/30">
+                <div className="flex items-center gap-2 mb-3">
+                  <Users className="h-4 w-4 text-primary" />
+                  <span className="font-display text-sm font-semibold text-foreground">Inventory Settings</span>
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="maxCapacity" className="text-xs">Max Capacity</Label>
+                  <Input
+                    id="maxCapacity"
+                    type="number"
+                    placeholder="e.g. 20"
+                    value={maxCapacity ?? ""}
+                    onChange={(e) => {
+                      const val = e.target.value ? parseInt(e.target.value) : null;
+                      setMaxCapacity(val);
+                      setDirty(true);
+                    }}
+                    className="max-w-[140px]"
+                  />
+                </div>
+              </div>
+            )}
             <ProposalEditor data={data} onChange={handleChange} />
             <HelpdeskFooter />
           </div>
@@ -440,7 +469,7 @@ export default function EditorPage() {
             <RevisionsPage />
           )}
           {!editorSubPage && (
-            <ProposalPreview data={previewData} shareId={shareId} isEditor onEditorSubPage={handleEditorSubPage} />
+            <ProposalPreview data={previewData} shareId={publicSlug} isEditor onEditorSubPage={handleEditorSubPage} />
           )}
         </div>
       </div>

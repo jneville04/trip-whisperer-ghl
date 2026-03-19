@@ -10,6 +10,7 @@ export default function ClientView() {
   const [searchParams] = useSearchParams();
   const isAgentPreview = searchParams.get("preview") === "agent";
   const [data, setData] = useState<ProposalData | null>(null);
+  const [tripId, setTripId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -17,13 +18,6 @@ export default function ClientView() {
     if (!shareId) return;
 
     let cancelled = false;
-    let timeoutId: number | undefined;
-    let authSub: { unsubscribe: () => void } | undefined;
-
-    const notYetAvailable = () => {
-      setError("This proposal is not yet available. Please check back later or contact your travel advisor.");
-      setLoading(false);
-    };
 
     const run = async () => {
       setLoading(true);
@@ -31,9 +25,9 @@ export default function ClientView() {
       setData(null);
 
       const { data: row, error: err } = await supabase
-        .from("proposals")
-        .select("data, status, user_id")
-        .eq("share_id", shareId)
+        .from("trips")
+        .select("id, status, published_data, draft_data, org_id")
+        .eq("public_slug", shareId)
         .single();
 
       if (cancelled) return;
@@ -45,73 +39,32 @@ export default function ClientView() {
       }
 
       const r = row as any;
-      const status = r.status;
-      const isPublic = status === "published" || status === "sent" || status === "approved";
+      const status = r.status || "draft";
+      setTripId(r.id);
 
-      // Public behavior unchanged
-      if (!isAgentPreview) {
-        if (isPublic) {
-          setData(r.data as ProposalData);
-          setLoading(false);
-          return;
-        }
-        notYetAvailable();
-        return;
-      }
-
-      // Agent preview: if already public, no auth needed
-      if (isPublic) {
-        setData(r.data as ProposalData);
+      // Agent preview: show draft_data regardless of status
+      if (isAgentPreview) {
+        setData((r.draft_data || r.published_data) as ProposalData);
         setLoading(false);
         return;
       }
 
-      // Agent preview for non-public statuses requires authenticated owner context.
-      const decide = (userId: string | null | undefined, isFinal: boolean) => {
-        if (cancelled) return;
+      // Public view: only show published_data when status is published/approved
+      const isPublic = status === "published" || status === "sent" || status === "approved";
 
-        if (userId && userId === r.user_id) {
-          setData(r.data as ProposalData);
-          setLoading(false);
-          return;
-        }
-
-        if (isFinal) {
-          notYetAvailable();
-        }
-      };
-
-      // First: attempt to read the restored session directly.
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (cancelled) return;
-
-      if (sessionData.session?.user?.id) {
-        decide(sessionData.session.user.id, true);
+      if (isPublic && r.published_data) {
+        setData(r.published_data as ProposalData);
+        setLoading(false);
         return;
       }
 
-      // Then: wait for the auth library to finish its initial session restore.
-      const { data } = supabase.auth.onAuthStateChange((event, session) => {
-        if (event === "INITIAL_SESSION") {
-          decide(session?.user?.id ?? null, true);
-        }
-        if (event === "SIGNED_IN") {
-          decide(session?.user?.id ?? null, true);
-        }
-      });
-      authSub = data.subscription;
-
-      // Final fallback: if auth never resolves, treat as unauthenticated.
-      timeoutId = window.setTimeout(() => decide(null, true), 800);
+      // Not published — show "Under Revision"
+      setError("under_revision");
+      setLoading(false);
     };
 
     run();
-
-    return () => {
-      cancelled = true;
-      authSub?.unsubscribe();
-      if (timeoutId) window.clearTimeout(timeoutId);
-    };
+    return () => { cancelled = true; };
   }, [shareId, isAgentPreview]);
 
   const brandStyles = buildBrandCssVars(data?.brand);
@@ -124,6 +77,23 @@ export default function ClientView() {
     );
   }
 
+  // Under Revision branded message
+  if (error === "under_revision") {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-6">
+        <div className="text-center max-w-md">
+          <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
+            <span className="text-3xl">✏️</span>
+          </div>
+          <h1 className="font-display text-3xl font-bold text-foreground mb-3">Under Revision</h1>
+          <p className="text-muted-foreground font-body leading-relaxed">
+            Your travel advisor is currently updating this proposal. Please check back soon or contact your advisor for more information.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (error || !data) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-6">
@@ -131,9 +101,7 @@ export default function ClientView() {
           <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-4">
             <span className="text-2xl">✈️</span>
           </div>
-          <h1 className="font-display text-2xl font-bold text-foreground mb-2">
-            {error?.includes("not yet available") ? "Not Yet Available" : "Proposal Not Found"}
-          </h1>
+          <h1 className="font-display text-2xl font-bold text-foreground mb-2">Proposal Not Found</h1>
           <p className="text-muted-foreground font-body">{error}</p>
         </div>
       </div>
@@ -142,7 +110,7 @@ export default function ClientView() {
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
-      <ProposalPreview data={data} shareId={shareId} />
+      <ProposalPreview data={data} shareId={shareId} tripId={tripId || undefined} />
     </div>
   );
 }
