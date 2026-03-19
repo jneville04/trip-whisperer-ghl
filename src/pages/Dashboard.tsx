@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -32,6 +32,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [proposals, setProposals] = useState<ProposalRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [firstName, setFirstName] = useState<string | null>(null);
   const [dupModal, setDupModal] = useState<{ open: boolean; proposal: ProposalRow | null }>({ open: false, proposal: null });
 
   useEffect(() => {
@@ -39,6 +40,20 @@ export default function Dashboard() {
       loadProposals();
     }
   }, [profileStatus, isAdmin]);
+
+  useEffect(() => {
+    if (!user) return;
+    // Try user_metadata first, then fetch from profiles
+    const metaName = user.user_metadata?.full_name;
+    if (metaName) {
+      setFirstName(metaName.split(" ")[0]);
+    } else {
+      supabase.from("profiles").select("full_name").eq("id", user.id).single().then(({ data }) => {
+        const name = (data as any)?.full_name;
+        if (name) setFirstName(name.split(" ")[0]);
+      });
+    }
+  }, [user]);
 
   const loadProposals = async () => {
     const { data, error } = await supabase
@@ -114,13 +129,10 @@ export default function Dashboard() {
           <div className="text-center py-20">
             <MapPin className="h-12 w-12 text-primary/30 mx-auto mb-4" />
             <h2 className="font-display text-2xl font-semibold text-foreground mb-2">
-              Welcome to {settings.app_name}
+              {firstName ? `Welcome back, ${firstName}` : "Welcome back"}
             </h2>
-            <p className="text-muted-foreground font-body text-sm leading-relaxed mb-1">
-              Create and manage trip proposals for your clients.
-            </p>
             <p className="text-muted-foreground font-body text-sm leading-relaxed mb-8">
-              Start by creating your first trip proposal or group itinerary.
+              Create a proposal or group trip page and start building your next trip.
             </p>
             <CreateTripMenu />
           </div>
