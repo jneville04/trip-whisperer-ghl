@@ -289,7 +289,8 @@ function ItinerarySection({
   );
 }
 
-export default function ProposalPreview({ data, shareId, tripId, isEditor, onEditorSubPage }: Props) {
+export default function ProposalPreview({ data, shareId, tripId, isEditor, onEditorSubPage, remainingSpots, showExactSpots }: Props) {
+  const isSoldOut = remainingSpots !== undefined && remainingSpots !== null && remainingSpots <= 0;
   const isGroupBooking = (data as any).proposalType !== "proposal";
   const navigate = useNavigate();
   const heroImage = data.heroImageUrl || "";
