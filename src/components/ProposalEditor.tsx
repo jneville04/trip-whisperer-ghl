@@ -1447,7 +1447,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       <CollapsibleSection title={sectionTitles.itinerary} sectionKey="itinerary" visible={vis.itinerary} onToggleVisible={() => toggleSection("itinerary")} sectionCustomTitle={customTitles.itinerary?.title} sectionCustomSubtitle={customTitles.itinerary?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("itinerary", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("itinerary", v)}>
                         <div className="space-y-6">
                           {data.days.map((day, dayIdx) => (
-                            <CollapsibleHotel key={day.id} defaultOpen={dayIdx === 0} hotelName={`Day ${dayIdx + 1}${day.title ? `: ${day.title}` : ""}`} location={day.location} onDelete={() => removeDay(dayIdx)}>
+                            <CollapsibleHotel key={day.id} defaultOpen={dayIdx === 0} hotelName={`Day ${dayIdx + 1}${day.title ? `: ${day.title}` : ""}`} location={day.location} onDelete={() => removeDay(dayIdx)} hidden={day.hidden} onHide={() => { const days = [...data.days]; days[dayIdx] = { ...days[dayIdx], hidden: !days[dayIdx].hidden }; update("days", days); }} onCopy={() => { const clone = { ...day, id: crypto.randomUUID(), hidden: false }; update("days", [...data.days.slice(0, dayIdx + 1), clone, ...data.days.slice(dayIdx + 1)]); }}>
                               <div className="p-4 space-y-3">
                               <div className="grid grid-cols-2 gap-2 mb-2">
                                 <div>
