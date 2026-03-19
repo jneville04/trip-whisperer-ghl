@@ -153,10 +153,13 @@ export default function EditorPage() {
   const handleChange = useCallback((newData: ProposalData) => {
     setData(newData);
     setDirty(true);
+    setSaveFailed(false);
   }, []);
 
-  const saveProposal = async (status?: string) => {
-    if (!id) return;
+  // Core save function – returns true on success, false on failure
+  const saveProposal = async (status?: string, dataOverride?: ProposalData): Promise<boolean> => {
+    if (!id) return false;
+    const saveData = dataOverride || dataRef.current;
     const targetStatus = status ?? currentStatus;
     const isPublish = status === "published";
     const isUnpublish = status === "unpublished";
@@ -164,8 +167,7 @@ export default function EditorPage() {
     if (isPublish) setPublishing(true);
     else setSaving(true);
 
-    // Sync agent info AND resolved brand colors into proposal data on every save
-    const currentBrand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
+    const currentBrand = saveData.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "" };
     const resolvedBrand = {
       primaryColor: currentBrand.primaryColor || agentSettings.primary_color || appSettings.primary_color,
       secondaryColor: currentBrand.secondaryColor || agentSettings.secondary_color || appSettings.secondary_color,
@@ -174,7 +176,7 @@ export default function EditorPage() {
       showAgencyNameWithLogo: currentBrand.showAgencyNameWithLogo ?? agentSettings.show_agency_name_with_logo,
     };
     const dataToSave = {
-      ...data,
+      ...saveData,
       brand: resolvedBrand,
       agent: {
         name: agentSettings.agent_name || "",
@@ -188,15 +190,15 @@ export default function EditorPage() {
       },
     };
 
-    const tripName = (data as any).tripName || data.destination || "Untitled";
-    const displayTitle = data.clientName ? `${tripName} — ${data.clientName}` : tripName;
+    const tripName = (saveData as any).tripName || saveData.destination || "Untitled";
+    const displayTitle = saveData.clientName ? `${tripName} — ${saveData.clientName}` : tripName;
 
     const { error } = await supabase
       .from("proposals")
       .update({
         title: displayTitle,
-        client_name: data.clientName || "",
-        destination: data.destination || "",
+        client_name: saveData.clientName || "",
+        destination: saveData.destination || "",
         data: dataToSave as any,
         status: targetStatus,
         updated_at: new Date().toISOString(),
@@ -204,18 +206,39 @@ export default function EditorPage() {
       .eq("id", id);
 
     if (error) {
-      toast({ title: "Save failed", description: error.message, variant: "destructive" });
-    } else {
-      setCurrentStatus(targetStatus);
-      setLastSavedAt(new Date());
-      const msg = isPublish ? "Published!" : isUnpublish ? "Unpublished!" : "Saved!";
-      toast({ title: msg });
-      setDirty(false);
+      setSaveFailed(true);
+      if (isPublish || isUnpublish) {
+        toast({ title: "Save failed", description: error.message, variant: "destructive" });
+      }
+      setSaving(false);
+      setPublishing(false);
+      return false;
     }
+
+    setCurrentStatus(targetStatus);
+    setLastSavedAt(new Date());
+    setDirty(false);
+    setSaveFailed(false);
+
+    if (isPublish) toast({ title: "Published!" });
+    else if (isUnpublish) toast({ title: "Unpublished!" });
 
     setSaving(false);
     setPublishing(false);
+    return true;
   };
+
+  // Debounced autosave: triggers 2s after last change
+  useEffect(() => {
+    if (!dirty || !id) return;
+    if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+    autosaveTimerRef.current = setTimeout(() => {
+      saveProposal();
+    }, 2000);
+    return () => {
+      if (autosaveTimerRef.current) clearTimeout(autosaveTimerRef.current);
+    };
+  }, [dirty, data, id]);
 
   const handleSave = () => saveProposal();
   const handlePublish = () => saveProposal("published");
