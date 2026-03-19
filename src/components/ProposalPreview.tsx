@@ -1184,10 +1184,16 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                             </div>
                             {(acc.price || !isGroupBooking) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
-                                {acc.price && (
-                                  <span className="font-display text-xl font-bold text-foreground">${acc.price}</span>
+                                {acc.price && (acc.pricingDisplay || "total") !== "hide" ? (
+                                  <span className="font-display text-xl font-bold text-foreground">
+                                    {fmtCurrency(acc.price)}
+                                    <span className="text-xs text-muted-foreground font-body ml-1">
+                                      {(acc.pricingDisplay || "total") === "per_person" ? "per person" : (acc.pricingDisplay || "total") === "per_night" ? "per night" : "total"}
+                                    </span>
+                                  </span>
+                                ) : (
+                                  <span />
                                 )}
-                                {!acc.price && <span />}
                                 {accommodationSelectionEnabled && (
                                   <div className="flex items-center gap-2">
                                     {accommodations.length > 1 && (
