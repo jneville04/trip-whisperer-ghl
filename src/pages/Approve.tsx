@@ -41,9 +41,9 @@ export default function ApprovePage() {
     const loadBrand = async () => {
       setBrandLoading(true);
       const { data: row } = await supabase
-        .from("proposals")
-        .select("data")
-        .eq("share_id", shareId)
+        .from("trips")
+        .select("published_data, draft_data")
+        .eq("public_slug", shareId)
         .single();
 
       const proposalData = (row as any)?.data;

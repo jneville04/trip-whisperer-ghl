@@ -2656,6 +2656,24 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
         </footer>
       )}
 
+      {/* Full-Screen Success Overlay */}
+      {approveSuccess && (
+        <div className="fixed inset-0 z-[200] bg-background flex items-center justify-center px-6">
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md">
+            <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-8">
+              <CheckCircle2 className="h-12 w-12 text-primary" />
+            </div>
+            <h1 className="font-display text-4xl font-bold text-foreground mb-4">Trip Approved!</h1>
+            <p className="text-muted-foreground font-body text-lg leading-relaxed mb-10">
+              Thank you for approving your itinerary. Your travel advisor will be in touch shortly with booking confirmation and next steps.
+            </p>
+            <Button variant="travel-outline" size="lg" className="text-base px-8 py-5 h-auto" disabled>
+              <ArrowRight className="h-4 w-4 mr-2" /> Download PDF (Coming Soon)
+            </Button>
+          </motion.div>
+        </div>
+      )}
+
       <Lightbox
         images={lightboxImages}
         initialIndex={lightboxIndex}
