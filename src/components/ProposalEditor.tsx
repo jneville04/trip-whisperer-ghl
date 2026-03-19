@@ -864,7 +864,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                         <div className="space-y-4">
                           {(data as any).proposalType === "proposal" && (
                             <div className="rounded-lg border border-border/40 bg-muted/20 p-3 space-y-2">
-                              <FieldLabel>Accommodations Mode</FieldLabel>
+                              <FieldLabel>Selection Behavior</FieldLabel>
                               <div className="flex flex-wrap gap-1.5">
                                 <Button
                                   type="button"
@@ -885,6 +885,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                   Client selects one
                                 </Button>
                               </div>
+                              <p className="text-[10px] text-muted-foreground font-body leading-snug mt-1">
+                                {accommodationsMode === "informational_only"
+                                  ? "Show the hotel to the client with no selection button."
+                                  : "Let the client choose one hotel option on the proposal."}
+                              </p>
                             </div>
                           )}
                           {accommodations.map((acc, i) => {

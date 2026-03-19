@@ -105,16 +105,13 @@ function ItinerarySection({
   fadeUp: any;
   openLightbox: (images: { src: string; alt?: string }[], index?: number) => void;
 }) {
-  const [expandedDays, setExpandedDays] = useState<Record<string, boolean>>(() => {
-    const initial: Record<string, boolean> = {};
-    data.days.forEach((day, i) => {
-      initial[day.id] = i === 0;
-    });
-    return initial;
+  const [openDayId, setOpenDayId] = useState<string | null>(() => {
+    const visibleDays = data.days.filter(d => !d.hidden);
+    return visibleDays.length > 0 ? visibleDays[0].id : null;
   });
 
   const toggleDay = (dayId: string) => {
-    setExpandedDays((prev) => ({ ...prev, [dayId]: !prev[dayId] }));
+    setOpenDayId((prev) => prev === dayId ? null : dayId);
   };
 
   return (
@@ -133,7 +130,7 @@ function ItinerarySection({
         </motion.div>
         <div className="space-y-4">
           {data.days.filter(d => !d.hidden).map((day, dayIdx) => {
-            const isOpen = expandedDays[day.id] ?? false;
+            const isOpen = openDayId === day.id;
             return (
               <motion.div
                 key={day.id}
@@ -187,7 +184,9 @@ function ItinerarySection({
                               <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-6`}>
                                 <div className="flex-1">
                                   <div className="flex items-start gap-3">
-                                    <div className="relative z-10 mt-1.5 w-[13px] h-[13px] shrink-0 rounded-full border-2 border-primary bg-background" />
+                                    <div className="relative z-10 mt-1 w-7 h-7 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                      {getActivityIcon(act.type)}
+                                    </div>
                                     <div className="flex-1">
                                       {act.time && (
                                         <span className="text-xs font-semibold text-primary font-body flex items-center gap-1 mb-1">
@@ -831,10 +830,12 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                               <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary font-body">
                                 Option {optIdx + 1} of {flightOptions.length}
                               </span>
-                              {opt.price && (
+                              {opt.price && (opt.pricingDisplay || "total") !== "hide" && (
                                 <span className="font-display text-lg font-bold text-foreground">
-                                  ${opt.price}
-                                  <span className="text-xs text-muted-foreground font-body ml-1">/ person</span>
+                                  {fmtCurrency(opt.price)}
+                                  <span className="text-xs text-muted-foreground font-body ml-1">
+                                    {(opt.pricingDisplay || "total") === "per_person" ? "per person" : "total"}
+                                  </span>
                                 </span>
                               )}
                             </div>
@@ -935,13 +936,15 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           {/* Footer: price (if single option) + selection */}
                           {(opt.price || !isGroupBooking) && (
                             <div className="bg-muted/30 border-t border-border/30 px-6 py-4 flex items-center justify-between">
-                              {opt.price && flightOptions.length <= 1 && (
+                              {opt.price && flightOptions.length <= 1 && (opt.pricingDisplay || "total") !== "hide" && (
                                 <span className="font-display text-xl font-bold text-foreground">
-                                  ${opt.price}
-                                  <span className="text-xs text-muted-foreground font-body ml-1">/ person</span>
+                                  {fmtCurrency(opt.price)}
+                                  <span className="text-xs text-muted-foreground font-body ml-1">
+                                    {(opt.pricingDisplay || "total") === "per_person" ? "per person" : "total"}
+                                  </span>
                                 </span>
                               )}
-                              {(!opt.price || flightOptions.length > 1) && <span />}
+                              {(!opt.price || flightOptions.length > 1 || (opt.pricingDisplay || "total") === "hide") && <span />}
                               {!isGroupBooking && (
                                 <div className="flex items-center gap-2">
                                   {isSelected ? (
@@ -1181,10 +1184,16 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                             </div>
                             {(acc.price || !isGroupBooking) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
-                                {acc.price && (
-                                  <span className="font-display text-xl font-bold text-foreground">${acc.price}</span>
+                                {acc.price && (acc.pricingDisplay || "total") !== "hide" ? (
+                                  <span className="font-display text-xl font-bold text-foreground">
+                                    {fmtCurrency(acc.price)}
+                                    <span className="text-xs text-muted-foreground font-body ml-1">
+                                      {(acc.pricingDisplay || "total") === "per_person" ? "per person" : (acc.pricingDisplay || "total") === "per_night" ? "per night" : "total"}
+                                    </span>
+                                  </span>
+                                ) : (
+                                  <span />
                                 )}
-                                {!acc.price && <span />}
                                 {accommodationSelectionEnabled && (
                                   <div className="flex items-center gap-2">
                                     {accommodations.length > 1 && (
@@ -1453,10 +1462,16 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                             </div>
                             {(ship.price || !isGroupBooking) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
-                                {ship.price && (
-                                  <span className="font-display text-xl font-bold text-foreground">${ship.price}</span>
+                                {ship.price && (ship.pricingDisplay || "total") !== "hide" ? (
+                                  <span className="font-display text-xl font-bold text-foreground">
+                                    {fmtCurrency(ship.price)}
+                                    <span className="text-xs text-muted-foreground font-body ml-1">
+                                      {(ship.pricingDisplay || "total") === "per_person" ? "per person" : "total"}
+                                    </span>
+                                  </span>
+                                ) : (
+                                  <span />
                                 )}
-                                {!ship.price && <span />}
                                 {!isGroupBooking && (
                                   <div className="flex items-center gap-2">
                                     {cruiseShips.length > 1 && (
