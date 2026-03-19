@@ -251,6 +251,48 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
   return <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1 block font-body">{children}</label>;
 }
 
+// Pricing display mode selector for option sections
+function PricingDisplaySelect({ value, onChange, showPerNight }: { value?: PricingDisplayMode; onChange: (v: PricingDisplayMode) => void; showPerNight?: boolean }) {
+  const mode = value || "total";
+  const options: { value: PricingDisplayMode; label: string }[] = [
+    { value: "hide", label: "Hide" },
+    { value: "total", label: "Total" },
+    { value: "per_person", label: "Per Person" },
+  ];
+  if (showPerNight) options.push({ value: "per_night", label: "Per Night" });
+  return (
+    <div>
+      <FieldLabel>Client Price Display</FieldLabel>
+      <div className="flex gap-1 flex-wrap">
+        {options.map((opt) => (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            className={`px-2 py-1 text-[10px] rounded-md border font-body font-medium transition-colors ${
+              mode === opt.value
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-background text-muted-foreground border-border hover:bg-muted"
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// City-only destinations (no airports, ports, cruise lines)
+import { POPULAR_DESTINATIONS } from "@/components/LocationAutocomplete";
+const CITY_DESTINATIONS = POPULAR_DESTINATIONS.filter(
+  (d) => !d.includes("(Port)") && !d.match(/^[A-Z]{3}\s[–—-]\s/) && ![
+    "Royal Caribbean", "Carnival Cruise Line", "Norwegian Cruise Line",
+    "MSC Cruises", "Celebrity Cruises", "Princess Cruises",
+    "Holland America Line", "Disney Cruise Line", "Viking Ocean Cruises",
+  ].includes(d)
+);
+
 export default function ProposalEditor({ data, onChange }: Props) {
   const { settings: agentSettings } = useAgentSettings();
   const { settings: appSettings } = useAppSettings();
