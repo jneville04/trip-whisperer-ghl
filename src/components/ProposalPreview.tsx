@@ -130,7 +130,7 @@ function ItinerarySection({
         </motion.div>
         <div className="space-y-4">
           {data.days.filter(d => !d.hidden).map((day, dayIdx) => {
-            const isOpen = expandedDays[day.id] ?? false;
+            const isOpen = openDayId === day.id;
             return (
               <motion.div
                 key={day.id}
