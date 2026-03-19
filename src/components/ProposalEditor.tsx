@@ -367,6 +367,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const vis = data.sectionVisibility || { hero: true, overview: true, flights: true, accommodations: true, cruiseShips: true, busTrips: true, itinerary: true, inclusions: true, pricing: true, essentials: true, terms: true, agent: true };
   const flightOptions = data.flightOptions || [];
   const accommodations = data.accommodations || [];
+  const accommodationsMode = ((data as any).accommodationsMode || "client_selects_one") as "informational_only" | "client_selects_one";
   const cruiseShips = data.cruiseShips || [];
   const busTrips = data.busTrips || [];
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
