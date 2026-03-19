@@ -32,9 +32,13 @@ export default function EditorPage() {
   const [currentStatus, setCurrentStatus] = useState("draft");
   const [editorSubPage, setEditorSubPage] = useState<EditorSubPage | null>(null);
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
+  const [saveFailed, setSaveFailed] = useState(false);
   const [editingTripName, setEditingTripName] = useState(false);
   const tripNameInputRef = useRef<HTMLInputElement>(null);
   const [, setSearchParams] = useSearchParams();
+  const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const dataRef = useRef<ProposalData>(data);
+  dataRef.current = data;
 
   const handleEditorSubPage = useCallback((page: EditorSubPage | null) => {
     setEditorSubPage(page);
