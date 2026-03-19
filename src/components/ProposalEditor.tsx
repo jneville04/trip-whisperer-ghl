@@ -862,6 +862,31 @@ export default function ProposalEditor({ data, onChange }: Props) {
                     return (
                       <CollapsibleSection title={sectionTitles.accommodations} sectionKey="accommodations" visible={vis.accommodations} onToggleVisible={() => toggleSection("accommodations")} defaultOpen={false} sectionCustomTitle={customTitles.accommodations?.title} sectionCustomSubtitle={customTitles.accommodations?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("accommodations", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("accommodations", v)}>
                         <div className="space-y-4">
+                          {(data as any).proposalType === "proposal" && (
+                            <div className="rounded-lg border border-border/40 bg-muted/20 p-3 space-y-2">
+                              <FieldLabel>Accommodations Mode</FieldLabel>
+                              <div className="flex flex-wrap gap-1.5">
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant={accommodationsMode === "informational_only" ? "travel" : "travel-outline"}
+                                  className="h-7 text-xs"
+                                  onClick={() => onChange({ ...(data as any), accommodationsMode: "informational_only" } as ProposalData)}
+                                >
+                                  Informational only
+                                </Button>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant={accommodationsMode === "client_selects_one" ? "travel" : "travel-outline"}
+                                  className="h-7 text-xs"
+                                  onClick={() => onChange({ ...(data as any), accommodationsMode: "client_selects_one" } as ProposalData)}
+                                >
+                                  Client selects one
+                                </Button>
+                              </div>
+                            </div>
+                          )}
                           {accommodations.map((acc, i) => {
                             const accAmenities = acc.amenities || [];
                             const accHighlights = acc.highlights || [];
