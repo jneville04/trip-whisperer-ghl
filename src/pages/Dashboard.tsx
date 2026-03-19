@@ -129,13 +129,10 @@ export default function Dashboard() {
           <div className="text-center py-20">
             <MapPin className="h-12 w-12 text-primary/30 mx-auto mb-4" />
             <h2 className="font-display text-2xl font-semibold text-foreground mb-2">
-              Welcome to {settings.app_name}
+              {firstName ? `Welcome back, ${firstName}` : "Welcome back"}
             </h2>
-            <p className="text-muted-foreground font-body text-sm leading-relaxed mb-1">
-              Create and manage trip proposals for your clients.
-            </p>
             <p className="text-muted-foreground font-body text-sm leading-relaxed mb-8">
-              Start by creating your first trip proposal or group itinerary.
+              Create a proposal or group trip page and start building your next trip.
             </p>
             <CreateTripMenu />
           </div>
