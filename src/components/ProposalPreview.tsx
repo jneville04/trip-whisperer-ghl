@@ -2396,8 +2396,8 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                 const selectedFlightPrice = selectedFlight
                   ? parseFloat(flightOptions.find((o) => o.id === selectedFlight)?.price || "0")
                   : 0;
-                const selectedAccPrice = selectedAccommodation
-                  ? parseFloat(accommodations.find((a) => a.id === selectedAccommodation)?.price || "0")
+                const selectedAccPrice = effectiveSelectedAccommodation
+                  ? parseFloat(accommodations.find((a) => a.id === effectiveSelectedAccommodation)?.price || "0")
                   : 0;
                 const selectedCruisePrice = selectedCruise
                   ? parseFloat(cruiseShips.find((s) => s.id === selectedCruise)?.price || "0")
