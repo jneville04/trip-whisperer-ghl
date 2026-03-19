@@ -11,6 +11,8 @@ interface ImageUploadFieldProps {
   placeholder?: string;
   /** Show a small preview thumbnail */
   showPreview?: boolean;
+  /** Hide raw URL/value text when showPreview is false */
+  hideValueText?: boolean;
   className?: string;
 }
 
@@ -20,6 +22,7 @@ export default function ImageUploadField({
   label,
   placeholder = "Paste image URL or upload",
   showPreview = true,
+  hideValueText = false,
   className = "",
 }: ImageUploadFieldProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -79,7 +82,9 @@ export default function ImageUploadField({
           )}
           {!showPreview && (
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground truncate flex-1">{value.startsWith("data:") ? "Uploaded image" : value}</span>
+              {!hideValueText && (
+                <span className="text-xs text-muted-foreground truncate flex-1">{value.startsWith("data:") ? "Uploaded image" : value}</span>
+              )}
               <Button variant="travel-ghost" size="sm" className="h-7 text-xs" onClick={() => fileInputRef.current?.click()}>
                 <Upload className="h-3 w-3 mr-1" /> Replace
               </Button>

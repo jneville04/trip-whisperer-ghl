@@ -213,22 +213,20 @@ export default function SettingsPage() {
                     <FieldLabel>Agent Photo</FieldLabel>
                     <div className="flex items-start gap-4">
                       {form.agent_photo_url ? (
-                        <div className="relative group shrink-0">
+                        <div className="shrink-0">
                           <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-border bg-muted">
                             <img src={form.agent_photo_url} alt="Agent photo" className="w-full h-full object-cover" />
-                          </div>
-                          <div className="absolute inset-0 rounded-full bg-foreground/0 group-hover:bg-foreground/40 transition-colors flex items-center justify-center">
-                            <button
-                              onClick={() => updateField("agent_photo_url", "")}
-                              className="opacity-0 group-hover:opacity-100 transition-opacity bg-destructive text-destructive-foreground rounded-full p-1"
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
                           </div>
                         </div>
                       ) : null}
                       <div className="flex-1">
-                        <ImageUploadField value={form.agent_photo_url || ""} onChange={(url) => updateField("agent_photo_url", url)} placeholder="Upload or paste photo URL" showPreview={false} />
+                        <ImageUploadField
+                          value={form.agent_photo_url || ""}
+                          onChange={(url) => updateField("agent_photo_url", url)}
+                          placeholder="Upload or paste photo URL"
+                          showPreview={false}
+                          hideValueText
+                        />
                       </div>
                     </div>
                   </div>
@@ -263,35 +261,12 @@ export default function SettingsPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="font-display text-lg">Agency Information</CardTitle>
-                  <CardDescription className="font-body text-sm">Your agency name and logo for proposal footers.</CardDescription>
+                  <CardDescription className="font-body text-sm">Your agency name used in proposal footers.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
                     <FieldLabel>Agency Name</FieldLabel>
                     <Input value={form.agency_name || ""} onChange={(e) => updateField("agency_name", e.target.value)} className="h-9 text-sm" placeholder="Dream Travel Co." />
-                  </div>
-                  <div>
-                    <FieldLabel>Agency Logo</FieldLabel>
-                    <div className="flex items-start gap-4">
-                      {form.agency_logo_url ? (
-                        <div className="relative group shrink-0">
-                          <div className="w-20 h-14 rounded-lg overflow-hidden border border-border bg-muted flex items-center justify-center p-1">
-                            <img src={form.agency_logo_url} alt="Agency logo" className="max-w-full max-h-full object-contain" />
-                          </div>
-                          <div className="absolute inset-0 rounded-lg bg-foreground/0 group-hover:bg-foreground/40 transition-colors flex items-center justify-center">
-                            <button
-                              onClick={() => updateField("agency_logo_url", "")}
-                              className="opacity-0 group-hover:opacity-100 transition-opacity bg-destructive text-destructive-foreground rounded-full p-1"
-                            >
-                              <X className="h-3 w-3" />
-                            </button>
-                          </div>
-                        </div>
-                      ) : null}
-                      <div className="flex-1">
-                        <ImageUploadField value={form.agency_logo_url || ""} onChange={(url) => updateField("agency_logo_url", url)} placeholder="Upload or paste logo URL" showPreview={false} />
-                      </div>
-                    </div>
                   </div>
                 </CardContent>
               </Card>
