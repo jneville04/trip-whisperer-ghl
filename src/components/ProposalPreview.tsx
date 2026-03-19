@@ -1823,7 +1823,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
             );
 
           case "itinerary":
-            if (data.days.length === 0) return null;
+            if (data.days.filter(d => !d.hidden).length === 0) return null;
             return <ItinerarySection key="itinerary" data={data} fadeUp={fadeUp} openLightbox={openLightbox} />;
 
           case "inclusions":
