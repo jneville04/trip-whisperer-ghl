@@ -143,6 +143,9 @@ export default function TripCard({ proposal, onOpen, onDuplicate, onDelete, onCo
           <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full text-white ${proposalType === "proposal" ? "bg-primary" : "bg-travel-ocean"}`}>
             {proposalType === "proposal" ? "Proposal" : "Group Trip"}
           </span>
+          <span className={`text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full ${sc.className}`}>
+            {sc.label}
+          </span>
         </div>
 
         {/* Title */}
