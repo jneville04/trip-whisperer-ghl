@@ -154,3 +154,11 @@
 .tiptap {
   color: hsl(var(--foreground));
 }
+
+/* Proposal Builder placeholder styling */
+.proposal-builder input::placeholder,
+.proposal-builder textarea::placeholder,
+.proposal-builder .tiptap .is-editor-empty:first-child::before {
+  color: hsl(var(--muted-foreground) / 0.5);
+  font-style: italic;
+}
