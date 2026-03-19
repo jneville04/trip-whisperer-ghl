@@ -7,7 +7,7 @@ import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } 
 import { CSS } from "@dnd-kit/utilities";
 
 import DatePickerField from "@/components/DatePickerField";
-import TimePickerDropdown from "@/components/TimePickerDropdown";
+import InlineTimePicker from "@/components/InlineTimePicker";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
 import AirportAutocomplete from "@/components/AirportAutocomplete";
 import AirlineAutocomplete, { findAirlineCode } from "@/components/AirlineAutocomplete";
