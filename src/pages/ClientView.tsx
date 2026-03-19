@@ -11,6 +11,8 @@ export default function ClientView() {
   const isAgentPreview = searchParams.get("preview") === "agent";
   const [data, setData] = useState<ProposalData | null>(null);
   const [tripId, setTripId] = useState<string | null>(null);
+  const [remainingSpots, setRemainingSpots] = useState<number | null>(null);
+  const [showExactSpots, setShowExactSpots] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -26,7 +28,7 @@ export default function ClientView() {
 
       const { data: row, error: err } = await supabase
         .from("trips")
-        .select("id, status, published_data, draft_data, org_id")
+        .select("id, status, published_data, draft_data, org_id, trip_type, max_capacity")
         .eq("public_slug", shareId)
         .single();
 
@@ -41,6 +43,18 @@ export default function ClientView() {
       const r = row as any;
       const status = r.status || "draft";
       setTripId(r.id);
+
+      // Calculate remaining spots for group trips
+      if (r.trip_type === "group" && r.max_capacity != null) {
+        const { count } = await supabase
+          .from("snapshots")
+          .select("id", { count: "exact", head: true })
+          .eq("trip_id", r.id);
+        const approvedCount = count || 0;
+        setRemainingSpots(Math.max(0, r.max_capacity - approvedCount));
+        const pubData = (r.published_data || r.draft_data || {}) as any;
+        setShowExactSpots(pubData.showExactSpots === true);
+      }
 
       // Agent preview: show draft_data regardless of status
       if (isAgentPreview) {
@@ -110,7 +124,7 @@ export default function ClientView() {
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
-      <ProposalPreview data={data} shareId={shareId} tripId={tripId || undefined} />
+      <ProposalPreview data={data} shareId={shareId} tripId={tripId || undefined} remainingSpots={remainingSpots} showExactSpots={showExactSpots} />
     </div>
   );
 }
