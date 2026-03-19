@@ -1530,7 +1530,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                             <option key={t.value} value={t.value}>{t.label}</option>
                                           ))}
                                         </select>
-                                        <TimePickerDropdown value={act.time} onChange={(val) => updateActivity(dayIdx, actIdx, "time", val)} />
+                                        <InlineTimePicker value={act.time} onChange={(val) => updateActivity(dayIdx, actIdx, "time", val)} />
                                       </div>
                                       <div className="flex items-center gap-0.5">
                                         <button onClick={() => {
