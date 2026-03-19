@@ -1008,13 +1008,13 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                       {ct.accommodations?.subtitle || "Where You'll Stay"}
                     </p>
                     <h2 className="font-display text-4xl font-bold text-foreground">{ct.accommodations?.title || "Accommodations"}</h2>
-                    {!isGroupBooking && accommodations.length > 1 && (
+                    {accommodationSelectionEnabled && accommodations.length > 1 && (
                       <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>
                     )}
                   </motion.div>
                   <div className="space-y-10">
                     {accommodations.map((acc) => {
-                      const isSelected = selectedAccommodation === acc.id;
+                      const isSelected = effectiveSelectedAccommodation === acc.id;
                       const amenities = (acc.amenities || []).filter(Boolean);
                       const highlights = (acc.highlights || []).filter(Boolean);
                       const galleryUrls = acc.galleryUrls || [];
@@ -1033,15 +1033,19 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                           viewport={{ once: true }}
                           custom={0}
                           className={`bg-card rounded-2xl border-2 shadow-lg overflow-hidden transition-all ${
-                            !isGroupBooking
+                            accommodationSelectionEnabled
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
                                 : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
-                          onClick={() => !isGroupBooking && setSelectedAccommodation(isSelected ? "" : acc.id)}
+                          onClick={() => {
+                            if (accommodationSelectionEnabled) {
+                              setSelectedAccommodation(isSelected ? "" : acc.id);
+                            }
+                          }}
                         >
-                          {!isGroupBooking && accommodations.length > 1 && (
+                          {accommodationSelectionEnabled && accommodations.length > 1 && (
                             <div className="absolute top-4 right-4 z-10">
                               <span className="inline-block bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-[0.15em] font-body px-2.5 py-1 rounded-full">
                                 Option {accommodations.indexOf(acc) + 1}
