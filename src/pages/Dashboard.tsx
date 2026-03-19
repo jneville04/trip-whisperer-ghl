@@ -41,6 +41,20 @@ export default function Dashboard() {
     }
   }, [profileStatus, isAdmin]);
 
+  useEffect(() => {
+    if (!user) return;
+    // Try user_metadata first, then fetch from profiles
+    const metaName = user.user_metadata?.full_name;
+    if (metaName) {
+      setFirstName(metaName.split(" ")[0]);
+    } else {
+      supabase.from("profiles").select("full_name").eq("id", user.id).single().then(({ data }) => {
+        const name = (data as any)?.full_name;
+        if (name) setFirstName(name.split(" ")[0]);
+      });
+    }
+  }, [user]);
+
   const loadProposals = async () => {
     const { data, error } = await supabase
       .from("proposals")
