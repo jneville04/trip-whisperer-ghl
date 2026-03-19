@@ -749,16 +749,17 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                       <FieldLabel>Date</FieldLabel>
                                       <DatePickerField value={leg.date} onChange={(val) => updateFlightLeg(oi, li, "date", val)} placeholder="Select date" />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-1">
-                                      <div>
-                                        <FieldLabel>Depart</FieldLabel>
-                                        <InlineTimePicker value={leg.departureTime} onChange={(val) => updateFlightLeg(oi, li, "departureTime", val)} />
-                                      </div>
-                                      <div>
-                                        <FieldLabel>Arrive</FieldLabel>
-                                        <InlineTimePicker value={leg.arrivalTime} onChange={(val) => updateFlightLeg(oi, li, "arrivalTime", val)} />
-                                      </div>
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-2 mt-2">
+                                    <div>
+                                      <FieldLabel>Depart</FieldLabel>
+                                      <InlineTimePicker value={leg.departureTime} onChange={(val) => updateFlightLeg(oi, li, "departureTime", val)} />
                                     </div>
+                                    <div>
+                                      <FieldLabel>Arrive</FieldLabel>
+                                      <InlineTimePicker value={leg.arrivalTime} onChange={(val) => updateFlightLeg(oi, li, "arrivalTime", val)} />
+                                    </div>
+                                  </div>
                                   </div>
                                 </div>
                               ))}
