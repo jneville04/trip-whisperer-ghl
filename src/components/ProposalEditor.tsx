@@ -903,7 +903,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                       <div className="grid grid-cols-2 gap-2">
                                         <div>
                                           <FieldLabel>Location</FieldLabel>
-                                          <LocationAutocomplete value={acc.location} onChange={(val) => updateAccommodation(i, "location", val)} placeholder="Lisbon" className="h-8 text-xs" />
+                                          <LocationAutocomplete value={acc.location} onChange={(val) => updateAccommodation(i, "location", val)} placeholder="Lisbon, Portugal" className="h-8 text-xs" suggestions={CITY_DESTINATIONS} />
                                         </div>
                                         <div>
                                           <FieldLabel>Room Type</FieldLabel>
