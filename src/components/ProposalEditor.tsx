@@ -475,12 +475,16 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       onChange({ ...data, heroImageUrl: primary, heroImageUrls: gallery });
                     }}
                     onUpload={async (files) => {
-                      const urls = await uploadImages(files);
+                      const currentTotal = (data.heroImageUrl ? 1 : 0) + (data.heroImageUrls || []).length;
+                      const slotsLeft = 3 - currentTotal;
+                      if (slotsLeft <= 0) return;
+                      const capped = Array.from(files).slice(0, slotsLeft);
+                      const urls = await uploadImages(capped);
                       urls.forEach((url) => {
                         if (!data.heroImageUrl) { update("heroImageUrl", url); }
                         else { update("heroImageUrls", [...(data.heroImageUrls || []), url]); }
                       });
-                    }}
+                    }
                   />
                 </div>
                 <div className="flex gap-1.5 mt-1.5">
