@@ -760,7 +760,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                       <InlineTimePicker value={leg.arrivalTime} onChange={(val) => updateFlightLeg(oi, li, "arrivalTime", val)} />
                                     </div>
                                   </div>
-                                  </div>
                                 </div>
                               ))}
                               <div className="flex gap-2">
