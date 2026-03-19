@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Copy, Trash2, ExternalLink, MapPin, Calendar, Eye, Clock, MoreVertical } from "lucide-react";
-import { type ProposalData } from "@/types/proposal";
+import { type ProposalData, type TripRow } from "@/types/proposal";
 import { format } from "date-fns";
 
 /** Captures a frame from a direct video URL or fetches Vimeo thumbnail */
@@ -58,41 +58,34 @@ function VideoFrameThumb({ videoUrl, vimeoId, alt }: { videoUrl: string; vimeoId
   return <div className="w-full h-full bg-muted animate-pulse" />;
 }
 
-interface ProposalRow {
-  id: string;
-  title: string;
-  client_name: string;
-  destination: string;
-  status: string;
-  share_id: string;
-  data: ProposalData;
-  created_at: string;
-  updated_at: string;
-}
-
 const statusConfig: Record<string, { label: string; className: string }> = {
   draft: { label: "Draft", className: "bg-amber-100 text-amber-800" },
   published: { label: "Published", className: "bg-emerald-100 text-emerald-800" },
   sent: { label: "Published", className: "bg-emerald-100 text-emerald-800" },
   unpublished: { label: "Unpublished", className: "bg-slate-200 text-slate-700" },
-  approved: { label: "Published", className: "bg-emerald-100 text-emerald-800" },
+  approved: { label: "Approved", className: "bg-blue-100 text-blue-800" },
 };
 
 interface TripCardProps {
-  proposal: ProposalRow;
+  trip: TripRow;
   onOpen: () => void;
   onDuplicate: () => void;
   onDelete: () => void;
   onCopyLink: () => void;
 }
 
-export default function TripCard({ proposal, onOpen, onDuplicate, onDelete, onCopyLink }: TripCardProps) {
+export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLink }: TripCardProps) {
   const navigate = useNavigate();
-  const heroImg = proposal.data?.heroImageUrl || (proposal.data?.heroImageUrls?.length ? proposal.data.heroImageUrls[0] : "");
-  const proposalType = (proposal.data as any)?.proposalType || "group_booking";
-  const sc = statusConfig[proposal.status] || statusConfig.draft;
+  const draftData = trip.draft_data as ProposalData | null;
+  const heroImg = draftData?.heroImageUrl || (draftData?.heroImageUrls?.length ? draftData.heroImageUrls[0] : "");
+  const tripType = trip.trip_type || "individual";
+  const title = draftData?.tripName || "Untitled";
+  const clientName = draftData?.clientName || "";
+  const destination = draftData?.destination || "";
+  const sc = statusConfig[trip.status || "draft"] || statusConfig.draft;
 
-  const formatUpdatedAt = (dateStr: string) => {
+  const formatCreatedAt = (dateStr: string | null) => {
+    if (!dateStr) return "";
     try {
       return format(new Date(dateStr), "MMM d, yyyy");
     } catch {
@@ -108,9 +101,9 @@ export default function TripCard({ proposal, onOpen, onDuplicate, onDelete, onCo
       {/* Image */}
       <div className="h-40 relative overflow-hidden flex-shrink-0">
         {(() => {
-          const videoUrl = (proposal.data as any)?.heroVideoUrl;
-          const videoThumb = (proposal.data as any)?.heroVideoThumbnailUrl;
-          const heroMediaType = (proposal.data as any)?.heroMediaType;
+          const videoUrl = draftData?.heroVideoUrl;
+          const videoThumb = draftData?.heroVideoThumbnailUrl;
+          const heroMediaType = draftData?.heroMediaType;
           const isVideo = heroMediaType === "video" && videoUrl;
 
           if (isVideo) {
@@ -121,13 +114,12 @@ export default function TripCard({ proposal, onOpen, onDuplicate, onDelete, onCo
               || (vimeoMatch ? `vimeo:${vimeoMatch[1]}` : null);
 
             if (autoThumb && !autoThumb.startsWith("vimeo:")) {
-              return <img src={autoThumb} alt={proposal.destination || "Proposal"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />;
+              return <img src={autoThumb} alt={destination || "Trip"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />;
             }
-            // Vimeo or direct video — use VideoFrameThumb
-            return <VideoFrameThumb videoUrl={videoUrl} vimeoId={vimeoMatch ? vimeoMatch[1] : undefined} alt={proposal.destination || "Proposal"} />;
+            return <VideoFrameThumb videoUrl={videoUrl} vimeoId={vimeoMatch ? vimeoMatch[1] : undefined} alt={destination || "Trip"} />;
           }
           if (heroImg) {
-            return <img src={heroImg} alt={proposal.destination || "Proposal"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />;
+            return <img src={heroImg} alt={destination || "Trip"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />;
           }
           return (
             <div className="w-full h-full bg-muted flex items-center justify-center">
@@ -141,8 +133,8 @@ export default function TripCard({ proposal, onOpen, onDuplicate, onDelete, onCo
       <div className="p-4 flex flex-col flex-1 gap-3">
         {/* Type + Status Badges */}
         <div className="flex items-center gap-2">
-          <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full text-white ${proposalType === "proposal" ? "bg-primary" : "bg-travel-ocean"}`}>
-            {proposalType === "proposal" ? "Proposal" : "Group Trip"}
+          <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full text-white ${tripType === "individual" || (draftData as any)?.proposalType === "proposal" ? "bg-primary" : "bg-travel-ocean"}`}>
+            {tripType === "group" || (draftData as any)?.proposalType === "group_booking" ? "Group Trip" : "Proposal"}
           </span>
           <span className={`text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full ${sc.className}`}>
             {sc.label}
@@ -151,23 +143,23 @@ export default function TripCard({ proposal, onOpen, onDuplicate, onDelete, onCo
 
         {/* Title */}
         <h3 className="font-display text-base font-semibold text-foreground leading-snug line-clamp-2">
-          {proposal.title || "Untitled"}
+          {clientName ? `${title} — ${clientName}` : title}
         </h3>
 
         {/* Meta */}
         <div className="flex flex-col gap-1 text-xs text-muted-foreground font-body leading-relaxed">
-          {proposal.destination && (
+          {destination && (
             <span className="flex items-center gap-1.5">
-              <MapPin className="h-3 w-3 flex-shrink-0" /> {proposal.destination}
+              <MapPin className="h-3 w-3 flex-shrink-0" /> {destination}
             </span>
           )}
-          {proposal.client_name && (
+          {clientName && (
             <span className="flex items-center gap-1.5">
-              <Calendar className="h-3 w-3 flex-shrink-0" /> {proposal.client_name}
+              <Calendar className="h-3 w-3 flex-shrink-0" /> {clientName}
             </span>
           )}
           <span className="flex items-center gap-1.5">
-            <Clock className="h-3 w-3 flex-shrink-0" /> Updated {formatUpdatedAt(proposal.updated_at)}
+            <Clock className="h-3 w-3 flex-shrink-0" /> Created {formatCreatedAt(trip.created_at)}
           </span>
         </div>
 
@@ -186,7 +178,7 @@ export default function TripCard({ proposal, onOpen, onDuplicate, onDelete, onCo
               className="h-7 text-xs px-2 font-medium"
               onClick={(e) => {
                 e.stopPropagation();
-                navigate(`/view/${proposal.share_id}?preview=agent`);
+                navigate(`/view/${trip.public_slug}?preview=agent`);
               }}
             >
               <Eye className="h-3 w-3 mr-1" /> Preview

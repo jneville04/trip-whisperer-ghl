@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -8,42 +8,28 @@ import { useAppSettings } from "@/hooks/useAppSettings";
 import AppLayout from "@/components/AppLayout";
 import TripCard from "@/components/TripCard";
 import CreateTripMenu from "@/components/CreateTripMenu";
-import { MapPin, FileText } from "lucide-react";
-import { type ProposalData } from "@/types/proposal";
-import { format } from "date-fns";
+import { MapPin } from "lucide-react";
+import { type ProposalData, type TripRow } from "@/types/proposal";
 import DuplicateTripModal from "@/components/DuplicateTripModal";
-
-interface ProposalRow {
-  id: string;
-  title: string;
-  client_name: string;
-  destination: string;
-  status: string;
-  share_id: string;
-  data: ProposalData;
-  created_at: string;
-  updated_at: string;
-}
 
 export default function Dashboard() {
   const { user, loading: authLoading, profileStatus } = useAuth();
   const { data: isAdmin } = useAdminCheck(user?.id);
   const { settings } = useAppSettings();
   const navigate = useNavigate();
-  const [proposals, setProposals] = useState<ProposalRow[]>([]);
+  const [trips, setTrips] = useState<TripRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [firstName, setFirstName] = useState<string | null>(null);
-  const [dupModal, setDupModal] = useState<{ open: boolean; proposal: ProposalRow | null }>({ open: false, proposal: null });
+  const [dupModal, setDupModal] = useState<{ open: boolean; trip: TripRow | null }>({ open: false, trip: null });
 
   useEffect(() => {
     if (profileStatus === "approved" || isAdmin) {
-      loadProposals();
+      loadTrips();
     }
   }, [profileStatus, isAdmin]);
 
   useEffect(() => {
     if (!user) return;
-    // Try user_metadata first, then fetch from profiles
     const metaName = user.user_metadata?.full_name;
     if (metaName) {
       setFirstName(metaName.split(" ")[0]);
@@ -55,41 +41,37 @@ export default function Dashboard() {
     }
   }, [user]);
 
-  const loadProposals = async () => {
+  const loadTrips = async () => {
     const { data, error } = await supabase
-      .from("proposals")
+      .from("trips")
       .select("*")
-      .order("updated_at", { ascending: false });
+      .order("created_at", { ascending: false });
 
     if (error) {
-      toast({ title: "Error loading proposals", description: error.message, variant: "destructive" });
+      toast({ title: "Error loading trips", description: error.message, variant: "destructive" });
     } else {
-      setProposals((data as any[]) || []);
+      setTrips((data as any[]) || []);
     }
     setLoading(false);
   };
 
-  const duplicateProposal = async (tripName: string, clientName: string, proposal: ProposalRow) => {
+  const duplicateTrip = async (tripName: string, clientName: string, trip: TripRow) => {
     const user = (await supabase.auth.getUser()).data.user;
     if (!user) return;
 
     const dupData = {
-      ...(proposal.data as any),
-      tripName: tripName,
-      clientName: clientName,
+      ...(trip.draft_data as any),
+      tripName,
+      clientName,
     };
 
-    const displayTitle = clientName ? `${tripName} — ${clientName}` : tripName;
-
     const { error } = await supabase
-      .from("proposals")
+      .from("trips")
       .insert({
-        user_id: user.id,
-        title: displayTitle,
-        client_name: clientName,
-        destination: proposal.destination,
+        trip_type: trip.trip_type || "individual",
         status: "draft",
-        data: dupData as any,
+        draft_data: dupData as any,
+        max_capacity: trip.max_capacity,
       })
       .select()
       .single();
@@ -97,24 +79,25 @@ export default function Dashboard() {
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Proposal duplicated" });
-      loadProposals();
+      toast({ title: "Trip duplicated" });
+      loadTrips();
     }
   };
 
-  const deleteProposal = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this proposal?")) return;
-    const { error } = await supabase.from("proposals").delete().eq("id", id);
+  const deleteTrip = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this trip?")) return;
+    const { error } = await supabase.from("trips").delete().eq("id", id);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Proposal deleted" });
-      setProposals((prev) => prev.filter((p) => p.id !== id));
+      toast({ title: "Trip deleted" });
+      setTrips((prev) => prev.filter((t) => t.id !== id));
     }
   };
 
-  const copyShareLink = (shareId: string) => {
-    const url = `${window.location.origin}/view/${shareId}`;
+  const copyShareLink = (slug: string | null) => {
+    if (!slug) return;
+    const url = `${window.location.origin}/view/${slug}`;
     navigator.clipboard.writeText(url);
     toast({ title: "Link copied!", description: "Share this link with your client." });
   };
@@ -124,8 +107,7 @@ export default function Dashboard() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {loading ? (
           <div className="text-center py-20 text-muted-foreground font-body">Loading...</div>
-        ) : proposals.length === 0 ? (
-          /* Welcome empty state */
+        ) : trips.length === 0 ? (
           <div className="text-center py-20">
             <MapPin className="h-12 w-12 text-primary/30 mx-auto mb-4" />
             <h2 className="font-display text-2xl font-semibold text-foreground mb-2">
@@ -137,27 +119,26 @@ export default function Dashboard() {
             <CreateTripMenu />
           </div>
         ) : (
-          /* Dashboard with trip cards */
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {proposals.map((proposal) => (
+            {trips.map((trip) => (
               <TripCard
-                key={proposal.id}
-                proposal={proposal}
-                onOpen={() => navigate(`/editor/${proposal.id}`)}
-                onDuplicate={() => setDupModal({ open: true, proposal })}
-                onDelete={() => deleteProposal(proposal.id)}
-                onCopyLink={() => copyShareLink(proposal.share_id)}
+                key={trip.id}
+                trip={trip}
+                onOpen={() => navigate(`/editor/${trip.id}`)}
+                onDuplicate={() => setDupModal({ open: true, trip })}
+                onDelete={() => deleteTrip(trip.id)}
+                onCopyLink={() => copyShareLink(trip.public_slug)}
               />
             ))}
           </div>
         )}
-        {dupModal.proposal && (
+        {dupModal.trip && (
           <DuplicateTripModal
             open={dupModal.open}
             onOpenChange={(open) => setDupModal((prev) => ({ ...prev, open }))}
-            tripName={`${(dupModal.proposal.data as any)?.tripName || dupModal.proposal.title || ""} (Copy)`}
-            clientName={dupModal.proposal.client_name || ""}
-            onConfirm={(name, client) => duplicateProposal(name, client, dupModal.proposal!)}
+            tripName={`${(dupModal.trip.draft_data as any)?.tripName || ""} (Copy)`}
+            clientName={(dupModal.trip.draft_data as any)?.clientName || ""}
+            onConfirm={(name, client) => duplicateTrip(name, client, dupModal.trip!)}
           />
         )}
       </div>

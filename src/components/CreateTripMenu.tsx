@@ -68,6 +68,7 @@ export default function CreateTripMenu() {
   const [groupEndDate, setGroupEndDate] = useState<Date>();
   const [groupDestination, setGroupDestination] = useState("");
   const [groupName, setGroupName] = useState("");
+  const [groupMaxCapacity, setGroupMaxCapacity] = useState("");
   const [groupErrors, setGroupErrors] = useState<GroupErrors>({});
 
   const [creating, setCreating] = useState(false);
@@ -87,14 +88,8 @@ export default function CreateTripMenu() {
     setGroupEndDate(undefined);
     setGroupDestination("");
     setGroupName("");
+    setGroupMaxCapacity("");
     setGroupErrors({});
-  };
-
-  const formatDateRange = (start?: Date, end?: Date) => {
-    if (!start && !end) return "";
-    if (start && end) return `${format(start, "MMM d")}–${format(end, "d, yyyy")}`;
-    if (start) return format(start, "MMM d, yyyy");
-    return "";
   };
 
   const validateProposal = (): boolean => {
@@ -120,8 +115,6 @@ export default function CreateTripMenu() {
   const handleCreateProposal = async () => {
     if (!validateProposal()) return;
     setCreating(true);
-    const user = (await supabase.auth.getUser()).data.user;
-    if (!user) { setCreating(false); return; }
 
     const proposalData: ProposalData = {
       ...blankProposal,
@@ -134,13 +127,11 @@ export default function CreateTripMenu() {
     };
 
     const { data, error } = await supabase
-      .from("proposals")
+      .from("trips")
       .insert({
-        user_id: user.id,
-        title: tripTitle.trim(),
-        client_name: clientName.trim(),
-        destination: destination.trim(),
-        data: proposalData as any,
+        trip_type: "individual",
+        status: "draft",
+        draft_data: proposalData as any,
       })
       .select()
       .single();
@@ -158,8 +149,6 @@ export default function CreateTripMenu() {
   const handleCreateGroup = async () => {
     if (!validateGroup()) return;
     setCreating(true);
-    const user = (await supabase.auth.getUser()).data.user;
-    if (!user) { setCreating(false); return; }
 
     const proposalData: ProposalData = {
       ...blankProposal,
@@ -171,14 +160,15 @@ export default function CreateTripMenu() {
       endDate: groupEndDate ? format(groupEndDate, "MMMM d, yyyy") : "",
     };
 
+    const maxCap = parseInt(groupMaxCapacity) || null;
+
     const { data, error } = await supabase
-      .from("proposals")
+      .from("trips")
       .insert({
-        user_id: user.id,
-        title: groupTripTitle.trim(),
-        client_name: groupName.trim() || groupTripTitle.trim(),
-        destination: groupDestination.trim(),
-        data: proposalData as any,
+        trip_type: "group",
+        status: "draft",
+        draft_data: proposalData as any,
+        max_capacity: maxCap,
       })
       .select()
       .single();
@@ -379,6 +369,10 @@ export default function CreateTripMenu() {
             <div className="space-y-1.5">
               <Label htmlFor="groupName">Group Name <span className="text-muted-foreground text-xs">(optional)</span></Label>
               <Input id="groupName" placeholder="e.g. Smith Family Reunion" value={groupName} onChange={(e) => setGroupName(e.target.value)} />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="groupMaxCapacity">Max Capacity <span className="text-muted-foreground text-xs">(optional)</span></Label>
+              <Input id="groupMaxCapacity" type="number" placeholder="e.g. 20" value={groupMaxCapacity} onChange={(e) => setGroupMaxCapacity(e.target.value)} />
             </div>
           </div>
           <DialogFooter>

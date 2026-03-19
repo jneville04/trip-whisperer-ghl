@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,103 +9,93 @@ import ProposalFilters, { type FilterType, type SortType } from "@/components/Pr
 import TripCard from "@/components/TripCard";
 import AppLayout from "@/components/AppLayout";
 import { Search, FileText } from "lucide-react";
-import { type ProposalData } from "@/types/proposal";
+import { type ProposalData, type TripRow } from "@/types/proposal";
 import DuplicateTripModal from "@/components/DuplicateTripModal";
-
-interface ProposalRow {
-  id: string;
-  title: string;
-  client_name: string;
-  destination: string;
-  status: string;
-  share_id: string;
-  data: ProposalData;
-  created_at: string;
-  updated_at: string;
-}
 
 export default function Trips() {
   const { user } = useAuth();
   const { data: isAdmin } = useAdminCheck(user?.id);
   const navigate = useNavigate();
-  const [proposals, setProposals] = useState<ProposalRow[]>([]);
+  const [trips, setTrips] = useState<TripRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
   const [sort, setSort] = useState<SortType>("newest");
-  const [dupModal, setDupModal] = useState<{ open: boolean; proposal: ProposalRow | null }>({ open: false, proposal: null });
+  const [dupModal, setDupModal] = useState<{ open: boolean; trip: TripRow | null }>({ open: false, trip: null });
 
   useEffect(() => {
-    loadProposals();
+    loadTrips();
   }, []);
 
   const filtered = useMemo(() => {
-    let result = proposals.filter((p) => {
+    let result = trips.filter((t) => {
+      const d = t.draft_data as ProposalData | null;
+      const title = d?.tripName || "";
+      const clientName = d?.clientName || "";
+      const destination = d?.destination || "";
       const q = search.toLowerCase();
       const matchesSearch =
         !q ||
-        p.title.toLowerCase().includes(q) ||
-        p.client_name.toLowerCase().includes(q) ||
-        p.destination.toLowerCase().includes(q);
+        title.toLowerCase().includes(q) ||
+        clientName.toLowerCase().includes(q) ||
+        destination.toLowerCase().includes(q);
       if (!matchesSearch) return false;
 
-      const proposalType = (p.data as any)?.proposalType || "group_booking";
+      const tripType = t.trip_type || "individual";
       switch (filter) {
-        case "proposals": return proposalType === "proposal";
-        case "group_trips": return proposalType === "group_booking";
-        case "drafts": return p.status === "draft";
-        case "published": return ["published", "sent", "approved"].includes(p.status);
+        case "proposals": return tripType === "individual";
+        case "group_trips": return tripType === "group";
+        case "drafts": return t.status === "draft";
+        case "published": return ["published", "sent", "approved"].includes(t.status || "");
         default: return true;
       }
     });
 
     result.sort((a, b) => {
+      const aTitle = (a.draft_data as any)?.tripName || "";
+      const bTitle = (b.draft_data as any)?.tripName || "";
       switch (sort) {
-        case "oldest": return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-        case "az": return (a.title || "").localeCompare(b.title || "");
-        case "za": return (b.title || "").localeCompare(a.title || "");
-        default: return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+        case "oldest": return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
+        case "az": return aTitle.localeCompare(bTitle);
+        case "za": return bTitle.localeCompare(aTitle);
+        default: return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
       }
     });
 
     return result;
-  }, [proposals, search, filter, sort]);
+  }, [trips, search, filter, sort]);
 
-  const loadProposals = async () => {
+  const loadTrips = async () => {
     const { data, error } = await supabase
-      .from("proposals")
+      .from("trips")
       .select("*")
-      .order("updated_at", { ascending: false });
+      .order("created_at", { ascending: false });
 
     if (error) {
-      toast({ title: "Error loading proposals", description: error.message, variant: "destructive" });
+      toast({ title: "Error loading trips", description: error.message, variant: "destructive" });
     } else {
-      setProposals((data as any[]) || []);
+      setTrips((data as any[]) || []);
     }
     setLoading(false);
   };
 
-  const duplicateProposal = async (tripName: string, clientName: string, proposal: ProposalRow) => {
+  const duplicateTrip = async (tripName: string, clientName: string, trip: TripRow) => {
     const user = (await supabase.auth.getUser()).data.user;
     if (!user) return;
 
     const dupData = {
-      ...(proposal.data as any),
-      tripName: tripName,
-      clientName: clientName,
+      ...(trip.draft_data as any),
+      tripName,
+      clientName,
     };
 
-    const displayTitle = clientName ? `${tripName} — ${clientName}` : tripName;
-
     const { error } = await supabase
-      .from("proposals")
+      .from("trips")
       .insert({
-        user_id: user.id,
-        title: displayTitle,
-        client_name: clientName,
-        destination: proposal.destination,
+        trip_type: trip.trip_type || "individual",
         status: "draft",
-        data: dupData as any,
+        draft_data: dupData as any,
+        max_capacity: trip.max_capacity,
       })
       .select()
       .single();
@@ -114,24 +103,25 @@ export default function Trips() {
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Proposal duplicated" });
-      loadProposals();
+      toast({ title: "Trip duplicated" });
+      loadTrips();
     }
   };
 
-  const deleteProposal = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this proposal?")) return;
-    const { error } = await supabase.from("proposals").delete().eq("id", id);
+  const deleteTrip = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this trip?")) return;
+    const { error } = await supabase.from("trips").delete().eq("id", id);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      toast({ title: "Proposal deleted" });
-      setProposals((prev) => prev.filter((p) => p.id !== id));
+      toast({ title: "Trip deleted" });
+      setTrips((prev) => prev.filter((t) => t.id !== id));
     }
   };
 
-  const copyShareLink = (shareId: string) => {
-    const url = `${window.location.origin}/view/${shareId}`;
+  const copyShareLink = (slug: string | null) => {
+    if (!slug) return;
+    const url = `${window.location.origin}/view/${slug}`;
     navigator.clipboard.writeText(url);
     toast({ title: "Link copied!", description: "Share this link with your client." });
   };
@@ -166,25 +156,25 @@ export default function Trips() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filtered.map((proposal) => (
+            {filtered.map((trip) => (
               <TripCard
-                key={proposal.id}
-                proposal={proposal}
-                onOpen={() => navigate(`/editor/${proposal.id}`)}
-                onDuplicate={() => setDupModal({ open: true, proposal })}
-                onDelete={() => deleteProposal(proposal.id)}
-                onCopyLink={() => copyShareLink(proposal.share_id)}
+                key={trip.id}
+                trip={trip}
+                onOpen={() => navigate(`/editor/${trip.id}`)}
+                onDuplicate={() => setDupModal({ open: true, trip })}
+                onDelete={() => deleteTrip(trip.id)}
+                onCopyLink={() => copyShareLink(trip.public_slug)}
               />
             ))}
           </div>
         )}
-        {dupModal.proposal && (
+        {dupModal.trip && (
           <DuplicateTripModal
             open={dupModal.open}
             onOpenChange={(open) => setDupModal((prev) => ({ ...prev, open }))}
-            tripName={`${(dupModal.proposal.data as any)?.tripName || dupModal.proposal.title || ""} (Copy)`}
-            clientName={dupModal.proposal.client_name || ""}
-            onConfirm={(name, client) => duplicateProposal(name, client, dupModal.proposal!)}
+            tripName={`${(dupModal.trip.draft_data as any)?.tripName || ""} (Copy)`}
+            clientName={(dupModal.trip.draft_data as any)?.clientName || ""}
+            onConfirm={(name, client) => duplicateTrip(name, client, dupModal.trip!)}
           />
         )}
       </div>

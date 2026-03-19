@@ -506,6 +506,20 @@ export const blankProposal: ProposalData = {
 // defaultProposal is kept as an alias for backward compatibility (used in editor merge logic)
 export const defaultProposal: ProposalData = blankProposal;
 
+/** Shape of a row from the `trips` table */
+export interface TripRow {
+  id: string;
+  trip_type: string | null;
+  status: string | null;
+  public_slug: string | null;
+  draft_data: ProposalData | null;
+  published_data: ProposalData | null;
+  max_capacity: number | null;
+  current_occupancy: number | null;
+  org_id: string | null;
+  created_at: string | null;
+}
+
 export function createDefaultCheckout(): CheckoutSettings {
   return {
     enabled: false,
