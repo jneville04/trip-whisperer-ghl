@@ -47,7 +47,13 @@ export default function InlineTimePicker({ value, onChange, className }: InlineT
   const handleHourChange = (raw: string) => {
     const digits = raw.replace(/\D/g, "").slice(0, 2);
     setHour(digits);
-    if (digits.length === 2 || parseInt(digits) > 1) {
+    // Only auto-advance when user has typed a complete 2-digit hour,
+    // or typed a digit > 1 (meaning it can only be 2-9, so hour is done)
+    const num = parseInt(digits);
+    if (digits.length === 2 && num >= 1 && num <= 12) {
+      minuteRef.current?.focus();
+      minuteRef.current?.select();
+    } else if (digits.length === 1 && num > 1) {
       minuteRef.current?.focus();
       minuteRef.current?.select();
     }

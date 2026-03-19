@@ -1462,10 +1462,16 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                             </div>
                             {(ship.price || !isGroupBooking) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
-                                {ship.price && (
-                                  <span className="font-display text-xl font-bold text-foreground">${ship.price}</span>
+                                {ship.price && (ship.pricingDisplay || "total") !== "hide" ? (
+                                  <span className="font-display text-xl font-bold text-foreground">
+                                    {fmtCurrency(ship.price)}
+                                    <span className="text-xs text-muted-foreground font-body ml-1">
+                                      {(ship.pricingDisplay || "total") === "per_person" ? "per person" : "total"}
+                                    </span>
+                                  </span>
+                                ) : (
+                                  <span />
                                 )}
-                                {!ship.price && <span />}
                                 {!isGroupBooking && (
                                   <div className="flex items-center gap-2">
                                     {cruiseShips.length > 1 && (
