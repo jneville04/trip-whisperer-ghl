@@ -12,6 +12,7 @@ import LocationAutocomplete from "@/components/LocationAutocomplete";
 import AirportAutocomplete from "@/components/AirportAutocomplete";
 import AirlineAutocomplete, { findAirlineCode } from "@/components/AirlineAutocomplete";
 import AddressFields, { type AddressData } from "@/components/AddressFields";
+import { CruiseLineAutocomplete, ShipNameAutocomplete, findCruiseLineForShip } from "@/components/CruiseLineAutocomplete";
 import ImageUploadField from "@/components/ImageUploadField";
 import SortableImageGrid from "@/components/SortableImageGrid";
 import HotelSearchDialog from "@/components/HotelSearchDialog";
@@ -23,7 +24,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import RichTextEditor from "@/components/RichTextEditor";
 import AgentPricingFields from "@/components/AgentPricingFields";
-import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, BusStop, SectionKey, CheckoutSettings, PaymentOption, LocationAddress, PricingOption, SectionTitles } from "@/types/proposal";
+import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, BusStop, SectionKey, CheckoutSettings, PaymentOption, LocationAddress, PricingOption, SectionTitles, PricingDisplayMode } from "@/types/proposal";
 import { createActivity, createDay, createPricingLine, createPricingOption, createFlightLeg, createFlightOption, createAccommodation, createCruiseShip, createBusTrip, createBusStop, defaultSectionOrder, createDefaultCheckout } from "@/types/proposal";
 import { normalizeHexInput } from "@/lib/brand";
 import { useAgentSettings } from "@/hooks/useAgentSettings";
@@ -250,6 +251,48 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
   return <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1 block font-body">{children}</label>;
 }
 
+// Pricing display mode selector for option sections
+function PricingDisplaySelect({ value, onChange, showPerNight }: { value?: PricingDisplayMode; onChange: (v: PricingDisplayMode) => void; showPerNight?: boolean }) {
+  const mode = value || "total";
+  const options: { value: PricingDisplayMode; label: string }[] = [
+    { value: "hide", label: "Hide" },
+    { value: "total", label: "Total" },
+    { value: "per_person", label: "Per Person" },
+  ];
+  if (showPerNight) options.push({ value: "per_night", label: "Per Night" });
+  return (
+    <div>
+      <FieldLabel>Client Price Display</FieldLabel>
+      <div className="flex gap-1 flex-wrap">
+        {options.map((opt) => (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            className={`px-2 py-1 text-[10px] rounded-md border font-body font-medium transition-colors ${
+              mode === opt.value
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-background text-muted-foreground border-border hover:bg-muted"
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// City-only destinations (no airports, ports, cruise lines)
+import { POPULAR_DESTINATIONS } from "@/components/LocationAutocomplete";
+const CITY_DESTINATIONS = POPULAR_DESTINATIONS.filter(
+  (d) => !d.includes("(Port)") && !d.match(/^[A-Z]{3}\s[–—-]\s/) && ![
+    "Royal Caribbean", "Carnival Cruise Line", "Norwegian Cruise Line",
+    "MSC Cruises", "Celebrity Cruises", "Princess Cruises",
+    "Holland America Line", "Disney Cruise Line", "Viking Ocean Cruises",
+  ].includes(d)
+);
+
 export default function ProposalEditor({ data, onChange }: Props) {
   const { settings: agentSettings } = useAgentSettings();
   const { settings: appSettings } = useAppSettings();
@@ -402,10 +445,10 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const builderTitle = (data as any).proposalType === "proposal" ? "Proposal Builder" : "Group Trip Builder";
 
   return (
-    <div className="space-y-4 p-4 sm:p-6 overflow-y-auto h-full">
-      <div className="mb-6">
+    <div className="proposal-builder space-y-4 p-4 sm:p-6 overflow-y-auto h-full relative">
+      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 mb-4 border-b border-border/30">
         <h2 className="font-display text-2xl font-bold text-foreground">{builderTitle}</h2>
-        <p className="text-sm text-muted-foreground font-body mt-1">Fill in the details below — preview updates live. Drag sections to reorder.</p>
+        <p className="text-sm text-muted-foreground font-body mt-0.5">Fill in the details below — preview updates live. Drag sections to reorder.</p>
       </div>
 
       {/* Brand Settings — pulled from global Settings */}
@@ -779,15 +822,23 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                 </Button>
                               </div>
                               {(data as any).proposalType === "proposal" && (
-                                <div className="mt-1">
-                                  <FieldLabel>Price (Proposal Option)</FieldLabel>
-                                  <div className="relative w-32">
-                                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
-                                    <Input value={opt.price || ""} onChange={(e) => {
-                                      const opts = [...flightOptions];
-                                      opts[oi] = { ...opts[oi], price: e.target.value };
-                                      update("flightOptions", opts);
-                                    }} placeholder="0.00" className="h-7 text-xs pl-5" />
+                                <div className="mt-1 space-y-2">
+                                  <div className="flex items-end gap-3">
+                                    <div>
+                                      <FieldLabel>Price (Proposal Option)</FieldLabel>
+                                      <div className="relative w-32">
+                                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
+                                        <Input value={opt.price || ""} onChange={(e) => {
+                                          const opts = [...flightOptions];
+                                          opts[oi] = { ...opts[oi], price: e.target.value };
+                                          update("flightOptions", opts);
+                                        }} placeholder="0.00" className="h-7 text-xs pl-5" />
+                                      </div>
+                                    </div>
+                                    <PricingDisplaySelect
+                                      value={opt.pricingDisplay}
+                                      onChange={(v) => { const opts = [...flightOptions]; opts[oi] = { ...opts[oi], pricingDisplay: v }; update("flightOptions", opts); }}
+                                    />
                                   </div>
                                 </div>
                               )}
@@ -852,7 +903,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                       <div className="grid grid-cols-2 gap-2">
                                         <div>
                                           <FieldLabel>Location</FieldLabel>
-                                          <LocationAutocomplete value={acc.location} onChange={(val) => updateAccommodation(i, "location", val)} placeholder="Lisbon" className="h-8 text-xs" />
+                                          <LocationAutocomplete value={acc.location} onChange={(val) => updateAccommodation(i, "location", val)} placeholder="Lisbon, Portugal" className="h-8 text-xs" suggestions={CITY_DESTINATIONS} />
                                         </div>
                                         <div>
                                           <FieldLabel>Room Type</FieldLabel>
@@ -874,11 +925,20 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                         </div>
                                       </div>
                                       {(data as any).proposalType === "proposal" && (
-                                        <div className="mt-2">
-                                          <FieldLabel>Price (Proposal Option)</FieldLabel>
-                                          <div className="relative w-32">
-                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
-                                            <Input value={acc.price || ""} onChange={(e) => updateAccField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
+                                        <div className="mt-2 space-y-2">
+                                          <div className="flex items-end gap-3">
+                                            <div>
+                                              <FieldLabel>Price (Proposal Option)</FieldLabel>
+                                              <div className="relative w-32">
+                                                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
+                                                <Input value={acc.price || ""} onChange={(e) => updateAccField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
+                                              </div>
+                                            </div>
+                                            <PricingDisplaySelect
+                                              value={acc.pricingDisplay as PricingDisplayMode | undefined}
+                                              onChange={(v) => updateAccField("pricingDisplay", v)}
+                                              showPerNight
+                                            />
                                           </div>
                                         </div>
                                       )}
@@ -1071,12 +1131,22 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     <TabsContent value="general" className="p-3 space-y-2 mt-0">
                                       <div className="grid grid-cols-2 gap-2">
                                         <div>
-                                          <FieldLabel>Ship Name</FieldLabel>
-                                          <Input value={ship.shipName} onChange={(e) => updateShipField("shipName", e.target.value)} placeholder="Symphony of the Seas" className="h-8 text-xs" />
+                                          <FieldLabel>Cruise Line</FieldLabel>
+                                          <CruiseLineAutocomplete value={ship.cruiseLine} onChange={(val) => updateShipField("cruiseLine", val)} placeholder="Royal Caribbean" className="h-8 text-xs" />
                                         </div>
                                         <div>
-                                          <FieldLabel>Cruise Line</FieldLabel>
-                                          <Input value={ship.cruiseLine} onChange={(e) => updateShipField("cruiseLine", e.target.value)} placeholder="Royal Caribbean" className="h-8 text-xs" />
+                                          <FieldLabel>Ship Name</FieldLabel>
+                                          <ShipNameAutocomplete
+                                            value={ship.shipName}
+                                            cruiseLine={ship.cruiseLine}
+                                            onChange={(val, detectedLine) => {
+                                              const s = [...(data.cruiseShips || [])];
+                                              s[i] = { ...s[i], shipName: val, ...(detectedLine && !ship.cruiseLine ? { cruiseLine: detectedLine } : {}) };
+                                              update("cruiseShips", s);
+                                            }}
+                                            placeholder="Symphony of the Seas"
+                                            className="h-8 text-xs"
+                                          />
                                         </div>
                                       </div>
                                       <div className="grid grid-cols-3 gap-2">
@@ -1098,11 +1168,19 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                         <RichTextEditor content={ship.description} onChange={(html) => updateShipField("description", html)} placeholder="Describe the ship, cabin features, onboard experience..." minHeight="150px" />
                                       </div>
                                       {(data as any).proposalType === "proposal" && (
-                                        <div className="mt-2">
-                                          <FieldLabel>Price (Proposal Option)</FieldLabel>
-                                          <div className="relative w-32">
-                                            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
-                                            <Input value={ship.price || ""} onChange={(e) => updateShipField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
+                                        <div className="mt-2 space-y-2">
+                                          <div className="flex items-end gap-3">
+                                            <div>
+                                              <FieldLabel>Price (Proposal Option)</FieldLabel>
+                                              <div className="relative w-32">
+                                                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
+                                                <Input value={ship.price || ""} onChange={(e) => updateShipField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
+                                              </div>
+                                            </div>
+                                            <PricingDisplaySelect
+                                              value={ship.pricingDisplay as PricingDisplayMode | undefined}
+                                              onChange={(v) => updateShipField("pricingDisplay", v)}
+                                            />
                                           </div>
                                         </div>
                                       )}

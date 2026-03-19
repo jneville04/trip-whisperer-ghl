@@ -69,10 +69,13 @@ export interface FlightLeg {
   agentPricing?: AgentPricing;
 }
 
+export type PricingDisplayMode = "hide" | "total" | "per_person" | "per_night";
+
 export interface FlightOption {
   id: string;
   legs: FlightLeg[];
   price?: string;
+  pricingDisplay?: PricingDisplayMode;
   agentPricing?: AgentPricing;
   hidden?: boolean;
 }
@@ -95,6 +98,7 @@ export interface Accommodation {
   videoThumbnailUrl?: string;
   mediaType?: "photos" | "video";
   price?: string;
+  pricingDisplay?: PricingDisplayMode;
   agentPricing?: AgentPricing;
   hidden?: boolean;
 }
@@ -120,6 +124,7 @@ export interface CruiseShip {
   videoThumbnailUrl?: string;
   mediaType?: "photos" | "video";
   price?: string;
+  pricingDisplay?: PricingDisplayMode;
   agentPricing?: AgentPricing;
   hidden?: boolean;
 }
