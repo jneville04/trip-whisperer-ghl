@@ -680,27 +680,31 @@ export default function ProposalEditor({ data, onChange }: Props) {
                     return (
                       <CollapsibleSection title={sectionTitles.flights} sectionKey="flights" visible={vis.flights} onToggleVisible={() => toggleSection("flights")} defaultOpen={false} sectionCustomTitle={customTitles.flights?.title} sectionCustomSubtitle={customTitles.flights?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("flights", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("flights", v)}>
                         <div className="space-y-4">
-                          {flightOptions.map((opt, oi) => (
-                            <div key={opt.id} className={`border border-border/40 rounded-lg p-3 bg-muted/20 space-y-3 ${opt.hidden ? "opacity-50" : ""}`}>
-                              <div className="flex items-center justify-between">
-                                <span className="font-body font-semibold text-sm text-foreground">
-                                  ✈️ Option {oi + 1}
-                                  {opt.hidden && <span className="text-[9px] uppercase tracking-wider text-muted-foreground bg-muted px-1.5 py-0.5 rounded ml-2">Hidden</span>}
-                                </span>
-                                <ItemControls
-                                  hidden={opt.hidden}
-                                  onHide={() => {
-                                    const opts = [...flightOptions];
-                                    opts[oi] = { ...opts[oi], hidden: !opts[oi].hidden };
-                                    update("flightOptions", opts);
-                                  }}
-                                  onCopy={() => {
-                                    const clone = { ...opt, id: crypto.randomUUID(), hidden: false };
-                                    update("flightOptions", [...flightOptions.slice(0, oi + 1), clone, ...flightOptions.slice(oi + 1)]);
-                                  }}
-                                  onDelete={() => update("flightOptions", flightOptions.filter((_, idx) => idx !== oi))}
-                                />
-                              </div>
+                          {flightOptions.map((opt, oi) => {
+                            // Build summary for collapsed state
+                            const routeParts = opt.legs.map(l => [l.departureAirport, l.arrivalAirport].filter(Boolean).join(" → ")).filter(Boolean);
+                            const flightSummary = [routeParts.join(" · "), opt.price ? `$${opt.price}` : ""].filter(Boolean).join(" · ");
+                            return (
+                            <CollapsibleHotel
+                              key={opt.id}
+                              hotelName={`✈️ Option ${oi + 1}`}
+                              summaryExtra={flightSummary}
+                              isOpen={openFlightIdx === oi}
+                              onToggle={() => setOpenFlightIdx(openFlightIdx === oi ? -1 : oi)}
+                              onDelete={() => { update("flightOptions", flightOptions.filter((_, idx) => idx !== oi)); if (openFlightIdx === oi) setOpenFlightIdx(-1); }}
+                              hidden={opt.hidden}
+                              onHide={() => {
+                                const opts = [...flightOptions];
+                                opts[oi] = { ...opts[oi], hidden: !opts[oi].hidden };
+                                update("flightOptions", opts);
+                              }}
+                              onCopy={() => {
+                                const clone = { ...opt, id: crypto.randomUUID(), hidden: false };
+                                update("flightOptions", [...flightOptions.slice(0, oi + 1), clone, ...flightOptions.slice(oi + 1)]);
+                                setOpenFlightIdx(oi + 1);
+                              }}
+                            >
+                              <div className="p-3 space-y-3">
                               {opt.legs.map((leg, li) => (
                                 <div key={leg.id} className="border border-border/30 rounded-md p-2.5 bg-background/50">
                                   <div className="flex items-center justify-between mb-2">
@@ -791,9 +795,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                 pricing={opt.agentPricing}
                                 onChange={(ap) => { const opts = [...flightOptions]; opts[oi] = { ...opts[oi], agentPricing: ap }; update("flightOptions", opts); }}
                               />
-                            </div>
-                          ))}
-                          <Button variant="travel-ghost" size="sm" onClick={() => update("flightOptions", [...flightOptions, createFlightOption()])} className="text-primary text-xs h-7">
+                              </div>
+                            </CollapsibleHotel>
+                            );
+                          })}
+                          <Button variant="travel-ghost" size="sm" onClick={() => { update("flightOptions", [...flightOptions, createFlightOption()]); setOpenFlightIdx(flightOptions.length); }} className="text-primary text-xs h-7">
                             <Plus className="h-3 w-3 mr-1" /> Add Flight Option
                           </Button>
                         </div>
