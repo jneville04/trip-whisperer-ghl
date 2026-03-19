@@ -335,8 +335,13 @@ export default function EditorPage() {
         </div>
 
         <div className="hidden sm:flex items-center text-xs text-muted-foreground font-body">
-          {lastSavedAt ? `Last saved ${lastSavedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : "Not saved yet"}
-          {dirty && <span className="ml-1.5 text-amber-500">• Unsaved changes</span>}
+          {saveFailed ? (
+            <span className="text-destructive font-medium">Save failed — retrying…</span>
+          ) : lastSavedAt ? (
+            `Last saved ${lastSavedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+          ) : "Not saved yet"}
+          {dirty && !saveFailed && <span className="ml-1.5 text-amber-500">• Unsaved changes</span>}
+          {saving && <span className="ml-1.5 text-muted-foreground">• Saving…</span>}
         </div>
 
         <div className="flex items-center gap-2">
