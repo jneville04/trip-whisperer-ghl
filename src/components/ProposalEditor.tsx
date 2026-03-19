@@ -126,7 +126,7 @@ function CollapsibleSection({
                 <Input
                   value={sectionCustomSubtitle || ""}
                   onChange={(e) => onCustomSubtitleChange?.(e.target.value)}
-                  placeholder="Optional subtitle"
+                  placeholder={sectionKey ? sectionDefaults[sectionKey]?.subtitle || "Optional subtitle" : "Optional subtitle"}
                   className="h-7 text-xs"
                 />
               </div>
