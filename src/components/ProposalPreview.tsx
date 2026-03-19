@@ -2296,9 +2296,11 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
                       <span className="font-body text-foreground font-medium">Accommodation</span>
                     </div>
                     <span className="font-body text-sm">
-                      {selectedAccommodation ? (
+                      {!accommodationSelectionEnabled ? (
+                        <span className="text-muted-foreground italic text-xs">Informational only</span>
+                      ) : effectiveSelectedAccommodation ? (
                         (() => {
-                          const a = accommodations.find((a) => a.id === selectedAccommodation);
+                          const a = accommodations.find((a) => a.id === effectiveSelectedAccommodation);
                           return (
                             <span className="text-foreground">
                               {a?.hotelName || "Selected"}
