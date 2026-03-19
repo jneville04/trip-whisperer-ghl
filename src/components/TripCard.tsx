@@ -71,11 +71,11 @@ interface ProposalRow {
 }
 
 const statusConfig: Record<string, { label: string; className: string }> = {
-  draft: { label: "Draft", className: "bg-muted text-muted-foreground" },
-  published: { label: "Published", className: "bg-primary/10 text-primary" },
-  sent: { label: "Published", className: "bg-primary/10 text-primary" },
-  unpublished: { label: "Unpublished", className: "bg-muted text-muted-foreground" },
-  approved: { label: "Published", className: "bg-primary/10 text-primary" },
+  draft: { label: "Draft", className: "bg-amber-100 text-amber-800" },
+  published: { label: "Published", className: "bg-emerald-100 text-emerald-800" },
+  sent: { label: "Published", className: "bg-emerald-100 text-emerald-800" },
+  unpublished: { label: "Unpublished", className: "bg-slate-200 text-slate-700" },
+  approved: { label: "Published", className: "bg-emerald-100 text-emerald-800" },
 };
 
 interface TripCardProps {
