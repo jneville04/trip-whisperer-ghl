@@ -46,7 +46,7 @@ export default function ApprovePage() {
         .eq("public_slug", shareId)
         .single();
 
-      const proposalData = (row as any)?.data;
+      const proposalData = (row as any)?.published_data || (row as any)?.draft_data;
       if (proposalData?.brand) {
         setBrandData(proposalData.brand as BrandColors);
       }
