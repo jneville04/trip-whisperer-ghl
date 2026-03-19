@@ -484,7 +484,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                         if (!data.heroImageUrl) { update("heroImageUrl", url); }
                         else { update("heroImageUrls", [...(data.heroImageUrls || []), url]); }
                       });
-                    }
+                    }}
                   />
                 </div>
                 <div className="flex gap-1.5 mt-1.5">
