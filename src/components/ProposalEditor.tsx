@@ -1,4 +1,4 @@
-import { useState, useRef, ReactNode } from "react";
+import { useState, useRef, useEffect, ReactNode } from "react";
 import { format, parse } from "date-fns";
 import { uploadImage, uploadImages } from "@/lib/uploadImage";
 import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, ChevronRight, Eye, EyeOff, ImagePlus, X, ArrowUp, ArrowDown, Search, Upload, Copy, Minus } from "lucide-react";
@@ -151,15 +151,17 @@ function SortableSection({ id, children }: { id: string; children: ReactNode }) 
       ref={setNodeRef}
       style={style}
       {...attributes}
-      {...listeners}
-      className={`relative group/sortable touch-none transition-shadow duration-200 rounded-xl ${
+      className={`relative group/sortable transition-shadow duration-200 rounded-xl ${
         isDragging
           ? "shadow-xl ring-2 ring-primary/20 opacity-90 scale-[1.01] bg-background"
           : "hover:shadow-md"
       }`}
     >
-      {/* Drag handle — visible on hover */}
-      <div className="absolute left-0 top-0 bottom-0 w-6 flex items-center justify-center z-10 pointer-events-none">
+      {/* Drag handle — visible on hover, listeners only here */}
+      <div
+        className="absolute left-0 top-0 bottom-0 w-6 flex items-center justify-center z-10 cursor-grab touch-none"
+        {...listeners}
+      >
         <GripVertical className="h-4 w-4 text-muted-foreground/40" />
       </div>
       {children}
@@ -312,6 +314,30 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
   const customTitles = data.sectionCustomTitles || {};
   const terms = data.terms || { cancellationPolicy: "", travelInsurance: "", bookingTerms: "", liability: "", showCancellation: true, showInsurance: true, showBookingTerms: true, showLiability: true };
+
+  // Auto-create first starter item when a proposal section is enabled with zero items
+  useEffect(() => {
+    if ((data as any).proposalType !== "proposal") return;
+    let updated = false;
+    const next = { ...data };
+    if (vis.flights && (!next.flightOptions || next.flightOptions.length === 0)) {
+      next.flightOptions = [createFlightOption()];
+      updated = true;
+    }
+    if (vis.accommodations && (!next.accommodations || next.accommodations.length === 0)) {
+      next.accommodations = [createAccommodation()];
+      updated = true;
+    }
+    if (vis.cruiseShips && (!next.cruiseShips || next.cruiseShips.length === 0)) {
+      next.cruiseShips = [createCruiseShip()];
+      updated = true;
+    }
+    if (vis.itinerary && (!next.days || next.days.length === 0)) {
+      next.days = [createDay(1)];
+      updated = true;
+    }
+    if (updated) onChange(next);
+  }, [vis.flights, vis.accommodations, vis.cruiseShips, vis.itinerary]);
 
   const updateCustomTitle = (key: SectionKey, title: string) => {
     const cur = data.sectionCustomTitles || {};
