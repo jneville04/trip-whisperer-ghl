@@ -17,7 +17,6 @@ const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Trips", url: "/trips", icon: Map },
   { title: "Section Library", url: "/section-library", icon: Library },
-  { title: "Settings", url: "/settings", icon: Settings },
 ];
 
 export function AppSidebar() {
