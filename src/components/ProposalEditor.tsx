@@ -559,7 +559,33 @@ export default function ProposalEditor({ data, onChange }: Props) {
           </div>
           <div>
             <FieldLabel>Number of Travelers <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(optional)</span></FieldLabel>
-            <Input value={data.travelerCount} onChange={(e) => update("travelerCount", e.target.value)} placeholder="2 Travelers" />
+            <div className="flex items-center gap-2">
+              <Button type="button" variant="outline" size="icon" className="h-8 w-8 shrink-0" onClick={() => {
+                const cur = parseInt(data.travelerCount) || 0;
+                if (cur > 0) update("travelerCount", String(cur - 1));
+              }} disabled={!data.travelerCount || parseInt(data.travelerCount) <= 0}>
+                <Minus className="h-3.5 w-3.5" />
+              </Button>
+              <Input
+                type="number"
+                min="0"
+                value={data.travelerCount}
+                onChange={(e) => update("travelerCount", e.target.value)}
+                placeholder="0"
+                className="h-8 w-20 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+              <Button type="button" variant="outline" size="icon" className="h-8 w-8 shrink-0" onClick={() => {
+                const cur = parseInt(data.travelerCount) || 0;
+                update("travelerCount", String(cur + 1));
+              }}>
+                <Plus className="h-3.5 w-3.5" />
+              </Button>
+              {data.travelerCount && parseInt(data.travelerCount) > 0 && (
+                <span className="text-xs text-muted-foreground font-body ml-1">
+                  {parseInt(data.travelerCount) === 1 ? "1 Traveler" : `${parseInt(data.travelerCount)} Travelers`}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </CollapsibleSection>
