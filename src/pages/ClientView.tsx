@@ -15,62 +15,68 @@ export default function ClientView() {
 
   useEffect(() => {
     if (!shareId) return;
-    loadProposal();
-  }, [shareId]);
 
-  const loadProposal = async () => {
-    // Get session first so we know if an agent is logged in
-    const { data: { session } } = await supabase.auth.getSession();
-    const currentUserId = session?.user?.id;
+    // When opening in a new tab, the Supabase client needs a moment to
+    // restore the session from localStorage. We listen for the auth state
+    // to be resolved before loading the proposal.
+    let resolved = false;
 
-    console.log("[ClientView] DEBUG — shareId:", shareId);
-    console.log("[ClientView] DEBUG — isAgentPreview:", isAgentPreview);
-    console.log("[ClientView] DEBUG — searchParams.get('preview'):", searchParams.get("preview"));
-    console.log("[ClientView] DEBUG — currentUserId:", currentUserId);
+    const loadWithSession = async (userId?: string) => {
+      if (resolved) return;
+      resolved = true;
 
-    const { data: row, error: err } = await supabase
-      .from("proposals")
-      .select("data, status, user_id")
-      .eq("share_id", shareId)
-      .single();
+      const { data: row, error: err } = await supabase
+        .from("proposals")
+        .select("data, status, user_id")
+        .eq("share_id", shareId)
+        .single();
 
-    console.log("[ClientView] DEBUG — query error:", err);
-    console.log("[ClientView] DEBUG — row status:", (row as any)?.status);
-    console.log("[ClientView] DEBUG — row user_id:", (row as any)?.user_id);
-    console.log("[ClientView] DEBUG — owner match:", currentUserId === (row as any)?.user_id);
+      if (err || !row) {
+        setError("Proposal not found or link has expired.");
+        setLoading(false);
+        return;
+      }
 
-    if (err || !row) {
-      console.log("[ClientView] DEBUG — RESULT: Proposal not found");
-      setError("Proposal not found or link has expired.");
+      const r = row as any;
+      const status = r.status;
+      const isPublic = status === "published" || status === "sent" || status === "approved";
+
+      // 1. Agent preview: logged-in owner with ?preview=agent can see any status
+      if (isAgentPreview && userId && userId === r.user_id) {
+        setData(r.data as ProposalData);
+        setLoading(false);
+        return;
+      }
+
+      // 2. Public access: only published/sent/approved
+      if (isPublic) {
+        setData(r.data as ProposalData);
+        setLoading(false);
+        return;
+      }
+
+      setError("This proposal is not yet available. Please check back later or contact your travel advisor.");
       setLoading(false);
+    };
+
+    if (!isAgentPreview) {
+      // Public access — no need to wait for auth
+      loadWithSession(undefined);
       return;
     }
 
-    const r = row as any;
-    const status = r.status;
-    const isPublic = status === "published" || status === "sent" || status === "approved";
+    // For agent preview, listen for auth state to resolve
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      loadWithSession(session?.user?.id);
+    });
 
-    // 1. Agent preview: logged-in owner with ?preview=agent can see any status
-    if (isAgentPreview && currentUserId && currentUserId === r.user_id) {
-      console.log("[ClientView] DEBUG — RESULT: Agent preview bypass — rendering proposal");
-      setData(r.data as ProposalData);
-      setLoading(false);
-      return;
-    }
+    // Also check immediately in case the session is already available
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      loadWithSession(session?.user?.id);
+    });
 
-    // 2. Public access: only published/sent/approved
-    if (isPublic) {
-      console.log("[ClientView] DEBUG — RESULT: Public access — rendering proposal");
-      setData(r.data as ProposalData);
-      setLoading(false);
-      return;
-    }
-
-    console.log("[ClientView] DEBUG — RESULT: Blocked — not yet available");
-    console.log("[ClientView] DEBUG — isAgentPreview was:", isAgentPreview, "| currentUserId was:", currentUserId, "| user_id was:", r.user_id, "| isPublic was:", isPublic);
-    setError("This proposal is not yet available. Please check back later or contact your travel advisor.");
-    setLoading(false);
-  };
+    return () => subscription.unsubscribe();
+  }, [shareId, isAgentPreview]);
 
   const brandStyles = buildBrandCssVars(data?.brand);
 
