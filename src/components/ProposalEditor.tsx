@@ -592,7 +592,11 @@ export default function ProposalEditor({ data, onChange }: Props) {
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={sectionOrder} strategy={verticalListSortingStrategy}>
-          {sectionOrder.filter((k) => k !== "agent").map((key) => (
+          {sectionOrder.filter((k) => {
+            if (k === "agent") return false;
+            if (k === "busTrips" && (data as any).proposalType === "proposal") return false;
+            return true;
+          }).map((key) => (
             <SortableSection key={key} id={key}>
               {(() => {
                 switch (key) {
