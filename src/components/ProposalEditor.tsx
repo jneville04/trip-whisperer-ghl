@@ -48,6 +48,21 @@ const activityTypes: { value: Activity["type"]; label: string }[] = [
   { value: "sightseeing", label: "📸 Sightseeing" },
 ];
 
+// Default section titles/subtitles used in client-facing output
+const sectionDefaults: Record<string, { title: string; subtitle: string }> = {
+  overview: { title: "Introduction", subtitle: "Prepared Exclusively For" },
+  flights: { title: "Air Travel", subtitle: "Your Flights" },
+  accommodations: { title: "Accommodations", subtitle: "Where You'll Stay" },
+  cruiseShips: { title: "Cruise Ship & Cabin", subtitle: "Your Vessel" },
+  busTrips: { title: "Bus Trips", subtitle: "Ground Transport" },
+  itinerary: { title: "Day-by-Day Itinerary", subtitle: "Your Journey" },
+  inclusions: { title: "What's Included", subtitle: "Everything Taken Care Of" },
+  pricing: { title: "Choose Your Package", subtitle: "Investment" },
+  essentials: { title: "Travel Essentials", subtitle: "Good to Know" },
+  terms: { title: "Terms & Conditions", subtitle: "Important Information" },
+  agent: { title: "Your Advisor", subtitle: "Let's Connect" },
+};
+
 function CollapsibleSection({
   title,
   children,
