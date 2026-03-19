@@ -822,15 +822,23 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                 </Button>
                               </div>
                               {(data as any).proposalType === "proposal" && (
-                                <div className="mt-1">
-                                  <FieldLabel>Price (Proposal Option)</FieldLabel>
-                                  <div className="relative w-32">
-                                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
-                                    <Input value={opt.price || ""} onChange={(e) => {
-                                      const opts = [...flightOptions];
-                                      opts[oi] = { ...opts[oi], price: e.target.value };
-                                      update("flightOptions", opts);
-                                    }} placeholder="0.00" className="h-7 text-xs pl-5" />
+                                <div className="mt-1 space-y-2">
+                                  <div className="flex items-end gap-3">
+                                    <div>
+                                      <FieldLabel>Price (Proposal Option)</FieldLabel>
+                                      <div className="relative w-32">
+                                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
+                                        <Input value={opt.price || ""} onChange={(e) => {
+                                          const opts = [...flightOptions];
+                                          opts[oi] = { ...opts[oi], price: e.target.value };
+                                          update("flightOptions", opts);
+                                        }} placeholder="0.00" className="h-7 text-xs pl-5" />
+                                      </div>
+                                    </div>
+                                    <PricingDisplaySelect
+                                      value={opt.pricingDisplay}
+                                      onChange={(v) => { const opts = [...flightOptions]; opts[oi] = { ...opts[oi], pricingDisplay: v }; update("flightOptions", opts); }}
+                                    />
                                   </div>
                                 </div>
                               )}
