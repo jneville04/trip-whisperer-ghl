@@ -371,7 +371,7 @@ export default function ProposalPreview({ data, shareId, isEditor, onEditorSubPa
       accommodations: accommodations.length > 0,
       cruiseShips: cruiseShips.length > 0,
       busTrips: busTrips.length > 0,
-      itinerary: (data.days || []).length > 0,
+      itinerary: (data.days || []).filter(d => !d.hidden).length > 0,
       inclusions: (data.inclusions || []).length > 0,
       pricing: (data.pricing || []).length > 0 || (data.pricingOptions || []).length > 0,
       essentials: !!(
