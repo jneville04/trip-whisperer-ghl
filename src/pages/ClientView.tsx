@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import ProposalPreview from "@/components/ProposalPreview";
 import type { ProposalData } from "@/types/proposal";
@@ -7,6 +7,8 @@ import { buildBrandCssVars } from "@/lib/brand";
 
 export default function ClientView() {
   const { shareId } = useParams<{ shareId: string }>();
+  const [searchParams] = useSearchParams();
+  const isAgentPreview = searchParams.get("preview") === "agent";
   const [data, setData] = useState<ProposalData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -19,22 +21,37 @@ export default function ClientView() {
   const loadProposal = async () => {
     const { data: row, error: err } = await supabase
       .from("proposals")
-      .select("data, status")
+      .select("data, status, user_id")
       .eq("share_id", shareId)
       .single();
 
     if (err || !row) {
       setError("Proposal not found or link has expired.");
-    } else {
-      const status = (row as any).status;
-      const isPublic = status === "published" || status === "sent" || status === "approved";
+      setLoading(false);
+      return;
+    }
 
-      if (!isPublic) {
-        setError("This proposal is not yet available. Please check back later or contact your travel advisor.");
-      } else {
-        setData((row as any).data as ProposalData);
+    const r = row as any;
+    const status = r.status;
+    const isPublic = status === "published" || status === "sent" || status === "approved";
+
+    if (isPublic) {
+      setData(r.data as ProposalData);
+      setLoading(false);
+      return;
+    }
+
+    // Not public — check if this is an agent preview by the owner
+    if (isAgentPreview) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.id && session.user.id === r.user_id) {
+        setData(r.data as ProposalData);
+        setLoading(false);
+        return;
       }
     }
+
+    setError("This proposal is not yet available. Please check back later or contact your travel advisor.");
     setLoading(false);
   };
 

@@ -180,7 +180,7 @@ export default function TripCard({ proposal, onOpen, onDuplicate, onDelete, onCo
             <Button variant="travel-ghost" size="sm" className="h-7 text-xs px-2 font-medium" onClick={(e) => { e.stopPropagation(); onOpen(); }}>
               Open
             </Button>
-            <Button variant="travel-ghost" size="sm" className="h-7 text-xs px-2 font-medium" onClick={(e) => { e.stopPropagation(); window.open(`/view/${proposal.share_id}`, "_blank"); }}>
+            <Button variant="travel-ghost" size="sm" className="h-7 text-xs px-2 font-medium" onClick={(e) => { e.stopPropagation(); window.open(`/view/${proposal.share_id}?preview=agent`, "_blank"); }}>
               <Eye className="h-3 w-3 mr-1" /> Preview
             </Button>
           </div>
