@@ -6,7 +6,7 @@ import { useAppSettings } from "@/hooks/useAppSettings";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, Shield } from "lucide-react";
+import { LogOut, Shield, Settings } from "lucide-react";
 import CreateTripMenu from "@/components/CreateTripMenu";
 import PendingApproval from "@/components/PendingApproval";
 
