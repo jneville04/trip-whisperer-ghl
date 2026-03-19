@@ -310,6 +310,9 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   const [selectedCruise, setSelectedCruise] = useState<string>("");
   const [selectedBusTrip, setSelectedBusTrip] = useState<string>("");
   const [selectedPricingOption, setSelectedPricingOption] = useState<string>("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [approving, setApproving] = useState(false);
+  const [approveSuccess, setApproveSuccess] = useState(false);
   const vis = data.sectionVisibility || {
     hero: true,
     overview: true,
