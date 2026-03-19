@@ -96,6 +96,7 @@ export interface Accommodation {
   mediaType?: "photos" | "video";
   price?: string;
   agentPricing?: AgentPricing;
+  hidden?: boolean;
 }
 
 export interface CruiseShip {
