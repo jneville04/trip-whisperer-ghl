@@ -69,10 +69,13 @@ export interface FlightLeg {
   agentPricing?: AgentPricing;
 }
 
+export type PricingDisplayMode = "hide" | "total" | "per_person" | "per_night";
+
 export interface FlightOption {
   id: string;
   legs: FlightLeg[];
   price?: string;
+  pricingDisplay?: PricingDisplayMode;
   agentPricing?: AgentPricing;
   hidden?: boolean;
 }
