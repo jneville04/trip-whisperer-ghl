@@ -12,7 +12,7 @@ import LocationAutocomplete from "@/components/LocationAutocomplete";
 import AirportAutocomplete from "@/components/AirportAutocomplete";
 import AirlineAutocomplete, { findAirlineCode } from "@/components/AirlineAutocomplete";
 import AddressFields, { type AddressData } from "@/components/AddressFields";
-import { CruiseLineAutocomplete, ShipNameAutocomplete, findCruiseLineForShip } from "@/components/CruiseLineAutocomplete";
+import { findCruiseLineForShip } from "@/components/CruiseLineAutocomplete";
 import ImageUploadField from "@/components/ImageUploadField";
 import SortableImageGrid from "@/components/SortableImageGrid";
 import HotelSearchDialog from "@/components/HotelSearchDialog";
