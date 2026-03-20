@@ -645,190 +645,197 @@ export default function ProposalEditor({ data, onChange }: Props) {
       </Card>
 
       <CollapsibleSection title="📋 Trip Details" sectionKey="hero" visible={vis.hero} onToggleVisible={() => toggleSection("hero")}>
-        <div className="space-y-3">
-          <div>
-            <FieldLabel>Trip Name</FieldLabel>
-            <Input value={(data as any).tripName || ""} onChange={(e) => update("tripName" as any, e.target.value)} placeholder="e.g. Italy Adventure 2026" />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <FieldLabel>Destination</FieldLabel>
-              <LocationAutocomplete value={data.destination} onChange={(val) => update("destination", val)} placeholder="e.g. Portugal" />
-            </div>
-            <div>
-              <FieldLabel>Subtitle <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(optional)</span></FieldLabel>
-              <Input value={data.subtitle} onChange={(e) => update("subtitle", e.target.value)} placeholder="e.g. Lisbon · Porto · Algarve" />
-            </div>
-          </div>
-          <div>
-            <FieldLabel>Hero Media</FieldLabel>
-            <div className="flex gap-2 mt-1 mb-2">
-              <Button type="button" size="sm" variant={(!data.heroMediaType || data.heroMediaType === "photos") ? "default" : "outline"} className="text-xs h-7" onClick={() => {
-                onChange({ ...data, heroMediaType: "photos" });
-              }}>
-                📷 Photos
-              </Button>
-              <Button type="button" size="sm" variant={data.heroMediaType === "video" ? "default" : "outline"} className="text-xs h-7" onClick={() => {
-                onChange({ ...data, heroMediaType: "video" });
-              }}>
-                🎬 Video
-              </Button>
-            </div>
-            {(!data.heroMediaType || data.heroMediaType === "photos") ? (
-              <>
-                <div className="mt-1.5">
-                  <SortableImageGrid
-                    primaryImage={data.heroImageUrl}
-                    galleryImages={data.heroImageUrls || []}
-                    onReorder={(primary, gallery) => {
-                      onChange({ ...data, heroImageUrl: primary, heroImageUrls: gallery });
-                    }}
-                    onUpload={async (files) => {
-                      const currentTotal = (data.heroImageUrl ? 1 : 0) + (data.heroImageUrls || []).length;
-                      const slotsLeft = 3 - currentTotal;
-                      if (slotsLeft <= 0) return;
-                      const capped = Array.from(files).slice(0, slotsLeft);
-                      const urls = await uploadImages(capped);
-                      urls.forEach((url) => {
-                        if (!data.heroImageUrl) { update("heroImageUrl", url); }
-                        else { update("heroImageUrls", [...(data.heroImageUrls || []), url]); }
-                      });
-                    }}
-                  />
+        <Tabs defaultValue="general" className="w-full">
+          <TabsList className="w-full mb-3">
+            <TabsTrigger value="general" className="flex-1 text-xs">General Info</TabsTrigger>
+            {(data as any).proposalType === "proposal" && (
+              <TabsTrigger value="financials" className="flex-1 text-xs">💰 Financials</TabsTrigger>
+            )}
+          </TabsList>
+
+          <TabsContent value="general">
+            <div className="space-y-3">
+              <div>
+                <FieldLabel>Trip Name</FieldLabel>
+                <Input value={(data as any).tripName || ""} onChange={(e) => update("tripName" as any, e.target.value)} placeholder="e.g. Italy Adventure 2026" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <FieldLabel>Destination</FieldLabel>
+                  <LocationAutocomplete value={data.destination} onChange={(val) => update("destination", val)} placeholder="e.g. Portugal" />
                 </div>
-                <div className="flex gap-1.5 mt-1.5">
-                  <Input placeholder="Paste image URL..." className="h-7 text-xs flex-1" onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      const val = (e.target as HTMLInputElement).value.trim();
-                      if (!val) return;
-                      if (!data.heroImageUrl) { update("heroImageUrl", val); }
-                      else { update("heroImageUrls", [...(data.heroImageUrls || []), val]); }
-                      (e.target as HTMLInputElement).value = "";
-                    }
-                  }} />
+                <div>
+                  <FieldLabel>Subtitle <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(optional)</span></FieldLabel>
+                  <Input value={data.subtitle} onChange={(e) => update("subtitle", e.target.value)} placeholder="e.g. Lisbon · Porto · Algarve" />
                 </div>
-              </>
-            ) : (
-              <div className="space-y-2">
-                <div className="flex gap-1.5">
-                  <Input placeholder="YouTube, Vimeo, or direct video URL..." className="h-7 text-xs flex-1" value={data.heroVideoUrl || ""} onChange={(e) => update("heroVideoUrl", e.target.value)} />
-                  <label className="cursor-pointer">
-                    <input type="file" accept="video/*" className="hidden" onChange={async (e) => {
-                      const f = e.target.files?.[0];
-                      if (!f) return;
-                      const url = await uploadImage(f);
-                      update("heroVideoUrl", url);
-                    }} />
-                    <Button type="button" size="sm" variant="outline" className="text-xs h-7" asChild><span>Upload</span></Button>
-                  </label>
+              </div>
+              <div>
+                <FieldLabel>Hero Media</FieldLabel>
+                <div className="flex gap-2 mt-1 mb-2">
+                  <Button type="button" size="sm" variant={(!data.heroMediaType || data.heroMediaType === "photos") ? "default" : "outline"} className="text-xs h-7" onClick={() => {
+                    onChange({ ...data, heroMediaType: "photos" });
+                  }}>
+                    📷 Photos
+                  </Button>
+                  <Button type="button" size="sm" variant={data.heroMediaType === "video" ? "default" : "outline"} className="text-xs h-7" onClick={() => {
+                    onChange({ ...data, heroMediaType: "video" });
+                  }}>
+                    🎬 Video
+                  </Button>
                 </div>
-                {data.heroVideoUrl && !data.heroAutoplay && (
-                  <div>
-                    <FieldLabel>Custom Thumbnail</FieldLabel>
-                    <div className="flex gap-1.5 items-center mt-1">
+                {(!data.heroMediaType || data.heroMediaType === "photos") ? (
+                  <>
+                    <div className="mt-1.5">
+                      <SortableImageGrid
+                        primaryImage={data.heroImageUrl}
+                        galleryImages={data.heroImageUrls || []}
+                        onReorder={(primary, gallery) => {
+                          onChange({ ...data, heroImageUrl: primary, heroImageUrls: gallery });
+                        }}
+                        onUpload={async (files) => {
+                          const currentTotal = (data.heroImageUrl ? 1 : 0) + (data.heroImageUrls || []).length;
+                          const slotsLeft = 3 - currentTotal;
+                          if (slotsLeft <= 0) return;
+                          const capped = Array.from(files).slice(0, slotsLeft);
+                          const urls = await uploadImages(capped);
+                          urls.forEach((url) => {
+                            if (!data.heroImageUrl) { update("heroImageUrl", url); }
+                            else { update("heroImageUrls", [...(data.heroImageUrls || []), url]); }
+                          });
+                        }}
+                      />
+                    </div>
+                    <div className="flex gap-1.5 mt-1.5">
+                      <Input placeholder="Paste image URL..." className="h-7 text-xs flex-1" onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          const val = (e.target as HTMLInputElement).value.trim();
+                          if (!val) return;
+                          if (!data.heroImageUrl) { update("heroImageUrl", val); }
+                          else { update("heroImageUrls", [...(data.heroImageUrls || []), val]); }
+                          (e.target as HTMLInputElement).value = "";
+                        }
+                      }} />
+                    </div>
+                  </>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="flex gap-1.5">
+                      <Input placeholder="YouTube, Vimeo, or direct video URL..." className="h-7 text-xs flex-1" value={data.heroVideoUrl || ""} onChange={(e) => update("heroVideoUrl", e.target.value)} />
                       <label className="cursor-pointer">
-                        <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                        <input type="file" accept="video/*" className="hidden" onChange={async (e) => {
                           const f = e.target.files?.[0];
                           if (!f) return;
                           const url = await uploadImage(f);
-                          update("heroVideoThumbnailUrl", url);
+                          update("heroVideoUrl", url);
                         }} />
-                        <Button type="button" size="sm" variant="outline" className="text-xs h-7" asChild><span>Upload Thumbnail</span></Button>
+                        <Button type="button" size="sm" variant="outline" className="text-xs h-7" asChild><span>Upload</span></Button>
                       </label>
-                      {data.heroVideoThumbnailUrl && (
-                        <div className="relative h-10 w-16 rounded overflow-hidden border">
-                          <img src={data.heroVideoThumbnailUrl} alt="Thumbnail" className="w-full h-full object-cover" />
-                          <button type="button" className="absolute top-0 right-0 bg-destructive text-destructive-foreground rounded-bl p-0.5" onClick={() => update("heroVideoThumbnailUrl", "")}>✕</button>
+                    </div>
+                    {data.heroVideoUrl && !data.heroAutoplay && (
+                      <div>
+                        <FieldLabel>Custom Thumbnail</FieldLabel>
+                        <div className="flex gap-1.5 items-center mt-1">
+                          <label className="cursor-pointer">
+                            <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                              const f = e.target.files?.[0];
+                              if (!f) return;
+                              const url = await uploadImage(f);
+                              update("heroVideoThumbnailUrl", url);
+                            }} />
+                            <Button type="button" size="sm" variant="outline" className="text-xs h-7" asChild><span>Upload Thumbnail</span></Button>
+                          </label>
+                          {data.heroVideoThumbnailUrl && (
+                            <div className="relative h-10 w-16 rounded overflow-hidden border">
+                              <img src={data.heroVideoThumbnailUrl} alt="Thumbnail" className="w-full h-full object-cover" />
+                              <button type="button" className="absolute top-0 right-0 bg-destructive text-destructive-foreground rounded-bl p-0.5" onClick={() => update("heroVideoThumbnailUrl", "")}>✕</button>
+                            </div>
+                          )}
                         </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-                {data.heroVideoUrl && (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
-                      <div>
-                        <p className="text-sm font-body font-medium text-foreground">Autoplay</p>
-                        <p className="text-xs text-muted-foreground font-body">Video plays automatically on load.</p>
                       </div>
-                      <Switch
-                        checked={!!data.heroAutoplay}
-                        onCheckedChange={(checked) => update("heroAutoplay", checked)}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
-                      <div>
-                        <p className="text-sm font-body font-medium text-foreground">Muted</p>
-                        <p className="text-xs text-muted-foreground font-body">Video starts muted (required for autoplay on most browsers).</p>
+                    )}
+                    {data.heroVideoUrl && (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
+                          <div>
+                            <p className="text-sm font-body font-medium text-foreground">Autoplay</p>
+                            <p className="text-xs text-muted-foreground font-body">Video plays automatically on load.</p>
+                          </div>
+                          <Switch
+                            checked={!!data.heroAutoplay}
+                            onCheckedChange={(checked) => update("heroAutoplay", checked)}
+                          />
+                        </div>
+                        <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
+                          <div>
+                            <p className="text-sm font-body font-medium text-foreground">Muted</p>
+                            <p className="text-xs text-muted-foreground font-body">Video starts muted (required for autoplay on most browsers).</p>
+                          </div>
+                          <Switch
+                            checked={!!data.heroMuted}
+                            onCheckedChange={(checked) => update("heroMuted" as any, checked)}
+                          />
+                        </div>
                       </div>
-                      <Switch
-                        checked={!!data.heroMuted}
-                        onCheckedChange={(checked) => update("heroMuted" as any, checked)}
-                      />
-                    </div>
+                    )}
                   </div>
                 )}
               </div>
-            )}
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <FieldLabel>Start Date</FieldLabel>
-              <DatePickerField value={(data as any).startDate || ""} onChange={(val) => {
-                onChange({ ...data, startDate: val } as any);
-              }} placeholder="Pick start date" showTime={false} />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <FieldLabel>Start Date</FieldLabel>
+                  <DatePickerField value={(data as any).startDate || ""} onChange={(val) => {
+                    onChange({ ...data, startDate: val } as any);
+                  }} placeholder="Pick start date" showTime={false} />
+                </div>
+                <div>
+                  <FieldLabel>End Date</FieldLabel>
+                  <DatePickerField value={(data as any).endDate || ""} onChange={(val) => {
+                    onChange({ ...data, endDate: val } as any);
+                  }} placeholder="Pick end date" showTime={false} />
+                </div>
+              </div>
+              <div>
+                <FieldLabel>Number of Travelers <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(optional)</span></FieldLabel>
+                <div className="flex items-center gap-2">
+                  <Button type="button" variant="outline" size="icon" className="h-8 w-8 shrink-0" onClick={() => {
+                    const cur = parseInt(data.travelerCount) || 0;
+                    if (cur > 0) update("travelerCount", String(cur - 1));
+                  }} disabled={!data.travelerCount || parseInt(data.travelerCount) <= 0}>
+                    <Minus className="h-3.5 w-3.5" />
+                  </Button>
+                  <Input
+                    type="number"
+                    min="0"
+                    value={data.travelerCount}
+                    onChange={(e) => update("travelerCount", e.target.value)}
+                    placeholder="0"
+                    className="h-8 w-20 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                  />
+                  <Button type="button" variant="outline" size="icon" className="h-8 w-8 shrink-0" onClick={() => {
+                    const cur = parseInt(data.travelerCount) || 0;
+                    update("travelerCount", String(cur + 1));
+                  }}>
+                    <Plus className="h-3.5 w-3.5" />
+                  </Button>
+                  {data.travelerCount && parseInt(data.travelerCount) > 0 && (
+                    <span className="text-xs text-muted-foreground font-body ml-1">
+                      {parseInt(data.travelerCount) === 1 ? "1 Traveler" : `${parseInt(data.travelerCount)} Travelers`}
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
-            <div>
-              <FieldLabel>End Date</FieldLabel>
-              <DatePickerField value={(data as any).endDate || ""} onChange={(val) => {
-                onChange({ ...data, endDate: val } as any);
-              }} placeholder="Pick end date" showTime={false} />
-            </div>
-          </div>
-          <div>
-            <FieldLabel>Number of Travelers <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(optional)</span></FieldLabel>
-            <div className="flex items-center gap-2">
-              <Button type="button" variant="outline" size="icon" className="h-8 w-8 shrink-0" onClick={() => {
-                const cur = parseInt(data.travelerCount) || 0;
-                if (cur > 0) update("travelerCount", String(cur - 1));
-              }} disabled={!data.travelerCount || parseInt(data.travelerCount) <= 0}>
-                <Minus className="h-3.5 w-3.5" />
-              </Button>
-              <Input
-                type="number"
-                min="0"
-                value={data.travelerCount}
-                onChange={(e) => update("travelerCount", e.target.value)}
-                placeholder="0"
-                className="h-8 w-20 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-              />
-              <Button type="button" variant="outline" size="icon" className="h-8 w-8 shrink-0" onClick={() => {
-                const cur = parseInt(data.travelerCount) || 0;
-                update("travelerCount", String(cur + 1));
-              }}>
-                <Plus className="h-3.5 w-3.5" />
-              </Button>
-              {data.travelerCount && parseInt(data.travelerCount) > 0 && (
-                <span className="text-xs text-muted-foreground font-body ml-1">
-                  {parseInt(data.travelerCount) === 1 ? "1 Traveler" : `${parseInt(data.travelerCount)} Travelers`}
-                </span>
-              )}
-            </div>
-          </div>
+          </TabsContent>
 
-          {/* Financials */}
           {(data as any).proposalType === "proposal" && (
-            <div className="mt-4 pt-4 border-t border-border/30">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-base font-display font-semibold text-foreground">💰 Financials</span>
-              </div>
+            <TabsContent value="financials">
               <FinancialsEditor
                 financials={data.financials || createDefaultFinancials()}
                 onChange={(f) => onChange({ ...data, financials: f })}
               />
-            </div>
+            </TabsContent>
           )}
-        </div>
+        </Tabs>
       </CollapsibleSection>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>

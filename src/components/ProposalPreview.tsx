@@ -2306,9 +2306,9 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
               custom={2}
               className="bg-background rounded-2xl border border-border/50 shadow-lg p-8"
             >
-              {/* Selected items summary */}
+              {/* Selected items summary — only show sections that are enabled AND have data */}
               <div className="space-y-4 mb-6">
-                {flightOptions.length > 0 && (
+                {vis.flights && flightOptions.length > 0 && (
                   <div className="flex justify-between items-center py-3 border-b border-border/30">
                     <div className="flex items-center gap-2">
                       <Plane className="h-4 w-4 text-primary" />
@@ -2335,7 +2335,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                     </span>
                   </div>
                 )}
-                {accommodations.length > 0 && (
+                {vis.accommodations && accommodations.length > 0 && (
                   <div className="flex justify-between items-center py-3 border-b border-border/30">
                     <div className="flex items-center gap-2">
                       <BedDouble className="h-4 w-4 text-primary" />
@@ -2360,7 +2360,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                     </span>
                   </div>
                 )}
-                {cruiseShips.length > 0 && (
+                {vis.cruiseShips && cruiseShips.length > 0 && (
                   <div className="flex justify-between items-center py-3 border-b border-border/30">
                     <div className="flex items-center gap-2">
                       <Ship className="h-4 w-4 text-primary" />
@@ -2383,7 +2383,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                     </span>
                   </div>
                 )}
-                {busTrips.length > 0 && (
+                {vis.busTrips && busTrips.length > 0 && (
                   <div className="flex justify-between items-center py-3 border-b border-border/30">
                     <div className="flex items-center gap-2">
                       <Bus className="h-4 w-4 text-primary" />
@@ -2437,8 +2437,46 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                 </div>
               )}
 
-              {/* Dynamic Total */}
+              {/* Total & Deposit — synced from Financials tab */}
               {(() => {
+                const finTotal = parseFloat(financials.totalPrice?.replace(/[^0-9.-]/g, "") || "0");
+                const finDeposit = parseFloat(financials.depositAmount?.replace(/[^0-9.-]/g, "") || "0");
+
+                // If financials has a fixed total, use it; otherwise fall back to calculated sum
+                if (financials.pricingMode === "fixed" && finTotal > 0) {
+                  return (
+                    <div className="pt-4 border-t-2 border-primary/30 mb-6 space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="font-display text-xl font-bold text-foreground">Total Price</span>
+                        <span className="font-display text-2xl font-bold text-primary">
+                          {financials.currency !== "USD" ? financials.currency + " " : "$"}{finTotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                      {finDeposit > 0 && (
+                        <div className="flex justify-between items-center">
+                          <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
+                          <span className="font-display text-lg font-bold text-accent">
+                            {financials.currency !== "USD" ? financials.currency + " " : "$"}{finDeposit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </span>
+                        </div>
+                      )}
+                      {financials.depositDueDate && (
+                        <div className="flex justify-between items-center">
+                          <span className="font-body text-sm text-muted-foreground">Deposit Due By</span>
+                          <span className="font-body text-sm font-medium text-foreground">{financials.depositDueDate}</span>
+                        </div>
+                      )}
+                      {financials.finalPaymentDueDate && (
+                        <div className="flex justify-between items-center">
+                          <span className="font-body text-sm text-muted-foreground">Final Balance Due By</span>
+                          <span className="font-body text-sm font-medium text-foreground">{financials.finalPaymentDueDate}</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+
+                // Calculated / sum mode — compute from selections
                 const selectedFlightPrice = selectedFlight
                   ? parseFloat(flightOptions.find((o) => o.id === selectedFlight)?.price || "0")
                   : 0;
@@ -2471,27 +2509,33 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                   selectedOptionPrice;
                 if (total > 0) {
                   return (
-                    <div className="pt-4 border-t-2 border-primary/30 mb-6">
+                    <div className="pt-4 border-t-2 border-primary/30 mb-6 space-y-2">
                       <div className="flex justify-between items-center">
                         <span className="font-display text-xl font-bold text-foreground">Estimated Total</span>
                         <span className="font-display text-2xl font-bold text-primary">
                           ${total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
                       </div>
-                      {/* Show deposit from selected pricing option */}
-                      {selectedPricingOption &&
-                        (() => {
-                          const opt = pricingOptions.find((o) => o.id === selectedPricingOption);
-                          if (!opt?.deposit) return null;
-                          return (
-                            <div className="flex justify-between items-center mt-2">
-                              <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
-                              <span className="font-display text-lg font-bold text-accent">
-                                {fmtCurrency(opt.deposit)}
-                              </span>
-                            </div>
-                          );
-                        })()}
+                      {finDeposit > 0 && (
+                        <div className="flex justify-between items-center">
+                          <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
+                          <span className="font-display text-lg font-bold text-accent">
+                            {financials.currency !== "USD" ? financials.currency + " " : "$"}{finDeposit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          </span>
+                        </div>
+                      )}
+                      {financials.depositDueDate && (
+                        <div className="flex justify-between items-center">
+                          <span className="font-body text-sm text-muted-foreground">Deposit Due By</span>
+                          <span className="font-body text-sm font-medium text-foreground">{financials.depositDueDate}</span>
+                        </div>
+                      )}
+                      {financials.finalPaymentDueDate && (
+                        <div className="flex justify-between items-center">
+                          <span className="font-body text-sm text-muted-foreground">Final Balance Due By</span>
+                          <span className="font-body text-sm font-medium text-foreground">{financials.finalPaymentDueDate}</span>
+                        </div>
+                      )}
                     </div>
                   );
                 }
@@ -2500,24 +2544,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
 
               {data.paymentTerms && <p className="text-xs text-muted-foreground mb-6 font-body">{data.paymentTerms}</p>}
 
-              {/* Deposit info from checkout settings (legacy) */}
-              {(() => {
-                const checkout = data.checkout;
-                if (!checkout?.enabled) return null;
-                if (selectedPricingOption) return null; // pricing option deposit takes precedence
-                const depositOpt = checkout.paymentOptions.find((o) => o.enabled && o.type === "deposit");
-                if (!depositOpt || !depositOpt.depositPercent) return null;
-                // depositPercent now stores dollar amount directly
-                const depositAmount = depositOpt.depositPercent;
-                return (
-                  <div className="flex justify-between items-center pt-2 mb-4">
-                    <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
-                    <span className="font-display text-lg font-bold text-accent">
-                      ${depositAmount.toLocaleString()}
-                    </span>
-                  </div>
-                );
-              })()}
+              {financials.paymentNotes && <p className="text-xs text-muted-foreground mb-6 font-body">{financials.paymentNotes}</p>}
 
               {/* Terms & Conditions checkbox */}
               {!isEditor && tripId && (
