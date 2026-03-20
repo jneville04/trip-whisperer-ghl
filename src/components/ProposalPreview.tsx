@@ -239,7 +239,7 @@ function ItinerarySection({
                                 </div>
                                 {hasImages && (
                                   <div
-                                    className="sm:w-[260px] md:w-[300px] h-[180px] sm:h-[200px] shrink-0 rounded-lg overflow-hidden cursor-pointer group relative"
+                                    className="sm:w-[220px] md:w-[260px] h-[160px] sm:h-[175px] shrink-0 rounded-lg overflow-hidden cursor-pointer group relative opacity-95"
                                     onClick={() =>
                                       openLightbox(
                                         act.imageUrls!.map((u) => ({ src: u, alt: act.title })),
