@@ -1976,6 +1976,23 @@ export default function ProposalEditor({ data, onChange }: Props) {
                               )}
                             </div>
                           ))}
+                          {/* Payment Notes (moved from old Pricing section) */}
+                          <div className="border border-border/30 rounded-lg overflow-hidden">
+                            <div className="flex items-center justify-between px-3 py-2 bg-muted/30">
+                              <span className="text-sm font-body font-medium">Payment Notes</span>
+                            </div>
+                            <div className="p-3">
+                              <RichTextEditor
+                                content={(data.financials || createDefaultFinancials()).paymentNotes}
+                                onChange={(html) => {
+                                  const fin = data.financials || createDefaultFinancials();
+                                  onChange({ ...data, financials: { ...fin, paymentNotes: html } });
+                                }}
+                                placeholder="Payment terms, deposit schedule, refund policy notes..."
+                                minHeight="100px"
+                              />
+                            </div>
+                          </div>
                         </div>
                       </CollapsibleSection>
                     );
