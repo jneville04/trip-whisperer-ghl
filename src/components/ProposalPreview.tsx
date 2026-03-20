@@ -220,7 +220,7 @@ function ItinerarySection({
                                     </div>
                                     <div className="flex-1 min-w-0">
                                       {act.time && (
-                                        <span className="text-xs font-semibold text-primary font-body flex items-center gap-1 mb-1.5">
+                                        <span className="text-xs font-medium text-primary font-body flex items-center gap-1 mb-1">
                                           <Clock className="h-3 w-3" /> {act.time}
                                         </span>
                                       )}
