@@ -691,6 +691,19 @@ export default function ProposalEditor({ data, onChange }: Props) {
               )}
             </div>
           </div>
+
+          {/* Financials */}
+          {(data as any).proposalType === "proposal" && (
+            <div className="mt-4 pt-4 border-t border-border/30">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-base font-display font-semibold text-foreground">💰 Financials</span>
+              </div>
+              <FinancialsEditor
+                financials={data.financials || createDefaultFinancials()}
+                onChange={(f) => onChange({ ...data, financials: f })}
+              />
+            </div>
+          )}
         </div>
       </CollapsibleSection>
 
