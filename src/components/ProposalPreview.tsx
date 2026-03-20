@@ -464,6 +464,15 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   ]);
 
   const goToApprove = useCallback(() => {
+    // If financials.acceptPayments is ON and there's a redirect URL, redirect there
+    if (financials.acceptPayments && financials.redirectUrl) {
+      if (isEditor && onEditorSubPage) {
+        onEditorSubPage("approve");
+        return;
+      }
+      window.location.href = financials.redirectUrl;
+      return;
+    }
     if (checkoutEnabled) {
       goToCheckout();
       return;
@@ -479,17 +488,8 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
       navigate(`/approve${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
     }
   }, [
-    navigate,
-    shareId,
-    brandData,
-    returnTo,
-    bookingUrl,
-    approveUrl,
-    openModal,
-    checkoutEnabled,
-    goToCheckout,
-    isEditor,
-    onEditorSubPage,
+    navigate, shareId, brandData, returnTo, bookingUrl, approveUrl, openModal,
+    checkoutEnabled, goToCheckout, isEditor, onEditorSubPage, financials,
   ]);
 
   const goToRevisions = useCallback(() => {
@@ -497,12 +497,14 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
       onEditorSubPage("revisions");
       return;
     }
-    if (revisionsUrl) {
-      openModal(revisionsUrl, "Request Revisions");
+    // Use financials.revisionUrl first, then legacy revisionsUrl
+    const revUrl = financials.revisionUrl || revisionsUrl;
+    if (revUrl) {
+      openModal(revUrl, "Request Revisions");
     } else {
       navigate(`/revisions${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
     }
-  }, [navigate, shareId, brandData, returnTo, revisionsUrl, openModal, isEditor, onEditorSubPage]);
+  }, [navigate, shareId, brandData, returnTo, revisionsUrl, openModal, isEditor, onEditorSubPage, financials]);
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
