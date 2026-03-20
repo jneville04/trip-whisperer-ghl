@@ -865,6 +865,9 @@ export default function ProposalEditor({ data, onChange }: Props) {
                           {(data as any).proposalType === "proposal" && (
                             <div className="rounded-lg border border-border/40 bg-muted/20 p-3 space-y-2">
                               <FieldLabel>Selection Behavior</FieldLabel>
+                              <p className="text-[10px] text-muted-foreground/70 font-body leading-snug -mt-0.5">
+                                Choose whether this section is just for viewing or whether the traveler must select an option.
+                              </p>
                               <div className="flex flex-wrap gap-1.5">
                                 <Button
                                   type="button"
@@ -885,10 +888,10 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                   Client selects one
                                 </Button>
                               </div>
-                              <p className="text-[10px] text-muted-foreground font-body leading-snug mt-1">
+                              <p className="text-[10px] text-muted-foreground/70 font-body leading-snug mt-1">
                                 {accommodationsMode === "informational_only"
-                                  ? "Show the hotel to the client with no selection button."
-                                  : "Let the client choose one hotel option on the proposal."}
+                                  ? "Traveler can view this section but cannot select an option."
+                                  : "Traveler can choose one option from this section."}
                               </p>
                             </div>
                           )}
