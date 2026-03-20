@@ -188,7 +188,7 @@ function ItinerarySection({
                         </span>
                       )}
                     </div>
-                    <h3 className="font-display text-2xl sm:text-3xl font-semibold text-foreground leading-tight">{day.title}</h3>
+                    <h3 className="font-display text-xl sm:text-2xl font-semibold text-foreground leading-tight">{day.title}</h3>
                   </div>
                   <ChevronDown
                     className={`h-5 w-5 text-muted-foreground shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
@@ -203,14 +203,14 @@ function ItinerarySection({
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="px-6 pb-6 pt-2 space-y-3">
+                      <div className="px-6 pb-6 pt-4 space-y-3">
                         {validActivities.map((act, actIdx) => {
                           const hasImages = act.imageUrls && act.imageUrls.length > 0;
                           const hasVideo = !!act.videoUrl;
                           return (
                             <div
                               key={act.id || actIdx}
-                              className="rounded-lg border border-border/30 bg-card p-4 sm:p-5"
+                              className="rounded-lg border border-border/60 bg-background p-4 sm:p-5"
                             >
                               <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-5`}>
                                 <div className="flex-1">
@@ -220,7 +220,7 @@ function ItinerarySection({
                                     </div>
                                     <div className="flex-1 min-w-0">
                                       {act.time && (
-                                        <span className="text-xs font-semibold text-primary font-body flex items-center gap-1 mb-1.5">
+                                        <span className="text-xs font-medium text-primary font-body flex items-center gap-1 mb-1">
                                           <Clock className="h-3 w-3" /> {act.time}
                                         </span>
                                       )}
@@ -239,7 +239,7 @@ function ItinerarySection({
                                 </div>
                                 {hasImages && (
                                   <div
-                                    className="sm:w-[260px] md:w-[300px] h-[180px] sm:h-[200px] shrink-0 rounded-lg overflow-hidden cursor-pointer group relative"
+                                    className="sm:w-[220px] md:w-[260px] h-[160px] sm:h-[175px] shrink-0 rounded-lg overflow-hidden cursor-pointer group relative opacity-95"
                                     onClick={() =>
                                       openLightbox(
                                         act.imageUrls!.map((u) => ({ src: u, alt: act.title })),
