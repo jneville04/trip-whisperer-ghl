@@ -1215,7 +1215,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                             </div>
                             {(acc.price || !isGroupBooking) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
-                                {acc.price && (acc.pricingDisplay || "total") !== "hide" ? (
+                                {acc.price && (acc.pricingDisplay || "total") !== "hide" && !hideItemizedPrices ? (
                                   <span className="font-display text-xl font-bold text-foreground">
                                     {fmtCurrency(acc.price)}
                                     <span className="text-xs text-muted-foreground font-body ml-1">
