@@ -168,7 +168,7 @@ function ItinerarySection({
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
                 custom={0}
-                className="rounded-xl border border-border/50 bg-muted/30 overflow-hidden"
+                className="rounded-xl border border-border/40 bg-muted/20 overflow-hidden shadow-sm"
               >
                 <button
                   onClick={() => toggleDay(day.id)}
