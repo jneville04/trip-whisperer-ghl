@@ -344,7 +344,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   const effectiveSelectedAccommodation = accommodationSelectionEnabled ? selectedAccommodation : "";
   const cruiseShips = (data.cruiseShips || []).filter(s => !s.hidden);
   const busTrips = (data.busTrips || []).filter(t => !(t as any).hidden);
-  const pricingOptions = data.pricingOptions || [];
+  const pricingOptions = (data.pricingOptions || []).filter(opt => opt.name?.trim() || opt.totalPrice?.trim() || opt.deposit?.trim());
   const financials: FinancialsSettings = data.financials || createDefaultFinancials();
   const hideItemizedPrices = financials.clientView === "package";
   const agent = data.agent || {
