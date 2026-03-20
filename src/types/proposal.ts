@@ -456,6 +456,7 @@ export const createDefaultFinancials = (): FinancialsSettings => ({
   paymentNotes: "",
 });
 
+export const blankProposal: ProposalData = {
   proposalType: "proposal",
   tripName: "",
   destination: "",
