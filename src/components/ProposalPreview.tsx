@@ -71,10 +71,12 @@ const fadeUp = {
   }),
 };
 
+const UTILITY_ACTIVITY_TYPES: Activity["type"][] = ["transport"];
+
 function getActivityIcon(type: Activity["type"]) {
   switch (type) {
     case "transport":
-      return <Plane className="h-4 w-4" />;
+      return <Bus className="h-4 w-4" />;
     case "hotel":
       return <Hotel className="h-4 w-4" />;
     case "dining":
