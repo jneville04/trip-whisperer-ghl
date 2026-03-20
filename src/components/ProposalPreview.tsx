@@ -967,7 +967,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                           {/* Footer: price (if single option) + selection */}
                           {(opt.price || !isGroupBooking) && (
                             <div className="bg-muted/30 border-t border-border/30 px-6 py-4 flex items-center justify-between">
-                              {opt.price && flightOptions.length <= 1 && (opt.pricingDisplay || "total") !== "hide" && (
+                              {opt.price && flightOptions.length <= 1 && (opt.pricingDisplay || "total") !== "hide" && !hideItemizedPrices && (
                                 <span className="font-display text-xl font-bold text-foreground">
                                   {fmtCurrency(opt.price)}
                                   <span className="text-xs text-muted-foreground font-body ml-1">
