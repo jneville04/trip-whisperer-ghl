@@ -283,7 +283,131 @@ function PricingDisplaySelect({ value, onChange, showPerNight }: { value?: Prici
   );
 }
 
-// City-only destinations (no airports, ports, cruise lines)
+const CURRENCIES = ["USD", "EUR", "GBP", "CAD", "AUD", "MXN", "BRL", "JPY", "CHF", "NZD"];
+
+function FinancialsEditor({ financials, onChange }: { financials: FinancialsSettings; onChange: (f: FinancialsSettings) => void }) {
+  const upd = (partial: Partial<FinancialsSettings>) => onChange({ ...financials, ...partial });
+
+  return (
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <FieldLabel>Total Price</FieldLabel>
+          <div className="relative">
+            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">$</span>
+            <Input value={financials.totalPrice} onChange={(e) => upd({ totalPrice: e.target.value })} placeholder="0.00" className="h-8 text-sm pl-5" />
+          </div>
+        </div>
+        <div>
+          <FieldLabel>Deposit Amount</FieldLabel>
+          <div className="relative">
+            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">$</span>
+            <Input value={financials.depositAmount} onChange={(e) => upd({ depositAmount: e.target.value })} placeholder="0.00" className="h-8 text-sm pl-5" />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <FieldLabel>Currency</FieldLabel>
+        <select
+          value={financials.currency}
+          onChange={(e) => upd({ currency: e.target.value })}
+          className="h-8 text-sm rounded-md border border-input bg-background px-3 py-1 font-body text-foreground w-full"
+        >
+          {CURRENCIES.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <FieldLabel>Deposit Due Date</FieldLabel>
+          <DatePickerField value={financials.depositDueDate} onChange={(v) => upd({ depositDueDate: v })} placeholder="Select date" showTime={false} />
+        </div>
+        <div>
+          <FieldLabel>Final Payment Due Date</FieldLabel>
+          <DatePickerField value={financials.finalPaymentDueDate} onChange={(v) => upd({ finalPaymentDueDate: v })} placeholder="Select date" showTime={false} />
+        </div>
+      </div>
+
+      {/* Pricing Mode */}
+      <div className="rounded-lg border border-border/40 bg-muted/20 p-3 space-y-1.5">
+        <FieldLabel>Pricing Mode</FieldLabel>
+        <p className="text-[10px] text-muted-foreground/70 font-body leading-snug -mt-0.5">
+          Choose whether this proposal uses one fixed trip price or builds the total from selected options.
+        </p>
+        <div className="flex gap-1.5">
+          <Button type="button" size="sm" variant={financials.pricingMode === "fixed" ? "travel" : "travel-outline"} className="h-7 text-xs" onClick={() => upd({ pricingMode: "fixed" })}>
+            Fixed Total
+          </Button>
+          <Button type="button" size="sm" variant={financials.pricingMode === "sum" ? "travel" : "travel-outline"} className="h-7 text-xs" onClick={() => upd({ pricingMode: "sum" })}>
+            Calculated Total
+          </Button>
+        </div>
+        <p className="text-[10px] text-muted-foreground/70 font-body leading-snug">
+          {financials.pricingMode === "fixed"
+            ? "Use one main package price for the proposal."
+            : "Build the total from selected options."}
+        </p>
+      </div>
+
+      {/* Client Price View */}
+      <div className="rounded-lg border border-border/40 bg-muted/20 p-3 space-y-1.5">
+        <FieldLabel>Client Price View</FieldLabel>
+        <p className="text-[10px] text-muted-foreground/70 font-body leading-snug -mt-0.5">
+          Choose how prices appear to the traveler on the proposal.
+        </p>
+        <div className="flex gap-1.5">
+          <Button type="button" size="sm" variant={financials.clientView === "package" ? "travel" : "travel-outline"} className="h-7 text-xs" onClick={() => upd({ clientView: "package" })}>
+            Package Total
+          </Button>
+          <Button type="button" size="sm" variant={financials.clientView === "itemized" ? "travel" : "travel-outline"} className="h-7 text-xs" onClick={() => upd({ clientView: "itemized" })}>
+            Itemized
+          </Button>
+        </div>
+        <p className="text-[10px] text-muted-foreground/70 font-body leading-snug">
+          {financials.clientView === "package"
+            ? "Show one total package price and hide individual section prices."
+            : "Show prices inside Flights, Hotels, and Cruise sections."}
+        </p>
+      </div>
+
+      {/* Accept Payments */}
+      <div className="rounded-lg border border-border/40 bg-muted/20 p-3 space-y-1.5">
+        <div className="flex items-center justify-between">
+          <div>
+            <FieldLabel>Accept Payments</FieldLabel>
+            <p className="text-[10px] text-muted-foreground/70 font-body leading-snug -mt-0.5">
+              If turned on, approving the proposal can send the traveler to your payment page.
+            </p>
+          </div>
+          <Switch checked={financials.acceptPayments} onCheckedChange={(v) => upd({ acceptPayments: v })} />
+        </div>
+        <p className="text-[10px] text-muted-foreground/70 font-body leading-snug">
+          {financials.acceptPayments
+            ? "Approve can redirect the traveler to the payment or checkout page."
+            : "Approve only confirms the proposal and does not send the traveler to payment."}
+        </p>
+      </div>
+
+      {financials.acceptPayments && (
+        <div>
+          <FieldLabel>Redirect URL (Payment / Checkout Page)</FieldLabel>
+          <Input value={financials.redirectUrl} onChange={(e) => upd({ redirectUrl: e.target.value })} placeholder="https://your-payment-page.com" className="h-8 text-sm" />
+          <p className="text-[10px] text-muted-foreground/70 font-body mt-1">Client will be redirected here after approving.</p>
+        </div>
+      )}
+
+      <div>
+        <FieldLabel>Revision URL <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(optional)</span></FieldLabel>
+        <Input value={financials.revisionUrl} onChange={(e) => upd({ revisionUrl: e.target.value })} placeholder="https://your-revision-form.com" className="h-8 text-sm" />
+        <p className="text-[10px] text-muted-foreground/70 font-body mt-1">If set, "Request Revisions" opens this URL instead of the built-in form.</p>
+      </div>
+    </div>
+  );
+}
+
 import { POPULAR_DESTINATIONS } from "@/components/LocationAutocomplete";
 const CITY_DESTINATIONS = POPULAR_DESTINATIONS.filter(
   (d) => !d.includes("(Port)") && !d.match(/^[A-Z]{3}\s[–—-]\s/) && ![
