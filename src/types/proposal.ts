@@ -441,7 +441,21 @@ export const createBusTrip = (): BusTrip => ({
   mediaType: "photos",
 });
 
-export const blankProposal: ProposalData = {
+export const createDefaultFinancials = (): FinancialsSettings => ({
+  totalPrice: "",
+  depositAmount: "",
+  currency: "USD",
+  depositDueDate: "",
+  finalPaymentDueDate: "",
+  pricingMode: "fixed",
+  clientView: "package",
+  hideOnApproval: false,
+  acceptPayments: false,
+  redirectUrl: "",
+  revisionUrl: "",
+  paymentNotes: "",
+});
+
   proposalType: "proposal",
   tripName: "",
   destination: "",
