@@ -2266,7 +2266,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                         </div>
                       )}
                       <h3 className="font-display text-xl font-bold text-foreground mb-3">
-                        {opt.name || "Untitled Option"}
+                        {opt.name}
                       </h3>
                       {opt.totalPrice && (
                         <p className="font-display text-3xl font-bold text-primary mb-4">
