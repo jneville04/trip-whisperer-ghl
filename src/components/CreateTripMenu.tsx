@@ -366,14 +366,6 @@ export default function CreateTripMenu() {
               />
               <FieldError message={groupErrors.groupDestination} />
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="groupName">Group Name <span className="text-muted-foreground text-xs">(optional)</span></Label>
-              <Input id="groupName" placeholder="e.g. Smith Family Reunion" value={groupName} onChange={(e) => setGroupName(e.target.value)} />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="groupMaxCapacity">Max Capacity <span className="text-muted-foreground text-xs">(optional)</span></Label>
-              <Input id="groupMaxCapacity" type="number" placeholder="e.g. 20" value={groupMaxCapacity} onChange={(e) => setGroupMaxCapacity(e.target.value)} />
-            </div>
           </div>
           <DialogFooter>
             <Button variant="travel-outline" size="sm" onClick={() => setGroupOpen(false)}>Cancel</Button>

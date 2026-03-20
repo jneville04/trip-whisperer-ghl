@@ -430,30 +430,6 @@ export default function EditorPage() {
       <div className="flex-1 flex overflow-hidden">
         {mode === "split" && panelOpen && !editorSubPage && (
           <div className="w-full max-w-lg border-r border-border/50 overflow-y-auto overscroll-contain bg-background">
-            {/* Inventory Settings for Group Trips */}
-            {tripType === "group" && (
-              <div className="px-6 py-4 border-b border-border/50 bg-muted/30">
-                <div className="flex items-center gap-2 mb-3">
-                  <Users className="h-4 w-4 text-primary" />
-                  <span className="font-display text-sm font-semibold text-foreground">Inventory Settings</span>
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="maxCapacity" className="text-xs">Max Capacity</Label>
-                  <Input
-                    id="maxCapacity"
-                    type="number"
-                    placeholder="e.g. 20"
-                    value={maxCapacity ?? ""}
-                    onChange={(e) => {
-                      const val = e.target.value ? parseInt(e.target.value) : null;
-                      setMaxCapacity(val);
-                      setDirty(true);
-                    }}
-                    className="max-w-[140px]"
-                  />
-                </div>
-              </div>
-            )}
             <ProposalEditor data={data} onChange={handleChange} />
             <HelpdeskFooter />
           </div>
