@@ -345,6 +345,8 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   const cruiseShips = (data.cruiseShips || []).filter(s => !s.hidden);
   const busTrips = (data.busTrips || []).filter(t => !(t as any).hidden);
   const pricingOptions = data.pricingOptions || [];
+  const financials: FinancialsSettings = data.financials || createDefaultFinancials();
+  const hideItemizedPrices = financials.clientView === "package";
   const agent = data.agent || {
     name: "",
     title: "",
