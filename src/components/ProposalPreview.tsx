@@ -71,10 +71,12 @@ const fadeUp = {
   }),
 };
 
+const UTILITY_ACTIVITY_TYPES: Activity["type"][] = ["transport"];
+
 function getActivityIcon(type: Activity["type"]) {
   switch (type) {
     case "transport":
-      return <Plane className="h-4 w-4" />;
+      return <Bus className="h-4 w-4" />;
     case "hotel":
       return <Hotel className="h-4 w-4" />;
     case "dining":
@@ -166,7 +168,7 @@ function ItinerarySection({
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
                 custom={0}
-                className="rounded-xl border border-border/50 bg-muted/30 overflow-hidden"
+                className="rounded-xl border border-border/40 bg-muted/20 overflow-hidden shadow-sm"
               >
                 <button
                   onClick={() => toggleDay(day.id)}
@@ -203,14 +205,16 @@ function ItinerarySection({
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="px-6 pb-6 pt-4 space-y-3">
+                      <div className="px-6 pb-6 pt-5 space-y-4">
                         {validActivities.map((act, actIdx) => {
-                          const hasImages = act.imageUrls && act.imageUrls.length > 0;
-                          const hasVideo = !!act.videoUrl;
+                          const isUtility = UTILITY_ACTIVITY_TYPES.includes(act.type as any);
+                          const hasImages = act.imageUrls && act.imageUrls.length > 0 && !isUtility;
+                          const hasVideo = !!act.videoUrl && !isUtility;
+                          const isFeatured = actIdx === 0 && (hasImages || hasVideo);
                           return (
                             <div
                               key={act.id || actIdx}
-                              className="rounded-lg border border-border/60 bg-background p-4 sm:p-5"
+                              className="rounded-lg border border-border/70 bg-card p-4 sm:p-5 shadow-[0_1px_3px_hsl(var(--foreground)/0.04)]"
                             >
                               <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-5`}>
                                 <div className="flex-1">
@@ -239,7 +243,11 @@ function ItinerarySection({
                                 </div>
                                 {hasImages && (
                                   <div
-                                    className="sm:w-[220px] md:w-[260px] h-[160px] sm:h-[175px] shrink-0 rounded-lg overflow-hidden cursor-pointer group relative opacity-95"
+                                    className={`shrink-0 rounded-lg overflow-hidden cursor-pointer group relative ${
+                                      isFeatured
+                                        ? "sm:w-[260px] md:w-[300px] h-[180px] sm:h-[200px]"
+                                        : "sm:w-[180px] md:w-[200px] h-[130px] sm:h-[140px]"
+                                    }`}
                                     onClick={() =>
                                       openLightbox(
                                         act.imageUrls!.map((u) => ({ src: u, alt: act.title })),
@@ -250,7 +258,7 @@ function ItinerarySection({
                                     <img
                                       src={act.imageUrls![0]}
                                       alt={act.title || "Activity photo"}
-                                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                                     />
                                     {act.imageUrls!.length > 1 && (
                                       <div className="absolute bottom-2 right-2 bg-foreground/60 text-background text-xs font-semibold px-2 py-1 rounded-full backdrop-blur-sm">
@@ -260,7 +268,7 @@ function ItinerarySection({
                                   </div>
                                 )}
                                 {hasVideo && !hasImages && (
-                                  <div className="sm:w-[260px] md:w-[300px] shrink-0">
+                                  <div className={`shrink-0 ${isFeatured ? "sm:w-[280px] md:w-[320px]" : "sm:w-[220px] md:w-[240px]"}`}>
                                     <VideoEmbed
                                       url={act.videoUrl!}
                                       title={act.title}
