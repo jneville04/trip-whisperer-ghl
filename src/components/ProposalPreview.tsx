@@ -1493,7 +1493,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                             </div>
                             {(ship.price || !isGroupBooking) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
-                                {ship.price && (ship.pricingDisplay || "total") !== "hide" ? (
+                                {ship.price && (ship.pricingDisplay || "total") !== "hide" && !hideItemizedPrices ? (
                                   <span className="font-display text-xl font-bold text-foreground">
                                     {fmtCurrency(ship.price)}
                                     <span className="text-xs text-muted-foreground font-body ml-1">
