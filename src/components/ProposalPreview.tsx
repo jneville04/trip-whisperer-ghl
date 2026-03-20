@@ -188,7 +188,7 @@ function ItinerarySection({
                         </span>
                       )}
                     </div>
-                    <h3 className="font-display text-2xl sm:text-3xl font-semibold text-foreground leading-tight">{day.title}</h3>
+                    <h3 className="font-display text-xl sm:text-2xl font-semibold text-foreground leading-tight">{day.title}</h3>
                   </div>
                   <ChevronDown
                     className={`h-5 w-5 text-muted-foreground shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
