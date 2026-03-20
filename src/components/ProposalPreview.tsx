@@ -152,9 +152,12 @@ function ItinerarySection({
           <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">{data.sectionCustomTitles?.itinerary?.subtitle || "Your Journey"}</p>
           <h2 className="font-display text-4xl font-bold text-foreground">{data.sectionCustomTitles?.itinerary?.title || "Day-by-Day Itinerary"}</h2>
         </motion.div>
-        <div className="space-y-4">
+        <div className="space-y-6">
           {visibleDays.map((day, dayIdx) => {
             const isOpen = itineraryDisplayMode === "all_open" ? true : openDayId === day.id;
+            const validActivities = day.activities.filter(
+              (act) => act.title?.trim() || act.description?.trim() || (act.imageUrls && act.imageUrls.length > 0) || act.videoUrl
+            );
             return (
               <motion.div
                 key={day.id}
@@ -163,13 +166,14 @@ function ItinerarySection({
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
                 custom={0}
+                className="rounded-xl border border-border/50 bg-muted/30 overflow-hidden"
               >
                 <button
                   onClick={() => toggleDay(day.id)}
-                  className="w-full flex items-center justify-between gap-3 pb-4 pt-2 border-b border-border/40 cursor-pointer group text-left"
+                  className="w-full flex items-center justify-between gap-3 px-6 py-5 cursor-pointer group text-left"
                 >
                   <div>
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-1">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
                       <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-body font-semibold">
                         Day {dayIdx + 1}
                       </span>
@@ -184,7 +188,7 @@ function ItinerarySection({
                         </span>
                       )}
                     </div>
-                    <h3 className="font-display text-2xl sm:text-3xl font-bold text-foreground">{day.title}</h3>
+                    <h3 className="font-display text-2xl sm:text-3xl font-semibold text-foreground leading-tight">{day.title}</h3>
                   </div>
                   <ChevronDown
                     className={`h-5 w-5 text-muted-foreground shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
@@ -199,29 +203,34 @@ function ItinerarySection({
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="space-y-8 pt-6 pb-4">
-                        {day.activities.map((act, actIdx) => {
+                      <div className="px-6 pb-6 pt-2 space-y-3">
+                        {validActivities.map((act, actIdx) => {
                           const hasImages = act.imageUrls && act.imageUrls.length > 0;
                           const hasVideo = !!act.videoUrl;
                           return (
-                            <div key={act.id || actIdx}>
-                              <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-6`}>
+                            <div
+                              key={act.id || actIdx}
+                              className="rounded-lg border border-border/30 bg-card p-4 sm:p-5"
+                            >
+                              <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-5`}>
                                 <div className="flex-1">
                                   <div className="flex items-start gap-3">
-                                    <div className="relative z-10 mt-1 w-7 h-7 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                    <div className="relative z-10 mt-0.5 w-8 h-8 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                                       {getActivityIcon(act.type)}
                                     </div>
-                                    <div className="flex-1">
+                                    <div className="flex-1 min-w-0">
                                       {act.time && (
-                                        <span className="text-xs font-semibold text-primary font-body flex items-center gap-1 mb-1">
+                                        <span className="text-xs font-semibold text-primary font-body flex items-center gap-1 mb-1.5">
                                           <Clock className="h-3 w-3" /> {act.time}
                                         </span>
                                       )}
-                                      <p className="font-display text-lg font-bold text-foreground">
-                                        {act.title || "Untitled Activity"}
-                                      </p>
+                                      {act.title?.trim() && (
+                                        <p className="font-display text-lg font-semibold text-foreground leading-snug">
+                                          {act.title}
+                                        </p>
+                                      )}
                                       {act.description && (
-                                        <p className="text-sm text-muted-foreground font-body mt-1.5 leading-relaxed">
+                                        <p className="text-sm text-muted-foreground font-body mt-2 leading-relaxed">
                                           {act.description}
                                         </p>
                                       )}
@@ -230,7 +239,7 @@ function ItinerarySection({
                                 </div>
                                 {hasImages && (
                                   <div
-                                    className="sm:w-[260px] md:w-[300px] h-[180px] sm:h-[200px] shrink-0 rounded-xl overflow-hidden cursor-pointer group relative"
+                                    className="sm:w-[260px] md:w-[300px] h-[180px] sm:h-[200px] shrink-0 rounded-lg overflow-hidden cursor-pointer group relative"
                                     onClick={() =>
                                       openLightbox(
                                         act.imageUrls!.map((u) => ({ src: u, alt: act.title })),
@@ -256,7 +265,7 @@ function ItinerarySection({
                                       url={act.videoUrl!}
                                       title={act.title}
                                       thumbnailUrl={act.videoThumbnailUrl}
-                                      className="rounded-xl"
+                                      className="rounded-lg"
                                     />
                                   </div>
                                 )}
