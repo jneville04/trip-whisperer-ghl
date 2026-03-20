@@ -24,8 +24,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import RichTextEditor from "@/components/RichTextEditor";
 import AgentPricingFields from "@/components/AgentPricingFields";
-import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, BusStop, SectionKey, CheckoutSettings, PaymentOption, LocationAddress, PricingOption, SectionTitles, PricingDisplayMode } from "@/types/proposal";
-import { createActivity, createDay, createPricingLine, createPricingOption, createFlightLeg, createFlightOption, createAccommodation, createCruiseShip, createBusTrip, createBusStop, defaultSectionOrder, createDefaultCheckout } from "@/types/proposal";
+import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, BusStop, SectionKey, CheckoutSettings, PaymentOption, LocationAddress, PricingOption, SectionTitles, PricingDisplayMode, FinancialsSettings } from "@/types/proposal";
+import { createActivity, createDay, createPricingLine, createPricingOption, createFlightLeg, createFlightOption, createAccommodation, createCruiseShip, createBusTrip, createBusStop, defaultSectionOrder, createDefaultCheckout, createDefaultFinancials } from "@/types/proposal";
 import { normalizeHexInput } from "@/lib/brand";
 import { useAgentSettings } from "@/hooks/useAgentSettings";
 import { useAppSettings } from "@/hooks/useAppSettings";
@@ -283,7 +283,131 @@ function PricingDisplaySelect({ value, onChange, showPerNight }: { value?: Prici
   );
 }
 
-// City-only destinations (no airports, ports, cruise lines)
+const CURRENCIES = ["USD", "EUR", "GBP", "CAD", "AUD", "MXN", "BRL", "JPY", "CHF", "NZD"];
+
+function FinancialsEditor({ financials, onChange }: { financials: FinancialsSettings; onChange: (f: FinancialsSettings) => void }) {
+  const upd = (partial: Partial<FinancialsSettings>) => onChange({ ...financials, ...partial });
+
+  return (
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <FieldLabel>Total Price</FieldLabel>
+          <div className="relative">
+            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">$</span>
+            <Input value={financials.totalPrice} onChange={(e) => upd({ totalPrice: e.target.value })} placeholder="0.00" className="h-8 text-sm pl-5" />
+          </div>
+        </div>
+        <div>
+          <FieldLabel>Deposit Amount</FieldLabel>
+          <div className="relative">
+            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">$</span>
+            <Input value={financials.depositAmount} onChange={(e) => upd({ depositAmount: e.target.value })} placeholder="0.00" className="h-8 text-sm pl-5" />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <FieldLabel>Currency</FieldLabel>
+        <select
+          value={financials.currency}
+          onChange={(e) => upd({ currency: e.target.value })}
+          className="h-8 text-sm rounded-md border border-input bg-background px-3 py-1 font-body text-foreground w-full"
+        >
+          {CURRENCIES.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <FieldLabel>Deposit Due Date</FieldLabel>
+          <DatePickerField value={financials.depositDueDate} onChange={(v) => upd({ depositDueDate: v })} placeholder="Select date" showTime={false} />
+        </div>
+        <div>
+          <FieldLabel>Final Payment Due Date</FieldLabel>
+          <DatePickerField value={financials.finalPaymentDueDate} onChange={(v) => upd({ finalPaymentDueDate: v })} placeholder="Select date" showTime={false} />
+        </div>
+      </div>
+
+      {/* Pricing Mode */}
+      <div className="rounded-lg border border-border/40 bg-muted/20 p-3 space-y-1.5">
+        <FieldLabel>Pricing Mode</FieldLabel>
+        <p className="text-[10px] text-muted-foreground/70 font-body leading-snug -mt-0.5">
+          Choose whether this proposal uses one fixed trip price or builds the total from selected options.
+        </p>
+        <div className="flex gap-1.5">
+          <Button type="button" size="sm" variant={financials.pricingMode === "fixed" ? "travel" : "travel-outline"} className="h-7 text-xs" onClick={() => upd({ pricingMode: "fixed" })}>
+            Fixed Total
+          </Button>
+          <Button type="button" size="sm" variant={financials.pricingMode === "sum" ? "travel" : "travel-outline"} className="h-7 text-xs" onClick={() => upd({ pricingMode: "sum" })}>
+            Calculated Total
+          </Button>
+        </div>
+        <p className="text-[10px] text-muted-foreground/70 font-body leading-snug">
+          {financials.pricingMode === "fixed"
+            ? "Use one main package price for the proposal."
+            : "Build the total from selected options."}
+        </p>
+      </div>
+
+      {/* Client Price View */}
+      <div className="rounded-lg border border-border/40 bg-muted/20 p-3 space-y-1.5">
+        <FieldLabel>Client Price View</FieldLabel>
+        <p className="text-[10px] text-muted-foreground/70 font-body leading-snug -mt-0.5">
+          Choose how prices appear to the traveler on the proposal.
+        </p>
+        <div className="flex gap-1.5">
+          <Button type="button" size="sm" variant={financials.clientView === "package" ? "travel" : "travel-outline"} className="h-7 text-xs" onClick={() => upd({ clientView: "package" })}>
+            Package Total
+          </Button>
+          <Button type="button" size="sm" variant={financials.clientView === "itemized" ? "travel" : "travel-outline"} className="h-7 text-xs" onClick={() => upd({ clientView: "itemized" })}>
+            Itemized
+          </Button>
+        </div>
+        <p className="text-[10px] text-muted-foreground/70 font-body leading-snug">
+          {financials.clientView === "package"
+            ? "Show one total package price and hide individual section prices."
+            : "Show prices inside Flights, Hotels, and Cruise sections."}
+        </p>
+      </div>
+
+      {/* Accept Payments */}
+      <div className="rounded-lg border border-border/40 bg-muted/20 p-3 space-y-1.5">
+        <div className="flex items-center justify-between">
+          <div>
+            <FieldLabel>Accept Payments</FieldLabel>
+            <p className="text-[10px] text-muted-foreground/70 font-body leading-snug -mt-0.5">
+              If turned on, approving the proposal can send the traveler to your payment page.
+            </p>
+          </div>
+          <Switch checked={financials.acceptPayments} onCheckedChange={(v) => upd({ acceptPayments: v })} />
+        </div>
+        <p className="text-[10px] text-muted-foreground/70 font-body leading-snug">
+          {financials.acceptPayments
+            ? "Approve can redirect the traveler to the payment or checkout page."
+            : "Approve only confirms the proposal and does not send the traveler to payment."}
+        </p>
+      </div>
+
+      {financials.acceptPayments && (
+        <div>
+          <FieldLabel>Redirect URL (Payment / Checkout Page)</FieldLabel>
+          <Input value={financials.redirectUrl} onChange={(e) => upd({ redirectUrl: e.target.value })} placeholder="https://your-payment-page.com" className="h-8 text-sm" />
+          <p className="text-[10px] text-muted-foreground/70 font-body mt-1">Client will be redirected here after approving.</p>
+        </div>
+      )}
+
+      <div>
+        <FieldLabel>Revision URL <span className="text-muted-foreground text-[10px] normal-case tracking-normal">(optional)</span></FieldLabel>
+        <Input value={financials.revisionUrl} onChange={(e) => upd({ revisionUrl: e.target.value })} placeholder="https://your-revision-form.com" className="h-8 text-sm" />
+        <p className="text-[10px] text-muted-foreground/70 font-body mt-1">If set, "Request Revisions" opens this URL instead of the built-in form.</p>
+      </div>
+    </div>
+  );
+}
+
 import { POPULAR_DESTINATIONS } from "@/components/LocationAutocomplete";
 const CITY_DESTINATIONS = POPULAR_DESTINATIONS.filter(
   (d) => !d.includes("(Port)") && !d.match(/^[A-Z]{3}\s[–—-]\s/) && ![
@@ -691,6 +815,19 @@ export default function ProposalEditor({ data, onChange }: Props) {
               )}
             </div>
           </div>
+
+          {/* Financials */}
+          {(data as any).proposalType === "proposal" && (
+            <div className="mt-4 pt-4 border-t border-border/30">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-base font-display font-semibold text-foreground">💰 Financials</span>
+              </div>
+              <FinancialsEditor
+                financials={data.financials || createDefaultFinancials()}
+                onChange={(f) => onChange({ ...data, financials: f })}
+              />
+            </div>
+          )}
         </div>
       </CollapsibleSection>
 
@@ -1912,124 +2049,9 @@ export default function ProposalEditor({ data, onChange }: Props) {
                       </CollapsibleSection>
                     );
 
-                  case "pricing": {
-                    const pricingOptions = data.pricingOptions || [];
-                    return (
-                      <CollapsibleSection title={sectionTitles.pricing} defaultOpen={false} sectionKey="pricing" visible={vis.pricing} onToggleVisible={() => toggleSection("pricing")} sectionCustomTitle={customTitles.pricing?.title} sectionCustomSubtitle={customTitles.pricing?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("pricing", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("pricing", v)}>
-                        <div className="space-y-4">
-                          {/* Pricing Options */}
-                          <div>
-                            <div className="flex items-center justify-between mb-2">
-                              <FieldLabel>Pricing Options</FieldLabel>
-                            </div>
-                            <div className="space-y-3">
-                              {pricingOptions.map((opt, i) => (
-                                <div key={opt.id} className="border border-border/40 rounded-lg bg-muted/20 p-3 space-y-2">
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider font-body">Option {i + 1}</span>
-                                    <Button variant="travel-ghost" size="icon" onClick={() => update("pricingOptions", pricingOptions.filter((_, idx) => idx !== i))} className="h-7 w-7 text-muted-foreground/40 hover:text-destructive shrink-0">
-                                      <Trash2 className="h-3 w-3" />
-                                    </Button>
-                                  </div>
-                                  <div>
-                                    <FieldLabel>Option Name</FieldLabel>
-                                    <Input value={opt.name} onChange={(e) => { const p = [...pricingOptions]; p[i] = { ...p[i], name: e.target.value }; update("pricingOptions", p); }} placeholder="e.g. Double Occupancy, Ocean View, VIP Package" className="h-8 text-sm" />
-                                  </div>
-                                  <div className="grid grid-cols-2 gap-2">
-                                    <div>
-                                      <FieldLabel>Total Price</FieldLabel>
-                                      <div className="relative">
-                                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">$</span>
-                                        <Input value={opt.totalPrice} onChange={(e) => { const p = [...pricingOptions]; p[i] = { ...p[i], totalPrice: e.target.value }; update("pricingOptions", p); }} placeholder="0.00" className="h-8 text-sm pl-5" />
-                                      </div>
-                                    </div>
-                                    <div>
-                                      <FieldLabel>Deposit Amount</FieldLabel>
-                                      <div className="relative">
-                                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">$</span>
-                                        <Input value={opt.deposit} onChange={(e) => { const p = [...pricingOptions]; p[i] = { ...p[i], deposit: e.target.value }; update("pricingOptions", p); }} placeholder="0.00" className="h-8 text-sm pl-5" />
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div>
-                                    <FieldLabel>Payment Note (optional)</FieldLabel>
-                                    <Input value={opt.paymentNote} onChange={(e) => { const p = [...pricingOptions]; p[i] = { ...p[i], paymentNote: e.target.value }; update("pricingOptions", p); }} placeholder="e.g. Flexible payment plan available" className="h-8 text-sm" />
-                                  </div>
-                                  <div className="grid grid-cols-2 gap-2">
-                                    <div>
-                                      <FieldLabel>Final Payment Due (optional)</FieldLabel>
-                                      <DatePickerField value={opt.finalPaymentDate} onChange={(v) => { const p = [...pricingOptions]; p[i] = { ...p[i], finalPaymentDate: v }; update("pricingOptions", p); }} placeholder="Select date" showTime={false} />
-                                    </div>
-                                    <div>
-                                      <FieldLabel>Availability Note (optional)</FieldLabel>
-                                      <Input value={opt.availabilityNote} onChange={(e) => { const p = [...pricingOptions]; p[i] = { ...p[i], availabilityNote: e.target.value }; update("pricingOptions", p); }} placeholder="e.g. Only 5 spots left" className="h-8 text-sm" />
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                              <Button variant="travel-ghost" size="sm" onClick={() => update("pricingOptions", [...pricingOptions, createPricingOption()])} className="text-primary text-xs h-7">
-                                <Plus className="h-3 w-3 mr-1" /> Add Pricing Option
-                              </Button>
-                            </div>
-                          </div>
-
-                          {/* Legacy pricing lines */}
-                          <div className="pt-2 border-t border-border/30">
-                            <FieldLabel>Additional Line Items</FieldLabel>
-                            <div className="space-y-2 mt-1">
-                              {data.pricing.map((line, i) => (
-                                <div key={line.id} className="flex gap-2">
-                                  <Input value={line.label} onChange={(e) => { const p = [...data.pricing]; p[i] = { ...p[i], label: e.target.value }; update("pricing", p); }} placeholder="Line item" className="h-8 text-sm flex-1" />
-                                  <div className="relative w-28">
-                                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pointer-events-none">$</span>
-                                    <Input value={line.amount} onChange={(e) => { const p = [...data.pricing]; p[i] = { ...p[i], amount: e.target.value }; update("pricing", p); }} placeholder="0.00" className="h-8 text-sm pl-5" />
-                                  </div>
-                                  <Button variant="travel-ghost" size="icon" onClick={() => update("pricing", data.pricing.filter((_, idx) => idx !== i))} className="h-8 w-8 text-muted-foreground/40 hover:text-destructive shrink-0">
-                                    <Trash2 className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              ))}
-                              <Button variant="travel-ghost" size="sm" onClick={() => update("pricing", [...data.pricing, createPricingLine()])} className="text-primary text-xs h-7">
-                                <Plus className="h-3 w-3 mr-1" /> Add Line
-                              </Button>
-                            </div>
-                          </div>
-
-                          <div className="pt-2 space-y-2 border-t border-border/30">
-                            <div>
-                              <FieldLabel>Payment Terms</FieldLabel>
-                              <Input value={data.paymentTerms} onChange={(e) => update("paymentTerms", e.target.value)} className="h-8 text-sm" />
-                            </div>
-                            <div>
-                              <FieldLabel>Valid Until</FieldLabel>
-                              <Input value={data.validUntil} onChange={(e) => update("validUntil", e.target.value)} className="h-8 text-sm" />
-                            </div>
-                            {(data as any).proposalType !== "proposal" && (
-                              <div>
-                                <FieldLabel>Book Now URL (Form or Checkout Page)</FieldLabel>
-                                <Input value={data.bookingUrl || ""} onChange={(e) => update("bookingUrl", e.target.value)} placeholder="https://your-ghl-form-or-checkout.com" className="h-8 text-sm" />
-                                <p className="text-[10px] text-muted-foreground mt-1">Paste your sign-up form or checkout page URL. Opens in a modal when clients click "Book Now".</p>
-                              </div>
-                            )}
-                            {(data as any).proposalType === "proposal" && (
-                              <>
-                                <div>
-                                  <FieldLabel>Approve Itinerary URL</FieldLabel>
-                                  <Input value={data.approveUrl || ""} onChange={(e) => update("approveUrl", e.target.value)} placeholder="https://your-ghl-approve-form.com" className="h-8 text-sm" />
-                                  <p className="text-[10px] text-muted-foreground mt-1">Optional. If set, "Approve Itinerary" opens this in a modal instead of the built-in form.</p>
-                                </div>
-                                <div>
-                                  <FieldLabel>Request Revisions URL</FieldLabel>
-                                  <Input value={data.revisionsUrl || ""} onChange={(e) => update("revisionsUrl", e.target.value)} placeholder="https://your-ghl-revisions-form.com" className="h-8 text-sm" />
-                                  <p className="text-[10px] text-muted-foreground mt-1">Optional. If set, "Request Revisions" opens this in a modal instead of the built-in form.</p>
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </CollapsibleSection>
-                    );
-                  }
+                  case "pricing":
+                    // Pricing section removed — financials are now in Trip Details
+                    return null;
 
                   case "essentials":
                     return (
@@ -2078,6 +2100,23 @@ export default function ProposalEditor({ data, onChange }: Props) {
                               )}
                             </div>
                           ))}
+                          {/* Payment Notes (moved from old Pricing section) */}
+                          <div className="border border-border/30 rounded-lg overflow-hidden">
+                            <div className="flex items-center justify-between px-3 py-2 bg-muted/30">
+                              <span className="text-sm font-body font-medium">Payment Notes</span>
+                            </div>
+                            <div className="p-3">
+                              <RichTextEditor
+                                content={(data.financials || createDefaultFinancials()).paymentNotes}
+                                onChange={(html) => {
+                                  const fin = data.financials || createDefaultFinancials();
+                                  onChange({ ...data, financials: { ...fin, paymentNotes: html } });
+                                }}
+                                placeholder="Payment terms, deposit schedule, refund policy notes..."
+                                minHeight="100px"
+                              />
+                            </div>
+                          </div>
                         </div>
                       </CollapsibleSection>
                     );

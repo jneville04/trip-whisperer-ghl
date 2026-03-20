@@ -34,8 +34,8 @@ import { parseAirportValue } from "@/components/AirportAutocomplete";
 import BookingModal from "@/components/BookingModal";
 import VideoEmbed from "@/components/VideoEmbed";
 import { Button } from "@/components/ui/button";
-import type { ProposalData, Activity, SectionKey } from "@/types/proposal";
-import { defaultSectionOrder } from "@/types/proposal";
+import type { ProposalData, Activity, SectionKey, FinancialsSettings } from "@/types/proposal";
+import { defaultSectionOrder, createDefaultFinancials } from "@/types/proposal";
 import { buildBrandCssVars } from "@/lib/brand";
 
 const PARSE_FMTS = ["MMMM d, yyyy", "MMM d, yyyy", "yyyy-MM-dd", "MM/dd/yyyy"];
@@ -345,6 +345,8 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   const cruiseShips = (data.cruiseShips || []).filter(s => !s.hidden);
   const busTrips = (data.busTrips || []).filter(t => !(t as any).hidden);
   const pricingOptions = data.pricingOptions || [];
+  const financials: FinancialsSettings = data.financials || createDefaultFinancials();
+  const hideItemizedPrices = financials.clientView === "package";
   const agent = data.agent || {
     name: "",
     title: "",
@@ -462,6 +464,15 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   ]);
 
   const goToApprove = useCallback(() => {
+    // If financials.acceptPayments is ON and there's a redirect URL, redirect there
+    if (financials.acceptPayments && financials.redirectUrl) {
+      if (isEditor && onEditorSubPage) {
+        onEditorSubPage("approve");
+        return;
+      }
+      window.location.href = financials.redirectUrl;
+      return;
+    }
     if (checkoutEnabled) {
       goToCheckout();
       return;
@@ -477,17 +488,8 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
       navigate(`/approve${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
     }
   }, [
-    navigate,
-    shareId,
-    brandData,
-    returnTo,
-    bookingUrl,
-    approveUrl,
-    openModal,
-    checkoutEnabled,
-    goToCheckout,
-    isEditor,
-    onEditorSubPage,
+    navigate, shareId, brandData, returnTo, bookingUrl, approveUrl, openModal,
+    checkoutEnabled, goToCheckout, isEditor, onEditorSubPage, financials,
   ]);
 
   const goToRevisions = useCallback(() => {
@@ -495,12 +497,14 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
       onEditorSubPage("revisions");
       return;
     }
-    if (revisionsUrl) {
-      openModal(revisionsUrl, "Request Revisions");
+    // Use financials.revisionUrl first, then legacy revisionsUrl
+    const revUrl = financials.revisionUrl || revisionsUrl;
+    if (revUrl) {
+      openModal(revUrl, "Request Revisions");
     } else {
       navigate(`/revisions${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
     }
-  }, [navigate, shareId, brandData, returnTo, revisionsUrl, openModal, isEditor, onEditorSubPage]);
+  }, [navigate, shareId, brandData, returnTo, revisionsUrl, openModal, isEditor, onEditorSubPage, financials]);
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
@@ -857,7 +861,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                               <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary font-body">
                                 Option {optIdx + 1} of {flightOptions.length}
                               </span>
-                              {opt.price && (opt.pricingDisplay || "total") !== "hide" && (
+                              {opt.price && (opt.pricingDisplay || "total") !== "hide" && !hideItemizedPrices && (
                                 <span className="font-display text-lg font-bold text-foreground">
                                   {fmtCurrency(opt.price)}
                                   <span className="text-xs text-muted-foreground font-body ml-1">
@@ -963,7 +967,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                           {/* Footer: price (if single option) + selection */}
                           {(opt.price || !isGroupBooking) && (
                             <div className="bg-muted/30 border-t border-border/30 px-6 py-4 flex items-center justify-between">
-                              {opt.price && flightOptions.length <= 1 && (opt.pricingDisplay || "total") !== "hide" && (
+                              {opt.price && flightOptions.length <= 1 && (opt.pricingDisplay || "total") !== "hide" && !hideItemizedPrices && (
                                 <span className="font-display text-xl font-bold text-foreground">
                                   {fmtCurrency(opt.price)}
                                   <span className="text-xs text-muted-foreground font-body ml-1">
@@ -971,7 +975,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                   </span>
                                 </span>
                               )}
-                              {(!opt.price || flightOptions.length > 1 || (opt.pricingDisplay || "total") === "hide") && <span />}
+                              {(!opt.price || flightOptions.length > 1 || (opt.pricingDisplay || "total") === "hide" || hideItemizedPrices) && <span />}
                               {!isGroupBooking && (
                                 <div className="flex items-center gap-2">
                                   {isSelected ? (
@@ -1211,7 +1215,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                             </div>
                             {(acc.price || !isGroupBooking) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
-                                {acc.price && (acc.pricingDisplay || "total") !== "hide" ? (
+                                {acc.price && (acc.pricingDisplay || "total") !== "hide" && !hideItemizedPrices ? (
                                   <span className="font-display text-xl font-bold text-foreground">
                                     {fmtCurrency(acc.price)}
                                     <span className="text-xs text-muted-foreground font-body ml-1">
@@ -1489,7 +1493,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                             </div>
                             {(ship.price || !isGroupBooking) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
-                                {ship.price && (ship.pricingDisplay || "total") !== "hide" ? (
+                                {ship.price && (ship.pricingDisplay || "total") !== "hide" && !hideItemizedPrices ? (
                                   <span className="font-display text-xl font-bold text-foreground">
                                     {fmtCurrency(ship.price)}
                                     <span className="text-xs text-muted-foreground font-body ml-1">

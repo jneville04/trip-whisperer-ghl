@@ -234,6 +234,24 @@ export interface CheckoutSettings {
   confirmationMessage: string;
 }
 
+export type FinancialsPricingMode = "fixed" | "sum";
+export type FinancialsClientView = "package" | "itemized";
+
+export interface FinancialsSettings {
+  totalPrice: string;
+  depositAmount: string;
+  currency: string;
+  depositDueDate: string;
+  finalPaymentDueDate: string;
+  pricingMode: FinancialsPricingMode;
+  clientView: FinancialsClientView;
+  hideOnApproval: boolean;
+  acceptPayments: boolean;
+  redirectUrl: string;
+  revisionUrl: string;
+  paymentNotes: string;
+}
+
 export type SectionKey = "overview" | "flights" | "accommodations" | "cruiseShips" | "busTrips" | "itinerary" | "inclusions" | "pricing" | "essentials" | "terms" | "agent";
 
 export interface SectionVisibility {
@@ -298,6 +316,7 @@ export interface ProposalData {
   notes: string;
   agent: AgentInfo;
   brand: BrandSettings;
+  financials?: FinancialsSettings;
   sectionVisibility: SectionVisibility;
   sectionOrder: SectionKey[];
   sectionCustomTitles?: SectionTitles;
@@ -422,6 +441,21 @@ export const createBusTrip = (): BusTrip => ({
   mediaType: "photos",
 });
 
+export const createDefaultFinancials = (): FinancialsSettings => ({
+  totalPrice: "",
+  depositAmount: "",
+  currency: "USD",
+  depositDueDate: "",
+  finalPaymentDueDate: "",
+  pricingMode: "fixed",
+  clientView: "package",
+  hideOnApproval: false,
+  acceptPayments: false,
+  redirectUrl: "",
+  revisionUrl: "",
+  paymentNotes: "",
+});
+
 export const blankProposal: ProposalData = {
   proposalType: "proposal",
   tripName: "",
@@ -498,6 +532,7 @@ export const blankProposal: ProposalData = {
     showLiability: true,
   },
   notes: "",
+  financials: createDefaultFinancials(),
   sectionOrder: [...defaultSectionOrder],
   sectionCustomTitles: {},
   checkout: createDefaultCheckout(),
