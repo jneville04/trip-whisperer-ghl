@@ -344,7 +344,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   const effectiveSelectedAccommodation = accommodationSelectionEnabled ? selectedAccommodation : "";
   const cruiseShips = (data.cruiseShips || []).filter(s => !s.hidden);
   const busTrips = (data.busTrips || []).filter(t => !(t as any).hidden);
-  const pricingOptions = data.pricingOptions || [];
+  const pricingOptions = (data.pricingOptions || []).filter(opt => opt.name?.trim() || opt.totalPrice?.trim() || opt.deposit?.trim());
   const financials: FinancialsSettings = data.financials || createDefaultFinancials();
   const hideItemizedPrices = financials.clientView === "package";
   const agent = data.agent || {
@@ -1985,7 +1985,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                               </div>
                             )}
                             <h3 className="font-display text-xl font-bold text-foreground mb-3">
-                              {opt.name || "Untitled Option"}
+                              {opt.name}
                             </h3>
                             {opt.totalPrice && (
                               <p className="font-display text-3xl font-bold text-primary mb-4">
@@ -2266,7 +2266,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                         </div>
                       )}
                       <h3 className="font-display text-xl font-bold text-foreground mb-3">
-                        {opt.name || "Untitled Option"}
+                        {opt.name}
                       </h3>
                       {opt.totalPrice && (
                         <p className="font-display text-3xl font-bold text-primary mb-4">
