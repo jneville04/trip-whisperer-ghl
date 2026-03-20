@@ -532,6 +532,7 @@ export const blankProposal: ProposalData = {
     showLiability: true,
   },
   notes: "",
+  financials: createDefaultFinancials(),
   sectionOrder: [...defaultSectionOrder],
   sectionCustomTitles: {},
   checkout: createDefaultCheckout(),
