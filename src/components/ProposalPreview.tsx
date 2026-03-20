@@ -34,8 +34,8 @@ import { parseAirportValue } from "@/components/AirportAutocomplete";
 import BookingModal from "@/components/BookingModal";
 import VideoEmbed from "@/components/VideoEmbed";
 import { Button } from "@/components/ui/button";
-import type { ProposalData, Activity, SectionKey } from "@/types/proposal";
-import { defaultSectionOrder } from "@/types/proposal";
+import type { ProposalData, Activity, SectionKey, FinancialsSettings } from "@/types/proposal";
+import { defaultSectionOrder, createDefaultFinancials } from "@/types/proposal";
 import { buildBrandCssVars } from "@/lib/brand";
 
 const PARSE_FMTS = ["MMMM d, yyyy", "MMM d, yyyy", "yyyy-MM-dd", "MM/dd/yyyy"];
