@@ -861,7 +861,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                               <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary font-body">
                                 Option {optIdx + 1} of {flightOptions.length}
                               </span>
-                              {opt.price && (opt.pricingDisplay || "total") !== "hide" && (
+                              {opt.price && (opt.pricingDisplay || "total") !== "hide" && !hideItemizedPrices && (
                                 <span className="font-display text-lg font-bold text-foreground">
                                   {fmtCurrency(opt.price)}
                                   <span className="text-xs text-muted-foreground font-body ml-1">
