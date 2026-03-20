@@ -316,6 +316,7 @@ export interface ProposalData {
   notes: string;
   agent: AgentInfo;
   brand: BrandSettings;
+  financials?: FinancialsSettings;
   sectionVisibility: SectionVisibility;
   sectionOrder: SectionKey[];
   sectionCustomTitles?: SectionTitles;
