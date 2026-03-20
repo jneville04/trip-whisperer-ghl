@@ -234,6 +234,24 @@ export interface CheckoutSettings {
   confirmationMessage: string;
 }
 
+export type FinancialsPricingMode = "fixed" | "sum";
+export type FinancialsClientView = "package" | "itemized";
+
+export interface FinancialsSettings {
+  totalPrice: string;
+  depositAmount: string;
+  currency: string;
+  depositDueDate: string;
+  finalPaymentDueDate: string;
+  pricingMode: FinancialsPricingMode;
+  clientView: FinancialsClientView;
+  hideOnApproval: boolean;
+  acceptPayments: boolean;
+  redirectUrl: string;
+  revisionUrl: string;
+  paymentNotes: string;
+}
+
 export type SectionKey = "overview" | "flights" | "accommodations" | "cruiseShips" | "busTrips" | "itinerary" | "inclusions" | "pricing" | "essentials" | "terms" | "agent";
 
 export interface SectionVisibility {
