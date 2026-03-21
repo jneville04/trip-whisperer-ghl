@@ -111,33 +111,36 @@ function ItinerarySection({
 }) {
   const itineraryDisplayMode = (((data as any).itineraryDisplayMode || "single_open") as "collapsed" | "single_open" | "all_open");
   const visibleDays = useMemo(() => data.days.filter((d) => !d.hidden), [data.days]);
-  const [openDayId, setOpenDayId] = useState<string | null>(() => {
-    if (itineraryDisplayMode === "single_open") return visibleDays[0]?.id ?? null;
-    return null;
+
+  // Build initial open set from agent setting
+  const [openDayIds, setOpenDayIds] = useState<Set<string>>(() => {
+    if (itineraryDisplayMode === "all_open") return new Set(visibleDays.map((d) => d.id));
+    if (itineraryDisplayMode === "single_open") return new Set(visibleDays[0] ? [visibleDays[0].id] : []);
+    return new Set();
   });
 
+  // Re-sync only when the agent setting changes (editor live preview)
   useEffect(() => {
     if (itineraryDisplayMode === "all_open") {
-      setOpenDayId(null);
-      return;
+      setOpenDayIds(new Set(visibleDays.map((d) => d.id)));
+    } else if (itineraryDisplayMode === "single_open") {
+      setOpenDayIds(new Set(visibleDays[0] ? [visibleDays[0].id] : []));
+    } else {
+      setOpenDayIds(new Set());
     }
-    if (itineraryDisplayMode === "single_open") {
-      setOpenDayId((prev) => {
-        if (prev && visibleDays.some((day) => day.id === prev)) return prev;
-        return visibleDays[0]?.id ?? null;
-      });
-      return;
-    }
-    setOpenDayId(null);
-  }, [itineraryDisplayMode, visibleDays]);
+  }, [itineraryDisplayMode, visibleDays.length]);
 
+  // Client can always toggle any day open/closed after load
   const toggleDay = (dayId: string) => {
-    if (itineraryDisplayMode === "all_open") return;
-    if (itineraryDisplayMode === "single_open") {
-      setOpenDayId(dayId);
-      return;
-    }
-    setOpenDayId((prev) => (prev === dayId ? null : dayId));
+    setOpenDayIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(dayId)) {
+        next.delete(dayId);
+      } else {
+        next.add(dayId);
+      }
+      return next;
+    });
   };
 
   return (
