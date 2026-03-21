@@ -638,9 +638,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
       {/* STICKY HEADER NAV */}
-      <nav className="sticky top-0 z-[90] border-b border-border bg-background shadow-[0_14px_26px_-18px_hsl(var(--foreground)/0.65)]">
-        <div className="max-w-[1120px] mx-auto px-4 sm:px-6 flex items-center gap-3 h-14">
-          <div className="flex items-center gap-3 min-w-0 shrink-0 pr-3 border-r border-border/70">
+      <nav className="sticky top-0 z-[90] border-b-2 border-border bg-background shadow-[0_4px_20px_-4px_hsl(var(--foreground)/0.12)]">
+        <div className="max-w-[1120px] mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+          {/* LEFT: Logo + Brand */}
+          <div className="flex items-center gap-3 min-w-0 shrink-0">
             {brandData.logoUrl && (
               <img
                 src={brandData.logoUrl}
@@ -649,46 +650,52 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               />
             )}
             {(!brandData.logoUrl || showAgencyNameWithLogo) && (
-              <span className="font-display text-base sm:text-lg font-bold text-foreground truncate tracking-tight">
+              <span className="font-display text-lg font-bold text-foreground truncate tracking-tight">
                 {agent.agencyName || "Travel Co."}
               </span>
             )}
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+
+          {/* RIGHT: Nav items + action */}
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {navItems.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => scrollTo(item.id)}
-                  className="shrink-0 rounded-full border border-border/70 bg-muted/40 px-3.5 py-1.5 text-xs sm:text-[13px] font-body font-semibold text-foreground transition-all hover:bg-background hover:border-border hover:shadow-sm"
+                  className={`shrink-0 rounded-full px-3.5 py-1.5 text-[13px] sm:text-sm font-body font-semibold transition-all ${
+                    activeNavId === item.id
+                      ? "bg-primary text-primary-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
                 >
                   {item.label}
                 </button>
               ))}
             </div>
+            {isGroupBooking ? (
+              <Button
+                variant="travel"
+                size="sm"
+                className="text-xs shrink-0 ml-2"
+                onClick={() => {
+                  if (checkoutEnabled) goToCheckout();
+                  else if (bookingUrl) openModal(bookingUrl, "Book Now");
+                }}
+              >
+                Book Now
+              </Button>
+            ) : !isEditor && !isReadOnly && !approveSuccess && tripStatus !== "revision_requested" && tripStatus !== "reopened" ? (
+              <Button
+                variant="travel-ghost"
+                size="sm"
+                className="text-xs gap-1.5 shrink-0 ml-2"
+                onClick={() => setShowAskQuestion(true)}
+              >
+                <HelpCircle className="h-3.5 w-3.5" /> Ask a Question
+              </Button>
+            ) : null}
           </div>
-          {isGroupBooking ? (
-            <Button
-              variant="travel"
-              size="sm"
-              className="text-xs shrink-0"
-              onClick={() => {
-                if (checkoutEnabled) goToCheckout();
-                else if (bookingUrl) openModal(bookingUrl, "Book Now");
-              }}
-            >
-              Book Now
-            </Button>
-          ) : !isEditor && !isReadOnly && !approveSuccess && tripStatus !== "revision_requested" && tripStatus !== "reopened" ? (
-            <Button
-              variant="travel-ghost"
-              size="sm"
-              className="text-xs gap-1.5 shrink-0"
-              onClick={() => setShowAskQuestion(true)}
-            >
-              <HelpCircle className="h-3.5 w-3.5" /> Ask a Question
-            </Button>
-          ) : null}
         </div>
       </nav>
 
