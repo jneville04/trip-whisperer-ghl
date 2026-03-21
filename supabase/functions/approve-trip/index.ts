@@ -41,7 +41,10 @@ Deno.serve(async (req) => {
     }
 
     const publishedData = trip.published_data as Record<string, any> | null;
-    const tripName = publishedData?.tripName || "Untitled Trip";
+    const tripName = publishedData?.tripName || publishedData?.destination || "Untitled Trip";
+    const agentEmail = publishedData?.agent?.email;
+    const agentName = publishedData?.agent?.name || "Travel Advisor";
+    const clientName = publishedData?.clientName || "Traveler";
 
     // 1. Create snapshot
     const snapshotUrl = `${Deno.env.get("SUPABASE_URL")?.replace('.supabase.co', '.supabase.co')}/view/${trip.public_slug}`;
