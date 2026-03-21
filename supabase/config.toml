@@ -1,19 +1,17 @@
 project_id = "faxbjbbwniypaffevbuo"
 
-[functions.firecrawl-search]
-verify_jwt = false
-
-[functions.ghl-webhook]
-verify_jwt = false
-
-[functions.process-email-queue]
-verify_jwt = true
-
-[functions.notify-admin-signup]
-verify_jwt = false
-
-[functions.notify-agent-approval]
-verify_jwt = false
-
-[functions.approve-trip]
-verify_jwt = false
+[functions]
+  [functions.approve-trip]
+    verify_jwt = false
+  [functions.auth-email-hook]
+    verify_jwt = false
+  [functions.firecrawl-search]
+    verify_jwt = false
+  [functions.ghl-webhook]
+    verify_jwt = false
+  [functions.notify-admin-signup]
+    verify_jwt = false
+  [functions.notify-agent-approval]
+    verify_jwt = false
+  [functions.process-email-queue]
+    verify_jwt = true
