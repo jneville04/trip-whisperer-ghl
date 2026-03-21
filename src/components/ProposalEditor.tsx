@@ -24,7 +24,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import RichTextEditor from "@/components/RichTextEditor";
 import AgentPricingFields from "@/components/AgentPricingFields";
-import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, BusStop, SectionKey, CheckoutSettings, PaymentOption, LocationAddress, PricingOption, SectionTitles, PricingDisplayMode, FinancialsSettings, SectionSelections } from "@/types/proposal";
+import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, BusStop, SectionKey, CheckoutSettings, PaymentOption, LocationAddress, PricingOption, SectionTitles, PricingDisplayMode, FinancialsSettings, SectionSelections, AgentPricing } from "@/types/proposal";
 import { createActivity, createDay, createPricingLine, createPricingOption, createFlightLeg, createFlightOption, createAccommodation, createCruiseShip, createBusTrip, createBusStop, defaultSectionOrder, createDefaultCheckout, createDefaultFinancials } from "@/types/proposal";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { normalizeHexInput } from "@/lib/brand";
