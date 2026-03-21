@@ -185,7 +185,7 @@ function ItinerarySection({
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
                 custom={0}
-                className="rounded-2xl border-2 border-border bg-background overflow-hidden shadow-[0_16px_40px_-20px_hsl(var(--foreground)/0.18)]"
+                className="rounded-2xl border-2 border-border bg-[hsl(var(--muted)/0.35)] overflow-hidden shadow-[0_16px_40px_-20px_hsl(var(--foreground)/0.18)]"
               >
                 <button
                   onClick={() => toggleDay(day.id)}
@@ -222,7 +222,7 @@ function ItinerarySection({
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="px-6 pb-6 pt-5 space-y-4">
+                      <div className="px-6 pb-6 pt-4 space-y-4">
                         {validActivities.map((act, actIdx) => {
                           const isUtility = UTILITY_ACTIVITY_TYPES.includes(act.type as any);
                           const hasImages = act.imageUrls && act.imageUrls.length > 0 && !isUtility;
@@ -758,7 +758,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               className="relative z-10 -mt-8 mx-4 sm:mx-6"
             >
               <div className="max-w-[70%] w-full mx-auto bg-background/95 backdrop-blur-md rounded-2xl shadow-xl border border-border/40 px-6 sm:px-10 py-5">
-                <div className="flex items-center justify-center gap-4 sm:gap-6 flex-wrap">
+                <div className="flex items-center justify-center gap-5 sm:gap-8 flex-wrap">
                   {((data as any).startDate || (data as any).endDate) && (
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
@@ -1292,7 +1292,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           <div className="flex flex-col md:flex-row-reverse">
                             {/* Image Section — Right */}
                             {showAccPhotos && allAccImages.length > 0 && (
-                              <div className="md:w-[380px] lg:w-[420px] shrink-0 p-2.5">
+                              <div className="md:w-[340px] lg:w-[380px] shrink-0 p-3">
                                 {allAccImages.length === 1 ? (
                                   <div
                                     className="w-full h-full overflow-hidden cursor-pointer relative group rounded-xl"
@@ -1523,7 +1523,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           <div className="flex flex-col md:flex-row-reverse">
                             {/* Image Section — Right */}
                             {showShipPhotos && allShipImages.length > 0 && (
-                              <div className="md:w-[380px] lg:w-[420px] shrink-0 p-2.5">
+                              <div className="md:w-[340px] lg:w-[380px] shrink-0 p-3">
                                 {allShipImages.length === 1 ? (
                                   <div
                                     className="w-full h-full overflow-hidden cursor-pointer relative group rounded-xl"
