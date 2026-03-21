@@ -1070,7 +1070,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                       {ct.accommodations?.subtitle || "Where You'll Stay"}
                     </p>
                     <h2 className="font-display text-4xl font-bold text-foreground">{ct.accommodations?.title || "Accommodations"}</h2>
-                    {accommodationSelectionEnabled && accommodations.length > 1 && (
+                    {accommodationsIsChoice && accommodations.length > 1 && (
                       <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>
                     )}
                   </motion.div>
@@ -1095,19 +1095,19 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                           viewport={{ once: true }}
                           custom={0}
                           className={`bg-card rounded-2xl border-2 shadow-lg overflow-hidden transition-all ${
-                            accommodationSelectionEnabled
+                            accommodationsIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
                                 : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
                           onClick={() => {
-                            if (accommodationSelectionEnabled) {
+                            if (accommodationsIsChoice) {
                               setSelectedAccommodation(isSelected ? "" : acc.id);
                             }
                           }}
                         >
-                          {accommodationSelectionEnabled && accommodations.length > 1 && (
+                          {accommodationsIsChoice && accommodations.length > 1 && (
                             <div className="absolute top-4 right-4 z-10">
                               <span className="inline-block bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-[0.15em] font-body px-2.5 py-1 rounded-full">
                                 Option {accommodations.indexOf(acc) + 1}
@@ -1253,7 +1253,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                 ) : (
                                   <span />
                                 )}
-                                {accommodationSelectionEnabled && (
+                                {accommodationsIsChoice && (
                                   <div className="flex items-center gap-2">
                                     {accommodations.length > 1 && (
                                       <span className="text-[10px] text-muted-foreground font-body">
@@ -2370,7 +2370,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                       <span className="font-body text-foreground font-medium">Accommodation</span>
                     </div>
                     <span className="font-body text-sm">
-                      {!accommodationSelectionEnabled ? (
+                      {!accommodationsIsChoice ? (
                         <span className="text-muted-foreground italic text-xs">Informational only</span>
                       ) : effectiveSelectedAccommodation ? (
                         (() => {
