@@ -609,7 +609,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
       {/* STICKY HEADER NAV */}
-      <div className="max-w-[1140px] mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
+      <nav className="sticky top-0 z-[90] border-b border-border/40 bg-background/98 backdrop-blur-xl supports-[backdrop-filter]:bg-background/92 shadow-sm">
+        <div className="max-w-[1140px] mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
           <div className="flex items-center gap-3 min-w-0">
             {brandData.logoUrl && (
               <img
@@ -647,14 +648,14 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             </Button>
           ) : null}
         </div>
-        <div className="border-t border-border/40 bg-muted/35">
-          <div className="max-w-6xl mx-auto px-3 sm:px-6">
-            <div className="flex items-center gap-1.5 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="border-t border-border/30 bg-muted/30">
+          <div className="max-w-[1140px] mx-auto px-3 sm:px-6">
+            <div className="flex items-center gap-1 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {navItems.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => scrollTo(item.id)}
-                  className="shrink-0 rounded-full border border-transparent bg-background/80 px-3.5 py-1.5 text-xs sm:text-[13px] font-body font-medium text-muted-foreground transition-colors hover:text-foreground hover:border-border/70 hover:bg-background"
+                  className="shrink-0 rounded-full border border-transparent px-3.5 py-1.5 text-xs sm:text-[13px] font-body font-medium text-muted-foreground transition-all hover:text-foreground hover:bg-background hover:border-border/60 hover:shadow-sm"
                 >
                   {item.label}
                 </button>
