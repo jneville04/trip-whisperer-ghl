@@ -339,13 +339,15 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   const [validationError, setValidationError] = useState<string>("");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showAskQuestion, setShowAskQuestion] = useState(false);
-  const [questionForm, setQuestionForm] = useState({ name: "", email: "", message: "" });
+  const travelerName = data.clientName || "";
+  const travelerEmail = (data as any).clientEmail || "";
+  const [questionForm, setQuestionForm] = useState({ name: travelerName, email: travelerEmail, message: "" });
   const [questionSending, setQuestionSending] = useState(false);
   const [questionSent, setQuestionSent] = useState(false);
   const [isReadOnly, setIsReadOnly] = useState(tripStatus === "approved");
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showRevisionModal, setShowRevisionModal] = useState(false);
-  const [revisionForm, setRevisionForm] = useState({ name: "", email: "", message: "" });
+  const [revisionForm, setRevisionForm] = useState({ name: travelerName, email: travelerEmail, message: "" });
   const [revisionSending, setRevisionSending] = useState(false);
   const [revisionSent, setRevisionSent] = useState(false);
   const [revisionCategories] = useState([
@@ -646,16 +648,14 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               Book Now
             </Button>
           ) : !isEditor && !isReadOnly && !approveSuccess ? (
-            <div className="flex items-center gap-2">
-              <Button
-                variant="travel-ghost"
-                size="sm"
-                className="text-xs"
-                onClick={() => setShowAskQuestion(true)}
-              >
-                <HelpCircle className="h-3.5 w-3.5 mr-1" /> Ask a Question
-              </Button>
-            </div>
+            <Button
+              variant="travel-ghost"
+              size="sm"
+              className="text-xs"
+              onClick={() => setShowAskQuestion(true)}
+            >
+              <HelpCircle className="h-3.5 w-3.5 mr-1" /> Ask a Question
+            </Button>
           ) : null}
         </div>
       </nav>
@@ -3382,9 +3382,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
         </div>
       )}
 
-      {/* ═══ FLOATING HUB ═══ */}
-      {!isGroupBooking && !approveSuccess && !isReadOnly && !isEditor && (
-        <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-end gap-3">
+      {/* ═══ FLOATING UTILITY — Ask a Question only ═══ */}
+      {!isGroupBooking && !approveSuccess && !isReadOnly && !isEditor && tripStatus !== "revision_requested" && tripStatus !== "reopened" && (
+        <div className="fixed bottom-6 right-6 z-[100]">
           <Button
             variant="travel-ghost"
             size="sm"
@@ -3393,45 +3393,6 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           >
             <HelpCircle className="h-4 w-4 mr-1.5" /> Ask a Question
           </Button>
-          {requiredChoiceSections.length === 0 ? (
-            <Button
-              variant="travel"
-              size="lg"
-              className="rounded-full shadow-xl text-sm px-6 py-3 h-auto"
-              onClick={() => setShowReviewModal(true)}
-            >
-              <CheckCircle2 className="h-4 w-4 mr-1.5" /> Review &amp; Approve
-            </Button>
-          ) : !allSelectionsComplete ? (
-            <Button
-              variant="travel"
-              size="lg"
-              className="rounded-full shadow-xl text-sm px-6 py-3 h-auto"
-              onClick={() => {
-                const firstMissing = requiredChoiceSections.find(s => !s.selectedId);
-                if (firstMissing) {
-                  const el = document.getElementById(firstMissing.key);
-                  if (el) {
-                    el.scrollIntoView({ behavior: "smooth", block: "start" });
-                    el.classList.add("ring-2", "ring-primary/40", "ring-offset-2");
-                    setTimeout(() => el.classList.remove("ring-2", "ring-primary/40", "ring-offset-2"), 3000);
-                  }
-                  setValidationError(`Please select an option for ${firstMissing.label} before continuing.`);
-                }
-              }}
-            >
-              <ArrowRight className="h-4 w-4 mr-1.5" /> Complete Selections
-            </Button>
-          ) : (
-            <Button
-              variant="travel"
-              size="lg"
-              className="rounded-full shadow-xl text-sm px-6 py-3 h-auto"
-              onClick={() => setShowReviewModal(true)}
-            >
-              <CheckCircle2 className="h-4 w-4 mr-1.5" /> Review &amp; Approve
-            </Button>
-          )}
         </div>
       )}
 
