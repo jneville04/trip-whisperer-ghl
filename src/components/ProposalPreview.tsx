@@ -1735,7 +1735,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           whileInView="visible"
                           viewport={{ once: true }}
                           custom={0}
-                          className={`bg-card rounded-3xl border-2 shadow-[0_24px_50px_-34px_hsl(var(--foreground)/0.75)] overflow-hidden relative transition-all ${
+                          className={`bg-card rounded-3xl border-2 shadow-[0_10px_30px_-12px_hsl(var(--foreground)/0.15)] overflow-hidden relative transition-all ${
                             busIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
