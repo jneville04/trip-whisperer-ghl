@@ -1327,7 +1327,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                 {primaryPrice && (
                                   <div className="text-right shrink-0">
                                     <p className="font-display text-2xl font-bold text-foreground leading-none">{primaryPrice}</p>
-                                    <p className="text-[11px] text-muted-foreground font-body mt-0.5">{pricingLabel}</p>
+                                    {pricingLabel && <p className="text-[11px] text-muted-foreground font-body mt-0.5">{pricingLabel}</p>}
                                   </div>
                                 )}
                               </div>
@@ -1364,7 +1364,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                   {amenities.slice(0, 6).map((a, ai) => (
                                     <span
                                       key={ai}
-                                      className="inline-flex items-center gap-1 bg-muted/50 text-muted-foreground text-[11px] font-body px-2.5 py-1 rounded-full border border-border/30"
+                                      className="inline-flex items-center gap-1 bg-muted/70 text-muted-foreground text-[11px] font-body px-2.5 py-1 rounded-full border border-border/60"
                                     >
                                       <Check className="h-2.5 w-2.5 text-primary" /> {a}
                                     </span>
@@ -1379,7 +1379,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               <div className="flex-1" />
 
                               {/* Footer: dates + selection */}
-                              <div className="flex items-center justify-between mt-5 pt-4 border-t border-border/20">
+                              <div className="flex items-center justify-between mt-5 pt-4 border-t border-border/60">
                                 <div className="flex items-center gap-4 text-xs text-muted-foreground font-body flex-wrap">
                                   {acc.checkIn && (
                                     <span className="flex items-center gap-1">
@@ -1391,7 +1391,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                       <Calendar className="h-3 w-3" /> Out: {acc.checkOut}
                                     </span>
                                   )}
-                                  {acc.nights && <span className="text-primary font-semibold">{acc.nights}</span>}
+                                  {acc.nights && <span className="text-primary font-semibold">{formatNightsLabel(acc.nights)}</span>}
                                 </div>
                                 {accommodationsIsChoice && !isReadOnly && (
                                   <div className="flex items-center gap-1.5 shrink-0">
