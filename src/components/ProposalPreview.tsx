@@ -222,7 +222,7 @@ function ItinerarySection({
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="px-6 pb-6 pt-5 space-y-4">
+                      <div className="px-6 pb-6 pt-4 space-y-4">
                         {validActivities.map((act, actIdx) => {
                           const isUtility = UTILITY_ACTIVITY_TYPES.includes(act.type as any);
                           const hasImages = act.imageUrls && act.imageUrls.length > 0 && !isUtility;
