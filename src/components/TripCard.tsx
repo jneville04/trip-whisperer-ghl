@@ -223,9 +223,11 @@ export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLi
                   <Clock className="h-3.5 w-3.5 mr-2" /> Archive
                 </DropdownMenuItem>
               ) : null}
-              <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={(e) => { e.stopPropagation(); onDelete(); }}>
-                <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
-              </DropdownMenuItem>
+              {!isApproved && (
+                <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={(e) => { e.stopPropagation(); onDelete(); }}>
+                  <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
