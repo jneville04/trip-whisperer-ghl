@@ -1298,23 +1298,17 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                         <RichTextEditor content={ship.description} onChange={(html) => updateShipField("description", html)} placeholder="Describe the ship, cabin features, onboard experience..." minHeight="150px" />
                                       </div>
                                       {(data as any).proposalType === "proposal" && (
-                                        <div className="mt-2 space-y-2">
-                                          <div className="flex items-end gap-3">
-                                            <div>
-                                              <FieldLabel>Price (Proposal Option)</FieldLabel>
-                                              <div className="relative w-32">
-                                                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
-                                                <Input value={ship.price || ""} onChange={(e) => updateShipField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
-                                              </div>
+                                        <div className="mt-2">
+                                          <div>
+                                            <FieldLabel>Price (Proposal Option)</FieldLabel>
+                                            <div className="relative w-32">
+                                              <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
+                                              <Input value={ship.price || ""} onChange={(e) => updateShipField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
                                             </div>
-                                            <PricingDisplaySelect
-                                              value={ship.pricingDisplay as PricingDisplayMode | undefined}
-                                              onChange={(v) => updateShipField("pricingDisplay", v)}
-                                            />
                                           </div>
                                         </div>
                                       )}
-                                      <AgentPricingFields
+                                      <AgentFinancialsAccordion
                                         pricing={ship.agentPricing}
                                         onChange={(ap) => { const s = [...cruiseShips]; s[i] = { ...s[i], agentPricing: ap }; update("cruiseShips", s); }}
                                       />
