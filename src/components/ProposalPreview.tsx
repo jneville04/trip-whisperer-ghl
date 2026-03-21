@@ -609,8 +609,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
       {/* STICKY HEADER NAV */}
-      <nav className="sticky top-0 z-[90] border-b border-border/50 bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/90 shadow-[0_10px_30px_-28px_hsl(var(--foreground)/0.9)]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+      <nav className="sticky top-0 z-[90] border-b border-border/40 bg-background/98 backdrop-blur-xl supports-[backdrop-filter]:bg-background/92 shadow-sm">
           <div className="flex items-center gap-3 min-w-0">
             {brandData.logoUrl && (
               <img
