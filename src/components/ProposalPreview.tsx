@@ -2985,6 +2985,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       setShowReviewModal(false);
                       return;
                     }
+                    if (isReadOnly) return;
                     setApproving(true);
                     try {
                       let totalPrice = 0;
