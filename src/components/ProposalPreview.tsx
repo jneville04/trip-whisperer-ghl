@@ -1274,21 +1274,21 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           whileInView="visible"
                           viewport={{ once: true }}
                           custom={accIdx * 0.1}
-                          className={`bg-card rounded-3xl border-2 overflow-hidden transition-all shadow-[0_10px_30px_-12px_hsl(var(--foreground)/0.15)] ${
+                          className={`bg-card rounded-2xl border-2 overflow-hidden transition-all shadow-[0_8px_28px_-8px_hsl(var(--foreground)/0.18)] ${
                             accommodationsIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
-                                : "border-border hover:border-primary/40 cursor-pointer hover:shadow-[0_14px_36px_-14px_hsl(var(--foreground)/0.2)]"
-                              : "border-border"
+                                : "border-border/80 hover:border-primary/40 cursor-pointer hover:shadow-[0_12px_32px_-10px_hsl(var(--foreground)/0.22)]"
+                              : "border-border/80"
                           }`}
                           onClick={() => accommodationsIsChoice && setSelectedAccommodation(isSelected ? "" : acc.id)}
                         >
                           <div className="flex flex-col md:flex-row-reverse">
-                            {/* Image Section — Left */}
+                            {/* Image Section — Right */}
                             {showAccPhotos && allAccImages.length > 0 && (
-                              <div className="md:w-[400px] lg:w-[440px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-l-2 border-border bg-muted/30">
+                              <div className="md:w-[380px] lg:w-[420px] shrink-0 border-b md:border-b-0 md:border-l-2 border-border/60">
                                 <div
-                                  className="aspect-[16/10] overflow-hidden cursor-pointer relative group rounded-xl border border-border"
+                                  className="aspect-[4/3] md:h-full overflow-hidden cursor-pointer relative group"
                                   onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
                                 >
                                   <img
@@ -1296,31 +1296,12 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                     alt={acc.hotelName}
                                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                                   />
-                                  {allAccImages.length > 3 && (
-                                    <div className="absolute bottom-2 right-2 bg-foreground text-background text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
-                                      <Camera className="h-3 w-3" /> +{allAccImages.length - 3} more
+                                  {allAccImages.length > 1 && (
+                                    <div className="absolute bottom-3 right-3 bg-foreground/80 text-background text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 backdrop-blur-sm">
+                                      <Camera className="h-3 w-3" /> +{allAccImages.length - 1} photos
                                     </div>
                                   )}
                                 </div>
-
-                                {allAccImages.length > 1 && (
-                                  <div className="grid grid-cols-2 gap-2.5 mt-2.5">
-                                    {allAccImages.slice(1, 3).map((img, gi) => (
-                                      <div
-                                        key={gi}
-                                        className="aspect-[16/10] overflow-hidden cursor-pointer rounded-xl border border-border"
-                                        onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, gi + 1); }}
-                                      >
-                                        <img
-                                          src={img.src}
-                                          alt={img.alt || ""}
-                                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                                        />
-                                      </div>
-                                    ))}
-                                    {allAccImages.length === 2 && <div className="aspect-[16/10] rounded-xl border border-dashed border-border bg-muted/50" />}
-                                  </div>
-                                )}
                               </div>
                             )}
                             {showAccVideo && (
