@@ -3235,6 +3235,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     onSubmit={async (e) => {
                       e.preventDefault();
                       if (!revisionForm.message.trim()) return;
+                      if (isReadOnly) return;
                       setRevisionSending(true);
                       try {
                         // Build current selections for context
