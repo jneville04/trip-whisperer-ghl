@@ -989,7 +989,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={1}
-                    className="font-display text-3xl sm:text-5xl font-bold text-foreground"
+                    className="font-display text-4xl sm:text-5xl font-bold text-foreground"
                   >
                     {data.clientName || "Your Client"}
                   </motion.h2>
