@@ -11,6 +11,7 @@ export default function ClientView() {
   const isAgentPreview = searchParams.get("preview") === "agent";
   const [data, setData] = useState<ProposalData | null>(null);
   const [tripId, setTripId] = useState<string | null>(null);
+  const [tripStatus, setTripStatus] = useState<string>("draft");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
