@@ -64,6 +64,8 @@ const statusConfig: Record<string, { label: string; className: string }> = {
   sent: { label: "Published", className: "bg-emerald-100 text-emerald-800" },
   unpublished: { label: "Unpublished", className: "bg-slate-200 text-slate-700" },
   approved: { label: "Approved", className: "bg-blue-100 text-blue-800" },
+  revision_requested: { label: "Revision Requested", className: "bg-orange-100 text-orange-800" },
+  reopened: { label: "Reopened", className: "bg-violet-100 text-violet-800" },
 };
 
 interface TripCardProps {
