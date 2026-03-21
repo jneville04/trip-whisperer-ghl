@@ -184,7 +184,7 @@ export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLi
               className="h-7 text-xs px-2 font-medium"
               onClick={(e) => {
                 e.stopPropagation();
-                navigate(`/view/${trip.public_slug}?preview=agent`);
+                navigate(`/view/${trip.public_slug}?preview=agent&from=trips`);
               }}
             >
               <Eye className="h-3 w-3 mr-1" /> Preview
