@@ -65,6 +65,14 @@ const fmtCurrency = (val: string) => {
   return "$" + num.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 };
 
+const formatNightsLabel = (value?: string) => {
+  if (!value) return "";
+  if (/[a-zA-Z]/.test(value)) return value;
+  const nights = Number.parseInt(value, 10);
+  if (Number.isNaN(nights)) return value;
+  return `${nights} ${nights === 1 ? "Night" : "Nights"}`;
+};
+
 const easeOut: Easing = [0.25, 0.46, 0.45, 0.94];
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -150,7 +158,7 @@ function ItinerarySection({
 
   return (
     <section id="itinerary" className="py-20 lg:py-24 border-t border-border/30 bg-muted/20">
-      <div className="max-w-[1140px] mx-auto px-6">
+      <div className="max-w-[1120px] mx-auto px-6">
         <motion.div
           variants={fadeUp}
           initial="hidden"
@@ -609,9 +617,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
       {/* STICKY HEADER NAV */}
-      <nav className="sticky top-0 z-[90] border-b border-border/40 bg-background/98 backdrop-blur-xl supports-[backdrop-filter]:bg-background/92 shadow-sm">
-        <div className="max-w-[1140px] mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
-          <div className="flex items-center gap-3 min-w-0">
+      <nav className="sticky top-0 z-[90] border-b border-border bg-background shadow-[0_14px_26px_-18px_hsl(var(--foreground)/0.65)]">
+        <div className="max-w-[1120px] mx-auto px-4 sm:px-6 flex items-center gap-3 h-14">
+          <div className="flex items-center gap-3 min-w-0 shrink-0 pr-3 border-r border-border/70">
             {brandData.logoUrl && (
               <img
                 src={brandData.logoUrl}
@@ -620,16 +628,29 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               />
             )}
             {(!brandData.logoUrl || showAgencyNameWithLogo) && (
-              <span className="font-display text-lg font-semibold text-foreground truncate tracking-tight">
+              <span className="font-display text-base sm:text-lg font-bold text-foreground truncate tracking-tight">
                 {agent.agencyName || "Travel Co."}
               </span>
             )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => scrollTo(item.id)}
+                  className="shrink-0 rounded-full border border-border/70 bg-muted/40 px-3.5 py-1.5 text-xs sm:text-[13px] font-body font-semibold text-foreground transition-all hover:bg-background hover:border-border hover:shadow-sm"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
           </div>
           {isGroupBooking ? (
             <Button
               variant="travel"
               size="sm"
-              className="text-xs"
+              className="text-xs shrink-0"
               onClick={() => {
                 if (checkoutEnabled) goToCheckout();
                 else if (bookingUrl) openModal(bookingUrl, "Book Now");
@@ -641,27 +662,12 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             <Button
               variant="travel-ghost"
               size="sm"
-              className="text-xs gap-1.5"
+              className="text-xs gap-1.5 shrink-0"
               onClick={() => setShowAskQuestion(true)}
             >
               <HelpCircle className="h-3.5 w-3.5" /> Ask a Question
             </Button>
           ) : null}
-        </div>
-        <div className="border-t border-border/30 bg-muted/30">
-          <div className="max-w-[1140px] mx-auto px-3 sm:px-6">
-            <div className="flex items-center gap-1 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollTo(item.id)}
-                  className="shrink-0 rounded-full border border-transparent px-3.5 py-1.5 text-xs sm:text-[13px] font-body font-medium text-muted-foreground transition-all hover:text-foreground hover:bg-background hover:border-border/60 hover:shadow-sm"
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </nav>
 
@@ -986,7 +992,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             if (flightOptions.length === 0) return null;
             return (
               <section key="flights" id="flights" className="py-20 lg:py-24 border-t border-border/30 bg-muted/20">
-                <div className="max-w-[1140px] mx-auto px-6">
+                <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
@@ -1198,19 +1204,20 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             if (accommodations.length === 0) return null;
             return (
               <section key="accommodations" id="accommodations" className="py-20 lg:py-24 border-t border-border/30 bg-background">
-                <div className="max-w-[1140px] mx-auto px-6">
+                <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="mb-14"
+                    className="text-center mb-14"
                   >
                     <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-3">
                       {ct.accommodations?.subtitle || "Accommodations"}
                     </p>
                     <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.accommodations?.title || "Hotel Options"}</h2>
+                    <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
                     {accommodationsIsChoice && accommodations.length > 1 && (
                       <p className="text-sm text-muted-foreground font-body mt-3">Choose one of the options below</p>
                     )}
@@ -1228,7 +1235,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       const showAccVideo = (acc.mediaType || "photos") === "video" && !!acc.videoUrl;
                       const showAccPhotos = !showAccVideo;
                       const primaryPrice = acc.price && showItemizedPrices ? fmtCurrency(acc.price) : null;
-                      const pricingLabel = (acc.pricingDisplay || "total") === "per_person" ? "per person" : (acc.pricingDisplay || "total") === "per_night" ? "per night" : "total";
+                      const pricingLabel = (acc.pricingDisplay || "total") === "per_person" ? "Per Person" : (acc.pricingDisplay || "total") === "per_night" ? "Per Night" : "";
 
                       return (
                         <motion.div
@@ -1238,21 +1245,21 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           whileInView="visible"
                           viewport={{ once: true }}
                           custom={accIdx * 0.1}
-                          className={`bg-card rounded-2xl border-2 overflow-hidden transition-all shadow-[0_8px_30px_-15px_hsl(var(--foreground)/0.12)] ${
+                          className={`bg-card rounded-3xl border-2 overflow-hidden transition-all shadow-[0_18px_36px_-28px_hsl(var(--foreground)/0.7)] ${
                             accommodationsIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
-                                : "border-border/40 hover:border-primary/30 cursor-pointer hover:shadow-[0_12px_40px_-15px_hsl(var(--foreground)/0.18)]"
-                              : "border-border/40"
+                                : "border-border/70 hover:border-primary/40 cursor-pointer hover:shadow-[0_24px_44px_-30px_hsl(var(--foreground)/0.75)]"
+                              : "border-border/70"
                           }`}
                           onClick={() => accommodationsIsChoice && setSelectedAccommodation(isSelected ? "" : acc.id)}
                         >
-                          <div className="flex flex-col md:flex-row">
+                          <div className="flex flex-col md:flex-row-reverse">
                             {/* Image Section — Left */}
                             {showAccPhotos && allAccImages.length > 0 && (
-                              <div className="md:w-[380px] lg:w-[420px] shrink-0 relative">
+                              <div className="md:w-[360px] lg:w-[380px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-l border-border/60 bg-muted/25">
                                 <div
-                                  className="aspect-[4/3] md:aspect-auto md:h-full overflow-hidden cursor-pointer relative group"
+                                  className="aspect-[16/10] overflow-hidden cursor-pointer relative group rounded-xl border border-border/60"
                                   onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
                                 >
                                   <img
@@ -1260,19 +1267,19 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                     alt={acc.hotelName}
                                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                                   />
-                                  {allAccImages.length > 1 && (
-                                    <div className="absolute bottom-3 right-3 bg-foreground/60 text-background text-xs font-semibold px-2.5 py-1 rounded-full backdrop-blur-sm flex items-center gap-1">
-                                      <Camera className="h-3 w-3" /> {allAccImages.length}
+                                  {allAccImages.length > 3 && (
+                                    <div className="absolute bottom-2 right-2 bg-foreground text-background text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
+                                      <Camera className="h-3 w-3" /> +{allAccImages.length - 3} more
                                     </div>
                                   )}
                                 </div>
-                                {/* Thumbnail strip for desktop */}
+
                                 {allAccImages.length > 1 && (
-                                  <div className="hidden md:flex gap-1 p-1.5 bg-muted/30">
-                                    {allAccImages.slice(1, 5).map((img, gi) => (
+                                  <div className="grid grid-cols-2 gap-2.5 mt-2.5">
+                                    {allAccImages.slice(1, 3).map((img, gi) => (
                                       <div
                                         key={gi}
-                                        className="flex-1 aspect-[4/3] overflow-hidden cursor-pointer rounded"
+                                        className="aspect-[16/10] overflow-hidden cursor-pointer rounded-xl border border-border/60"
                                         onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, gi + 1); }}
                                       >
                                         <img
@@ -1282,20 +1289,13 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                         />
                                       </div>
                                     ))}
-                                    {allAccImages.length > 5 && (
-                                      <div
-                                        className="flex-1 aspect-[4/3] overflow-hidden cursor-pointer rounded bg-muted/60 flex items-center justify-center"
-                                        onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 5); }}
-                                      >
-                                        <span className="text-xs font-body font-semibold text-muted-foreground">+{allAccImages.length - 5}</span>
-                                      </div>
-                                    )}
+                                    {allAccImages.length === 2 && <div className="aspect-[16/10] rounded-xl border border-dashed border-border/70 bg-muted/40" />}
                                   </div>
                                 )}
                               </div>
                             )}
                             {showAccVideo && (
-                              <div className="md:w-[380px] lg:w-[420px] shrink-0 p-4">
+                              <div className="md:w-[360px] lg:w-[380px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-l border-border/60 bg-muted/25">
                                 <VideoEmbed
                                   url={acc.videoUrl!}
                                   title={acc.hotelName}
@@ -1327,7 +1327,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                 {primaryPrice && (
                                   <div className="text-right shrink-0">
                                     <p className="font-display text-2xl font-bold text-foreground leading-none">{primaryPrice}</p>
-                                    <p className="text-[11px] text-muted-foreground font-body mt-0.5">{pricingLabel}</p>
+                                    {pricingLabel && <p className="text-[11px] text-muted-foreground font-body mt-0.5">{pricingLabel}</p>}
                                   </div>
                                 )}
                               </div>
@@ -1364,7 +1364,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                   {amenities.slice(0, 6).map((a, ai) => (
                                     <span
                                       key={ai}
-                                      className="inline-flex items-center gap-1 bg-muted/50 text-muted-foreground text-[11px] font-body px-2.5 py-1 rounded-full border border-border/30"
+                                      className="inline-flex items-center gap-1 bg-muted/70 text-muted-foreground text-[11px] font-body px-2.5 py-1 rounded-full border border-border/60"
                                     >
                                       <Check className="h-2.5 w-2.5 text-primary" /> {a}
                                     </span>
@@ -1379,7 +1379,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               <div className="flex-1" />
 
                               {/* Footer: dates + selection */}
-                              <div className="flex items-center justify-between mt-5 pt-4 border-t border-border/20">
+                              <div className="flex items-center justify-between mt-5 pt-4 border-t border-border/60">
                                 <div className="flex items-center gap-4 text-xs text-muted-foreground font-body flex-wrap">
                                   {acc.checkIn && (
                                     <span className="flex items-center gap-1">
@@ -1391,7 +1391,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                       <Calendar className="h-3 w-3" /> Out: {acc.checkOut}
                                     </span>
                                   )}
-                                  {acc.nights && <span className="text-primary font-semibold">{acc.nights}</span>}
+                                  {acc.nights && <span className="text-primary font-semibold">{formatNightsLabel(acc.nights)}</span>}
                                 </div>
                                 {accommodationsIsChoice && !isReadOnly && (
                                   <div className="flex items-center gap-1.5 shrink-0">
@@ -1436,19 +1436,20 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             if (cruiseShips.length === 0) return null;
             return (
               <section key="cruiseShips" id="cruiseShips" className="py-20 lg:py-24 border-t border-border/30 bg-muted/20">
-                <div className="max-w-[1140px] mx-auto px-6">
+                <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="mb-14"
+                    className="text-center mb-14"
                   >
                     <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-3">
                       {ct.cruiseShips?.subtitle || "Your Vessel"}
                     </p>
                     <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.cruiseShips?.title || "Cruise Ship & Cabin"}</h2>
+                    <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
                     {cruiseIsChoice && cruiseShips.length > 1 && (
                       <p className="text-sm text-muted-foreground font-body mt-3">Choose one of the options below</p>
                     )}
@@ -1466,7 +1467,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       const showShipVideo = (ship.mediaType || "photos") === "video" && !!ship.videoUrl;
                       const showShipPhotos = !showShipVideo;
                       const primaryPrice = ship.price && showItemizedPrices ? fmtCurrency(ship.price) : null;
-                      const pricingLabel = (ship.pricingDisplay || "total") === "per_person" ? "per person" : (ship.pricingDisplay || "total") === "per_night" ? "per night" : "total";
+                      const pricingLabel = (ship.pricingDisplay || "total") === "per_person" ? "Per Person" : (ship.pricingDisplay || "total") === "per_night" ? "Per Night" : "";
 
                       return (
                         <motion.div
@@ -1476,21 +1477,21 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           whileInView="visible"
                           viewport={{ once: true }}
                           custom={shipIdx * 0.1}
-                          className={`bg-card rounded-2xl border-2 overflow-hidden transition-all shadow-[0_8px_30px_-15px_hsl(var(--foreground)/0.12)] ${
+                          className={`bg-card rounded-3xl border-2 overflow-hidden transition-all shadow-[0_18px_36px_-28px_hsl(var(--foreground)/0.7)] ${
                             cruiseIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
-                                : "border-border/40 hover:border-primary/30 cursor-pointer hover:shadow-[0_12px_40px_-15px_hsl(var(--foreground)/0.18)]"
-                              : "border-border/40"
+                                : "border-border/70 hover:border-primary/40 cursor-pointer hover:shadow-[0_24px_44px_-30px_hsl(var(--foreground)/0.75)]"
+                              : "border-border/70"
                           }`}
                           onClick={() => cruiseIsChoice && setSelectedCruise(isSelected ? "" : ship.id)}
                         >
-                          <div className="flex flex-col md:flex-row">
+                          <div className="flex flex-col md:flex-row-reverse">
                             {/* Image Section — Left */}
                             {showShipPhotos && allShipImages.length > 0 && (
-                              <div className="md:w-[380px] lg:w-[420px] shrink-0 relative">
+                              <div className="md:w-[360px] lg:w-[380px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-l border-border/60 bg-muted/25">
                                 <div
-                                  className="aspect-[4/3] md:aspect-auto md:h-full overflow-hidden cursor-pointer relative group"
+                                  className="aspect-[16/10] overflow-hidden cursor-pointer relative group rounded-xl border border-border/60"
                                   onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, 0); }}
                                 >
                                   <img
@@ -1498,37 +1499,30 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                     alt={ship.shipName}
                                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                                   />
-                                  {allShipImages.length > 1 && (
-                                    <div className="absolute bottom-3 right-3 bg-foreground/60 text-background text-xs font-semibold px-2.5 py-1 rounded-full backdrop-blur-sm flex items-center gap-1">
-                                      <Camera className="h-3 w-3" /> {allShipImages.length}
+                                  {allShipImages.length > 3 && (
+                                    <div className="absolute bottom-2 right-2 bg-foreground text-background text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
+                                      <Camera className="h-3 w-3" /> +{allShipImages.length - 3} more
                                     </div>
                                   )}
                                 </div>
                                 {allShipImages.length > 1 && (
-                                  <div className="hidden md:flex gap-1 p-1.5 bg-muted/30">
-                                    {allShipImages.slice(1, 5).map((img, gi) => (
+                                  <div className="grid grid-cols-2 gap-2.5 mt-2.5">
+                                    {allShipImages.slice(1, 3).map((img, gi) => (
                                       <div
                                         key={gi}
-                                        className="flex-1 aspect-[4/3] overflow-hidden cursor-pointer rounded"
+                                        className="aspect-[16/10] overflow-hidden cursor-pointer rounded-xl border border-border/60"
                                         onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, gi + 1); }}
                                       >
                                         <img src={img.src} alt={img.alt || ""} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
                                       </div>
                                     ))}
-                                    {allShipImages.length > 5 && (
-                                      <div
-                                        className="flex-1 aspect-[4/3] overflow-hidden cursor-pointer rounded bg-muted/60 flex items-center justify-center"
-                                        onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, 5); }}
-                                      >
-                                        <span className="text-xs font-body font-semibold text-muted-foreground">+{allShipImages.length - 5}</span>
-                                      </div>
-                                    )}
+                                    {allShipImages.length === 2 && <div className="aspect-[16/10] rounded-xl border border-dashed border-border/70 bg-muted/40" />}
                                   </div>
                                 )}
                               </div>
                             )}
                             {showShipVideo && (
-                              <div className="md:w-[380px] lg:w-[420px] shrink-0 p-4">
+                              <div className="md:w-[360px] lg:w-[380px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-l border-border/60 bg-muted/25">
                                 <VideoEmbed url={ship.videoUrl!} title={ship.shipName} thumbnailUrl={ship.videoThumbnailUrl} className="w-full rounded-xl" />
                               </div>
                             )}
@@ -1554,7 +1548,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                 {primaryPrice && (
                                   <div className="text-right shrink-0">
                                     <p className="font-display text-2xl font-bold text-foreground leading-none">{primaryPrice}</p>
-                                    <p className="text-[11px] text-muted-foreground font-body mt-0.5">{pricingLabel}</p>
+                                    {pricingLabel && <p className="text-[11px] text-muted-foreground font-body mt-0.5">{pricingLabel}</p>}
                                   </div>
                                 )}
                               </div>
@@ -1598,7 +1592,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               {amenities.length > 0 && (
                                 <div className="flex flex-wrap gap-1.5 mt-4">
                                   {amenities.slice(0, 6).map((a, ai) => (
-                                    <span key={ai} className="inline-flex items-center gap-1 bg-muted/50 text-muted-foreground text-[11px] font-body px-2.5 py-1 rounded-full border border-border/30">
+                                    <span key={ai} className="inline-flex items-center gap-1 bg-muted/70 text-muted-foreground text-[11px] font-body px-2.5 py-1 rounded-full border border-border/60">
                                       <Check className="h-2.5 w-2.5 text-primary" /> {a}
                                     </span>
                                   ))}
@@ -1612,14 +1606,14 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               {(ship.embarkationPort || ship.disembarkationPort || ship.embarkationDate || ship.disembarkationDate) && (
                                 <div className="grid grid-cols-2 gap-3 mt-4 text-xs text-muted-foreground font-body">
                                   {(ship.embarkationPort || ship.embarkationDate) && (
-                                    <div className="bg-muted/30 rounded-lg px-3 py-2">
+                                    <div className="bg-muted/30 rounded-lg px-3 py-2 border border-border/50">
                                       <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-semibold mb-0.5">Embarkation</p>
                                       {ship.embarkationPort && <p className="text-foreground font-medium">{ship.embarkationPort}</p>}
                                       {ship.embarkationDate && <p>{ship.embarkationDate}</p>}
                                     </div>
                                   )}
                                   {(ship.disembarkationPort || ship.disembarkationDate) && (
-                                    <div className="bg-muted/30 rounded-lg px-3 py-2">
+                                    <div className="bg-muted/30 rounded-lg px-3 py-2 border border-border/50">
                                       <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-semibold mb-0.5">Disembarkation</p>
                                       {ship.disembarkationPort && <p className="text-foreground font-medium">{ship.disembarkationPort}</p>}
                                       {ship.disembarkationDate && <p>{ship.disembarkationDate}</p>}
@@ -1628,14 +1622,14 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                 </div>
                               )}
                               {ship.nights && (
-                                <p className="text-sm text-primary font-semibold font-body mt-2">{ship.nights}</p>
+                                <p className="text-sm text-primary font-semibold font-body mt-2">{formatNightsLabel(ship.nights)}</p>
                               )}
 
                               <div className="flex-1" />
 
                               {/* Footer: selection */}
                               {cruiseIsChoice && !isReadOnly && (
-                                <div className="flex items-center justify-end mt-5 pt-4 border-t border-border/20">
+                                <div className="flex items-center justify-end mt-5 pt-4 border-t border-border/60">
                                   <div className="flex items-center gap-1.5">
                                     {isSelected ? (
                                       <>
@@ -1678,7 +1672,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             if (busTrips.length === 0) return null;
             return (
               <section key="busTrips" id="busTrips" className="py-20 lg:py-24 border-t border-border/30 bg-background">
-                <div className="max-w-[1140px] mx-auto px-6">
+                <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
@@ -2015,7 +2009,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             if (data.inclusions.filter(Boolean).length === 0) return null;
             return (
               <section key="inclusions" id="inclusions" className="py-20 lg:py-24 border-t border-border/30 bg-muted/20">
-                <div className="max-w-[1140px] mx-auto px-6">
+                <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
@@ -2057,7 +2051,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             if (data.pricing.length === 0 && pricingOptions.length === 0) return null;
             return (
               <section key="pricing" id="pricing" className="py-20 lg:py-24 bg-card">
-                <div className="max-w-[1140px] mx-auto px-6">
+                <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
@@ -2205,7 +2199,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             if (!hasTerms) return null;
             return (
               <section key="terms" id="terms" className="py-20 lg:py-24 border-t border-border/30 bg-muted/15">
-                <div className="max-w-[1140px] mx-auto px-6">
+                <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
