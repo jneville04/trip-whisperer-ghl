@@ -917,7 +917,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                               <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary font-body">
                                 Option {optIdx + 1} of {flightOptions.length}
                               </span>
-                              {opt.price && (opt.pricingDisplay || "total") !== "hide" && !hideItemizedPrices && (
+                              {opt.price && (opt.pricingDisplay || "total") !== "hide" && showItemizedPrices && (
                                 <span className="font-display text-lg font-bold text-foreground">
                                   {fmtCurrency(opt.price)}
                                   <span className="text-xs text-muted-foreground font-body ml-1">
@@ -1023,7 +1023,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                           {/* Footer: price (if single option) + selection */}
                           {(opt.price || flightsIsChoice) && (
                             <div className="bg-muted/30 border-t border-border/30 px-6 py-4 flex items-center justify-between">
-                              {opt.price && flightOptions.length <= 1 && (opt.pricingDisplay || "total") !== "hide" && !hideItemizedPrices && (
+                              {opt.price && flightOptions.length <= 1 && (opt.pricingDisplay || "total") !== "hide" && showItemizedPrices && (
                                 <span className="font-display text-xl font-bold text-foreground">
                                   {fmtCurrency(opt.price)}
                                   <span className="text-xs text-muted-foreground font-body ml-1">
@@ -1031,7 +1031,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                   </span>
                                 </span>
                               )}
-                              {(!opt.price || flightOptions.length > 1 || (opt.pricingDisplay || "total") === "hide" || hideItemizedPrices) && <span />}
+                              {(!opt.price || flightOptions.length > 1 || (opt.pricingDisplay || "total") === "hide" || !showItemizedPrices) && <span />}
                               {flightsIsChoice && (
                                 <div className="flex items-center gap-2">
                                   {isSelected ? (
@@ -1271,7 +1271,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                             </div>
                             {(acc.price || accommodationsIsChoice) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
-                                {acc.price && (acc.pricingDisplay || "total") !== "hide" && !hideItemizedPrices ? (
+                                {acc.price && (acc.pricingDisplay || "total") !== "hide" && showItemizedPrices ? (
                                   <span className="font-display text-xl font-bold text-foreground">
                                     {fmtCurrency(acc.price)}
                                     <span className="text-xs text-muted-foreground font-body ml-1">
@@ -1549,7 +1549,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                             </div>
                             {(ship.price || cruiseIsChoice) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
-                                {ship.price && (ship.pricingDisplay || "total") !== "hide" && !hideItemizedPrices ? (
+                                {ship.price && (ship.pricingDisplay || "total") !== "hide" && showItemizedPrices ? (
                                   <span className="font-display text-xl font-bold text-foreground">
                                     {fmtCurrency(ship.price)}
                                     <span className="text-xs text-muted-foreground font-body ml-1">
