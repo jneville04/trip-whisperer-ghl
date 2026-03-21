@@ -150,6 +150,58 @@ Deno.serve(async (req) => {
       }
     }
 
+    // Send agent email notification via Resend
+    const resendKey = Deno.env.get("RESEND_API_KEY");
+    if (resendKey && agentEmail) {
+      try {
+        const currSymbol = currency === "USD" ? "$" : currency + " ";
+        const sectionLines = (sectionDetails || [])
+          .map((s: any) => `<tr><td style="padding:4px 0;color:#888;width:120px;">${s.section}</td><td style="padding:4px 0;font-weight:600;">${s.selectedName}${s.price ? ` — ${currSymbol}${parseFloat(s.price).toLocaleString()}` : ""}</td></tr>`)
+          .join("");
+
+        const emailHtml = `
+          <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;">
+            <h2 style="color:#0c7d69;margin-bottom:4px;">Proposal Approved! 🎉</h2>
+            <p style="color:#666;font-size:14px;margin-top:0;">A traveler has approved their proposal.</p>
+            <hr style="border:none;border-top:1px solid #eee;margin:20px 0;" />
+            <table style="width:100%;font-size:14px;color:#333;">
+              <tr><td style="padding:6px 0;color:#888;width:140px;">Proposal</td><td style="padding:6px 0;font-weight:600;">${tripName}</td></tr>
+              <tr><td style="padding:6px 0;color:#888;">Traveler</td><td style="padding:6px 0;">${clientName}</td></tr>
+              <tr><td style="padding:6px 0;color:#888;">Approved At</td><td style="padding:6px 0;">${new Date(approvedAt || Date.now()).toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })}</td></tr>
+            </table>
+            ${sectionLines ? `
+            <div style="margin:20px 0;">
+              <p style="font-size:12px;text-transform:uppercase;color:#888;margin:0 0 8px;letter-spacing:0.5px;">Selected Options</p>
+              <table style="width:100%;font-size:14px;color:#333;">${sectionLines}</table>
+            </div>` : ""}
+            <div style="background:#f0fdf4;border-radius:8px;padding:16px;margin:20px 0;">
+              <table style="width:100%;font-size:14px;color:#333;">
+                <tr><td style="padding:4px 0;color:#888;">Total</td><td style="padding:4px 0;font-weight:700;font-size:18px;color:#0c7d69;">${currSymbol}${(totalPrice || 0).toLocaleString()}</td></tr>
+                ${depositAmount ? `<tr><td style="padding:4px 0;color:#888;">Deposit Due</td><td style="padding:4px 0;font-weight:600;">${currSymbol}${depositAmount.toLocaleString()}</td></tr>` : ""}
+              </table>
+            </div>
+            <p style="font-size:12px;color:#aaa;margin-top:30px;">This notification was sent automatically from your proposal system.</p>
+          </div>
+        `;
+
+        await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${resendKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: "noreply@notify.journeyswithjoi.com",
+            to: [agentEmail],
+            subject: `Proposal Approved: ${tripName}`,
+            html: emailHtml,
+          }),
+        });
+      } catch (emailErr) {
+        console.error("Failed to send agent approval email:", emailErr);
+      }
+    }
+
     return new Response(
       JSON.stringify({
         success: true,
