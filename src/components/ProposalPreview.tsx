@@ -530,6 +530,27 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  // ── Scroll-spy: track which section is currently in view ──
+  const [activeNavId, setActiveNavId] = useState<string>("");
+  useEffect(() => {
+    if (navItems.length === 0) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActiveNavId(entry.target.id);
+          }
+        }
+      },
+      { rootMargin: "-80px 0px -60% 0px", threshold: 0.1 }
+    );
+    for (const item of navItems) {
+      const el = document.getElementById(item.id);
+      if (el) observer.observe(el);
+    }
+    return () => observer.disconnect();
+  }, [navItems]);
+
   const returnTo = window.location.pathname;
 
   const bookingUrl = data.bookingUrl || "";
