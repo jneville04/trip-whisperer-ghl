@@ -993,7 +993,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                           </div>
 
                           {/* Footer: price (if single option) + selection */}
-                          {(opt.price || !isGroupBooking) && (
+                          {(opt.price || flightsIsChoice) && (
                             <div className="bg-muted/30 border-t border-border/30 px-6 py-4 flex items-center justify-between">
                               {opt.price && flightOptions.length <= 1 && (opt.pricingDisplay || "total") !== "hide" && !hideItemizedPrices && (
                                 <span className="font-display text-xl font-bold text-foreground">
@@ -1004,7 +1004,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                 </span>
                               )}
                               {(!opt.price || flightOptions.length > 1 || (opt.pricingDisplay || "total") === "hide" || hideItemizedPrices) && <span />}
-                              {!isGroupBooking && (
+                              {flightsIsChoice && (
                                 <div className="flex items-center gap-2">
                                   {isSelected ? (
                                     <div className="flex items-center gap-1.5">
@@ -1241,7 +1241,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                               )}
                               {acc.nights && <span className="text-primary font-semibold">{acc.nights}</span>}
                             </div>
-                            {(acc.price || !isGroupBooking) && (
+                            {(acc.price || accommodationsIsChoice) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
                                 {acc.price && (acc.pricingDisplay || "total") !== "hide" && !hideItemizedPrices ? (
                                   <span className="font-display text-xl font-bold text-foreground">
@@ -1347,15 +1347,15 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                           viewport={{ once: true }}
                           custom={0}
                           className={`bg-card rounded-2xl border-2 shadow-lg overflow-hidden relative transition-all ${
-                            !isGroupBooking
+                            cruiseIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
                                 : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
-                          onClick={() => !isGroupBooking && setSelectedCruise(isSelected ? "" : ship.id)}
+                          onClick={() => cruiseIsChoice && setSelectedCruise(isSelected ? "" : ship.id)}
                         >
-                          {!isGroupBooking && cruiseShips.length > 1 && (
+                          {cruiseIsChoice && cruiseShips.length > 1 && (
                             <div className="absolute top-4 right-4 z-10">
                               <span className="inline-block bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-[0.15em] font-body px-2.5 py-1 rounded-full">
                                 Option {cruiseShips.indexOf(ship) + 1}
@@ -1519,7 +1519,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                 </div>
                               )}
                             </div>
-                            {(ship.price || !isGroupBooking) && (
+                            {(ship.price || cruiseIsChoice) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
                                 {ship.price && (ship.pricingDisplay || "total") !== "hide" && !hideItemizedPrices ? (
                                   <span className="font-display text-xl font-bold text-foreground">
@@ -1531,7 +1531,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                 ) : (
                                   <span />
                                 )}
-                                {!isGroupBooking && (
+                                {cruiseIsChoice && (
                                   <div className="flex items-center gap-2">
                                     {cruiseShips.length > 1 && (
                                       <span className="text-[10px] text-muted-foreground font-body">
@@ -1625,15 +1625,15 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                           viewport={{ once: true }}
                           custom={0}
                           className={`bg-card rounded-2xl border-2 shadow-lg overflow-hidden relative transition-all ${
-                            !isGroupBooking
+                            busIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
                                 : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
-                          onClick={() => !isGroupBooking && setSelectedBusTrip(isSelected ? "" : trip.id)}
+                          onClick={() => busIsChoice && setSelectedBusTrip(isSelected ? "" : trip.id)}
                         >
-                          {!isGroupBooking && busTrips.length > 1 && (
+                          {busIsChoice && busTrips.length > 1 && (
                             <div className="absolute top-4 right-4 z-10">
                               <span className="inline-block bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-[0.15em] font-body px-2.5 py-1 rounded-full">
                                 Option {busTrips.indexOf(trip) + 1}
@@ -1857,13 +1857,13 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                 )}
                               </div>
                             )}
-                            {(trip.price || !isGroupBooking) && (
+                            {(trip.price || busIsChoice) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
                                 {trip.price && (
                                   <span className="font-display text-xl font-bold text-foreground">${trip.price}</span>
                                 )}
                                 {!trip.price && <span />}
-                                {!isGroupBooking && (
+                                {busIsChoice && (
                                   <div className="flex items-center gap-2">
                                     {busTrips.length > 1 && (
                                       <span className="text-[10px] text-muted-foreground font-body">
