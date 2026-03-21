@@ -746,38 +746,38 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               transition={{ duration: 0.6, delay: 0.5 }}
               className="relative z-10 -mt-8 mx-4 sm:mx-6"
             >
-              <div className="max-w-[720px] mx-auto bg-background/95 backdrop-blur-md rounded-2xl shadow-lg border border-border/30 px-5 sm:px-6 py-3.5">
-                <div className="flex items-center justify-center gap-6 sm:gap-8 flex-wrap">
+              <div className="max-w-[540px] mx-auto bg-background/95 backdrop-blur-md rounded-2xl shadow-lg border border-border/30 px-4 py-2.5">
+                <div className="flex items-center justify-center gap-4 flex-wrap">
                   {((data as any).startDate || (data as any).endDate) && (
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <Calendar className="h-4 w-4 text-primary" />
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Calendar className="h-3.5 w-3.5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-body font-medium">Dates</p>
-                        <p className="text-sm font-semibold text-foreground font-body leading-tight">{formatDateRange((data as any).startDate, (data as any).endDate)}</p>
+                        <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-body font-medium">Dates</p>
+                        <p className="text-[13px] font-semibold text-foreground font-body leading-tight">{formatDateRange((data as any).startDate, (data as any).endDate)}</p>
                       </div>
                     </div>
                   )}
                   {data.travelerCount && (
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <Users className="h-4 w-4 text-primary" />
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Users className="h-3.5 w-3.5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-body font-medium">Travelers</p>
-                        <p className="text-sm font-semibold text-foreground font-body leading-tight">{parseInt(data.travelerCount) === 1 ? "1 Guest" : `${parseInt(data.travelerCount)} Guests`}</p>
+                        <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-body font-medium">Travelers</p>
+                        <p className="text-[13px] font-semibold text-foreground font-body leading-tight">{parseInt(data.travelerCount) === 1 ? "1 Guest" : `${parseInt(data.travelerCount)} Guests`}</p>
                       </div>
                     </div>
                   )}
                   {(data as any).duration && (
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <Clock className="h-4 w-4 text-primary" />
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Clock className="h-3.5 w-3.5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-body font-medium">Duration</p>
-                        <p className="text-sm font-semibold text-foreground font-body leading-tight">{(data as any).duration}</p>
+                        <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-body font-medium">Duration</p>
+                        <p className="text-[13px] font-semibold text-foreground font-body leading-tight">{(data as any).duration}</p>
                       </div>
                     </div>
                   )}
@@ -1038,7 +1038,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           whileInView="visible"
                           viewport={{ once: true }}
                           custom={optIdx}
-                          className={`bg-muted/20 rounded-3xl border-2 shadow-[0_10px_30px_-12px_hsl(var(--foreground)/0.15)] relative overflow-hidden transition-all ${
+                          className={`max-w-[860px] mx-auto bg-[hsl(var(--muted)/0.35)] rounded-3xl border-2 shadow-[0_10px_30px_-12px_hsl(var(--foreground)/0.15)] relative overflow-hidden transition-all ${
                             flightsIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
@@ -1049,7 +1049,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                         >
                           {/* Option header bar */}
                           {flightOptions.length > 1 && (
-                            <div className="bg-primary/5 border-b-2 border-border px-6 py-3 flex items-center justify-between">
+                            <div className="bg-primary/5 border-b-2 border-border px-5 py-2.5 flex items-center justify-between">
                               <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary font-body">
                                 Option {optIdx + 1} of {flightOptions.length}
                               </span>
@@ -1065,66 +1065,65 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           )}
 
                           {/* Flight legs – side-by-side mini-cards */}
-                          <div className="p-4 sm:p-5">
-                            <div className={`grid gap-4 ${opt.legs.length === 1 ? "grid-cols-1 max-w-md mx-auto" : "grid-cols-1 md:grid-cols-2"}`}>
+                          <div className="p-3 sm:p-4">
+                            <div className={`grid gap-2.5 ${opt.legs.length === 1 ? "grid-cols-1 max-w-sm mx-auto" : "grid-cols-1 md:grid-cols-2"}`}>
                               {opt.legs.map((leg) => (
-                                <div key={leg.id} className="bg-muted/30 rounded-2xl border border-border/60 p-4 sm:p-5">
+                                <div key={leg.id} className="bg-[hsl(var(--muted)/0.5)] rounded-2xl border border-border/60 p-3 sm:p-4">
                                   {/* Leg label + date row */}
-                                  <div className="flex items-center justify-between mb-3">
-                                    <div className="flex items-center gap-2">
-                                      <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-1.5">
+                                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center">
                                         {leg.type === "departure" ? (
-                                          <PlaneTakeoff className="h-3.5 w-3.5 text-primary" />
+                                          <PlaneTakeoff className="h-3 w-3 text-primary" />
                                         ) : (
-                                          <PlaneLanding className="h-3.5 w-3.5 text-primary" />
+                                          <PlaneLanding className="h-3 w-3 text-primary" />
                                         )}
                                       </div>
-                                      <span className="font-body font-semibold text-foreground text-xs uppercase tracking-wider">
+                                      <span className="font-body font-semibold text-foreground text-[10px] uppercase tracking-wider">
                                         {leg.type === "departure" ? "Departure" : "Return"}
                                       </span>
                                     </div>
                                     {leg.date && (
-                                      <span className="text-[11px] text-muted-foreground font-body bg-muted/60 px-2 py-0.5 rounded-full">
+                                      <span className="text-[10px] text-muted-foreground font-body bg-muted/60 px-1.5 py-0.5 rounded-full">
                                         {leg.date}
                                       </span>
                                     )}
                                   </div>
 
-                                  {/* Airport codes + flight path */}
-                                  <div className="flex items-center gap-3">
+                                  <div className="flex items-center gap-2">
                                     {/* Origin */}
                                     <div className="flex-1">
                                       {(() => {
                                         const ap = parseAirportValue(leg.departureAirport);
                                         return (
                                           <>
-                                            <p className="font-display text-2xl font-bold text-foreground leading-none">
+                                            <p className="font-display text-xl font-bold text-foreground leading-none">
                                               {ap.code || leg.departureAirport.slice(0, 3).toUpperCase() || "—"}
                                             </p>
-                                            <p className="text-[11px] text-muted-foreground font-body mt-0.5 truncate">
+                                            <p className="text-[10px] text-muted-foreground font-body mt-0.5 truncate">
                                               {ap.city || leg.departureAirport}
                                             </p>
                                           </>
                                         );
                                       })()}
                                       {leg.departureTime && (
-                                        <p className="text-xs font-semibold text-foreground font-body mt-1">
+                                        <p className="text-[11px] font-semibold text-foreground font-body mt-0.5">
                                           {leg.departureTime}
                                         </p>
                                       )}
                                     </div>
 
                                     {/* Flight path visual */}
-                                    <div className="flex-1 flex flex-col items-center gap-0.5 min-w-[80px]">
+                                    <div className="flex-1 flex flex-col items-center gap-0.5 min-w-[60px] max-w-[100px]">
                                       <div className="flex items-center w-full">
                                         <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
                                         <div className="flex-1 border-t-2 border-dashed border-primary/30 mx-0.5" />
-                                        <Plane className="h-3.5 w-3.5 text-primary shrink-0" />
+                                        <Plane className="h-3 w-3 text-primary shrink-0" />
                                         <div className="flex-1 border-t-2 border-dashed border-primary/30 mx-0.5" />
                                         <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
                                       </div>
                                       {(leg.airline || leg.flightNumber) && (
-                                        <p className="text-[9px] text-muted-foreground font-body whitespace-nowrap">
+                                        <p className="text-[8px] text-muted-foreground font-body whitespace-nowrap">
                                           {leg.airline}
                                           {leg.flightNumber ? ` · ${leg.flightNumber}` : ""}
                                         </p>
@@ -1137,17 +1136,17 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                         const ap = parseAirportValue(leg.arrivalAirport);
                                         return (
                                           <>
-                                            <p className="font-display text-2xl font-bold text-foreground leading-none">
+                                            <p className="font-display text-xl font-bold text-foreground leading-none">
                                               {ap.code || leg.arrivalAirport.slice(0, 3).toUpperCase() || "—"}
                                             </p>
-                                            <p className="text-[11px] text-muted-foreground font-body mt-0.5 truncate">
+                                            <p className="text-[10px] text-muted-foreground font-body mt-0.5 truncate">
                                               {ap.city || leg.arrivalAirport}
                                             </p>
                                           </>
                                         );
                                       })()}
                                       {leg.arrivalTime && (
-                                        <p className="text-xs font-semibold text-foreground font-body mt-1">
+                                        <p className="text-[11px] font-semibold text-foreground font-body mt-0.5">
                                           {leg.arrivalTime}
                                         </p>
                                       )}
@@ -1160,7 +1159,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
                           {/* Footer: price (if single option) + selection */}
                           {(opt.price || flightsIsChoice) && (
-                            <div className="bg-muted/50 border-t-2 border-border px-6 py-4 flex items-center justify-between">
+                            <div className="bg-muted/50 border-t-2 border-border px-5 py-3 flex items-center justify-between">
                               {opt.price && flightOptions.length <= 1 && showItemizedPrices && (
                                 <span className="font-display text-xl font-bold text-foreground">
                                   {fmtCurrency(opt.price)}
