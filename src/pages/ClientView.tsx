@@ -1,19 +1,30 @@
 import { useState, useEffect } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import ProposalPreview from "@/components/ProposalPreview";
 import type { ProposalData } from "@/types/proposal";
 import { buildBrandCssVars } from "@/lib/brand";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Mail, Phone } from "lucide-react";
 
 export default function ClientView() {
   const { shareId } = useParams<{ shareId: string }>();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const isAgentPreview = searchParams.get("preview") === "agent";
+  const previewFrom = searchParams.get("from") || "";
   const [data, setData] = useState<ProposalData | null>(null);
   const [tripId, setTripId] = useState<string | null>(null);
   const [tripStatus, setTripStatus] = useState<string>("draft");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsLoggedIn(!!session?.user);
+    });
+  }, []);
 
   useEffect(() => {
     if (!shareId) return;
@@ -27,7 +38,7 @@ export default function ClientView() {
 
       const { data: row, error: err } = await supabase
         .from("trips")
-        .select("id, status, published_data, draft_data, org_id")
+        .select("id, status, published_data, draft_data, org_id, archived_at")
         .eq("public_slug", shareId)
         .single();
 
@@ -47,6 +58,13 @@ export default function ClientView() {
       // Agent preview: show draft_data regardless of status
       if (isAgentPreview) {
         setData((r.draft_data || r.published_data) as ProposalData);
+        setLoading(false);
+        return;
+      }
+
+      // Archived trip — show inactive message for public visitors
+      if (r.archived_at) {
+        setError("archived");
         setLoading(false);
         return;
       }
@@ -71,10 +89,34 @@ export default function ClientView() {
 
   const brandStyles = buildBrandCssVars(data?.brand);
 
+  const getBackDestination = () => {
+    if (previewFrom === "editor" && tripId) return { label: "Back to Editor", path: `/editor/${tripId}` };
+    if (previewFrom === "dashboard") return { label: "Back to Dashboard", path: "/" };
+    if (previewFrom === "trips") return { label: "Back to Trips", path: "/trips" };
+    return { label: "Back to Trips", path: "/trips" };
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center text-muted-foreground font-body">
         Loading proposal...
+      </div>
+    );
+  }
+
+  // Archived trip message
+  if (error === "archived") {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-6">
+        <div className="text-center max-w-md">
+          <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
+            <span className="text-3xl">📋</span>
+          </div>
+          <h1 className="font-display text-3xl font-bold text-foreground mb-3">Proposal Inactive</h1>
+          <p className="text-muted-foreground font-body leading-relaxed">
+            This proposal is no longer active. Please contact your travel advisor for more information.
+          </p>
+        </div>
       </div>
     );
   }
@@ -110,8 +152,28 @@ export default function ClientView() {
     );
   }
 
+  const back = getBackDestination();
+
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
+      {/* Agent-only back navigation */}
+      {isLoggedIn && isAgentPreview && (
+        <div className="sticky top-0 z-[60] bg-background/95 backdrop-blur-sm border-b border-border/50 px-4 py-2">
+          <div className="max-w-6xl mx-auto flex items-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-xs text-muted-foreground hover:text-foreground"
+              onClick={() => navigate(back.path)}
+            >
+              <ArrowLeft className="h-3.5 w-3.5 mr-1.5" /> {back.label}
+            </Button>
+            <span className="ml-auto text-[10px] uppercase tracking-wider font-medium text-muted-foreground/60 bg-muted px-2 py-0.5 rounded-full">
+              Agent Preview
+            </span>
+          </div>
+        </div>
+      )}
       <ProposalPreview data={data} shareId={shareId} tripId={tripId || undefined} tripStatus={tripStatus} />
     </div>
   );

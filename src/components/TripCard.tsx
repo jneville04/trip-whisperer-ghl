@@ -64,6 +64,8 @@ const statusConfig: Record<string, { label: string; className: string }> = {
   sent: { label: "Published", className: "bg-emerald-100 text-emerald-800" },
   unpublished: { label: "Unpublished", className: "bg-slate-200 text-slate-700" },
   approved: { label: "Approved", className: "bg-blue-100 text-blue-800" },
+  revision_requested: { label: "Revision Requested", className: "bg-orange-100 text-orange-800" },
+  reopened: { label: "Reopened", className: "bg-violet-100 text-violet-800" },
 };
 
 interface TripCardProps {
@@ -72,9 +74,13 @@ interface TripCardProps {
   onDuplicate: () => void;
   onDelete: () => void;
   onCopyLink: () => void;
+  onArchive?: () => void;
+  onRestore?: () => void;
+  onReopen?: () => void;
+  isArchived?: boolean;
 }
 
-export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLink }: TripCardProps) {
+export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLink, onArchive, onRestore, onReopen, isArchived }: TripCardProps) {
   const navigate = useNavigate();
   const draftData = trip.draft_data as ProposalData | null;
   const heroImg = draftData?.heroImageUrl || (draftData?.heroImageUrls?.length ? draftData.heroImageUrls[0] : "");
@@ -178,7 +184,7 @@ export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLi
               className="h-7 text-xs px-2 font-medium"
               onClick={(e) => {
                 e.stopPropagation();
-                navigate(`/view/${trip.public_slug}?preview=agent`);
+                navigate(`/view/${trip.public_slug}?preview=agent&from=trips`);
               }}
             >
               <Eye className="h-3 w-3 mr-1" /> Preview
@@ -197,6 +203,20 @@ export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLi
               <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDuplicate(); }}>
                 <Copy className="h-3.5 w-3.5 mr-2" /> Copy
               </DropdownMenuItem>
+              {trip.status === "approved" && onReopen && (
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onReopen(); }}>
+                  <Calendar className="h-3.5 w-3.5 mr-2" /> Reopen for Editing
+                </DropdownMenuItem>
+              )}
+              {isArchived && onRestore ? (
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onRestore(); }}>
+                  <MapPin className="h-3.5 w-3.5 mr-2" /> Restore
+                </DropdownMenuItem>
+              ) : onArchive ? (
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onArchive(); }}>
+                  <Clock className="h-3.5 w-3.5 mr-2" /> Archive
+                </DropdownMenuItem>
+              ) : null}
               <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={(e) => { e.stopPropagation(); onDelete(); }}>
                 <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
               </DropdownMenuItem>
