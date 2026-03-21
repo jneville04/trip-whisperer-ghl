@@ -648,16 +648,14 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               Book Now
             </Button>
           ) : !isEditor && !isReadOnly && !approveSuccess ? (
-            <div className="flex items-center gap-2">
-              <Button
-                variant="travel-ghost"
-                size="sm"
-                className="text-xs"
-                onClick={() => setShowAskQuestion(true)}
-              >
-                <HelpCircle className="h-3.5 w-3.5 mr-1" /> Ask a Question
-              </Button>
-            </div>
+            <Button
+              variant="travel-ghost"
+              size="sm"
+              className="text-xs"
+              onClick={() => setShowAskQuestion(true)}
+            >
+              <HelpCircle className="h-3.5 w-3.5 mr-1" /> Ask a Question
+            </Button>
           ) : null}
         </div>
       </nav>
