@@ -2063,7 +2063,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "inclusions":
             if (data.inclusions.filter(Boolean).length === 0) return null;
             return (
-              <section key="inclusions" id="inclusions" className="py-20">
+              <section key="inclusions" id="inclusions" className="py-24 bg-muted/20">
                 <div className="max-w-4xl mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
@@ -2071,12 +2071,13 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="text-center mb-12"
+                    className="text-center mb-14"
                   >
-                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+                    <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">
                       {ct.inclusions?.subtitle || "Everything Taken Care Of"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.inclusions?.title || "What's Included"}</h2>
+                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.inclusions?.title || "What's Included"}</h2>
+                    <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
                   </motion.div>
                   <motion.div
                     variants={fadeUp}
@@ -2084,14 +2085,14 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={1}
-                    className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-4"
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-3"
                   >
                     {data.inclusions.filter(Boolean).map((item, i) => (
-                      <div key={i} className="flex items-center gap-3 py-2 border-b border-border/50">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <div key={i} className="flex items-center gap-3 py-3 border-b border-border/30">
+                        <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                           <Check className="h-3.5 w-3.5 text-primary" />
                         </div>
-                        <span className="font-body text-foreground">{item}</span>
+                        <span className="font-body text-foreground text-[15px]">{item}</span>
                       </div>
                     ))}
                   </motion.div>
