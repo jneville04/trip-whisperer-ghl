@@ -1211,12 +1211,13 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="mb-14"
+                    className="text-center mb-14"
                   >
                     <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-3">
                       {ct.accommodations?.subtitle || "Accommodations"}
                     </p>
                     <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.accommodations?.title || "Hotel Options"}</h2>
+                    <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
                     {accommodationsIsChoice && accommodations.length > 1 && (
                       <p className="text-sm text-muted-foreground font-body mt-3">Choose one of the options below</p>
                     )}
@@ -1234,7 +1235,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       const showAccVideo = (acc.mediaType || "photos") === "video" && !!acc.videoUrl;
                       const showAccPhotos = !showAccVideo;
                       const primaryPrice = acc.price && showItemizedPrices ? fmtCurrency(acc.price) : null;
-                      const pricingLabel = (acc.pricingDisplay || "total") === "per_person" ? "per person" : (acc.pricingDisplay || "total") === "per_night" ? "per night" : "total";
+                      const pricingLabel = (acc.pricingDisplay || "total") === "per_person" ? "Per Person" : (acc.pricingDisplay || "total") === "per_night" ? "Per Night" : "";
 
                       return (
                         <motion.div
@@ -1244,12 +1245,12 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           whileInView="visible"
                           viewport={{ once: true }}
                           custom={accIdx * 0.1}
-                          className={`bg-card rounded-2xl border-2 overflow-hidden transition-all shadow-[0_8px_30px_-15px_hsl(var(--foreground)/0.12)] ${
+                          className={`bg-card rounded-3xl border-2 overflow-hidden transition-all shadow-[0_18px_36px_-28px_hsl(var(--foreground)/0.7)] ${
                             accommodationsIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
-                                : "border-border/40 hover:border-primary/30 cursor-pointer hover:shadow-[0_12px_40px_-15px_hsl(var(--foreground)/0.18)]"
-                              : "border-border/40"
+                                : "border-border/70 hover:border-primary/40 cursor-pointer hover:shadow-[0_24px_44px_-30px_hsl(var(--foreground)/0.75)]"
+                              : "border-border/70"
                           }`}
                           onClick={() => accommodationsIsChoice && setSelectedAccommodation(isSelected ? "" : acc.id)}
                         >
