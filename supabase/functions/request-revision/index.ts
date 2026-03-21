@@ -152,8 +152,8 @@ Deno.serve(async (req) => {
           introText: "A traveler has requested changes to a proposal.",
           detailsRows,
           summaryHtml: [revisionNoteHtml, categoriesHtml, selectionsHtml].filter(Boolean).join(""),
-          ctaUrl: proposalUrl,
-          ctaLabel: "View Proposal",
+          ctaUrl: editorUrl,
+          ctaLabel: "Open in Editor",
         });
 
         const resendRes = await fetch("https://api.resend.com/emails", {

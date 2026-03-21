@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Copy, Trash2, ExternalLink, MapPin, Calendar, Eye, Clock, MoreVertical } from "lucide-react";
+import { Copy, Trash2, ExternalLink, MapPin, Calendar, Eye, Clock, MoreVertical, Pencil, RotateCcw } from "lucide-react";
 import { type ProposalData, type TripRow } from "@/types/proposal";
 import { format } from "date-fns";
 
@@ -63,7 +63,7 @@ const statusConfig: Record<string, { label: string; className: string }> = {
   published: { label: "Published", className: "bg-emerald-100 text-emerald-800" },
   sent: { label: "Published", className: "bg-emerald-100 text-emerald-800" },
   unpublished: { label: "Unpublished", className: "bg-slate-200 text-slate-700" },
-  approved: { label: "Approved", className: "bg-blue-100 text-blue-800" },
+  approved: { label: "Approved", className: "bg-emerald-100 text-emerald-800" },
   revision_requested: { label: "Revision Requested", className: "bg-orange-100 text-orange-800" },
   reopened: { label: "Reopened", className: "bg-violet-100 text-violet-800" },
 };
@@ -89,6 +89,7 @@ export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLi
   const clientName = draftData?.clientName || "";
   const destination = draftData?.destination || "";
   const sc = statusConfig[trip.status || "draft"] || statusConfig.draft;
+  const isApproved = trip.status === "approved";
 
   const formatCreatedAt = (dateStr: string | null) => {
     if (!dateStr) return "";
@@ -176,7 +177,11 @@ export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLi
         <div className="flex items-center justify-between pt-3 border-t border-border mt-1">
           <div className="flex items-center gap-1">
             <Button variant="travel-ghost" size="sm" className="h-7 text-xs px-2 font-medium" onClick={(e) => { e.stopPropagation(); onOpen(); }}>
-              Open
+              {isApproved ? (
+                <><Eye className="h-3 w-3 mr-1" /> View</>
+              ) : (
+                <><Pencil className="h-3 w-3 mr-1" /> Edit</>
+              )}
             </Button>
             <Button
               variant="travel-ghost"
@@ -184,7 +189,8 @@ export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLi
               className="h-7 text-xs px-2 font-medium"
               onClick={(e) => {
                 e.stopPropagation();
-                navigate(`/view/${trip.public_slug}?preview=agent&from=trips`);
+                const fromSource = window.location.pathname === "/" ? "dashboard" : "trips";
+                navigate(`/view/${trip.public_slug}?preview=agent&from=${fromSource}`);
               }}
             >
               <Eye className="h-3 w-3 mr-1" /> Preview
@@ -201,11 +207,11 @@ export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLi
                 <ExternalLink className="h-3.5 w-3.5 mr-2" /> Share
               </DropdownMenuItem>
               <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDuplicate(); }}>
-                <Copy className="h-3.5 w-3.5 mr-2" /> Copy
+                <Copy className="h-3.5 w-3.5 mr-2" /> Duplicate
               </DropdownMenuItem>
-              {trip.status === "approved" && onReopen && (
+              {isApproved && onReopen && (
                 <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onReopen(); }}>
-                  <Calendar className="h-3.5 w-3.5 mr-2" /> Reopen for Editing
+                  <RotateCcw className="h-3.5 w-3.5 mr-2" /> Reopen for Editing
                 </DropdownMenuItem>
               )}
               {isArchived && onRestore ? (
