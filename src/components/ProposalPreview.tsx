@@ -2554,7 +2554,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
               {/* Additional pricing lines */}
               {data.pricing.length > 0 && (
-                <div className="space-y-3 mb-6 pt-4 border-t border-border/30">
+                <div className="space-y-3 mb-6 pt-4 border-t-2 border-border">
                   {data.pricing.map((line) => (
                     <div key={line.id} className="flex justify-between items-center font-body">
                       <span className="text-muted-foreground">{line.label}</span>
