@@ -34,7 +34,7 @@ import { parseAirportValue } from "@/components/AirportAutocomplete";
 import BookingModal from "@/components/BookingModal";
 import VideoEmbed from "@/components/VideoEmbed";
 import { Button } from "@/components/ui/button";
-import type { ProposalData, Activity, SectionKey, FinancialsSettings } from "@/types/proposal";
+import type { ProposalData, Activity, SectionKey, FinancialsSettings, SectionSelections } from "@/types/proposal";
 import { defaultSectionOrder, createDefaultFinancials } from "@/types/proposal";
 import { buildBrandCssVars } from "@/lib/brand";
 
