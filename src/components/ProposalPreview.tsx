@@ -1038,7 +1038,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           whileInView="visible"
                           viewport={{ once: true }}
                           custom={optIdx}
-                          className={`bg-muted/20 rounded-3xl border-2 shadow-[0_10px_30px_-12px_hsl(var(--foreground)/0.15)] relative overflow-hidden transition-all ${
+                          className={`max-w-[860px] mx-auto bg-[hsl(var(--muted)/0.35)] rounded-3xl border-2 shadow-[0_10px_30px_-12px_hsl(var(--foreground)/0.15)] relative overflow-hidden transition-all ${
                             flightsIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
@@ -1049,7 +1049,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                         >
                           {/* Option header bar */}
                           {flightOptions.length > 1 && (
-                            <div className="bg-primary/5 border-b-2 border-border px-6 py-3 flex items-center justify-between">
+                            <div className="bg-primary/5 border-b-2 border-border px-5 py-2.5 flex items-center justify-between">
                               <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary font-body">
                                 Option {optIdx + 1} of {flightOptions.length}
                               </span>
@@ -1065,10 +1065,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           )}
 
                           {/* Flight legs – side-by-side mini-cards */}
-                          <div className="p-4 sm:p-5">
-                            <div className={`grid gap-4 ${opt.legs.length === 1 ? "grid-cols-1 max-w-md mx-auto" : "grid-cols-1 md:grid-cols-2"}`}>
+                          <div className="p-3 sm:p-4">
+                            <div className={`grid gap-2.5 ${opt.legs.length === 1 ? "grid-cols-1 max-w-sm mx-auto" : "grid-cols-1 md:grid-cols-2"}`}>
                               {opt.legs.map((leg) => (
-                                <div key={leg.id} className="bg-muted/30 rounded-2xl border border-border/60 p-4 sm:p-5">
+                                <div key={leg.id} className="bg-[hsl(var(--muted)/0.5)] rounded-2xl border border-border/60 p-3 sm:p-4">
                                   {/* Leg label + date row */}
                                   <div className="flex items-center justify-between mb-3">
                                     <div className="flex items-center gap-2">
