@@ -859,7 +859,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                       {ct.flights?.subtitle || "Your Flights"}
                     </p>
                     <h2 className="font-display text-4xl font-bold text-foreground">{ct.flights?.title || "Air Travel"}</h2>
-                    {!isGroupBooking && flightOptions.length > 1 && (
+                    {flightsIsChoice && (
                       <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>
                     )}
                   </motion.div>
