@@ -1064,96 +1064,98 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                             </div>
                           )}
 
-                          {/* Flight legs */}
-                          <div className="divide-y-2 divide-border">
-                            {opt.legs.map((leg) => (
-                              <div key={leg.id} className="px-6 py-5">
-                                {/* Leg label + date row */}
-                                <div className="flex items-center justify-between mb-4">
-                                  <div className="flex items-center gap-2">
-                                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                      {leg.type === "departure" ? (
-                                        <PlaneTakeoff className="h-4 w-4 text-primary" />
-                                      ) : (
-                                        <PlaneLanding className="h-4 w-4 text-primary" />
+                          {/* Flight legs – side-by-side mini-cards */}
+                          <div className="p-4 sm:p-5">
+                            <div className={`grid gap-4 ${opt.legs.length === 1 ? "grid-cols-1 max-w-md mx-auto" : "grid-cols-1 md:grid-cols-2"}`}>
+                              {opt.legs.map((leg) => (
+                                <div key={leg.id} className="bg-muted/30 rounded-2xl border border-border/60 p-4 sm:p-5">
+                                  {/* Leg label + date row */}
+                                  <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-2">
+                                      <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
+                                        {leg.type === "departure" ? (
+                                          <PlaneTakeoff className="h-3.5 w-3.5 text-primary" />
+                                        ) : (
+                                          <PlaneLanding className="h-3.5 w-3.5 text-primary" />
+                                        )}
+                                      </div>
+                                      <span className="font-body font-semibold text-foreground text-xs uppercase tracking-wider">
+                                        {leg.type === "departure" ? "Departure" : "Return"}
+                                      </span>
+                                    </div>
+                                    {leg.date && (
+                                      <span className="text-[11px] text-muted-foreground font-body bg-muted/60 px-2 py-0.5 rounded-full">
+                                        {leg.date}
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  {/* Airport codes + flight path */}
+                                  <div className="flex items-center gap-3">
+                                    {/* Origin */}
+                                    <div className="flex-1">
+                                      {(() => {
+                                        const ap = parseAirportValue(leg.departureAirport);
+                                        return (
+                                          <>
+                                            <p className="font-display text-2xl font-bold text-foreground leading-none">
+                                              {ap.code || leg.departureAirport.slice(0, 3).toUpperCase() || "—"}
+                                            </p>
+                                            <p className="text-[11px] text-muted-foreground font-body mt-0.5 truncate">
+                                              {ap.city || leg.departureAirport}
+                                            </p>
+                                          </>
+                                        );
+                                      })()}
+                                      {leg.departureTime && (
+                                        <p className="text-xs font-semibold text-foreground font-body mt-1">
+                                          {leg.departureTime}
+                                        </p>
                                       )}
                                     </div>
-                                    <span className="font-body font-semibold text-foreground text-sm">
-                                      {leg.type === "departure" ? "Departure" : "Return"}
-                                    </span>
-                                  </div>
-                                  {leg.date && (
-                                    <span className="text-xs text-muted-foreground font-body bg-muted/50 px-2.5 py-1 rounded-full">
-                                      {leg.date}
-                                    </span>
-                                  )}
-                                </div>
 
-                                {/* Airport codes + flight path */}
-                                <div className="flex items-center gap-4">
-                                  {/* Origin */}
-                                  <div className="flex-1">
-                                    {(() => {
-                                      const ap = parseAirportValue(leg.departureAirport);
-                                      return (
-                                        <>
-                                          <p className="font-display text-3xl font-bold text-foreground leading-none">
-                                            {ap.code || leg.departureAirport.slice(0, 3).toUpperCase() || "—"}
-                                          </p>
-                                          <p className="text-xs text-muted-foreground font-body mt-1 truncate">
-                                            {ap.city || leg.departureAirport}
-                                          </p>
-                                        </>
-                                      );
-                                    })()}
-                                    {leg.departureTime && (
-                                      <p className="text-sm font-semibold text-foreground font-body mt-1">
-                                        {leg.departureTime}
-                                      </p>
-                                    )}
-                                  </div>
-
-                                  {/* Flight path visual */}
-                                  <div className="flex-1 flex flex-col items-center gap-1 min-w-[120px]">
-                                    <div className="flex items-center w-full">
-                                      <div className="h-2 w-2 rounded-full bg-primary shrink-0" />
-                                      <div className="flex-1 border-t-2 border-dashed border-primary/30 mx-1" />
-                                      <Plane className="h-4 w-4 text-primary shrink-0 -rotate-0" />
-                                      <div className="flex-1 border-t-2 border-dashed border-primary/30 mx-1" />
-                                      <div className="h-2 w-2 rounded-full bg-primary shrink-0" />
+                                    {/* Flight path visual */}
+                                    <div className="flex-1 flex flex-col items-center gap-0.5 min-w-[80px]">
+                                      <div className="flex items-center w-full">
+                                        <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+                                        <div className="flex-1 border-t-2 border-dashed border-primary/30 mx-0.5" />
+                                        <Plane className="h-3.5 w-3.5 text-primary shrink-0" />
+                                        <div className="flex-1 border-t-2 border-dashed border-primary/30 mx-0.5" />
+                                        <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+                                      </div>
+                                      {(leg.airline || leg.flightNumber) && (
+                                        <p className="text-[9px] text-muted-foreground font-body whitespace-nowrap">
+                                          {leg.airline}
+                                          {leg.flightNumber ? ` · ${leg.flightNumber}` : ""}
+                                        </p>
+                                      )}
                                     </div>
-                                    {(leg.airline || leg.flightNumber) && (
-                                      <p className="text-[10px] text-muted-foreground font-body whitespace-nowrap">
-                                        {leg.airline}
-                                        {leg.flightNumber ? ` · ${leg.flightNumber}` : ""}
-                                      </p>
-                                    )}
-                                  </div>
 
-                                  {/* Destination */}
-                                  <div className="flex-1 text-right">
-                                    {(() => {
-                                      const ap = parseAirportValue(leg.arrivalAirport);
-                                      return (
-                                        <>
-                                          <p className="font-display text-3xl font-bold text-foreground leading-none">
-                                            {ap.code || leg.arrivalAirport.slice(0, 3).toUpperCase() || "—"}
-                                          </p>
-                                          <p className="text-xs text-muted-foreground font-body mt-1 truncate">
-                                            {ap.city || leg.arrivalAirport}
-                                          </p>
-                                        </>
-                                      );
-                                    })()}
-                                    {leg.arrivalTime && (
-                                      <p className="text-sm font-semibold text-foreground font-body mt-1">
-                                        {leg.arrivalTime}
-                                      </p>
-                                    )}
+                                    {/* Destination */}
+                                    <div className="flex-1 text-right">
+                                      {(() => {
+                                        const ap = parseAirportValue(leg.arrivalAirport);
+                                        return (
+                                          <>
+                                            <p className="font-display text-2xl font-bold text-foreground leading-none">
+                                              {ap.code || leg.arrivalAirport.slice(0, 3).toUpperCase() || "—"}
+                                            </p>
+                                            <p className="text-[11px] text-muted-foreground font-body mt-0.5 truncate">
+                                              {ap.city || leg.arrivalAirport}
+                                            </p>
+                                          </>
+                                        );
+                                      })()}
+                                      {leg.arrivalTime && (
+                                        <p className="text-xs font-semibold text-foreground font-body mt-1">
+                                          {leg.arrivalTime}
+                                        </p>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
+                              ))}
+                            </div>
                           </div>
 
                           {/* Footer: price (if single option) + selection */}
