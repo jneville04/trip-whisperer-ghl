@@ -246,7 +246,7 @@ function ItinerarySection({
                                         </span>
                                       )}
                                       {act.title?.trim() && (
-                                        <p className="font-display text-lg font-semibold text-foreground leading-snug">
+                                        <p className="font-display text-lg sm:text-xl font-semibold text-foreground leading-snug">
                                           {act.title}
                                         </p>
                                       )}
