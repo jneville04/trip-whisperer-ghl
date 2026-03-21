@@ -1343,7 +1343,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                       Option {accIdx + 1} of {accommodations.length}
                                     </span>
                                   )}
-                                  <h3 className="font-display text-xl sm:text-2xl font-bold text-foreground leading-tight">
+                                  <h3 className="font-display text-2xl sm:text-[1.65rem] font-bold text-foreground leading-tight">
                                     {acc.hotelName || "Hotel"}
                                   </h3>
                                   {acc.location && (
