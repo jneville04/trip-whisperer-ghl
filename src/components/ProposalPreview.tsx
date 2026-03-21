@@ -2619,22 +2619,6 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
 
               {financials.paymentNotes && <p className="text-xs text-muted-foreground mb-6 font-body">{financials.paymentNotes}</p>}
 
-              {/* Terms & Conditions checkbox */}
-              {!isEditor && tripId && (
-                <div className="flex items-start gap-3 py-4">
-                  <input
-                    type="checkbox"
-                    id="terms-accept"
-                    checked={termsAccepted}
-                    onChange={(e) => setTermsAccepted(e.target.checked)}
-                    className="mt-1 h-4 w-4 rounded border-border accent-primary cursor-pointer"
-                  />
-                  <label htmlFor="terms-accept" className="text-sm text-muted-foreground font-body cursor-pointer leading-relaxed">
-                    I have read and agree to the terms and conditions outlined in this proposal. I understand the payment terms and cancellation policy.
-                  </label>
-                </div>
-              )}
-
               {/* Validation error */}
               {validationError && (
                 <div className="bg-destructive/10 border border-destructive/30 rounded-lg px-4 py-3 mb-4 text-sm text-destructive font-body text-center">
@@ -2642,110 +2626,83 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                 </div>
               )}
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                {!isEditor && tripId ? (
-                  !allSelectionsComplete ? (
-                    <Button
-                      variant="travel"
-                      size="lg"
-                      className="text-lg px-10 py-6 h-auto"
-                      onClick={() => {
-                        const firstMissing = requiredChoiceSections.find(s => !s.selectedId);
-                        if (firstMissing) {
-                          const el = document.getElementById(firstMissing.key);
-                          if (el) {
-                            el.scrollIntoView({ behavior: "smooth", block: "start" });
-                            el.classList.add("ring-2", "ring-accent/50");
-                            setTimeout(() => el.classList.remove("ring-2", "ring-accent/50"), 3000);
+              {!isReadOnly && (
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                  {!isEditor && tripId ? (
+                    !allSelectionsComplete ? (
+                      <Button
+                        variant="travel"
+                        size="lg"
+                        className="text-lg px-10 py-6 h-auto"
+                        onClick={() => {
+                          const firstMissing = requiredChoiceSections.find(s => !s.selectedId);
+                          if (firstMissing) {
+                            const el = document.getElementById(firstMissing.key);
+                            if (el) {
+                              el.scrollIntoView({ behavior: "smooth", block: "start" });
+                              el.classList.add("ring-2", "ring-primary/40", "ring-offset-2");
+                              setTimeout(() => el.classList.remove("ring-2", "ring-primary/40", "ring-offset-2"), 3000);
+                            }
+                            setValidationError(`Please select an option for ${firstMissing.label} before continuing.`);
                           }
-                          setValidationError(`Please select an option for ${firstMissing.label} before continuing.`);
-                        }
-                      }}
-                    >
-                      <ArrowRight className="h-5 w-5 mr-2" /> Complete Selections
-                    </Button>
+                        }}
+                      >
+                        <ArrowRight className="h-5 w-5 mr-2" /> Complete Selections
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="travel"
+                        size="lg"
+                        className="text-lg px-10 py-6 h-auto"
+                        onClick={() => {
+                          // Final validation before showing review
+                          const missing = requiredChoiceSections.filter(s => !s.selectedId).map(s => s.label);
+                          if (missing.length > 0) {
+                            setValidationError(`Please select an option for: ${missing.join(", ")}`);
+                            return;
+                          }
+                          setValidationError("");
+                          setShowReviewModal(true);
+                        }}
+                      >
+                        <CheckCircle2 className="h-5 w-5 mr-2" /> Review &amp; Approve
+                      </Button>
+                    )
                   ) : (
                     <Button
                       variant="travel"
                       size="lg"
                       className="text-lg px-10 py-6 h-auto"
-                      disabled={!termsAccepted || approving}
-                      onClick={async () => {
-                        // Final validation guard
-                        const missing = requiredChoiceSections
-                          .filter((s) => !s.selectedId)
-                          .map((s) => s.label);
-                        if (missing.length > 0) {
-                          setValidationError(`Please select an option for: ${missing.join(", ")}`);
-                          return;
-                        }
-                        setValidationError("");
-                        setApproving(true);
-                        try {
-                          // Build total from section registry
-                          let totalPrice = 0;
-                          for (const sec of sectionRegistry) {
-                            if (!sec.visible || sec.items.length === 0) continue;
-                            const effectiveId = sec.items.length === 1 ? sec.items[0].id : sec.selectedId;
-                            if (effectiveId) {
-                              const item = sec.items.find(i => i.id === effectiveId);
-                              totalPrice += parseFloat(item?.price?.replace(/[^0-9.-]/g, "") || "0");
+                      onClick={() => {
+                        if (!allSelectionsComplete) {
+                          const firstMissing = requiredChoiceSections.find(s => !s.selectedId);
+                          if (firstMissing) {
+                            const el = document.getElementById(firstMissing.key);
+                            if (el) {
+                              el.scrollIntoView({ behavior: "smooth", block: "start" });
+                              el.classList.add("ring-2", "ring-primary/40", "ring-offset-2");
+                              setTimeout(() => el.classList.remove("ring-2", "ring-primary/40", "ring-offset-2"), 3000);
                             }
+                            setValidationError(`Please select an option for ${firstMissing.label} before continuing.`);
                           }
-                          totalPrice += data.pricing.reduce((sum, l) => sum + (parseFloat(l.amount.replace(/[^0-9.-]/g, "")) || 0), 0);
-                          if (selectedPricingOption) {
-                            totalPrice += parseFloat(pricingOptions.find(p => p.id === selectedPricingOption)?.totalPrice?.replace(/[^0-9.-]/g, "") || "0");
-                          }
-
-                          const { error } = await supabase.functions.invoke("approve-trip", {
-                            body: {
-                              tripId,
-                              selectionSummary: sectionRegistry
-                                .filter(s => s.visible && s.items.length > 0)
-                                .map(s => {
-                                  const effId = s.items.length === 1 ? s.items[0].id : s.selectedId;
-                                  if (!effId) return null;
-                                  if (s.key === "flights") return `Flight: ${flightOptions.find(f => f.id === effId)?.legs?.[0]?.airline || "Selected"}`;
-                                  if (s.key === "accommodations") return `Hotel: ${accommodations.find(a => a.id === effId)?.hotelName || "Selected"}`;
-                                  if (s.key === "cruiseShips") return `Cruise: ${cruiseShips.find(c => c.id === effId)?.shipName || "Selected"}`;
-                                  if (s.key === "busTrips") return `Bus: ${busTrips.find(b => b.id === effId)?.routeName || "Selected"}`;
-                                  return null;
-                                })
-                                .filter(Boolean)
-                                .join(" | "),
-                              totalPrice,
-                            },
-                          });
-                          if (error) throw error;
-                          setApproveSuccess(true);
-                        } catch (err) {
-                          console.error("Approve failed:", err);
-                          setApproveSuccess(true);
+                        } else {
+                          setShowReviewModal(true);
                         }
-                        setApproving(false);
                       }}
                     >
-                      {approving ? (
-                        <>Processing...</>
-                      ) : (
-                        <><CheckCircle2 className="h-5 w-5 mr-2" /> Approve &amp; Secure Booking</>
-                      )}
+                      <CheckCircle2 className="h-5 w-5 mr-2" /> {allSelectionsComplete ? "Review & Approve" : "Complete Selections"}
                     </Button>
-                  )
-                ) : (
-                  <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>
-                    <CheckCircle2 className="h-5 w-5 mr-2" /> {allSelectionsComplete ? "Approve & Secure Booking" : "Complete Selections"}
+                  )}
+                  <Button
+                    variant="travel-outline"
+                    size="lg"
+                    className="text-lg px-10 py-6 h-auto"
+                    onClick={goToRevisions}
+                  >
+                    <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
                   </Button>
-                )}
-                <Button
-                  variant="travel-outline"
-                  size="lg"
-                  className="text-lg px-10 py-6 h-auto"
-                  onClick={goToRevisions}
-                >
-                  <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
-                </Button>
-              </div>
+                </div>
+              )}
               {data.validUntil && (
                 <p className="text-sm text-muted-foreground mt-4 text-center font-body">
                   This proposal is valid until {data.validUntil}
