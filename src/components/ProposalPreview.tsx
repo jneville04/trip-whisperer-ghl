@@ -362,19 +362,47 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   const busTrips = (data.busTrips || []).filter(t => !(t as any).hidden);
   const pricingOptions = (data.pricingOptions || []).filter(opt => opt.name?.trim() || opt.totalPrice?.trim() || opt.deposit?.trim());
   const financials: FinancialsSettings = data.financials || createDefaultFinancials();
-  const hideItemizedPrices = financials.clientView === "package";
+  const showItemizedPrices = financials.clientView === "itemized";
 
-  // Smart section logic: auto-detect informational vs choice
-  const flightsIsChoice = !isGroupBooking && flightOptions.length >= 2;
-  const accommodationsIsChoice = !isGroupBooking && accommodations.length >= 2;
-  const cruiseIsChoice = !isGroupBooking && cruiseShips.length >= 2;
-  const busIsChoice = !isGroupBooking && busTrips.length >= 2;
+  // ── Universal section-driven pattern ──
+  // Each entry describes a proposal section that CAN be selectable.
+  // The system auto-determines behaviour from item count — no hard-coding.
+  interface SelectableSection {
+    key: string;
+    label: string;
+    items: { id: string; price?: string; pricingDisplay?: string }[];
+    visible: boolean;
+    selectedId: string;
+    setSelectedId: (id: string) => void;
+  }
+
+  const sectionRegistry: SelectableSection[] = [
+    { key: "flights", label: "Flight", items: flightOptions, visible: vis.flights, selectedId: selectedFlight, setSelectedId: setSelectedFlight },
+    { key: "accommodations", label: "Accommodation", items: accommodations, visible: vis.accommodations, selectedId: selectedAccommodation, setSelectedId: setSelectedAccommodation },
+    { key: "cruiseShips", label: "Cruise", items: cruiseShips, visible: vis.cruiseShips, selectedId: selectedCruise, setSelectedId: setSelectedCruise },
+    { key: "busTrips", label: "Bus Trip", items: busTrips, visible: vis.busTrips, selectedId: selectedBusTrip, setSelectedId: setSelectedBusTrip },
+  ];
+
+  // A section is a "required choice" if visible, not group-booking, and has 2+ items
+  const requiredChoiceSections = sectionRegistry.filter(
+    (s) => s.visible && !isGroupBooking && s.items.length >= 2
+  );
+
+  // Convenience booleans derived from the universal list
+  const flightsIsChoice = requiredChoiceSections.some((s) => s.key === "flights");
+  const accommodationsIsChoice = requiredChoiceSections.some((s) => s.key === "accommodations");
+  const cruiseIsChoice = requiredChoiceSections.some((s) => s.key === "cruiseShips");
+  const busIsChoice = requiredChoiceSections.some((s) => s.key === "busTrips");
 
   // Auto-include single required items
   const effectiveSelectedFlight = flightsIsChoice ? selectedFlight : (flightOptions.length === 1 ? flightOptions[0].id : "");
   const effectiveSelectedAccommodation = accommodationsIsChoice ? selectedAccommodation : (accommodations.length === 1 ? accommodations[0].id : "");
   const effectiveSelectedCruise = cruiseIsChoice ? selectedCruise : (cruiseShips.length === 1 ? cruiseShips[0].id : "");
   const effectiveSelectedBusTrip = busIsChoice ? selectedBusTrip : (busTrips.length === 1 ? busTrips[0].id : "");
+
+  // Universal validation: all required choice sections must have a selection
+  const missingSelections = requiredChoiceSections.filter((s) => !s.selectedId);
+  const allSelectionsComplete = missingSelections.length === 0;
   const agent = data.agent || {
     name: "",
     title: "",
@@ -889,7 +917,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                               <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary font-body">
                                 Option {optIdx + 1} of {flightOptions.length}
                               </span>
-                              {opt.price && (opt.pricingDisplay || "total") !== "hide" && !hideItemizedPrices && (
+                              {opt.price && showItemizedPrices && (
                                 <span className="font-display text-lg font-bold text-foreground">
                                   {fmtCurrency(opt.price)}
                                   <span className="text-xs text-muted-foreground font-body ml-1">
@@ -995,7 +1023,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                           {/* Footer: price (if single option) + selection */}
                           {(opt.price || flightsIsChoice) && (
                             <div className="bg-muted/30 border-t border-border/30 px-6 py-4 flex items-center justify-between">
-                              {opt.price && flightOptions.length <= 1 && (opt.pricingDisplay || "total") !== "hide" && !hideItemizedPrices && (
+                              {opt.price && flightOptions.length <= 1 && showItemizedPrices && (
                                 <span className="font-display text-xl font-bold text-foreground">
                                   {fmtCurrency(opt.price)}
                                   <span className="text-xs text-muted-foreground font-body ml-1">
@@ -1003,7 +1031,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                   </span>
                                 </span>
                               )}
-                              {(!opt.price || flightOptions.length > 1 || (opt.pricingDisplay || "total") === "hide" || hideItemizedPrices) && <span />}
+                              {(!opt.price || flightOptions.length > 1 || !showItemizedPrices) && <span />}
                               {flightsIsChoice && (
                                 <div className="flex items-center gap-2">
                                   {isSelected ? (
@@ -1243,7 +1271,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                             </div>
                             {(acc.price || accommodationsIsChoice) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
-                                {acc.price && (acc.pricingDisplay || "total") !== "hide" && !hideItemizedPrices ? (
+                                {acc.price && showItemizedPrices ? (
                                   <span className="font-display text-xl font-bold text-foreground">
                                     {fmtCurrency(acc.price)}
                                     <span className="text-xs text-muted-foreground font-body ml-1">
@@ -1521,7 +1549,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                             </div>
                             {(ship.price || cruiseIsChoice) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
-                                {ship.price && (ship.pricingDisplay || "total") !== "hide" && !hideItemizedPrices ? (
+                                {ship.price && showItemizedPrices ? (
                                   <span className="font-display text-xl font-bold text-foreground">
                                     {fmtCurrency(ship.price)}
                                     <span className="text-xs text-muted-foreground font-body ml-1">
@@ -2603,14 +2631,12 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                     variant="travel"
                     size="lg"
                     className="text-lg px-10 py-6 h-auto"
-                    disabled={!termsAccepted || approving}
+                    disabled={!termsAccepted || approving || !allSelectionsComplete}
                     onClick={async () => {
-                      // Approval validation: check required choice sections
-                      const missing: string[] = [];
-                      if (flightsIsChoice && !selectedFlight) missing.push("Flight");
-                      if (accommodationsIsChoice && !selectedAccommodation) missing.push("Accommodation");
-                      if (cruiseIsChoice && !selectedCruise) missing.push("Cruise");
-                      if (busIsChoice && !selectedBusTrip) missing.push("Bus Trip");
+                      // Universal approval validation using section registry
+                      const missing = requiredChoiceSections
+                        .filter((s) => !s.selectedId)
+                        .map((s) => s.label);
                       if (missing.length > 0) {
                         setValidationError(`Please select an option for: ${missing.join(", ")}`);
                         return;
