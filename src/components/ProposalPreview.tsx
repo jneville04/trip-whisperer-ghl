@@ -342,7 +342,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   const [questionForm, setQuestionForm] = useState({ name: "", email: "", message: "" });
   const [questionSending, setQuestionSending] = useState(false);
   const [questionSent, setQuestionSent] = useState(false);
-  const [isReadOnly, setIsReadOnly] = useState(false);
+  const [isReadOnly, setIsReadOnly] = useState(tripStatus === "approved");
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showRevisionModal, setShowRevisionModal] = useState(false);
   const [revisionForm, setRevisionForm] = useState({ name: "", email: "", message: "" });
