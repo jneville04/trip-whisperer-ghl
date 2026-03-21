@@ -95,7 +95,7 @@ Deno.serve(async (req) => {
           </div>
         `;
 
-        await fetch("https://api.resend.com/emails", {
+        const resendRes = await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: {
             "Authorization": `Bearer ${resendKey}`,
@@ -108,6 +108,8 @@ Deno.serve(async (req) => {
             html: emailHtml,
           }),
         });
+        const resendBody = await resendRes.text();
+        console.log("Resend response:", { status: resendRes.status, body: resendBody });
       } catch (emailErr) {
         console.error("Failed to send agent email:", emailErr);
       }
