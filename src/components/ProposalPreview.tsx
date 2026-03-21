@@ -65,6 +65,14 @@ const fmtCurrency = (val: string) => {
   return "$" + num.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 };
 
+const formatNightsLabel = (value?: string) => {
+  if (!value) return "";
+  if (/[a-zA-Z]/.test(value)) return value;
+  const nights = Number.parseInt(value, 10);
+  if (Number.isNaN(nights)) return value;
+  return `${nights} ${nights === 1 ? "Night" : "Nights"}`;
+};
+
 const easeOut: Easing = [0.25, 0.46, 0.45, 0.94];
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -609,9 +617,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
       {/* STICKY HEADER NAV */}
-      <nav className="sticky top-0 z-[90] border-b border-border/40 bg-background/98 backdrop-blur-xl supports-[backdrop-filter]:bg-background/92 shadow-sm">
-        <div className="max-w-[1140px] mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
-          <div className="flex items-center gap-3 min-w-0">
+      <nav className="sticky top-0 z-[90] border-b border-border bg-background shadow-[0_14px_26px_-18px_hsl(var(--foreground)/0.65)]">
+        <div className="max-w-[1140px] mx-auto px-4 sm:px-6 flex items-center gap-3 h-14">
+          <div className="flex items-center gap-3 min-w-0 shrink-0 pr-3 border-r border-border/70">
             {brandData.logoUrl && (
               <img
                 src={brandData.logoUrl}
@@ -620,16 +628,29 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               />
             )}
             {(!brandData.logoUrl || showAgencyNameWithLogo) && (
-              <span className="font-display text-lg font-semibold text-foreground truncate tracking-tight">
+              <span className="font-display text-base sm:text-lg font-bold text-foreground truncate tracking-tight">
                 {agent.agencyName || "Travel Co."}
               </span>
             )}
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => scrollTo(item.id)}
+                  className="shrink-0 rounded-full border border-border/70 bg-muted/40 px-3.5 py-1.5 text-xs sm:text-[13px] font-body font-semibold text-foreground transition-all hover:bg-background hover:border-border hover:shadow-sm"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
           </div>
           {isGroupBooking ? (
             <Button
               variant="travel"
               size="sm"
-              className="text-xs"
+              className="text-xs shrink-0"
               onClick={() => {
                 if (checkoutEnabled) goToCheckout();
                 else if (bookingUrl) openModal(bookingUrl, "Book Now");
@@ -641,27 +662,12 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             <Button
               variant="travel-ghost"
               size="sm"
-              className="text-xs gap-1.5"
+              className="text-xs gap-1.5 shrink-0"
               onClick={() => setShowAskQuestion(true)}
             >
               <HelpCircle className="h-3.5 w-3.5" /> Ask a Question
             </Button>
           ) : null}
-        </div>
-        <div className="border-t border-border/30 bg-muted/30">
-          <div className="max-w-[1140px] mx-auto px-3 sm:px-6">
-            <div className="flex items-center gap-1 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollTo(item.id)}
-                  className="shrink-0 rounded-full border border-transparent px-3.5 py-1.5 text-xs sm:text-[13px] font-body font-medium text-muted-foreground transition-all hover:text-foreground hover:bg-background hover:border-border/60 hover:shadow-sm"
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
       </nav>
 
