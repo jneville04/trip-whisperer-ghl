@@ -1090,41 +1090,40 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                     )}
                                   </div>
 
-                                  {/* Airport codes + flight path */}
-                                  <div className="flex items-center gap-3">
+                                  <div className="flex items-center gap-2">
                                     {/* Origin */}
                                     <div className="flex-1">
                                       {(() => {
                                         const ap = parseAirportValue(leg.departureAirport);
                                         return (
                                           <>
-                                            <p className="font-display text-2xl font-bold text-foreground leading-none">
+                                            <p className="font-display text-xl font-bold text-foreground leading-none">
                                               {ap.code || leg.departureAirport.slice(0, 3).toUpperCase() || "—"}
                                             </p>
-                                            <p className="text-[11px] text-muted-foreground font-body mt-0.5 truncate">
+                                            <p className="text-[10px] text-muted-foreground font-body mt-0.5 truncate">
                                               {ap.city || leg.departureAirport}
                                             </p>
                                           </>
                                         );
                                       })()}
                                       {leg.departureTime && (
-                                        <p className="text-xs font-semibold text-foreground font-body mt-1">
+                                        <p className="text-[11px] font-semibold text-foreground font-body mt-0.5">
                                           {leg.departureTime}
                                         </p>
                                       )}
                                     </div>
 
                                     {/* Flight path visual */}
-                                    <div className="flex-1 flex flex-col items-center gap-0.5 min-w-[80px]">
+                                    <div className="flex-1 flex flex-col items-center gap-0.5 min-w-[60px] max-w-[100px]">
                                       <div className="flex items-center w-full">
                                         <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
                                         <div className="flex-1 border-t-2 border-dashed border-primary/30 mx-0.5" />
-                                        <Plane className="h-3.5 w-3.5 text-primary shrink-0" />
+                                        <Plane className="h-3 w-3 text-primary shrink-0" />
                                         <div className="flex-1 border-t-2 border-dashed border-primary/30 mx-0.5" />
                                         <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
                                       </div>
                                       {(leg.airline || leg.flightNumber) && (
-                                        <p className="text-[9px] text-muted-foreground font-body whitespace-nowrap">
+                                        <p className="text-[8px] text-muted-foreground font-body whitespace-nowrap">
                                           {leg.airline}
                                           {leg.flightNumber ? ` · ${leg.flightNumber}` : ""}
                                         </p>
@@ -1137,17 +1136,17 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                         const ap = parseAirportValue(leg.arrivalAirport);
                                         return (
                                           <>
-                                            <p className="font-display text-2xl font-bold text-foreground leading-none">
+                                            <p className="font-display text-xl font-bold text-foreground leading-none">
                                               {ap.code || leg.arrivalAirport.slice(0, 3).toUpperCase() || "—"}
                                             </p>
-                                            <p className="text-[11px] text-muted-foreground font-body mt-0.5 truncate">
+                                            <p className="text-[10px] text-muted-foreground font-body mt-0.5 truncate">
                                               {ap.city || leg.arrivalAirport}
                                             </p>
                                           </>
                                         );
                                       })()}
                                       {leg.arrivalTime && (
-                                        <p className="text-xs font-semibold text-foreground font-body mt-1">
+                                        <p className="text-[11px] font-semibold text-foreground font-body mt-0.5">
                                           {leg.arrivalTime}
                                         </p>
                                       )}
