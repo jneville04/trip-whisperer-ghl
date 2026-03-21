@@ -267,7 +267,7 @@ function ItinerarySection({
                                   </div>
                                 )}
                                 {hasVideo && !hasImages && (
-                                  <div className={`shrink-0 ${isFeatured ? "sm:w-[280px] md:w-[320px]" : "sm:w-[220px] md:w-[240px]"}`}>
+                                  <div className="shrink-0 sm:w-[220px] md:w-[240px]">
                                     <VideoEmbed
                                       url={act.videoUrl!}
                                       title={act.title}
