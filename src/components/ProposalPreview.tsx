@@ -2065,7 +2065,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                         <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                           <Check className="h-3.5 w-3.5 text-primary" />
                         </div>
-                        <span className="font-body text-foreground text-[15px]">{item}</span>
+                        <span className="font-body text-foreground text-base">{item}</span>
                       </div>
                     ))}
                   </motion.div>
