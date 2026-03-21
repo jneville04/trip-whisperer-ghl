@@ -41,6 +41,7 @@ export default function ClientView() {
 
       const r = row as any;
       const status = r.status || "draft";
+      setTripStatus(status);
       setTripId(r.id);
 
       // Agent preview: show draft_data regardless of status
