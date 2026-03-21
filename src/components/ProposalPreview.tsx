@@ -1392,7 +1392,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                   {amenities.slice(0, 6).map((a, ai) => (
                                     <span
                                       key={ai}
-                                      className="inline-flex items-center gap-1 bg-muted/70 text-muted-foreground text-[11px] font-body px-2.5 py-1 rounded-full border border-border/60"
+                                      className="inline-flex items-center gap-1 bg-muted text-muted-foreground text-xs font-body px-2.5 py-1 rounded-full border border-border"
                                     >
                                       <Check className="h-2.5 w-2.5 text-primary" /> {a}
                                     </span>
