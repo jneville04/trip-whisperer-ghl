@@ -2590,6 +2590,13 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                 </div>
               )}
 
+              {/* Validation error */}
+              {validationError && (
+                <div className="bg-destructive/10 border border-destructive/30 rounded-lg px-4 py-3 mb-4 text-sm text-destructive font-body text-center">
+                  {validationError}
+                </div>
+              )}
+
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                 {!isEditor && tripId ? (
                   <Button
@@ -2598,6 +2605,17 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                     className="text-lg px-10 py-6 h-auto"
                     disabled={!termsAccepted || approving}
                     onClick={async () => {
+                      // Approval validation: check required choice sections
+                      const missing: string[] = [];
+                      if (flightsIsChoice && !selectedFlight) missing.push("Flight");
+                      if (accommodationsIsChoice && !selectedAccommodation) missing.push("Accommodation");
+                      if (cruiseIsChoice && !selectedCruise) missing.push("Cruise");
+                      if (busIsChoice && !selectedBusTrip) missing.push("Bus Trip");
+                      if (missing.length > 0) {
+                        setValidationError(`Please select an option for: ${missing.join(", ")}`);
+                        return;
+                      }
+                      setValidationError("");
                       setApproving(true);
                       try {
                         const { error } = await supabase.functions.invoke("approve-trip", {
