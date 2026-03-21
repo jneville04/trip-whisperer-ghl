@@ -1070,21 +1070,21 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               {opt.legs.map((leg) => (
                                 <div key={leg.id} className="bg-[hsl(var(--muted)/0.5)] rounded-2xl border border-border/60 p-3 sm:p-4">
                                   {/* Leg label + date row */}
-                                  <div className="flex items-center justify-between mb-3">
-                                    <div className="flex items-center gap-2">
-                                      <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-1.5">
+                                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center">
                                         {leg.type === "departure" ? (
-                                          <PlaneTakeoff className="h-3.5 w-3.5 text-primary" />
+                                          <PlaneTakeoff className="h-3 w-3 text-primary" />
                                         ) : (
-                                          <PlaneLanding className="h-3.5 w-3.5 text-primary" />
+                                          <PlaneLanding className="h-3 w-3 text-primary" />
                                         )}
                                       </div>
-                                      <span className="font-body font-semibold text-foreground text-xs uppercase tracking-wider">
+                                      <span className="font-body font-semibold text-foreground text-[10px] uppercase tracking-wider">
                                         {leg.type === "departure" ? "Departure" : "Return"}
                                       </span>
                                     </div>
                                     {leg.date && (
-                                      <span className="text-[11px] text-muted-foreground font-body bg-muted/60 px-2 py-0.5 rounded-full">
+                                      <span className="text-[10px] text-muted-foreground font-body bg-muted/60 px-1.5 py-0.5 rounded-full">
                                         {leg.date}
                                       </span>
                                     )}
