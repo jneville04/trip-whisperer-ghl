@@ -2284,7 +2284,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       </div>
                     )}
                     {terms.showLiability !== false && terms.liability && (
-                      <div className="bg-background rounded-2xl border border-border/50 p-6 shadow-[0_14px_30px_-28px_hsl(var(--foreground)/0.8)]">
+                      <div className="bg-background rounded-2xl border-2 border-border p-6 shadow-[0_8px_24px_-12px_hsl(var(--foreground)/0.1)]">
                         <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">
                           Liability
                         </p>
