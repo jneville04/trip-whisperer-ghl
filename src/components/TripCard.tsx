@@ -203,6 +203,20 @@ export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLi
               <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDuplicate(); }}>
                 <Copy className="h-3.5 w-3.5 mr-2" /> Copy
               </DropdownMenuItem>
+              {trip.status === "approved" && onReopen && (
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onReopen(); }}>
+                  <Calendar className="h-3.5 w-3.5 mr-2" /> Reopen for Editing
+                </DropdownMenuItem>
+              )}
+              {isArchived && onRestore ? (
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onRestore(); }}>
+                  <MapPin className="h-3.5 w-3.5 mr-2" /> Restore
+                </DropdownMenuItem>
+              ) : onArchive ? (
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onArchive(); }}>
+                  <Clock className="h-3.5 w-3.5 mr-2" /> Archive
+                </DropdownMenuItem>
+              ) : null}
               <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={(e) => { e.stopPropagation(); onDelete(); }}>
                 <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
               </DropdownMenuItem>
