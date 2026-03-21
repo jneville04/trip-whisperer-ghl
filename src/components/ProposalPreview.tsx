@@ -1379,7 +1379,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               {highlights.length > 0 && (
                                 <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3">
                                   {highlights.slice(0, 4).map((h, hi) => (
-                                    <span key={hi} className="flex items-center gap-1.5 text-sm font-body text-foreground">
+                                    <span key={hi} className="flex items-center gap-1.5 text-[15px] font-body text-foreground">
                                       <Sparkles className="h-3 w-3 text-accent shrink-0" /> {h}
                                     </span>
                                   ))}
