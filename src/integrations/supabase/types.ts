@@ -423,6 +423,7 @@ export type Database = {
       }
       trips: {
         Row: {
+          archived_at: string | null
           created_at: string | null
           current_occupancy: number | null
           draft_data: Json | null
@@ -435,6 +436,7 @@ export type Database = {
           trip_type: string | null
         }
         Insert: {
+          archived_at?: string | null
           created_at?: string | null
           current_occupancy?: number | null
           draft_data?: Json | null
@@ -447,6 +449,7 @@ export type Database = {
           trip_type?: string | null
         }
         Update: {
+          archived_at?: string | null
           created_at?: string | null
           current_occupancy?: number | null
           draft_data?: Json | null
