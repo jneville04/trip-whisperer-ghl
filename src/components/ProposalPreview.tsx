@@ -2831,40 +2831,46 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
       {/* Travel Advisor Footer — for proposal mode, rendered after pricing summary */}
       {!isGroupBooking && agent.name && (
-        <footer className="py-16 px-6 border-t border-border/50 bg-card">
+        <footer className="py-20 px-6 border-t border-border/30">
           <div className="max-w-3xl mx-auto text-center">
-            <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+            <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-6">
               {ct.agent?.subtitle || "Your Travel Advisor"}
             </p>
-            <div className="flex flex-col items-center gap-4 mb-6">
+            <div className="flex flex-col items-center gap-5 mb-8">
               {agent.photoUrl && (
                 <img
                   src={agent.photoUrl}
                   alt={agent.name}
-                  className="w-20 h-20 rounded-full object-cover border-2 border-primary/20"
+                  className="w-24 h-24 rounded-full object-cover border-3 border-primary/15 shadow-md"
                 />
               )}
               <div>
                 <h3 className="font-display text-2xl font-bold text-foreground">{agent.name}</h3>
-                <p className="text-muted-foreground font-body mt-0.5">{agent.title}</p>
-                <p className="text-sm text-muted-foreground font-body">{agent.agencyName}</p>
+                {agent.title && <p className="text-muted-foreground font-body mt-1">{agent.title}</p>}
+                {agent.agencyName && <p className="text-sm text-muted-foreground/80 font-body mt-0.5">{agent.agencyName}</p>}
               </div>
             </div>
-            <div className="flex items-center justify-center gap-6 text-sm font-body text-muted-foreground flex-wrap">
+            <div className="flex items-center justify-center gap-8 text-sm font-body text-muted-foreground flex-wrap">
               {agent.phone && (
                 <a
                   href={`tel:${agent.phone.replace(/[^\d+]/g, "")}`}
-                  className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                  className="flex items-center gap-2 hover:text-primary transition-colors"
                 >
-                  <Phone className="h-4 w-4" /> {agent.phone}
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Phone className="h-3.5 w-3.5 text-primary" />
+                  </div>
+                  {agent.phone}
                 </a>
               )}
               {agent.email && (
                 <a
                   href={`mailto:${agent.email}`}
-                  className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                  className="flex items-center gap-2 hover:text-primary transition-colors"
                 >
-                  <Mail className="h-4 w-4" /> {agent.email}
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Mail className="h-3.5 w-3.5 text-primary" />
+                  </div>
+                  {agent.email}
                 </a>
               )}
               {agent.website && (
@@ -2872,14 +2878,18 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   href={agent.website.startsWith("http") ? agent.website : `https://${agent.website}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                  className="flex items-center gap-2 hover:text-primary transition-colors"
                 >
-                  <Globe className="h-4 w-4" /> {agent.website}
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Globe className="h-3.5 w-3.5 text-primary" />
+                  </div>
+                  {agent.website}
                 </a>
               )}
             </div>
-            <p className="text-xs text-muted-foreground/60 mt-10 font-body">
-              © 2026 {agent.agencyName} · All prices in USD · Subject to availability
+            <div className="w-12 h-[1px] bg-border/50 mx-auto mt-12 mb-4" />
+            <p className="text-xs text-muted-foreground/50 font-body">
+              © {new Date().getFullYear()} {agent.agencyName} · All prices in USD · Subject to availability
             </p>
           </div>
         </footer>
