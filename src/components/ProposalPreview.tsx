@@ -2391,7 +2391,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
       {/* PROPOSAL SELECTION SUMMARY — only for Proposal type */}
       {!isGroupBooking && (
-        <section id="pricing" className="py-20 bg-card border-t border-border/50">
+        <section id="pricing" className="py-24 bg-muted/20 border-t border-border/30">
           <div className="max-w-3xl mx-auto px-6">
             <motion.div
               variants={fadeUp}
@@ -2399,10 +2399,11 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               whileInView="visible"
               viewport={{ once: true }}
               custom={0}
-              className="text-center mb-10"
+              className="text-center mb-12"
             >
-              <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Investment</p>
-              <h2 className="font-display text-4xl font-bold text-foreground">Trip Pricing</h2>
+              <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">Investment</p>
+              <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">Trip Pricing</h2>
+              <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
             </motion.div>
 
             {/* Pricing Options Cards — large & prominent */}
