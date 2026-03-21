@@ -80,7 +80,7 @@ Deno.serve(async (req) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: `${appName} <noreply@notify.journeyswithjoi.com>`,
+          from: `${appName} <updates@updates.journeyswithjoi.com>`,
           to: [agentEmail],
           subject: `Welcome to ${appName} — Your Account is Approved`,
           html,

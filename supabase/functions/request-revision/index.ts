@@ -57,6 +57,7 @@ Deno.serve(async (req) => {
 
     // 2. Send agent email notification via Resend
     const resendKey = Deno.env.get("RESEND_SECRET_API");
+    console.log("Email check:", { hasResendKey: !!resendKey, agentEmail: agentEmail || "none" });
     if (resendKey && agentEmail) {
       try {
         const selectionsText = currentSelections
@@ -94,19 +95,21 @@ Deno.serve(async (req) => {
           </div>
         `;
 
-        await fetch("https://api.resend.com/emails", {
+        const resendRes = await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: {
             "Authorization": `Bearer ${resendKey}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "noreply@notify.journeyswithjoi.com",
+            from: "Updates @ Journeys with Joi <updates@updates.journeyswithjoi.com>",
             to: [agentEmail],
             subject: `Revision Requested: ${tripName}`,
             html: emailHtml,
           }),
         });
+        const resendBody = await resendRes.text();
+        console.log("Resend response:", { status: resendRes.status, body: resendBody });
       } catch (emailErr) {
         console.error("Failed to send agent email:", emailErr);
       }

@@ -109,7 +109,7 @@ Deno.serve(async (req) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from: `${appName} <noreply@notify.journeyswithjoi.com>`,
+            from: `${appName} <updates@updates.journeyswithjoi.com>`,
             to: [adminEmail],
             subject: `New Agent Signup: ${displayName} (${agentEmail})`,
             html,
