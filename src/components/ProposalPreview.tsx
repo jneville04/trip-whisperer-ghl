@@ -2518,19 +2518,29 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                   );
                 }
 
-                // Calculated / sum mode — compute from selections
-                const selectedFlightPrice = selectedFlight
-                  ? parseFloat(flightOptions.find((o) => o.id === selectedFlight)?.price || "0")
-                  : 0;
-                const selectedAccPrice = effectiveSelectedAccommodation
-                  ? parseFloat(accommodations.find((a) => a.id === effectiveSelectedAccommodation)?.price || "0")
-                  : 0;
-                const selectedCruisePrice = selectedCruise
-                  ? parseFloat(cruiseShips.find((s) => s.id === selectedCruise)?.price || "0")
-                  : 0;
-                const selectedBusPrice = selectedBusTrip
-                  ? parseFloat(busTrips.find((b) => b.id === selectedBusTrip)?.price || "0")
-                  : 0;
+                // Calculated / sum mode — compute from included + selected
+                // Base: auto-included single items (always counted)
+                const getPrice = (items: { id: string; price?: string }[], id: string) =>
+                  parseFloat(items.find(i => i.id === id)?.price?.replace(/[^0-9.-]/g, "") || "0");
+
+                let baseTotal = 0;
+                let selectedTotal = 0;
+                const pendingSections: string[] = [];
+
+                for (const sec of sectionRegistry) {
+                  if (!sec.visible || sec.items.length === 0) continue;
+                  const isChoice = !isGroupBooking && sec.items.length >= 2;
+                  const isSingle = sec.items.length === 1;
+
+                  if (isSingle) {
+                    baseTotal += getPrice(sec.items, sec.items[0].id);
+                  } else if (isChoice && sec.selectedId) {
+                    selectedTotal += getPrice(sec.items, sec.selectedId);
+                  } else if (isChoice) {
+                    pendingSections.push(sec.label);
+                  }
+                }
+
                 const pricingLinesTotal = data.pricing.reduce(
                   (sum, line) => sum + (parseFloat(line.amount.replace(/[^0-9.-]/g, "")) || 0),
                   0,
@@ -2542,27 +2552,37 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                         ?.totalPrice?.replace(/[^0-9.-]/g, "") || "0",
                     )
                   : 0;
-                const total =
-                  selectedFlightPrice +
-                  selectedAccPrice +
-                  selectedCruisePrice +
-                  selectedBusPrice +
-                  pricingLinesTotal +
-                  selectedOptionPrice;
-                if (total > 0) {
+
+                const currentSubtotal = baseTotal + selectedTotal + pricingLinesTotal + selectedOptionPrice;
+                const hasPendingSelections = pendingSections.length > 0;
+
+                if (currentSubtotal > 0 || hasPendingSelections) {
+                  const currSymbol = financials.currency !== "USD" ? financials.currency + " " : "$";
                   return (
-                    <div className="pt-4 border-t-2 border-primary/30 mb-6 space-y-2">
+                    <div className="pt-4 border-t-2 border-primary/30 mb-6 space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="font-display text-xl font-bold text-foreground">Estimated Total</span>
+                        <span className="font-display text-xl font-bold text-foreground">
+                          {hasPendingSelections ? "Current Subtotal" : "Estimated Total"}
+                        </span>
                         <span className="font-display text-2xl font-bold text-primary">
-                          ${total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          {currSymbol}{currentSubtotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
                       </div>
+                      {hasPendingSelections && (
+                        <div className="bg-accent/10 border border-accent/30 rounded-lg px-4 py-2.5">
+                          <p className="text-xs font-semibold text-accent font-body">
+                            Pending selections: {pendingSections.join(", ")}
+                          </p>
+                          <p className="text-[11px] text-muted-foreground font-body mt-0.5">
+                            Total will update as you make your selections above.
+                          </p>
+                        </div>
+                      )}
                       {finDeposit > 0 && (
                         <div className="flex justify-between items-center">
                           <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
                           <span className="font-display text-lg font-bold text-accent">
-                            {financials.currency !== "USD" ? financials.currency + " " : "$"}{finDeposit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            {currSymbol}{finDeposit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </span>
                         </div>
                       )}
