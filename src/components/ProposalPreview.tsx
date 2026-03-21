@@ -1969,7 +1969,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               </div>
                             )}
                             {(trip.price || busIsChoice) && (
-                              <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
+                              <div className="mt-4 pt-4 border-t-2 border-border flex items-center justify-between">
                                 {trip.price && (
                                   <span className="font-display text-xl font-bold text-foreground">${trip.price}</span>
                                 )}
