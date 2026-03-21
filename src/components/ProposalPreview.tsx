@@ -158,7 +158,7 @@ function ItinerarySection({
 
   return (
     <section id="itinerary" className="py-20 lg:py-24 border-t border-border/30 bg-muted/20">
-      <div className="max-w-[1140px] mx-auto px-6">
+      <div className="max-w-[1120px] mx-auto px-6">
         <motion.div
           variants={fadeUp}
           initial="hidden"
@@ -618,7 +618,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
       {/* STICKY HEADER NAV */}
       <nav className="sticky top-0 z-[90] border-b border-border bg-background shadow-[0_14px_26px_-18px_hsl(var(--foreground)/0.65)]">
-        <div className="max-w-[1140px] mx-auto px-4 sm:px-6 flex items-center gap-3 h-14">
+        <div className="max-w-[1120px] mx-auto px-4 sm:px-6 flex items-center gap-3 h-14">
           <div className="flex items-center gap-3 min-w-0 shrink-0 pr-3 border-r border-border/70">
             {brandData.logoUrl && (
               <img
@@ -992,7 +992,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             if (flightOptions.length === 0) return null;
             return (
               <section key="flights" id="flights" className="py-20 lg:py-24 border-t border-border/30 bg-muted/20">
-                <div className="max-w-[1140px] mx-auto px-6">
+                <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
@@ -1204,7 +1204,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             if (accommodations.length === 0) return null;
             return (
               <section key="accommodations" id="accommodations" className="py-20 lg:py-24 border-t border-border/30 bg-background">
-                <div className="max-w-[1140px] mx-auto px-6">
+                <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
@@ -1436,7 +1436,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             if (cruiseShips.length === 0) return null;
             return (
               <section key="cruiseShips" id="cruiseShips" className="py-20 lg:py-24 border-t border-border/30 bg-muted/20">
-                <div className="max-w-[1140px] mx-auto px-6">
+                <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
@@ -1672,7 +1672,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             if (busTrips.length === 0) return null;
             return (
               <section key="busTrips" id="busTrips" className="py-20 lg:py-24 border-t border-border/30 bg-background">
-                <div className="max-w-[1140px] mx-auto px-6">
+                <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
@@ -2009,7 +2009,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             if (data.inclusions.filter(Boolean).length === 0) return null;
             return (
               <section key="inclusions" id="inclusions" className="py-20 lg:py-24 border-t border-border/30 bg-muted/20">
-                <div className="max-w-[1140px] mx-auto px-6">
+                <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
@@ -2051,7 +2051,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             if (data.pricing.length === 0 && pricingOptions.length === 0) return null;
             return (
               <section key="pricing" id="pricing" className="py-20 lg:py-24 bg-card">
-                <div className="max-w-[1140px] mx-auto px-6">
+                <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
@@ -2199,7 +2199,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             if (!hasTerms) return null;
             return (
               <section key="terms" id="terms" className="py-20 lg:py-24 border-t border-border/30 bg-muted/15">
-                <div className="max-w-[1140px] mx-auto px-6">
+                <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
