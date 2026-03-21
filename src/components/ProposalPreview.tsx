@@ -1544,7 +1544,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                         <img src={img.src} alt={img.alt || ""} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
                                       </div>
                                     ))}
-                                    {allShipImages.length === 2 && <div className="aspect-[16/10] rounded-xl border border-dashed border-border/70 bg-muted/40" />}
+                                    {allShipImages.length === 2 && <div className="aspect-[16/10] rounded-xl border border-dashed border-border bg-muted/50" />}
                                   </div>
                                 )}
                               </div>
