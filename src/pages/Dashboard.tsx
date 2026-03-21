@@ -45,6 +45,7 @@ export default function Dashboard() {
     const { data, error } = await supabase
       .from("trips")
       .select("*")
+      .is("archived_at", null)
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -95,6 +96,30 @@ export default function Dashboard() {
     }
   };
 
+  const archiveTrip = async (id: string) => {
+    const { error } = await supabase
+      .from("trips")
+      .update({ archived_at: new Date().toISOString() } as any)
+      .eq("id", id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Trip archived" });
+      setTrips((prev) => prev.filter((t) => t.id !== id));
+    }
+  };
+
+  const reopenTrip = async (id: string) => {
+    if (!confirm("This will reopen the proposal for editing. Approval history is preserved. Continue?")) return;
+    const { error } = await supabase.from("trips").update({ status: "reopened" }).eq("id", id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Proposal reopened for editing" });
+      setTrips((prev) => prev.map((t) => t.id === id ? { ...t, status: "reopened" } : t));
+    }
+  };
+
   const copyShareLink = (slug: string | null) => {
     if (!slug) return;
     const url = `${window.location.origin}/view/${slug}`;
@@ -128,6 +153,8 @@ export default function Dashboard() {
                 onDuplicate={() => setDupModal({ open: true, trip })}
                 onDelete={() => deleteTrip(trip.id)}
                 onCopyLink={() => copyShareLink(trip.public_slug)}
+                onArchive={() => archiveTrip(trip.id)}
+                onReopen={() => reopenTrip(trip.id)}
               />
             ))}
           </div>
