@@ -88,6 +88,7 @@ Deno.serve(async (req) => {
           const webhookPayload = {
             trip_name: tripName,
             total_price: totalPrice || 0,
+            deposit_amount: depositAmount || 0,
             selection_summary: selectionSummary || "",
             snapshot_url: snapshotUrl,
             snapshot_id: snapshot?.id,
