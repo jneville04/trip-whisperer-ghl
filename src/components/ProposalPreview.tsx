@@ -3228,7 +3228,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   </div>
                   <h2 className="font-display text-2xl font-bold text-foreground mb-2">Revision Request Sent!</h2>
                   <p className="text-sm text-muted-foreground font-body mb-6">Your revision request has been sent to your travel advisor. They will update the proposal and follow up with you shortly.</p>
-                  <Button variant="travel-ghost" onClick={() => { setShowRevisionModal(false); setRevisionSent(false); setRevisionForm({ name: "", email: "", message: "" }); setSelectedRevCategories([]); }}>
+                  <Button variant="travel-ghost" onClick={() => { setShowRevisionModal(false); setRevisionSent(false); setRevisionForm({ name: travelerName, email: travelerEmail, message: "" }); setSelectedRevCategories([]); }}>
                     Close
                   </Button>
                 </div>
