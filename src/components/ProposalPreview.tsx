@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { format, parse } from "date-fns";
@@ -28,6 +28,10 @@ import {
   Anchor,
   Bus,
   ChevronDown,
+  HelpCircle,
+  Send,
+  Loader2,
+  X,
 } from "lucide-react";
 import Lightbox from "@/components/Lightbox";
 import { parseAirportValue } from "@/components/AirportAutocomplete";
@@ -332,6 +336,13 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   const [approving, setApproving] = useState(false);
   const [approveSuccess, setApproveSuccess] = useState(false);
   const [validationError, setValidationError] = useState<string>("");
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showAskQuestion, setShowAskQuestion] = useState(false);
+  const [questionForm, setQuestionForm] = useState({ name: "", email: "", message: "" });
+  const [questionSending, setQuestionSending] = useState(false);
+  const [questionSent, setQuestionSent] = useState(false);
+  const [isReadOnly, setIsReadOnly] = useState(false);
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const vis = data.sectionVisibility || {
     hero: true,
@@ -592,7 +603,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
               </button>
             ))}
           </div>
-          {isGroupBooking && (
+          {isGroupBooking ? (
             <Button
               variant="travel"
               size="sm"
@@ -604,7 +615,18 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
             >
               Book Now
             </Button>
-          )}
+          ) : !isEditor && !isReadOnly && !approveSuccess ? (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="travel-ghost"
+                size="sm"
+                className="text-xs"
+                onClick={() => setShowAskQuestion(true)}
+              >
+                <HelpCircle className="h-3.5 w-3.5 mr-1" /> Ask a Question
+              </Button>
+            </div>
+          ) : null}
         </div>
       </nav>
 
@@ -2608,22 +2630,6 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
 
               {financials.paymentNotes && <p className="text-xs text-muted-foreground mb-6 font-body">{financials.paymentNotes}</p>}
 
-              {/* Terms & Conditions checkbox */}
-              {!isEditor && tripId && (
-                <div className="flex items-start gap-3 py-4">
-                  <input
-                    type="checkbox"
-                    id="terms-accept"
-                    checked={termsAccepted}
-                    onChange={(e) => setTermsAccepted(e.target.checked)}
-                    className="mt-1 h-4 w-4 rounded border-border accent-primary cursor-pointer"
-                  />
-                  <label htmlFor="terms-accept" className="text-sm text-muted-foreground font-body cursor-pointer leading-relaxed">
-                    I have read and agree to the terms and conditions outlined in this proposal. I understand the payment terms and cancellation policy.
-                  </label>
-                </div>
-              )}
-
               {/* Validation error */}
               {validationError && (
                 <div className="bg-destructive/10 border border-destructive/30 rounded-lg px-4 py-3 mb-4 text-sm text-destructive font-body text-center">
@@ -2631,110 +2637,83 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                 </div>
               )}
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                {!isEditor && tripId ? (
-                  !allSelectionsComplete ? (
-                    <Button
-                      variant="travel"
-                      size="lg"
-                      className="text-lg px-10 py-6 h-auto"
-                      onClick={() => {
-                        const firstMissing = requiredChoiceSections.find(s => !s.selectedId);
-                        if (firstMissing) {
-                          const el = document.getElementById(firstMissing.key);
-                          if (el) {
-                            el.scrollIntoView({ behavior: "smooth", block: "start" });
-                            el.classList.add("ring-2", "ring-accent/50");
-                            setTimeout(() => el.classList.remove("ring-2", "ring-accent/50"), 3000);
+              {!isReadOnly && (
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                  {!isEditor && tripId ? (
+                    !allSelectionsComplete ? (
+                      <Button
+                        variant="travel"
+                        size="lg"
+                        className="text-lg px-10 py-6 h-auto"
+                        onClick={() => {
+                          const firstMissing = requiredChoiceSections.find(s => !s.selectedId);
+                          if (firstMissing) {
+                            const el = document.getElementById(firstMissing.key);
+                            if (el) {
+                              el.scrollIntoView({ behavior: "smooth", block: "start" });
+                              el.classList.add("ring-2", "ring-primary/40", "ring-offset-2");
+                              setTimeout(() => el.classList.remove("ring-2", "ring-primary/40", "ring-offset-2"), 3000);
+                            }
+                            setValidationError(`Please select an option for ${firstMissing.label} before continuing.`);
                           }
-                          setValidationError(`Please select an option for ${firstMissing.label} before continuing.`);
-                        }
-                      }}
-                    >
-                      <ArrowRight className="h-5 w-5 mr-2" /> Complete Selections
-                    </Button>
+                        }}
+                      >
+                        <ArrowRight className="h-5 w-5 mr-2" /> Complete Selections
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="travel"
+                        size="lg"
+                        className="text-lg px-10 py-6 h-auto"
+                        onClick={() => {
+                          // Final validation before showing review
+                          const missing = requiredChoiceSections.filter(s => !s.selectedId).map(s => s.label);
+                          if (missing.length > 0) {
+                            setValidationError(`Please select an option for: ${missing.join(", ")}`);
+                            return;
+                          }
+                          setValidationError("");
+                          setShowReviewModal(true);
+                        }}
+                      >
+                        <CheckCircle2 className="h-5 w-5 mr-2" /> Review &amp; Approve
+                      </Button>
+                    )
                   ) : (
                     <Button
                       variant="travel"
                       size="lg"
                       className="text-lg px-10 py-6 h-auto"
-                      disabled={!termsAccepted || approving}
-                      onClick={async () => {
-                        // Final validation guard
-                        const missing = requiredChoiceSections
-                          .filter((s) => !s.selectedId)
-                          .map((s) => s.label);
-                        if (missing.length > 0) {
-                          setValidationError(`Please select an option for: ${missing.join(", ")}`);
-                          return;
-                        }
-                        setValidationError("");
-                        setApproving(true);
-                        try {
-                          // Build total from section registry
-                          let totalPrice = 0;
-                          for (const sec of sectionRegistry) {
-                            if (!sec.visible || sec.items.length === 0) continue;
-                            const effectiveId = sec.items.length === 1 ? sec.items[0].id : sec.selectedId;
-                            if (effectiveId) {
-                              const item = sec.items.find(i => i.id === effectiveId);
-                              totalPrice += parseFloat(item?.price?.replace(/[^0-9.-]/g, "") || "0");
+                      onClick={() => {
+                        if (!allSelectionsComplete) {
+                          const firstMissing = requiredChoiceSections.find(s => !s.selectedId);
+                          if (firstMissing) {
+                            const el = document.getElementById(firstMissing.key);
+                            if (el) {
+                              el.scrollIntoView({ behavior: "smooth", block: "start" });
+                              el.classList.add("ring-2", "ring-primary/40", "ring-offset-2");
+                              setTimeout(() => el.classList.remove("ring-2", "ring-primary/40", "ring-offset-2"), 3000);
                             }
+                            setValidationError(`Please select an option for ${firstMissing.label} before continuing.`);
                           }
-                          totalPrice += data.pricing.reduce((sum, l) => sum + (parseFloat(l.amount.replace(/[^0-9.-]/g, "")) || 0), 0);
-                          if (selectedPricingOption) {
-                            totalPrice += parseFloat(pricingOptions.find(p => p.id === selectedPricingOption)?.totalPrice?.replace(/[^0-9.-]/g, "") || "0");
-                          }
-
-                          const { error } = await supabase.functions.invoke("approve-trip", {
-                            body: {
-                              tripId,
-                              selectionSummary: sectionRegistry
-                                .filter(s => s.visible && s.items.length > 0)
-                                .map(s => {
-                                  const effId = s.items.length === 1 ? s.items[0].id : s.selectedId;
-                                  if (!effId) return null;
-                                  if (s.key === "flights") return `Flight: ${flightOptions.find(f => f.id === effId)?.legs?.[0]?.airline || "Selected"}`;
-                                  if (s.key === "accommodations") return `Hotel: ${accommodations.find(a => a.id === effId)?.hotelName || "Selected"}`;
-                                  if (s.key === "cruiseShips") return `Cruise: ${cruiseShips.find(c => c.id === effId)?.shipName || "Selected"}`;
-                                  if (s.key === "busTrips") return `Bus: ${busTrips.find(b => b.id === effId)?.routeName || "Selected"}`;
-                                  return null;
-                                })
-                                .filter(Boolean)
-                                .join(" | "),
-                              totalPrice,
-                            },
-                          });
-                          if (error) throw error;
-                          setApproveSuccess(true);
-                        } catch (err) {
-                          console.error("Approve failed:", err);
-                          setApproveSuccess(true);
+                        } else {
+                          setShowReviewModal(true);
                         }
-                        setApproving(false);
                       }}
                     >
-                      {approving ? (
-                        <>Processing...</>
-                      ) : (
-                        <><CheckCircle2 className="h-5 w-5 mr-2" /> Approve &amp; Secure Booking</>
-                      )}
+                      <CheckCircle2 className="h-5 w-5 mr-2" /> {allSelectionsComplete ? "Review & Approve" : "Complete Selections"}
                     </Button>
-                  )
-                ) : (
-                  <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>
-                    <CheckCircle2 className="h-5 w-5 mr-2" /> {allSelectionsComplete ? "Approve & Secure Booking" : "Complete Selections"}
+                  )}
+                  <Button
+                    variant="travel-outline"
+                    size="lg"
+                    className="text-lg px-10 py-6 h-auto"
+                    onClick={goToRevisions}
+                  >
+                    <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
                   </Button>
-                )}
-                <Button
-                  variant="travel-outline"
-                  size="lg"
-                  className="text-lg px-10 py-6 h-auto"
-                  onClick={goToRevisions}
-                >
-                  <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
-                </Button>
-              </div>
+                </div>
+              )}
               {data.validUntil && (
                 <p className="text-sm text-muted-foreground mt-4 text-center font-body">
                   This proposal is valid until {data.validUntil}
@@ -2801,7 +2780,349 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
         </footer>
       )}
 
-      {/* Full-Screen Success Overlay */}
+      {/* ═══ REVIEW & APPROVE MODAL ═══ */}
+      <AnimatePresence>
+        {showReviewModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[150] bg-black/60 backdrop-blur-sm flex items-center justify-center px-4"
+            onClick={() => setShowReviewModal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 30, scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+              className="bg-background rounded-2xl border border-border/50 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-8"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="text-center mb-6">
+                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle2 className="h-7 w-7 text-primary" />
+                </div>
+                <h2 className="font-display text-2xl font-bold text-foreground">Review Your Selections</h2>
+                <p className="text-sm text-muted-foreground font-body mt-1">Confirm everything looks good before approving.</p>
+              </div>
+
+              {/* Selection summary rows */}
+              <div className="space-y-3 mb-6">
+                {sectionRegistry.filter(s => s.visible && s.items.length > 0).map((section) => {
+                  const isChoice = !isGroupBooking && section.items.length >= 2;
+                  const isSingle = section.items.length === 1;
+                  const effectiveId = isChoice ? section.selectedId : (isSingle ? section.items[0].id : "");
+                  const selectedItem = section.items.find(i => i.id === effectiveId);
+                  const itemName = (() => {
+                    if (section.key === "flights") {
+                      const opt = flightOptions.find(o => o.id === effectiveId);
+                      const dep = opt?.legs.find(l => l.type === "departure");
+                      return dep?.airline ? `${dep.airline} — ${dep.departureAirport?.split("–")[0]?.trim()} → ${dep.arrivalAirport?.split("–")[0]?.trim()}` : "Flight";
+                    }
+                    if (section.key === "accommodations") return accommodations.find(a => a.id === effectiveId)?.hotelName || "Hotel";
+                    if (section.key === "cruiseShips") return cruiseShips.find(s => s.id === effectiveId)?.shipName || "Cruise";
+                    if (section.key === "busTrips") return busTrips.find(b => b.id === effectiveId)?.routeName || "Bus";
+                    return "Selected";
+                  })();
+                  const sectionIcon = section.key === "flights" ? <Plane className="h-4 w-4 text-primary" />
+                    : section.key === "accommodations" ? <BedDouble className="h-4 w-4 text-primary" />
+                    : section.key === "cruiseShips" ? <Ship className="h-4 w-4 text-primary" />
+                    : section.key === "busTrips" ? <Bus className="h-4 w-4 text-primary" />
+                    : null;
+
+                  return (
+                    <div key={section.key} className="flex justify-between items-center py-3 border-b border-border/30">
+                      <div className="flex items-center gap-2">
+                        {sectionIcon}
+                        <span className="font-body text-foreground font-medium">{section.label}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-foreground text-sm font-medium font-body flex items-center gap-1.5">
+                          <Check className="h-3 w-3 text-primary" />
+                          {isSingle ? "Included" : `Selected: ${itemName}`}
+                        </span>
+                        {selectedItem?.price && showItemizedPrices && (
+                          <span className="text-xs text-primary font-semibold">{fmtCurrency(selectedItem.price)}</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Pricing summary */}
+              {(() => {
+                const finTotal = parseFloat(financials.totalPrice?.replace(/[^0-9.-]/g, "") || "0");
+                const finDeposit = parseFloat(financials.depositAmount?.replace(/[^0-9.-]/g, "") || "0");
+                const currSymbol = financials.currency !== "USD" ? financials.currency + " " : "$";
+                const useFixed = financials.pricingMode === "fixed" && finTotal > 0;
+
+                let displayTotal = finTotal;
+                if (!useFixed) {
+                  let calc = 0;
+                  for (const sec of sectionRegistry) {
+                    if (!sec.visible || sec.items.length === 0) continue;
+                    const effId = sec.items.length === 1 ? sec.items[0].id : sec.selectedId;
+                    if (effId) calc += parseFloat(sec.items.find(i => i.id === effId)?.price?.replace(/[^0-9.-]/g, "") || "0");
+                  }
+                  calc += data.pricing.reduce((sum, l) => sum + (parseFloat(l.amount.replace(/[^0-9.-]/g, "")) || 0), 0);
+                  if (selectedPricingOption) calc += parseFloat(pricingOptions.find(p => p.id === selectedPricingOption)?.totalPrice?.replace(/[^0-9.-]/g, "") || "0");
+                  displayTotal = calc;
+                }
+
+                return (
+                  <div className="border-t-2 border-primary/30 pt-4 mb-6 space-y-2">
+                    {displayTotal > 0 && (
+                      <div className="flex justify-between items-center">
+                        <span className="font-display text-lg font-bold text-foreground">Total Price</span>
+                        <span className="font-display text-xl font-bold text-primary">
+                          {currSymbol}{displayTotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                    )}
+                    {finDeposit > 0 && (
+                      <div className="flex justify-between items-center">
+                        <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
+                        <span className="font-display text-base font-bold text-accent">
+                          {currSymbol}{finDeposit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </span>
+                      </div>
+                    )}
+                    {financials.depositDueDate && (
+                      <div className="flex justify-between items-center">
+                        <span className="font-body text-xs text-muted-foreground">Deposit Due By</span>
+                        <span className="font-body text-xs font-medium text-foreground">{financials.depositDueDate}</span>
+                      </div>
+                    )}
+                    {financials.finalPaymentDueDate && (
+                      <div className="flex justify-between items-center">
+                        <span className="font-body text-xs text-muted-foreground">Final Balance Due By</span>
+                        <span className="font-body text-xs font-medium text-foreground">{financials.finalPaymentDueDate}</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+
+              {/* Terms checkbox */}
+              {!isEditor && tripId && (
+                <div className="flex items-start gap-3 py-3 mb-4">
+                  <input
+                    type="checkbox"
+                    id="review-terms-accept"
+                    checked={termsAccepted}
+                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                    className="mt-1 h-4 w-4 rounded border-border accent-primary cursor-pointer"
+                  />
+                  <label htmlFor="review-terms-accept" className="text-sm text-muted-foreground font-body cursor-pointer leading-relaxed">
+                    I have read and agree to the terms and conditions outlined in this proposal.
+                  </label>
+                </div>
+              )}
+
+              <div className="flex flex-col gap-3">
+                <Button
+                  variant="travel"
+                  size="lg"
+                  className="w-full text-base py-5 h-auto"
+                  disabled={(!isEditor && tripId && !termsAccepted) || approving}
+                  onClick={async () => {
+                    // Final guard
+                    const missing = requiredChoiceSections.filter(s => !s.selectedId).map(s => s.label);
+                    if (missing.length > 0) {
+                      setValidationError(`Please select an option for: ${missing.join(", ")}`);
+                      setShowReviewModal(false);
+                      return;
+                    }
+                    setApproving(true);
+                    try {
+                      let totalPrice = 0;
+                      for (const sec of sectionRegistry) {
+                        if (!sec.visible || sec.items.length === 0) continue;
+                        const effectiveId = sec.items.length === 1 ? sec.items[0].id : sec.selectedId;
+                        if (effectiveId) {
+                          totalPrice += parseFloat(sec.items.find(i => i.id === effectiveId)?.price?.replace(/[^0-9.-]/g, "") || "0");
+                        }
+                      }
+                      totalPrice += data.pricing.reduce((sum, l) => sum + (parseFloat(l.amount.replace(/[^0-9.-]/g, "")) || 0), 0);
+                      if (selectedPricingOption) {
+                        totalPrice += parseFloat(pricingOptions.find(p => p.id === selectedPricingOption)?.totalPrice?.replace(/[^0-9.-]/g, "") || "0");
+                      }
+                      const finTotal = parseFloat(financials.totalPrice?.replace(/[^0-9.-]/g, "") || "0");
+                      const finDeposit = parseFloat(financials.depositAmount?.replace(/[^0-9.-]/g, "") || "0");
+                      const finalTotal = financials.pricingMode === "fixed" && finTotal > 0 ? finTotal : totalPrice;
+
+                      const selectionSummary = sectionRegistry
+                        .filter(s => s.visible && s.items.length > 0)
+                        .map(s => {
+                          const effId = s.items.length === 1 ? s.items[0].id : s.selectedId;
+                          if (!effId) return null;
+                          if (s.key === "flights") return `Flight: ${flightOptions.find(f => f.id === effId)?.legs?.[0]?.airline || "Selected"}`;
+                          if (s.key === "accommodations") return `Hotel: ${accommodations.find(a => a.id === effId)?.hotelName || "Selected"}`;
+                          if (s.key === "cruiseShips") return `Cruise: ${cruiseShips.find(c => c.id === effId)?.shipName || "Selected"}`;
+                          if (s.key === "busTrips") return `Bus: ${busTrips.find(b => b.id === effId)?.routeName || "Selected"}`;
+                          return null;
+                        })
+                        .filter(Boolean)
+                        .join(" | ");
+
+                      if (!isEditor && tripId) {
+                        const { error } = await supabase.functions.invoke("approve-trip", {
+                          body: {
+                            tripId,
+                            selectionSummary,
+                            totalPrice: finalTotal,
+                            depositAmount: finDeposit,
+                          },
+                        });
+                        if (error) throw error;
+                      }
+                      setShowReviewModal(false);
+                      setApproveSuccess(true);
+                      setIsReadOnly(true);
+
+                      // 3-second redirect if Accept Payments is ON
+                      if (financials.acceptPayments && financials.redirectUrl) {
+                        redirectTimerRef.current = setTimeout(() => {
+                          window.location.href = financials.redirectUrl!;
+                        }, 3000);
+                      }
+                    } catch (err) {
+                      console.error("Approve failed:", err);
+                      setShowReviewModal(false);
+                      setApproveSuccess(true);
+                      setIsReadOnly(true);
+                    }
+                    setApproving(false);
+                  }}
+                >
+                  {approving ? (
+                    <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> Processing...</>
+                  ) : (
+                    <><CheckCircle2 className="h-5 w-5 mr-2" /> Confirm Approval</>
+                  )}
+                </Button>
+                <Button
+                  variant="travel-ghost"
+                  className="w-full"
+                  onClick={() => setShowReviewModal(false)}
+                >
+                  Go Back
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ═══ ASK A QUESTION MODAL ═══ */}
+      <AnimatePresence>
+        {showAskQuestion && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[150] bg-black/60 backdrop-blur-sm flex items-center justify-center px-4"
+            onClick={() => setShowAskQuestion(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 30, scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+              className="bg-background rounded-2xl border border-border/50 shadow-2xl max-w-md w-full p-8"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {questionSent ? (
+                <div className="text-center py-6">
+                  <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <Check className="h-7 w-7 text-primary" />
+                  </div>
+                  <h2 className="font-display text-2xl font-bold text-foreground mb-2">Message Sent!</h2>
+                  <p className="text-sm text-muted-foreground font-body mb-6">Your travel advisor will get back to you shortly.</p>
+                  <Button variant="travel-ghost" onClick={() => { setShowAskQuestion(false); setQuestionSent(false); }}>
+                    Close
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h2 className="font-display text-xl font-bold text-foreground">Ask a Question</h2>
+                      <p className="text-sm text-muted-foreground font-body mt-1">We'll get back to you as soon as possible.</p>
+                    </div>
+                    <button onClick={() => setShowAskQuestion(false)} className="text-muted-foreground hover:text-foreground">
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
+                  <form
+                    className="space-y-4"
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      if (!questionForm.message.trim()) return;
+                      setQuestionSending(true);
+                      try {
+                        await supabase.functions.invoke("ghl-webhook", {
+                          body: {
+                            type: "question",
+                            payload: {
+                              ...questionForm,
+                              tripId: tripId || shareId || "",
+                              tripName: (data as any).tripName || data.destination || "",
+                              source: window.location.href,
+                            },
+                          },
+                        });
+                      } catch (err) {
+                        console.error("Question webhook failed:", err);
+                      }
+                      setQuestionSending(false);
+                      setQuestionSent(true);
+                    }}
+                  >
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Name</label>
+                      <input
+                        value={questionForm.name}
+                        onChange={e => setQuestionForm(prev => ({ ...prev, name: e.target.value }))}
+                        className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        placeholder="Your name"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Email</label>
+                      <input
+                        type="email"
+                        value={questionForm.email}
+                        onChange={e => setQuestionForm(prev => ({ ...prev, email: e.target.value }))}
+                        className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        placeholder="your@email.com"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Message *</label>
+                      <textarea
+                        value={questionForm.message}
+                        onChange={e => setQuestionForm(prev => ({ ...prev, message: e.target.value }))}
+                        rows={3}
+                        required
+                        className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        placeholder="What would you like to know?"
+                      />
+                    </div>
+                    <Button type="submit" variant="travel" className="w-full" disabled={questionSending || !questionForm.message.trim()}>
+                      {questionSending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
+                      {questionSending ? "Sending..." : "Send Message"}
+                    </Button>
+                  </form>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ═══ FULL-SCREEN SUCCESS OVERLAY ═══ */}
       {approveSuccess && (
         <div className="fixed inset-0 z-[200] bg-background flex items-center justify-center px-6">
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md">
@@ -2809,13 +3130,86 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
               <CheckCircle2 className="h-12 w-12 text-primary" />
             </div>
             <h1 className="font-display text-4xl font-bold text-foreground mb-4">Trip Approved!</h1>
-            <p className="text-muted-foreground font-body text-lg leading-relaxed mb-10">
+            <p className="text-muted-foreground font-body text-lg leading-relaxed mb-6">
               Thank you for approving your itinerary. Your travel advisor will be in touch shortly with booking confirmation and next steps.
             </p>
-            <Button variant="travel-outline" size="lg" className="text-base px-8 py-5 h-auto" disabled>
-              <ArrowRight className="h-4 w-4 mr-2" /> Download PDF (Coming Soon)
-            </Button>
+            {financials.acceptPayments && financials.redirectUrl && (
+              <p className="text-sm text-muted-foreground font-body mb-6">
+                Redirecting you to complete payment in a moment...
+              </p>
+            )}
+            <div className="flex flex-col gap-3 items-center">
+              <Button variant="travel-outline" size="lg" className="text-base px-8 py-5 h-auto" disabled>
+                <ArrowRight className="h-4 w-4 mr-2" /> Download PDF (Coming Soon)
+              </Button>
+              {financials.acceptPayments && financials.redirectUrl && (
+                <Button
+                  variant="travel"
+                  size="sm"
+                  className="text-sm"
+                  onClick={() => {
+                    if (redirectTimerRef.current) clearTimeout(redirectTimerRef.current);
+                    window.location.href = financials.redirectUrl!;
+                  }}
+                >
+                  Go to Payment Now
+                </Button>
+              )}
+            </div>
           </motion.div>
+        </div>
+      )}
+
+      {/* ═══ FLOATING HUB ═══ */}
+      {!isGroupBooking && !approveSuccess && !isReadOnly && !isEditor && (
+        <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-end gap-3">
+          <Button
+            variant="travel-ghost"
+            size="sm"
+            className="rounded-full shadow-lg bg-background border border-border/50 hover:bg-muted text-sm px-4"
+            onClick={() => setShowAskQuestion(true)}
+          >
+            <HelpCircle className="h-4 w-4 mr-1.5" /> Ask a Question
+          </Button>
+          {requiredChoiceSections.length === 0 ? (
+            <Button
+              variant="travel"
+              size="lg"
+              className="rounded-full shadow-xl text-sm px-6 py-3 h-auto"
+              onClick={() => setShowReviewModal(true)}
+            >
+              <CheckCircle2 className="h-4 w-4 mr-1.5" /> Review &amp; Approve
+            </Button>
+          ) : !allSelectionsComplete ? (
+            <Button
+              variant="travel"
+              size="lg"
+              className="rounded-full shadow-xl text-sm px-6 py-3 h-auto"
+              onClick={() => {
+                const firstMissing = requiredChoiceSections.find(s => !s.selectedId);
+                if (firstMissing) {
+                  const el = document.getElementById(firstMissing.key);
+                  if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "start" });
+                    el.classList.add("ring-2", "ring-primary/40", "ring-offset-2");
+                    setTimeout(() => el.classList.remove("ring-2", "ring-primary/40", "ring-offset-2"), 3000);
+                  }
+                  setValidationError(`Please select an option for ${firstMissing.label} before continuing.`);
+                }
+              }}
+            >
+              <ArrowRight className="h-4 w-4 mr-1.5" /> Complete Selections
+            </Button>
+          ) : (
+            <Button
+              variant="travel"
+              size="lg"
+              className="rounded-full shadow-xl text-sm px-6 py-3 h-auto"
+              onClick={() => setShowReviewModal(true)}
+            >
+              <CheckCircle2 className="h-4 w-4 mr-1.5" /> Review &amp; Approve
+            </Button>
+          )}
         </div>
       )}
 
