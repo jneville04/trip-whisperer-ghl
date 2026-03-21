@@ -414,6 +414,20 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   // Universal validation: all required choice sections must have a selection
   const missingSelections = requiredChoiceSections.filter((s) => !s.selectedId);
   const allSelectionsComplete = missingSelections.length === 0;
+
+  // ── Auto-clear / update validation error when selections change ──
+  useEffect(() => {
+    if (!validationError) return;
+    if (allSelectionsComplete) {
+      setValidationError("");
+    } else {
+      // Update to show the NEXT missing section instead of stale one
+      const firstMissing = requiredChoiceSections.find(s => !s.selectedId);
+      if (firstMissing) {
+        setValidationError(`Please select an option for ${firstMissing.label} before continuing.`);
+      }
+    }
+  }, [selectedFlight, selectedAccommodation, selectedCruise, selectedBusTrip, allSelectionsComplete]);
   const agent = data.agent || {
     name: "",
     title: "",
@@ -2915,7 +2929,28 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                     className="mt-1 h-4 w-4 rounded border-border accent-primary cursor-pointer"
                   />
                   <label htmlFor="review-terms-accept" className="text-sm text-muted-foreground font-body cursor-pointer leading-relaxed">
-                    I have read and agree to the terms and conditions outlined in this proposal.
+                    I agree to the{" "}
+                    <button
+                      type="button"
+                      className="text-primary underline hover:text-primary/80 font-semibold"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Try terms_url from financials first, then scroll to terms section
+                        const termsUrl = (financials as any).termsUrl;
+                        if (termsUrl) {
+                          window.open(termsUrl, "_blank", "noopener,noreferrer");
+                        } else {
+                          // Scroll to the terms section on the proposal
+                          setShowReviewModal(false);
+                          setTimeout(() => {
+                            document.getElementById("terms")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                          }, 300);
+                        }
+                      }}
+                    >
+                      Terms &amp; Conditions
+                    </button>
                   </label>
                 </div>
               )}
@@ -2952,18 +2987,31 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                       const finDeposit = parseFloat(financials.depositAmount?.replace(/[^0-9.-]/g, "") || "0");
                       const finalTotal = financials.pricingMode === "fixed" && finTotal > 0 ? finTotal : totalPrice;
 
-                      const selectionSummary = sectionRegistry
+                      // Build detailed selection data for webhook
+                      const sectionDetails = sectionRegistry
                         .filter(s => s.visible && s.items.length > 0)
                         .map(s => {
                           const effId = s.items.length === 1 ? s.items[0].id : s.selectedId;
                           if (!effId) return null;
-                          if (s.key === "flights") return `Flight: ${flightOptions.find(f => f.id === effId)?.legs?.[0]?.airline || "Selected"}`;
-                          if (s.key === "accommodations") return `Hotel: ${accommodations.find(a => a.id === effId)?.hotelName || "Selected"}`;
-                          if (s.key === "cruiseShips") return `Cruise: ${cruiseShips.find(c => c.id === effId)?.shipName || "Selected"}`;
-                          if (s.key === "busTrips") return `Bus: ${busTrips.find(b => b.id === effId)?.routeName || "Selected"}`;
-                          return null;
+                          const item = s.items.find(i => i.id === effId);
+                          let name = "Selected";
+                          if (s.key === "flights") name = flightOptions.find(f => f.id === effId)?.legs?.[0]?.airline || "Flight";
+                          if (s.key === "accommodations") name = accommodations.find(a => a.id === effId)?.hotelName || "Hotel";
+                          if (s.key === "cruiseShips") name = cruiseShips.find(c => c.id === effId)?.shipName || "Cruise";
+                          if (s.key === "busTrips") name = busTrips.find(b => b.id === effId)?.routeName || "Bus";
+                          return {
+                            section: s.label,
+                            sectionKey: s.key,
+                            selectedName: name,
+                            selectedId: effId,
+                            price: item?.price || null,
+                            type: s.items.length === 1 ? "included" : "selected",
+                          };
                         })
-                        .filter(Boolean)
+                        .filter(Boolean);
+
+                      const selectionSummary = sectionDetails
+                        .map(d => `${d!.section}: ${d!.selectedName}`)
                         .join(" | ");
 
                       if (!isEditor && tripId) {
@@ -2973,6 +3021,10 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                             selectionSummary,
                             totalPrice: finalTotal,
                             depositAmount: finDeposit,
+                            sectionDetails,
+                            currency: financials.currency || "USD",
+                            pricingMode: financials.pricingMode || "fixed",
+                            approvedAt: new Date().toISOString(),
                           },
                         });
                         if (error) throw error;

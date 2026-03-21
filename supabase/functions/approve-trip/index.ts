@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { tripId, selectionSummary, totalPrice, depositAmount } = await req.json();
+    const { tripId, selectionSummary, totalPrice, depositAmount, sectionDetails, currency, pricingMode, approvedAt } = await req.json();
 
     if (!tripId) {
       return new Response(JSON.stringify({ error: "Missing tripId" }), {
@@ -89,9 +89,14 @@ Deno.serve(async (req) => {
             trip_name: tripName,
             total_price: totalPrice || 0,
             deposit_amount: depositAmount || 0,
+            currency: currency || "USD",
+            pricing_mode: pricingMode || "fixed",
             selection_summary: selectionSummary || "",
+            section_details: sectionDetails || [],
             snapshot_url: snapshotUrl,
             snapshot_id: snapshot?.id,
+            status: "approved",
+            approved_at: approvedAt || new Date().toISOString(),
             timestamp: new Date().toISOString(),
           };
 
@@ -128,7 +133,12 @@ Deno.serve(async (req) => {
             tripId,
             tripName,
             totalPrice: totalPrice || 0,
+            depositAmount: depositAmount || 0,
+            currency: currency || "USD",
             selectionSummary: selectionSummary || "",
+            sectionDetails: sectionDetails || [],
+            status: "approved",
+            approvedAt: approvedAt || new Date().toISOString(),
             timestamp: new Date().toISOString(),
           }),
         });
