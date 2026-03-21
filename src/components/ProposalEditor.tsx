@@ -24,8 +24,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import RichTextEditor from "@/components/RichTextEditor";
 import AgentPricingFields from "@/components/AgentPricingFields";
-import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, BusStop, SectionKey, CheckoutSettings, PaymentOption, LocationAddress, PricingOption, SectionTitles, PricingDisplayMode, FinancialsSettings } from "@/types/proposal";
+import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, BusStop, SectionKey, CheckoutSettings, PaymentOption, LocationAddress, PricingOption, SectionTitles, PricingDisplayMode, FinancialsSettings, SectionSelections, AgentPricing } from "@/types/proposal";
 import { createActivity, createDay, createPricingLine, createPricingOption, createFlightLeg, createFlightOption, createAccommodation, createCruiseShip, createBusTrip, createBusStop, defaultSectionOrder, createDefaultCheckout, createDefaultFinancials } from "@/types/proposal";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { normalizeHexInput } from "@/lib/brand";
 import { useAgentSettings } from "@/hooks/useAgentSettings";
 import { useAppSettings } from "@/hooks/useAppSettings";
@@ -251,35 +252,19 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
   return <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1 block font-body">{children}</label>;
 }
 
-// Pricing display mode selector for option sections
-function PricingDisplaySelect({ value, onChange, showPerNight }: { value?: PricingDisplayMode; onChange: (v: PricingDisplayMode) => void; showPerNight?: boolean }) {
-  const mode = value || "total";
-  const options: { value: PricingDisplayMode; label: string }[] = [
-    { value: "hide", label: "Hide" },
-    { value: "total", label: "Total" },
-    { value: "per_person", label: "Per Person" },
-  ];
-  if (showPerNight) options.push({ value: "per_night", label: "Per Night" });
+// Agent Financials Accordion - wraps cost/commission/markup in a collapsed section
+function AgentFinancialsAccordion({ pricing, onChange }: { pricing: AgentPricing | undefined; onChange: (ap: AgentPricing) => void }) {
   return (
-    <div>
-      <FieldLabel>Client Price Display</FieldLabel>
-      <div className="flex gap-1 flex-wrap">
-        {options.map((opt) => (
-          <button
-            key={opt.value}
-            type="button"
-            onClick={() => onChange(opt.value)}
-            className={`px-2 py-1 text-[10px] rounded-md border font-body font-medium transition-colors ${
-              mode === opt.value
-                ? "bg-primary text-primary-foreground border-primary"
-                : "bg-background text-muted-foreground border-border hover:bg-muted"
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
-    </div>
+    <Accordion type="single" collapsible className="mt-2">
+      <AccordionItem value="agent-financials" className="border-0">
+        <AccordionTrigger className="py-2 px-3 rounded-lg border border-dashed border-accent/40 bg-accent/5 hover:no-underline text-[10px] font-semibold uppercase tracking-wider text-accent font-body">
+          🔒 Agent Financials
+        </AccordionTrigger>
+        <AccordionContent className="pt-0 pb-0">
+          <AgentPricingFields pricing={pricing} onChange={onChange} />
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 }
 
@@ -972,7 +957,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     <div>
                                       <FieldLabel>Price (Proposal Option)</FieldLabel>
                                       <div className="relative w-32">
-                                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
+                                         <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
                                         <Input value={opt.price || ""} onChange={(e) => {
                                           const opts = [...flightOptions];
                                           opts[oi] = { ...opts[oi], price: e.target.value };
@@ -980,14 +965,10 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                         }} placeholder="0.00" className="h-7 text-xs pl-5" />
                                       </div>
                                     </div>
-                                    <PricingDisplaySelect
-                                      value={opt.pricingDisplay}
-                                      onChange={(v) => { const opts = [...flightOptions]; opts[oi] = { ...opts[oi], pricingDisplay: v }; update("flightOptions", opts); }}
-                                    />
                                   </div>
                                 </div>
                               )}
-                              <AgentPricingFields
+                              <AgentFinancialsAccordion
                                 pricing={opt.agentPricing}
                                 onChange={(ap) => { const opts = [...flightOptions]; opts[oi] = { ...opts[oi], agentPricing: ap }; update("flightOptions", opts); }}
                               />
@@ -1006,39 +987,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
                     return (
                       <CollapsibleSection title={sectionTitles.accommodations} sectionKey="accommodations" visible={vis.accommodations} onToggleVisible={() => toggleSection("accommodations")} defaultOpen={false} sectionCustomTitle={customTitles.accommodations?.title} sectionCustomSubtitle={customTitles.accommodations?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("accommodations", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("accommodations", v)}>
                         <div className="space-y-4">
-                          {(data as any).proposalType === "proposal" && (
-                            <div className="rounded-lg border border-border/40 bg-muted/20 p-3 space-y-2">
-                              <FieldLabel>Selection Behavior</FieldLabel>
-                              <p className="text-[10px] text-muted-foreground/70 font-body leading-snug -mt-0.5">
-                                Choose whether this section is just for viewing or whether the traveler must select an option.
-                              </p>
-                              <div className="flex flex-wrap gap-1.5">
-                                <Button
-                                  type="button"
-                                  size="sm"
-                                  variant={accommodationsMode === "informational_only" ? "travel" : "travel-outline"}
-                                  className="h-7 text-xs"
-                                  onClick={() => onChange({ ...(data as any), accommodationsMode: "informational_only" } as ProposalData)}
-                                >
-                                  Informational only
-                                </Button>
-                                <Button
-                                  type="button"
-                                  size="sm"
-                                  variant={accommodationsMode === "client_selects_one" ? "travel" : "travel-outline"}
-                                  className="h-7 text-xs"
-                                  onClick={() => onChange({ ...(data as any), accommodationsMode: "client_selects_one" } as ProposalData)}
-                                >
-                                  Client selects one
-                                </Button>
-                              </div>
-                              <p className="text-[10px] text-muted-foreground/70 font-body leading-snug mt-1">
-                                {accommodationsMode === "informational_only"
-                                  ? "Traveler can view this section but cannot select an option."
-                                  : "Traveler can choose one option from this section."}
-                              </p>
-                            </div>
-                          )}
                           {accommodations.map((acc, i) => {
                             const accAmenities = acc.amenities || [];
                             const accHighlights = acc.highlights || [];
@@ -1113,24 +1061,17 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                         </div>
                                       </div>
                                       {(data as any).proposalType === "proposal" && (
-                                        <div className="mt-2 space-y-2">
-                                          <div className="flex items-end gap-3">
-                                            <div>
-                                              <FieldLabel>Price (Proposal Option)</FieldLabel>
-                                              <div className="relative w-32">
-                                                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
-                                                <Input value={acc.price || ""} onChange={(e) => updateAccField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
-                                              </div>
+                                        <div className="mt-2">
+                                          <div>
+                                            <FieldLabel>Price (Proposal Option)</FieldLabel>
+                                            <div className="relative w-32">
+                                              <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
+                                              <Input value={acc.price || ""} onChange={(e) => updateAccField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
                                             </div>
-                                            <PricingDisplaySelect
-                                              value={acc.pricingDisplay as PricingDisplayMode | undefined}
-                                              onChange={(v) => updateAccField("pricingDisplay", v)}
-                                              showPerNight
-                                            />
                                           </div>
                                         </div>
                                       )}
-                                      <AgentPricingFields
+                                      <AgentFinancialsAccordion
                                         pricing={acc.agentPricing}
                                         onChange={(ap) => { const a = [...accommodations]; a[i] = { ...a[i], agentPricing: ap }; update("accommodations", a); }}
                                       />
@@ -1357,23 +1298,17 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                         <RichTextEditor content={ship.description} onChange={(html) => updateShipField("description", html)} placeholder="Describe the ship, cabin features, onboard experience..." minHeight="150px" />
                                       </div>
                                       {(data as any).proposalType === "proposal" && (
-                                        <div className="mt-2 space-y-2">
-                                          <div className="flex items-end gap-3">
-                                            <div>
-                                              <FieldLabel>Price (Proposal Option)</FieldLabel>
-                                              <div className="relative w-32">
-                                                <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
-                                                <Input value={ship.price || ""} onChange={(e) => updateShipField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
-                                              </div>
+                                        <div className="mt-2">
+                                          <div>
+                                            <FieldLabel>Price (Proposal Option)</FieldLabel>
+                                            <div className="relative w-32">
+                                              <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">$</span>
+                                              <Input value={ship.price || ""} onChange={(e) => updateShipField("price", e.target.value)} placeholder="0.00" className="h-8 text-xs pl-5" />
                                             </div>
-                                            <PricingDisplaySelect
-                                              value={ship.pricingDisplay as PricingDisplayMode | undefined}
-                                              onChange={(v) => updateShipField("pricingDisplay", v)}
-                                            />
                                           </div>
                                         </div>
                                       )}
-                                      <AgentPricingFields
+                                      <AgentFinancialsAccordion
                                         pricing={ship.agentPricing}
                                         onChange={(ap) => { const s = [...cruiseShips]; s[i] = { ...s[i], agentPricing: ap }; update("cruiseShips", s); }}
                                       />

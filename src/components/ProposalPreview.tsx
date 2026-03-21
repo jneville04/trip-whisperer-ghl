@@ -34,7 +34,7 @@ import { parseAirportValue } from "@/components/AirportAutocomplete";
 import BookingModal from "@/components/BookingModal";
 import VideoEmbed from "@/components/VideoEmbed";
 import { Button } from "@/components/ui/button";
-import type { ProposalData, Activity, SectionKey, FinancialsSettings } from "@/types/proposal";
+import type { ProposalData, Activity, SectionKey, FinancialsSettings, SectionSelections } from "@/types/proposal";
 import { defaultSectionOrder, createDefaultFinancials } from "@/types/proposal";
 import { buildBrandCssVars } from "@/lib/brand";
 
@@ -321,15 +321,18 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
     setLightboxOpen(true);
   };
 
-  // Proposal-type selection state (radio per category)
-  const [selectedFlight, setSelectedFlight] = useState<string>("");
-  const [selectedAccommodation, setSelectedAccommodation] = useState<string>("");
-  const [selectedCruise, setSelectedCruise] = useState<string>("");
-  const [selectedBusTrip, setSelectedBusTrip] = useState<string>("");
-  const [selectedPricingOption, setSelectedPricingOption] = useState<string>("");
+  // Selection persistence from data
+  const savedSelections: SectionSelections = data.sectionSelections || {};
+  const [selectedFlight, setSelectedFlight] = useState<string>(savedSelections.flights || "");
+  const [selectedAccommodation, setSelectedAccommodation] = useState<string>(savedSelections.accommodations || "");
+  const [selectedCruise, setSelectedCruise] = useState<string>(savedSelections.cruiseShips || "");
+  const [selectedBusTrip, setSelectedBusTrip] = useState<string>(savedSelections.busTrips || "");
+  const [selectedPricingOption, setSelectedPricingOption] = useState<string>(savedSelections.pricing || "");
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [approving, setApproving] = useState(false);
   const [approveSuccess, setApproveSuccess] = useState(false);
+  const [validationError, setValidationError] = useState<string>("");
+
   const vis = data.sectionVisibility || {
     hero: true,
     overview: true,
@@ -355,14 +358,23 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   const ct = data.sectionCustomTitles || {};
   const flightOptions = (data.flightOptions || []).filter(o => !o.hidden);
   const accommodations = (data.accommodations || []).filter(a => !a.hidden);
-  const accommodationsMode = ((data as any).accommodationsMode || "client_selects_one") as "informational_only" | "client_selects_one";
-  const accommodationSelectionEnabled = !isGroupBooking && accommodationsMode === "client_selects_one";
-  const effectiveSelectedAccommodation = accommodationSelectionEnabled ? selectedAccommodation : "";
   const cruiseShips = (data.cruiseShips || []).filter(s => !s.hidden);
   const busTrips = (data.busTrips || []).filter(t => !(t as any).hidden);
   const pricingOptions = (data.pricingOptions || []).filter(opt => opt.name?.trim() || opt.totalPrice?.trim() || opt.deposit?.trim());
   const financials: FinancialsSettings = data.financials || createDefaultFinancials();
   const hideItemizedPrices = financials.clientView === "package";
+
+  // Smart section logic: auto-detect informational vs choice
+  const flightsIsChoice = !isGroupBooking && flightOptions.length >= 2;
+  const accommodationsIsChoice = !isGroupBooking && accommodations.length >= 2;
+  const cruiseIsChoice = !isGroupBooking && cruiseShips.length >= 2;
+  const busIsChoice = !isGroupBooking && busTrips.length >= 2;
+
+  // Auto-include single required items
+  const effectiveSelectedFlight = flightsIsChoice ? selectedFlight : (flightOptions.length === 1 ? flightOptions[0].id : "");
+  const effectiveSelectedAccommodation = accommodationsIsChoice ? selectedAccommodation : (accommodations.length === 1 ? accommodations[0].id : "");
+  const effectiveSelectedCruise = cruiseIsChoice ? selectedCruise : (cruiseShips.length === 1 ? cruiseShips[0].id : "");
+  const effectiveSelectedBusTrip = busIsChoice ? selectedBusTrip : (busTrips.length === 1 ? busTrips[0].id : "");
   const agent = data.agent || {
     name: "",
     title: "",
@@ -847,7 +859,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                       {ct.flights?.subtitle || "Your Flights"}
                     </p>
                     <h2 className="font-display text-4xl font-bold text-foreground">{ct.flights?.title || "Air Travel"}</h2>
-                    {!isGroupBooking && flightOptions.length > 1 && (
+                    {flightsIsChoice && (
                       <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>
                     )}
                   </motion.div>
@@ -863,13 +875,13 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                           viewport={{ once: true }}
                           custom={optIdx}
                           className={`bg-background rounded-2xl border-2 shadow-sm relative overflow-hidden transition-all ${
-                            !isGroupBooking
+                            flightsIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
                                 : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
-                          onClick={() => !isGroupBooking && setSelectedFlight(isSelected ? "" : opt.id)}
+                          onClick={() => flightsIsChoice && setSelectedFlight(isSelected ? "" : opt.id)}
                         >
                           {/* Option header bar */}
                           {flightOptions.length > 1 && (
@@ -981,7 +993,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                           </div>
 
                           {/* Footer: price (if single option) + selection */}
-                          {(opt.price || !isGroupBooking) && (
+                          {(opt.price || flightsIsChoice) && (
                             <div className="bg-muted/30 border-t border-border/30 px-6 py-4 flex items-center justify-between">
                               {opt.price && flightOptions.length <= 1 && (opt.pricingDisplay || "total") !== "hide" && !hideItemizedPrices && (
                                 <span className="font-display text-xl font-bold text-foreground">
@@ -992,7 +1004,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                 </span>
                               )}
                               {(!opt.price || flightOptions.length > 1 || (opt.pricingDisplay || "total") === "hide" || hideItemizedPrices) && <span />}
-                              {!isGroupBooking && (
+                              {flightsIsChoice && (
                                 <div className="flex items-center gap-2">
                                   {isSelected ? (
                                     <div className="flex items-center gap-1.5">
@@ -1058,7 +1070,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                       {ct.accommodations?.subtitle || "Where You'll Stay"}
                     </p>
                     <h2 className="font-display text-4xl font-bold text-foreground">{ct.accommodations?.title || "Accommodations"}</h2>
-                    {accommodationSelectionEnabled && accommodations.length > 1 && (
+                    {accommodationsIsChoice && accommodations.length > 1 && (
                       <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>
                     )}
                   </motion.div>
@@ -1083,19 +1095,19 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                           viewport={{ once: true }}
                           custom={0}
                           className={`bg-card rounded-2xl border-2 shadow-lg overflow-hidden transition-all ${
-                            accommodationSelectionEnabled
+                            accommodationsIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
                                 : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
                           onClick={() => {
-                            if (accommodationSelectionEnabled) {
+                            if (accommodationsIsChoice) {
                               setSelectedAccommodation(isSelected ? "" : acc.id);
                             }
                           }}
                         >
-                          {accommodationSelectionEnabled && accommodations.length > 1 && (
+                          {accommodationsIsChoice && accommodations.length > 1 && (
                             <div className="absolute top-4 right-4 z-10">
                               <span className="inline-block bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-[0.15em] font-body px-2.5 py-1 rounded-full">
                                 Option {accommodations.indexOf(acc) + 1}
@@ -1229,7 +1241,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                               )}
                               {acc.nights && <span className="text-primary font-semibold">{acc.nights}</span>}
                             </div>
-                            {(acc.price || !isGroupBooking) && (
+                            {(acc.price || accommodationsIsChoice) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
                                 {acc.price && (acc.pricingDisplay || "total") !== "hide" && !hideItemizedPrices ? (
                                   <span className="font-display text-xl font-bold text-foreground">
@@ -1241,7 +1253,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                 ) : (
                                   <span />
                                 )}
-                                {accommodationSelectionEnabled && (
+                                {accommodationsIsChoice && (
                                   <div className="flex items-center gap-2">
                                     {accommodations.length > 1 && (
                                       <span className="text-[10px] text-muted-foreground font-body">
@@ -1335,15 +1347,15 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                           viewport={{ once: true }}
                           custom={0}
                           className={`bg-card rounded-2xl border-2 shadow-lg overflow-hidden relative transition-all ${
-                            !isGroupBooking
+                            cruiseIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
                                 : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
-                          onClick={() => !isGroupBooking && setSelectedCruise(isSelected ? "" : ship.id)}
+                          onClick={() => cruiseIsChoice && setSelectedCruise(isSelected ? "" : ship.id)}
                         >
-                          {!isGroupBooking && cruiseShips.length > 1 && (
+                          {cruiseIsChoice && cruiseShips.length > 1 && (
                             <div className="absolute top-4 right-4 z-10">
                               <span className="inline-block bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-[0.15em] font-body px-2.5 py-1 rounded-full">
                                 Option {cruiseShips.indexOf(ship) + 1}
@@ -1507,7 +1519,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                 </div>
                               )}
                             </div>
-                            {(ship.price || !isGroupBooking) && (
+                            {(ship.price || cruiseIsChoice) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
                                 {ship.price && (ship.pricingDisplay || "total") !== "hide" && !hideItemizedPrices ? (
                                   <span className="font-display text-xl font-bold text-foreground">
@@ -1519,7 +1531,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                 ) : (
                                   <span />
                                 )}
-                                {!isGroupBooking && (
+                                {cruiseIsChoice && (
                                   <div className="flex items-center gap-2">
                                     {cruiseShips.length > 1 && (
                                       <span className="text-[10px] text-muted-foreground font-body">
@@ -1613,15 +1625,15 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                           viewport={{ once: true }}
                           custom={0}
                           className={`bg-card rounded-2xl border-2 shadow-lg overflow-hidden relative transition-all ${
-                            !isGroupBooking
+                            busIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
                                 : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
-                          onClick={() => !isGroupBooking && setSelectedBusTrip(isSelected ? "" : trip.id)}
+                          onClick={() => busIsChoice && setSelectedBusTrip(isSelected ? "" : trip.id)}
                         >
-                          {!isGroupBooking && busTrips.length > 1 && (
+                          {busIsChoice && busTrips.length > 1 && (
                             <div className="absolute top-4 right-4 z-10">
                               <span className="inline-block bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-[0.15em] font-body px-2.5 py-1 rounded-full">
                                 Option {busTrips.indexOf(trip) + 1}
@@ -1845,13 +1857,13 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                 )}
                               </div>
                             )}
-                            {(trip.price || !isGroupBooking) && (
+                            {(trip.price || busIsChoice) && (
                               <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
                                 {trip.price && (
                                   <span className="font-display text-xl font-bold text-foreground">${trip.price}</span>
                                 )}
                                 {!trip.price && <span />}
-                                {!isGroupBooking && (
+                                {busIsChoice && (
                                   <div className="flex items-center gap-2">
                                     {busTrips.length > 1 && (
                                       <span className="text-[10px] text-muted-foreground font-body">
@@ -2358,7 +2370,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                       <span className="font-body text-foreground font-medium">Accommodation</span>
                     </div>
                     <span className="font-body text-sm">
-                      {!accommodationSelectionEnabled ? (
+                      {!accommodationsIsChoice ? (
                         <span className="text-muted-foreground italic text-xs">Informational only</span>
                       ) : effectiveSelectedAccommodation ? (
                         (() => {
@@ -2578,6 +2590,13 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                 </div>
               )}
 
+              {/* Validation error */}
+              {validationError && (
+                <div className="bg-destructive/10 border border-destructive/30 rounded-lg px-4 py-3 mb-4 text-sm text-destructive font-body text-center">
+                  {validationError}
+                </div>
+              )}
+
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                 {!isEditor && tripId ? (
                   <Button
@@ -2586,6 +2605,17 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                     className="text-lg px-10 py-6 h-auto"
                     disabled={!termsAccepted || approving}
                     onClick={async () => {
+                      // Approval validation: check required choice sections
+                      const missing: string[] = [];
+                      if (flightsIsChoice && !selectedFlight) missing.push("Flight");
+                      if (accommodationsIsChoice && !selectedAccommodation) missing.push("Accommodation");
+                      if (cruiseIsChoice && !selectedCruise) missing.push("Cruise");
+                      if (busIsChoice && !selectedBusTrip) missing.push("Bus Trip");
+                      if (missing.length > 0) {
+                        setValidationError(`Please select an option for: ${missing.join(", ")}`);
+                        return;
+                      }
+                      setValidationError("");
                       setApproving(true);
                       try {
                         const { error } = await supabase.functions.invoke("approve-trip", {
