@@ -343,6 +343,20 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   const [questionSent, setQuestionSent] = useState(false);
   const [isReadOnly, setIsReadOnly] = useState(false);
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [showRevisionModal, setShowRevisionModal] = useState(false);
+  const [revisionForm, setRevisionForm] = useState({ name: "", email: "", message: "" });
+  const [revisionSending, setRevisionSending] = useState(false);
+  const [revisionSent, setRevisionSent] = useState(false);
+  const [revisionCategories] = useState([
+    { id: "dates", label: "Travel Dates" },
+    { id: "hotels", label: "Hotels / Rooms" },
+    { id: "activities", label: "Activities / Tours" },
+    { id: "flights", label: "Flights" },
+    { id: "dining", label: "Dining" },
+    { id: "pricing", label: "Pricing / Budget" },
+    { id: "other", label: "Other" },
+  ]);
+  const [selectedRevCategories, setSelectedRevCategories] = useState<string[]>([]);
 
   const vis = data.sectionVisibility || {
     hero: true,
