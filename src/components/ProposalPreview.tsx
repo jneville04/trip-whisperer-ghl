@@ -251,7 +251,7 @@ function ItinerarySection({
                                         </p>
                                       )}
                                       {act.description && (
-                                        <p className="text-sm text-muted-foreground font-body mt-2 leading-relaxed">
+                                        <p className="text-[15px] text-muted-foreground font-body mt-2 leading-relaxed">
                                           {act.description}
                                         </p>
                                       )}
