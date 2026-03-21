@@ -1031,7 +1031,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                   </span>
                                 </span>
                               )}
-                              {(!opt.price || flightOptions.length > 1 || (opt.pricingDisplay || "total") === "hide" || !showItemizedPrices) && <span />}
+                              {(!opt.price || flightOptions.length > 1 || !showItemizedPrices) && <span />}
                               {flightsIsChoice && (
                                 <div className="flex items-center gap-2">
                                   {isSelected ? (
