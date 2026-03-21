@@ -343,6 +343,20 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   const [questionSent, setQuestionSent] = useState(false);
   const [isReadOnly, setIsReadOnly] = useState(false);
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [showRevisionModal, setShowRevisionModal] = useState(false);
+  const [revisionForm, setRevisionForm] = useState({ name: "", email: "", message: "" });
+  const [revisionSending, setRevisionSending] = useState(false);
+  const [revisionSent, setRevisionSent] = useState(false);
+  const [revisionCategories] = useState([
+    { id: "dates", label: "Travel Dates" },
+    { id: "hotels", label: "Hotels / Rooms" },
+    { id: "activities", label: "Activities / Tours" },
+    { id: "flights", label: "Flights" },
+    { id: "dining", label: "Dining" },
+    { id: "pricing", label: "Pricing / Budget" },
+    { id: "other", label: "Other" },
+  ]);
+  const [selectedRevCategories, setSelectedRevCategories] = useState<string[]>([]);
 
   const vis = data.sectionVisibility || {
     hero: true,
@@ -583,7 +597,8 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
     if (revUrl) {
       openModal(revUrl, "Request Revisions");
     } else {
-      navigate(`/revisions${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
+      // Show inline revision modal
+      setShowRevisionModal(true);
     }
   }, [navigate, shareId, brandData, returnTo, revisionsUrl, openModal, isEditor, onEditorSubPage, financials]);
 
@@ -3174,6 +3189,161 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
         )}
       </AnimatePresence>
 
+      {/* ═══ REVISION REQUEST MODAL ═══ */}
+      <AnimatePresence>
+        {showRevisionModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[150] bg-black/60 backdrop-blur-sm flex items-center justify-center px-4"
+            onClick={() => !revisionSending && setShowRevisionModal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 30, scale: 0.95 }}
+              transition={{ duration: 0.3 }}
+              className="bg-background rounded-2xl border border-border/50 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto p-8"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {revisionSent ? (
+                <div className="text-center py-6">
+                  <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <Check className="h-7 w-7 text-primary" />
+                  </div>
+                  <h2 className="font-display text-2xl font-bold text-foreground mb-2">Revision Request Sent!</h2>
+                  <p className="text-sm text-muted-foreground font-body mb-6">Your revision request has been sent to your travel advisor. They will update the proposal and follow up with you shortly.</p>
+                  <Button variant="travel-ghost" onClick={() => { setShowRevisionModal(false); setRevisionSent(false); setRevisionForm({ name: "", email: "", message: "" }); setSelectedRevCategories([]); }}>
+                    Close
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h2 className="font-display text-xl font-bold text-foreground">Request Revisions</h2>
+                      <p className="text-sm text-muted-foreground font-body mt-1">Let your advisor know what you'd like changed.</p>
+                    </div>
+                    <button onClick={() => setShowRevisionModal(false)} className="text-muted-foreground hover:text-foreground">
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
+                  <form
+                    className="space-y-4"
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      if (!revisionForm.message.trim()) return;
+                      setRevisionSending(true);
+                      try {
+                        // Build current selections for context
+                        const currentSelections = sectionRegistry
+                          .filter(s => s.visible && s.items.length > 0)
+                          .map(s => {
+                            const effId = s.items.length === 1 ? s.items[0].id : s.selectedId;
+                            if (!effId) return null;
+                            let name = "Selected";
+                            if (s.key === "flights") name = flightOptions.find(f => f.id === effId)?.legs?.[0]?.airline || "Flight";
+                            if (s.key === "accommodations") name = accommodations.find(a => a.id === effId)?.hotelName || "Hotel";
+                            if (s.key === "cruiseShips") name = cruiseShips.find(c => c.id === effId)?.shipName || "Cruise";
+                            if (s.key === "busTrips") name = busTrips.find(b => b.id === effId)?.routeName || "Bus";
+                            return { section: s.label, selectedName: name };
+                          })
+                          .filter(Boolean);
+
+                        if (tripId) {
+                          await supabase.functions.invoke("request-revision", {
+                            body: {
+                              tripId,
+                              revisionNote: revisionForm.message,
+                              travelerName: revisionForm.name,
+                              travelerEmail: revisionForm.email,
+                              categories: selectedRevCategories,
+                              currentSelections,
+                            },
+                          });
+                        } else {
+                          // Fallback: fire GHL webhook directly
+                          await supabase.functions.invoke("ghl-webhook", {
+                            body: {
+                              type: "revision",
+                              payload: {
+                                ...revisionForm,
+                                categories: selectedRevCategories,
+                                proposalId: shareId || "",
+                                source: window.location.href,
+                              },
+                            },
+                          });
+                        }
+                      } catch (err) {
+                        console.error("Revision request failed:", err);
+                      }
+                      setRevisionSending(false);
+                      setRevisionSent(true);
+                    }}
+                  >
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Name</label>
+                      <input
+                        value={revisionForm.name}
+                        onChange={e => setRevisionForm(prev => ({ ...prev, name: e.target.value }))}
+                        className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        placeholder="Your name"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Email</label>
+                      <input
+                        type="email"
+                        value={revisionForm.email}
+                        onChange={e => setRevisionForm(prev => ({ ...prev, email: e.target.value }))}
+                        className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        placeholder="your@email.com"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block font-body">What would you like changed?</label>
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        {revisionCategories.map((cat) => (
+                          <button
+                            key={cat.id}
+                            type="button"
+                            onClick={() => setSelectedRevCategories(prev => prev.includes(cat.id) ? prev.filter(c => c !== cat.id) : [...prev, cat.id])}
+                            className={`px-3 py-1.5 rounded-full text-xs font-body border transition-colors ${
+                              selectedRevCategories.includes(cat.id)
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : "bg-background text-muted-foreground border-border hover:border-primary/50"
+                            }`}
+                          >
+                            {cat.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Details *</label>
+                      <textarea
+                        value={revisionForm.message}
+                        onChange={e => setRevisionForm(prev => ({ ...prev, message: e.target.value }))}
+                        rows={4}
+                        required
+                        className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        placeholder="Please describe what you'd like changed..."
+                      />
+                    </div>
+                    <Button type="submit" variant="travel" className="w-full" disabled={revisionSending || !revisionForm.message.trim()}>
+                      {revisionSending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
+                      {revisionSending ? "Sending..." : "Send Revision Request"}
+                    </Button>
+                  </form>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ═══ FULL-SCREEN SUCCESS OVERLAY ═══ */}
       {approveSuccess && (
         <div className="fixed inset-0 z-[200] bg-background flex items-center justify-center px-6">
@@ -3183,18 +3353,15 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
             </div>
             <h1 className="font-display text-4xl font-bold text-foreground mb-4">Trip Approved!</h1>
             <p className="text-muted-foreground font-body text-lg leading-relaxed mb-6">
-              Thank you for approving your itinerary. Your travel advisor will be in touch shortly with booking confirmation and next steps.
+              Your travel advisor has been notified and will follow up with booking confirmation and next steps.
             </p>
             {financials.acceptPayments && financials.redirectUrl && (
               <p className="text-sm text-muted-foreground font-body mb-6">
                 Redirecting you to complete payment in a moment...
               </p>
             )}
-            <div className="flex flex-col gap-3 items-center">
-              <Button variant="travel-outline" size="lg" className="text-base px-8 py-5 h-auto" disabled>
-                <ArrowRight className="h-4 w-4 mr-2" /> Download PDF (Coming Soon)
-              </Button>
-              {financials.acceptPayments && financials.redirectUrl && (
+            {financials.acceptPayments && financials.redirectUrl && (
+              <div className="flex flex-col gap-3 items-center">
                 <Button
                   variant="travel"
                   size="sm"
@@ -3206,8 +3373,8 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                 >
                   Go to Payment Now
                 </Button>
-              )}
-            </div>
+              </div>
+            )}
           </motion.div>
         </div>
       )}

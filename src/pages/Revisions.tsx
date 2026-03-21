@@ -91,24 +91,39 @@ export default function RevisionsPage() {
     setSending(true);
 
     try {
-      const { error } = await supabase.functions.invoke("ghl-webhook", {
-        body: {
-          type: "revision",
-          payload: {
-            ...form,
+      // If we have a trip context, use the request-revision edge function
+      const tripId = searchParams.get("trip") || "";
+      if (tripId) {
+        await supabase.functions.invoke("request-revision", {
+          body: {
+            tripId,
+            revisionNote: form.message,
+            travelerName: form.name,
+            travelerEmail: form.email,
             categories: selected,
-            proposalId: proposalId || shareId,
-            source: window.location.href,
           },
-        },
-      });
+        });
+      } else {
+        // Fallback to GHL webhook
+        const { error } = await supabase.functions.invoke("ghl-webhook", {
+          body: {
+            type: "revision",
+            payload: {
+              ...form,
+              categories: selected,
+              proposalId: proposalId || shareId,
+              source: window.location.href,
+            },
+          },
+        });
 
-      if (error) {
-        console.error("Webhook error:", error);
-        toast({ title: "Submitted with warning", description: "Your revision request was recorded but the notification may have failed.", variant: "destructive" });
+        if (error) {
+          console.error("Webhook error:", error);
+          toast({ title: "Submitted with warning", description: "Your revision request was recorded but the notification may have failed.", variant: "destructive" });
+        }
       }
     } catch (err) {
-      console.error("Failed to call webhook:", err);
+      console.error("Failed to submit revision:", err);
     }
 
     setSubmitted(true);
