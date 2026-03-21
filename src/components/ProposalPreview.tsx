@@ -149,7 +149,7 @@ function ItinerarySection({
   };
 
   return (
-    <section id="itinerary" className="pb-20 pt-20 bg-card">
+    <section id="itinerary" className="pb-24 pt-24">
       <div className="max-w-5xl mx-auto px-6">
         <motion.div
           variants={fadeUp}
@@ -157,10 +157,11 @@ function ItinerarySection({
           whileInView="visible"
           viewport={{ once: true }}
           custom={0}
-          className="text-center mb-16"
+          className="text-center mb-20"
         >
-          <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">{data.sectionCustomTitles?.itinerary?.subtitle || "Your Journey"}</p>
-          <h2 className="font-display text-4xl font-bold text-foreground">{data.sectionCustomTitles?.itinerary?.title || "Day-by-Day Itinerary"}</h2>
+          <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">{data.sectionCustomTitles?.itinerary?.subtitle || "Your Journey"}</p>
+          <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{data.sectionCustomTitles?.itinerary?.title || "Day-by-Day Itinerary"}</h2>
+          <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
         </motion.div>
         <div className="space-y-6">
           {visibleDays.map((day, dayIdx) => {
