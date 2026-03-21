@@ -1032,7 +1032,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">
                       {ct.flights?.subtitle || "Your Flights"}
                     </p>
-                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.flights?.title || "Air Travel"}</h2>
+                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground tracking-tight">{ct.flights?.title || "Air Travel"}</h2>
                     <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
                     {flightsIsChoice && (
                       <p className="text-sm text-muted-foreground font-body mt-4">Choose one of the options below</p>
