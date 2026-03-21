@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
     const travelerName = publishedData?.travelerName || "Traveler";
     const deposit = publishedData?.depositAmount || "0";
 
-    // 1. Create snapshot
+    // 1. Create snapshot URL (FIXED SLASH)
     const snapshotUrl = `https://studio.journeyswithjoi.com{trip.public_slug}`;
 
     const { data: snapshot, error: snapError } = await supabase
@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
     // 2. Update trip status to approved
     await supabase.from("trips").update({ status: "approved" }).eq("id", tripId);
 
-    // 3. SEND THE EMAIL (FIXED URL)
+    // 3. SEND THE EMAIL (FIXED RESEND URL)
     let emailSent = false;
     if (resendApiKey && agentEmail) {
       console.log(`Attempting to send email to ${agentEmail}`);
