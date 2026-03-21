@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { tripId, selectionSummary, totalPrice } = await req.json();
+    const { tripId, selectionSummary, totalPrice, depositAmount } = await req.json();
 
     if (!tripId) {
       return new Response(JSON.stringify({ error: "Missing tripId" }), {
