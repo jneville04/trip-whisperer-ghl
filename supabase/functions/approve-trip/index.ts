@@ -133,7 +133,12 @@ Deno.serve(async (req) => {
             tripId,
             tripName,
             totalPrice: totalPrice || 0,
+            depositAmount: depositAmount || 0,
+            currency: currency || "USD",
             selectionSummary: selectionSummary || "",
+            sectionDetails: sectionDetails || [],
+            status: "approved",
+            approvedAt: approvedAt || new Date().toISOString(),
             timestamp: new Date().toISOString(),
           }),
         });

@@ -2987,18 +2987,31 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                       const finDeposit = parseFloat(financials.depositAmount?.replace(/[^0-9.-]/g, "") || "0");
                       const finalTotal = financials.pricingMode === "fixed" && finTotal > 0 ? finTotal : totalPrice;
 
-                      const selectionSummary = sectionRegistry
+                      // Build detailed selection data for webhook
+                      const sectionDetails = sectionRegistry
                         .filter(s => s.visible && s.items.length > 0)
                         .map(s => {
                           const effId = s.items.length === 1 ? s.items[0].id : s.selectedId;
                           if (!effId) return null;
-                          if (s.key === "flights") return `Flight: ${flightOptions.find(f => f.id === effId)?.legs?.[0]?.airline || "Selected"}`;
-                          if (s.key === "accommodations") return `Hotel: ${accommodations.find(a => a.id === effId)?.hotelName || "Selected"}`;
-                          if (s.key === "cruiseShips") return `Cruise: ${cruiseShips.find(c => c.id === effId)?.shipName || "Selected"}`;
-                          if (s.key === "busTrips") return `Bus: ${busTrips.find(b => b.id === effId)?.routeName || "Selected"}`;
-                          return null;
+                          const item = s.items.find(i => i.id === effId);
+                          let name = "Selected";
+                          if (s.key === "flights") name = flightOptions.find(f => f.id === effId)?.legs?.[0]?.airline || "Flight";
+                          if (s.key === "accommodations") name = accommodations.find(a => a.id === effId)?.hotelName || "Hotel";
+                          if (s.key === "cruiseShips") name = cruiseShips.find(c => c.id === effId)?.shipName || "Cruise";
+                          if (s.key === "busTrips") name = busTrips.find(b => b.id === effId)?.routeName || "Bus";
+                          return {
+                            section: s.label,
+                            sectionKey: s.key,
+                            selectedName: name,
+                            selectedId: effId,
+                            price: item?.price || null,
+                            type: s.items.length === 1 ? "included" : "selected",
+                          };
                         })
-                        .filter(Boolean)
+                        .filter(Boolean);
+
+                      const selectionSummary = sectionDetails
+                        .map(d => `${d!.section}: ${d!.selectedName}`)
                         .join(" | ");
 
                       if (!isEditor && tripId) {
@@ -3008,6 +3021,10 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                             selectionSummary,
                             totalPrice: finalTotal,
                             depositAmount: finDeposit,
+                            sectionDetails,
+                            currency: financials.currency || "USD",
+                            pricingMode: financials.pricingMode || "fixed",
+                            approvedAt: new Date().toISOString(),
                           },
                         });
                         if (error) throw error;
