@@ -647,7 +647,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             >
               Book Now
             </Button>
-          ) : !isEditor && !isReadOnly && !approveSuccess ? (
+          ) : !isEditor && !isReadOnly && !approveSuccess && tripStatus !== "revision_requested" && tripStatus !== "reopened" ? (
             <Button
               variant="travel-ghost"
               size="sm"
@@ -2667,7 +2667,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                 </div>
               )}
 
-              {!isReadOnly && (
+              {/* Status-driven CTAs: hide for revision_requested/reopened */}
+              {!isReadOnly && tripStatus !== "revision_requested" && tripStatus !== "reopened" && (
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                   {!isEditor && tripId ? (
                     !allSelectionsComplete ? (
@@ -2696,7 +2697,6 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                         size="lg"
                         className="text-lg px-10 py-6 h-auto"
                         onClick={() => {
-                          // Final validation before showing review
                           const missing = requiredChoiceSections.filter(s => !s.selectedId).map(s => s.label);
                           if (missing.length > 0) {
                             setValidationError(`Please select an option for: ${missing.join(", ")}`);
@@ -2742,6 +2742,18 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   >
                     <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
                   </Button>
+                </div>
+              )}
+              {/* Under Revision passive state */}
+              {(tripStatus === "revision_requested" || tripStatus === "reopened") && (
+                <div className="flex items-center justify-center gap-3 pt-4 py-4 px-6 bg-muted/50 rounded-xl border border-border/40">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-display text-sm font-semibold text-foreground">Under Revision</p>
+                    <p className="text-xs text-muted-foreground font-body">Your travel advisor is updating this proposal. Check back soon.</p>
+                  </div>
                 </div>
               )}
               {data.validUntil && (
@@ -3149,25 +3161,33 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       setQuestionSent(true);
                     }}
                   >
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Name</label>
-                      <input
-                        value={questionForm.name}
-                        onChange={e => setQuestionForm(prev => ({ ...prev, name: e.target.value }))}
-                        className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                        placeholder="Your name"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Email</label>
-                      <input
-                        type="email"
-                        value={questionForm.email}
-                        onChange={e => setQuestionForm(prev => ({ ...prev, email: e.target.value }))}
-                        className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                        placeholder="your@email.com"
-                      />
-                    </div>
+                    {(!travelerName || !travelerEmail) && (
+                      <>
+                        {!travelerName && (
+                          <div>
+                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Name</label>
+                            <input
+                              value={questionForm.name}
+                              onChange={e => setQuestionForm(prev => ({ ...prev, name: e.target.value }))}
+                              className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                              placeholder="Your name"
+                            />
+                          </div>
+                        )}
+                        {!travelerEmail && (
+                          <div>
+                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Email</label>
+                            <input
+                              type="email"
+                              value={questionForm.email}
+                              onChange={e => setQuestionForm(prev => ({ ...prev, email: e.target.value }))}
+                              className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                              placeholder="your@email.com"
+                            />
+                          </div>
+                        )}
+                      </>
+                    )}
                     <div>
                       <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Message *</label>
                       <textarea
@@ -3216,7 +3236,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   </div>
                   <h2 className="font-display text-2xl font-bold text-foreground mb-2">Revision Request Sent!</h2>
                   <p className="text-sm text-muted-foreground font-body mb-6">Your revision request has been sent to your travel advisor. They will update the proposal and follow up with you shortly.</p>
-                  <Button variant="travel-ghost" onClick={() => { setShowRevisionModal(false); setRevisionSent(false); setRevisionForm({ name: "", email: "", message: "" }); setSelectedRevCategories([]); }}>
+                  <Button variant="travel-ghost" onClick={() => { setShowRevisionModal(false); setRevisionSent(false); setRevisionForm({ name: travelerName, email: travelerEmail, message: "" }); setSelectedRevCategories([]); }}>
                     Close
                   </Button>
                 </div>
@@ -3286,25 +3306,33 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       setRevisionSent(true);
                     }}
                   >
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Name</label>
-                      <input
-                        value={revisionForm.name}
-                        onChange={e => setRevisionForm(prev => ({ ...prev, name: e.target.value }))}
-                        className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                        placeholder="Your name"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Email</label>
-                      <input
-                        type="email"
-                        value={revisionForm.email}
-                        onChange={e => setRevisionForm(prev => ({ ...prev, email: e.target.value }))}
-                        className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                        placeholder="your@email.com"
-                      />
-                    </div>
+                    {(!travelerName || !travelerEmail) && (
+                      <>
+                        {!travelerName && (
+                          <div>
+                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Name</label>
+                            <input
+                              value={revisionForm.name}
+                              onChange={e => setRevisionForm(prev => ({ ...prev, name: e.target.value }))}
+                              className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                              placeholder="Your name"
+                            />
+                          </div>
+                        )}
+                        {!travelerEmail && (
+                          <div>
+                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Email</label>
+                            <input
+                              type="email"
+                              value={revisionForm.email}
+                              onChange={e => setRevisionForm(prev => ({ ...prev, email: e.target.value }))}
+                              className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                              placeholder="your@email.com"
+                            />
+                          </div>
+                        )}
+                      </>
+                    )}
                     <div>
                       <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block font-body">What would you like changed?</label>
                       <div className="flex flex-wrap gap-2 mb-3">
