@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { format, parse } from "date-fns";
@@ -28,6 +28,10 @@ import {
   Anchor,
   Bus,
   ChevronDown,
+  HelpCircle,
+  Send,
+  Loader2,
+  X,
 } from "lucide-react";
 import Lightbox from "@/components/Lightbox";
 import { parseAirportValue } from "@/components/AirportAutocomplete";
