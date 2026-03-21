@@ -3382,9 +3382,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
         </div>
       )}
 
-      {/* ═══ FLOATING HUB ═══ */}
-      {!isGroupBooking && !approveSuccess && !isReadOnly && !isEditor && (
-        <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-end gap-3">
+      {/* ═══ FLOATING UTILITY — Ask a Question only ═══ */}
+      {!isGroupBooking && !approveSuccess && !isReadOnly && !isEditor && tripStatus !== "revision_requested" && tripStatus !== "reopened" && (
+        <div className="fixed bottom-6 right-6 z-[100]">
           <Button
             variant="travel-ghost"
             size="sm"
@@ -3393,45 +3393,6 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           >
             <HelpCircle className="h-4 w-4 mr-1.5" /> Ask a Question
           </Button>
-          {requiredChoiceSections.length === 0 ? (
-            <Button
-              variant="travel"
-              size="lg"
-              className="rounded-full shadow-xl text-sm px-6 py-3 h-auto"
-              onClick={() => setShowReviewModal(true)}
-            >
-              <CheckCircle2 className="h-4 w-4 mr-1.5" /> Review &amp; Approve
-            </Button>
-          ) : !allSelectionsComplete ? (
-            <Button
-              variant="travel"
-              size="lg"
-              className="rounded-full shadow-xl text-sm px-6 py-3 h-auto"
-              onClick={() => {
-                const firstMissing = requiredChoiceSections.find(s => !s.selectedId);
-                if (firstMissing) {
-                  const el = document.getElementById(firstMissing.key);
-                  if (el) {
-                    el.scrollIntoView({ behavior: "smooth", block: "start" });
-                    el.classList.add("ring-2", "ring-primary/40", "ring-offset-2");
-                    setTimeout(() => el.classList.remove("ring-2", "ring-primary/40", "ring-offset-2"), 3000);
-                  }
-                  setValidationError(`Please select an option for ${firstMissing.label} before continuing.`);
-                }
-              }}
-            >
-              <ArrowRight className="h-4 w-4 mr-1.5" /> Complete Selections
-            </Button>
-          ) : (
-            <Button
-              variant="travel"
-              size="lg"
-              className="rounded-full shadow-xl text-sm px-6 py-3 h-auto"
-              onClick={() => setShowReviewModal(true)}
-            >
-              <CheckCircle2 className="h-4 w-4 mr-1.5" /> Review &amp; Approve
-            </Button>
-          )}
         </div>
       )}
 
