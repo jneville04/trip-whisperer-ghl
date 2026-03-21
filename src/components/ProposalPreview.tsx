@@ -608,28 +608,28 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
       {/* STICKY HEADER NAV */}
-      <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
-          <div className="flex items-center gap-2 min-w-0">
+      <nav className="sticky top-0 z-50 bg-background/98 backdrop-blur-xl border-b border-border/30">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+          <div className="flex items-center gap-3 min-w-0">
             {brandData.logoUrl && (
               <img
                 src={brandData.logoUrl}
                 alt={`${agent.agencyName || "Agency"} logo`}
-                className="h-8 max-w-[120px] object-contain shrink-0"
+                className="h-9 max-w-[140px] object-contain shrink-0"
               />
             )}
             {(!brandData.logoUrl || showAgencyNameWithLogo) && (
-              <span className="font-display text-lg font-bold text-foreground truncate">
+              <span className="font-display text-lg font-semibold text-foreground truncate tracking-tight">
                 {agent.agencyName || "Travel Co."}
               </span>
             )}
           </div>
-          <div className="hidden sm:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-0.5">
             {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => scrollTo(item.id)}
-                className="px-3 py-1.5 text-sm font-body text-muted-foreground hover:text-primary transition-colors rounded-md hover:bg-muted/50"
+                className="px-3.5 py-2 text-[13px] font-body font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/60"
               >
                 {item.label}
               </button>
@@ -651,10 +651,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             <Button
               variant="travel-ghost"
               size="sm"
-              className="text-xs"
+              className="text-xs gap-1.5"
               onClick={() => setShowAskQuestion(true)}
             >
-              <HelpCircle className="h-3.5 w-3.5 mr-1" /> Ask a Question
+              <HelpCircle className="h-3.5 w-3.5" /> Ask a Question
             </Button>
           ) : null}
         </div>
@@ -663,11 +663,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
       {/* HERO */}
       {vis.hero &&
         (() => {
-          // Collect all hero media assets — modes are mutually exclusive
           const isVideo = data.heroMediaType === "video" && !!data.heroVideoUrl;
           const mainImg = data.heroImageUrl;
           const sideImgs = (data.heroImageUrls || []).filter(Boolean);
-          // In video mode, only show the video — no side images from photos mode
           const allReal = isVideo
             ? [data.heroVideoUrl!]
             : ([mainImg, ...sideImgs].filter(Boolean) as string[]);
@@ -687,12 +685,12 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   e.stopPropagation();
                   openLightbox(allHeroImgs, 0);
                 }}
-                className="absolute bottom-3 right-3 z-10 flex items-center gap-1.5 md:hidden"
+                className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 md:hidden"
                 style={{
                   background: "rgba(0,0,0,0.55)",
                   color: "white",
-                  borderRadius: 6,
-                  padding: "4px 10px",
+                  borderRadius: 8,
+                  padding: "6px 12px",
                   fontSize: 13,
                 }}
               >
@@ -701,81 +699,76 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               </button>
             ) : null;
 
-          const renderFirstAsset = (className: string, onClick?: () => void) => {
-            if (isVideo) {
-              return (
-                <div className={className} style={{ position: "relative" }}>
-                  <VideoEmbed
-                    url={data.heroVideoUrl!}
-                    title={data.destination}
-                    thumbnailUrl={data.heroVideoThumbnailUrl}
-                    className="!rounded-none !aspect-auto h-full w-full"
-                    autoplay={!!data.heroAutoplay}
-                    muted={!!data.heroMuted}
-                  />
+          // Trip metadata bar
+          const metadataBar = (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="relative z-10 -mt-8 mx-4 sm:mx-6"
+            >
+              <div className="max-w-4xl mx-auto bg-background/95 backdrop-blur-md rounded-2xl shadow-xl border border-border/30 px-6 sm:px-8 py-5">
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  {((data as any).startDate || (data as any).endDate) && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                        <Calendar className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-body font-medium">Dates</p>
+                        <p className="text-sm font-semibold text-foreground font-body">{formatDateRange((data as any).startDate, (data as any).endDate)}</p>
+                      </div>
+                    </div>
+                  )}
+                  {data.travelerCount && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                        <Users className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-body font-medium">Travelers</p>
+                        <p className="text-sm font-semibold text-foreground font-body">{parseInt(data.travelerCount) === 1 ? "1 Guest" : `${parseInt(data.travelerCount)} Guests`}</p>
+                      </div>
+                    </div>
+                  )}
+                  {data.duration && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                        <Clock className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-body font-medium">Duration</p>
+                        <p className="text-sm font-semibold text-foreground font-body">{data.duration}</p>
+                      </div>
+                    </div>
+                  )}
+                  {agent.agencyName && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                        <Globe className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-body font-medium">Prepared by</p>
+                        <p className="text-sm font-semibold text-foreground font-body">{agent.agencyName}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              );
-            }
-            return (
-              <div className={`${className} cursor-pointer`} onClick={onClick}>
-                <img
-                  src={allReal[0]}
-                  alt={data.destination}
-                  className="w-full h-full object-cover"
-                  loading="eager"
-                  decoding="async"
-                />
               </div>
-            );
-          };
+            </motion.div>
+          );
 
           return (
-            <section className="w-full overflow-hidden">
-              {/* ——— Mobile: main image only ——— */}
-              <div className={`md:hidden relative overflow-hidden ${isVideo ? "" : "cursor-pointer"}`} onClick={isVideo ? undefined : () => openLightbox(allHeroImgs, 0)}>
-                {isVideo ? (
-                  <VideoEmbed
-                    url={data.heroVideoUrl!}
-                    title={data.destination}
-                    thumbnailUrl={data.heroVideoThumbnailUrl}
-                    className="!rounded-none !aspect-auto w-full"
-                    autoplay={!!data.heroAutoplay}
-                    muted={!!data.heroMuted}
-                  />
-                ) : (
-                  <img
-                    src={allReal[0]}
-                    alt={data.destination}
-                    className="w-full object-cover object-center"
-                    style={{ height: "45vh" }}
-                    loading="eager"
-                    decoding="async"
-                  />
-                )}
-                {!isVideo && heroMediaBadge}
-              </div>
-
-              {/* ——— Desktop: 1 large left + 2 stacked right ——— */}
-              <div
-                className="hidden md:grid overflow-hidden"
-                style={{
-                  gridTemplateColumns: count >= 3 ? "2fr 1fr" : count === 2 ? "1fr 1fr" : "1fr",
-                  gap: 6,
-                  height: "55vh",
-                }}
-              >
-                {/* Main / left */}
-                <div
-                  className={`overflow-hidden ${isVideo ? "" : "cursor-pointer"}`}
-                  style={{ minHeight: 0 }}
-                  onClick={isVideo ? undefined : () => openLightbox(allHeroImgs, 0)}
-                >
+            <>
+              <section className="relative w-full overflow-hidden">
+                {/* ——— Mobile: main image with overlay ——— */}
+                <div className={`md:hidden relative overflow-hidden ${isVideo ? "" : "cursor-pointer"}`} onClick={isVideo ? undefined : () => openLightbox(allHeroImgs, 0)}>
                   {isVideo ? (
                     <VideoEmbed
                       url={data.heroVideoUrl!}
                       title={data.destination}
                       thumbnailUrl={data.heroVideoThumbnailUrl}
-                      className="!rounded-none !aspect-auto h-full w-full"
+                      className="!rounded-none !aspect-auto w-full"
                       autoplay={!!data.heroAutoplay}
                       muted={!!data.heroMuted}
                     />
@@ -783,92 +776,154 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     <img
                       src={allReal[0]}
                       alt={data.destination}
-                      className="w-full h-full object-cover object-center"
+                      className="w-full object-cover object-center"
+                      style={{ height: "50vh" }}
                       loading="eager"
                       decoding="async"
                     />
                   )}
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                  {/* Title overlay on mobile */}
+                  <div className="absolute bottom-12 left-0 right-0 z-10 px-6">
+                    {data.destination && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                        className="inline-flex items-center gap-1.5 bg-primary/90 text-primary-foreground px-3 py-1 rounded-full text-xs font-body font-semibold mb-3"
+                      >
+                        <MapPin className="h-3 w-3" /> {data.destination}
+                      </motion.div>
+                    )}
+                    <motion.h1
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.7, delay: 0.2 }}
+                      className="font-display text-3xl font-bold text-white leading-tight"
+                    >
+                      {(data as any).tripName || data.destination || "Your Destination"}
+                    </motion.h1>
+                    {data.subtitle && (
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.6, delay: 0.4 }}
+                        className="font-body text-white/80 text-sm mt-2"
+                      >
+                        {data.subtitle}
+                      </motion.p>
+                    )}
+                  </div>
+                  {!isVideo && heroMediaBadge}
                 </div>
 
-                {/* Right column: 2 stacked images, 50/50 split */}
-                {count >= 2 && (
+                {/* ——— Desktop: 1 large left + 2 stacked right with overlay ——— */}
+                <div className="hidden md:block relative">
                   <div
-                    className="overflow-hidden"
+                    className="grid overflow-hidden"
                     style={{
-                      display: "grid",
-                      gridTemplateRows: count >= 3 ? "1fr 1fr" : "1fr",
-                      gap: 6,
-                      minHeight: 0,
+                      gridTemplateColumns: count >= 3 ? "2fr 1fr" : count === 2 ? "1fr 1fr" : "1fr",
+                      gap: 4,
+                      height: "60vh",
                     }}
                   >
-                    {allReal.slice(1, 3).map((url, i) => (
-                      <div
-                        key={i}
-                        className="overflow-hidden cursor-pointer"
-                        style={{ minHeight: 0 }}
-                        onClick={() => openLightbox(allHeroImgs, i + 1)}
-                      >
+                    {/* Main / left */}
+                    <div
+                      className={`overflow-hidden ${isVideo ? "" : "cursor-pointer"}`}
+                      style={{ minHeight: 0 }}
+                      onClick={isVideo ? undefined : () => openLightbox(allHeroImgs, 0)}
+                    >
+                      {isVideo ? (
+                        <VideoEmbed
+                          url={data.heroVideoUrl!}
+                          title={data.destination}
+                          thumbnailUrl={data.heroVideoThumbnailUrl}
+                          className="!rounded-none !aspect-auto h-full w-full"
+                          autoplay={!!data.heroAutoplay}
+                          muted={!!data.heroMuted}
+                        />
+                      ) : (
                         <img
-                          src={url}
-                          alt={`${data.destination} ${i + 2}`}
+                          src={allReal[0]}
+                          alt={data.destination}
                           className="w-full h-full object-cover object-center"
-                          loading="lazy"
+                          loading="eager"
                           decoding="async"
                         />
+                      )}
+                    </div>
+
+                    {/* Right column */}
+                    {count >= 2 && (
+                      <div
+                        className="overflow-hidden"
+                        style={{
+                          display: "grid",
+                          gridTemplateRows: count >= 3 ? "1fr 1fr" : "1fr",
+                          gap: 4,
+                          minHeight: 0,
+                        }}
+                      >
+                        {allReal.slice(1, 3).map((url, i) => (
+                          <div
+                            key={i}
+                            className="overflow-hidden cursor-pointer"
+                            style={{ minHeight: 0 }}
+                            onClick={() => openLightbox(allHeroImgs, i + 1)}
+                          >
+                            <img
+                              src={url}
+                              alt={`${data.destination} ${i + 2}`}
+                              className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-700"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    )}
                   </div>
-                )}
-              </div>
-            </section>
+                  {/* Gradient overlay on desktop */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
+                  {/* Title overlay on desktop */}
+                  <div className="absolute bottom-16 left-0 right-0 z-10 max-w-5xl mx-auto px-8 pointer-events-none">
+                    {data.destination && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                        className="inline-flex items-center gap-1.5 bg-primary/90 text-primary-foreground px-3.5 py-1.5 rounded-full text-xs font-body font-semibold mb-4"
+                      >
+                        <MapPin className="h-3.5 w-3.5" /> {data.destination}
+                      </motion.div>
+                    )}
+                    <motion.h1
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, delay: 0.2 }}
+                      className="font-display text-5xl lg:text-6xl font-bold text-white leading-[1.1] max-w-2xl"
+                    >
+                      {(data as any).tripName || data.destination || "Your Destination"}
+                    </motion.h1>
+                    {data.subtitle && (
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.6, delay: 0.4 }}
+                        className="font-body text-white/80 text-base mt-3 max-w-lg"
+                      >
+                        {data.subtitle}
+                      </motion.p>
+                    )}
+                  </div>
+                </div>
+              </section>
+              {/* Floating metadata bar */}
+              {metadataBar}
+            </>
           );
         })()}
-
-      {/* Title section below hero */}
-      {vis.hero && (
-        <div className="max-w-5xl mx-auto px-6 py-10 text-center">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight"
-          >
-            {(data as any).tripName || data.destination || "Your Destination"}
-          </motion.h1>
-          {data.subtitle && (
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="font-display text-lg sm:text-xl text-muted-foreground mt-3 italic"
-            >
-              {data.subtitle}
-            </motion.p>
-          )}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="flex items-center justify-center gap-4 mt-6 flex-wrap"
-          >
-            {((data as any).startDate || (data as any).endDate) && (
-              <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body">
-                <Calendar className="h-4 w-4 text-primary" /> {formatDateRange((data as any).startDate, (data as any).endDate)}
-              </span>
-            )}
-            {data.travelerCount && (
-              <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body">
-                <Users className="h-4 w-4 text-primary" /> {parseInt(data.travelerCount) === 1 ? "1 Traveler" : `${parseInt(data.travelerCount)} Travelers`}
-              </span>
-            )}
-            {data.destination && (
-              <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body">
-                <MapPin className="h-4 w-4 text-primary" /> {data.destination}
-              </span>
-            )}
-          </motion.div>
-        </div>
-      )}
 
       {/* DYNAMIC SECTIONS */}
       {sectionOrder.map((sectionKey) => {
