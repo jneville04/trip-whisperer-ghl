@@ -1538,7 +1538,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                     {allShipImages.slice(1, 3).map((img, gi) => (
                                       <div
                                         key={gi}
-                                        className="aspect-[16/10] overflow-hidden cursor-pointer rounded-xl border border-border/60"
+                                        className="aspect-[16/10] overflow-hidden cursor-pointer rounded-xl border border-border"
                                         onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, gi + 1); }}
                                       >
                                         <img src={img.src} alt={img.alt || ""} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
