@@ -757,38 +757,38 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               transition={{ duration: 0.6, delay: 0.5 }}
               className="relative z-10 -mt-8 mx-4 sm:mx-6"
             >
-              <div className="max-w-[520px] mx-auto bg-background/95 backdrop-blur-md rounded-2xl shadow-lg border border-border/30 px-3 py-2">
-                <div className="flex items-center justify-center gap-3 flex-wrap">
+              <div className="max-w-[70%] w-full mx-auto bg-background/95 backdrop-blur-md rounded-2xl shadow-xl border border-border/40 px-6 sm:px-8 py-4">
+                <div className="flex items-center justify-center gap-6 sm:gap-8 flex-wrap">
                   {((data as any).startDate || (data as any).endDate) && (
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <Calendar className="h-3 w-3 text-primary" />
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                        <Calendar className="h-4 w-4 text-primary" />
                       </div>
                       <div>
-                        <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-body font-medium">Dates</p>
-                        <p className="text-[13px] font-semibold text-foreground font-body leading-tight">{formatDateRange((data as any).startDate, (data as any).endDate)}</p>
+                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-body font-medium">Dates</p>
+                        <p className="text-sm font-semibold text-foreground font-body leading-tight">{formatDateRange((data as any).startDate, (data as any).endDate)}</p>
                       </div>
                     </div>
                   )}
                   {data.travelerCount && (
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <Users className="h-3 w-3 text-primary" />
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                        <Users className="h-4 w-4 text-primary" />
                       </div>
                       <div>
-                        <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-body font-medium">Travelers</p>
-                        <p className="text-[13px] font-semibold text-foreground font-body leading-tight">{parseInt(data.travelerCount) === 1 ? "1 Guest" : `${parseInt(data.travelerCount)} Guests`}</p>
+                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-body font-medium">Travelers</p>
+                        <p className="text-sm font-semibold text-foreground font-body leading-tight">{parseInt(data.travelerCount) === 1 ? "1 Guest" : `${parseInt(data.travelerCount)} Guests`}</p>
                       </div>
                     </div>
                   )}
                   {computedDuration && (
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <Clock className="h-3 w-3 text-primary" />
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                        <Clock className="h-4 w-4 text-primary" />
                       </div>
                       <div>
-                        <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-body font-medium">Duration</p>
-                        <p className="text-[13px] font-semibold text-foreground font-body leading-tight">{computedDuration}</p>
+                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-body font-medium">Duration</p>
+                        <p className="text-sm font-semibold text-foreground font-body leading-tight">{computedDuration}</p>
                       </div>
                     </div>
                   )}
@@ -1287,21 +1287,39 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                             {/* Image Section — Right */}
                             {showAccPhotos && allAccImages.length > 0 && (
                               <div className="md:w-[380px] lg:w-[420px] shrink-0 border-b md:border-b-0 md:border-l-2 border-border/60">
-                                <div
-                                  className="aspect-[4/3] md:h-full overflow-hidden cursor-pointer relative group"
-                                  onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
-                                >
-                                  <img
-                                    src={allAccImages[0].src}
-                                    alt={acc.hotelName}
-                                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
-                                  />
-                                  {allAccImages.length > 1 && (
-                                    <div className="absolute bottom-3 right-3 bg-foreground/80 text-background text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 backdrop-blur-sm">
-                                      <Camera className="h-3 w-3" /> +{allAccImages.length - 1} photos
+                                {allAccImages.length === 1 ? (
+                                  <div
+                                    className="w-full h-full overflow-hidden cursor-pointer relative group"
+                                    onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
+                                  >
+                                    <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
+                                  </div>
+                                ) : (
+                                  <div className="grid grid-rows-[1fr_auto] h-full">
+                                    <div
+                                      className="overflow-hidden cursor-pointer relative group"
+                                      onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
+                                    >
+                                      <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
                                     </div>
-                                  )}
-                                </div>
+                                    <div className="grid grid-cols-2 gap-px bg-border/60">
+                                      {allAccImages.slice(1, 3).map((img, idx) => (
+                                        <div
+                                          key={idx}
+                                          className="aspect-[3/2] overflow-hidden cursor-pointer relative group"
+                                          onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, idx + 1); }}
+                                        >
+                                          <img src={img.src} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
+                                          {idx === 1 && allAccImages.length > 3 && (
+                                            <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center">
+                                              <span className="text-background text-sm font-bold flex items-center gap-1.5"><Camera className="h-3.5 w-3.5" />+{allAccImages.length - 3} more</span>
+                                            </div>
+                                          )}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             )}
                             {showAccVideo && (
@@ -1500,21 +1518,39 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                             {/* Image Section — Right */}
                             {showShipPhotos && allShipImages.length > 0 && (
                               <div className="md:w-[380px] lg:w-[420px] shrink-0 border-b md:border-b-0 md:border-l-2 border-border/60">
-                                <div
-                                  className="aspect-[4/3] md:h-full overflow-hidden cursor-pointer relative group"
-                                  onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, 0); }}
-                                >
-                                  <img
-                                    src={allShipImages[0].src}
-                                    alt={ship.shipName}
-                                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
-                                  />
-                                  {allShipImages.length > 1 && (
-                                    <div className="absolute bottom-3 right-3 bg-foreground/80 text-background text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 backdrop-blur-sm">
-                                      <Camera className="h-3 w-3" /> +{allShipImages.length - 1} photos
+                                {allShipImages.length === 1 ? (
+                                  <div
+                                    className="w-full h-full overflow-hidden cursor-pointer relative group"
+                                    onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, 0); }}
+                                  >
+                                    <img src={allShipImages[0].src} alt={ship.shipName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
+                                  </div>
+                                ) : (
+                                  <div className="grid grid-rows-[1fr_auto] h-full">
+                                    <div
+                                      className="overflow-hidden cursor-pointer relative group"
+                                      onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, 0); }}
+                                    >
+                                      <img src={allShipImages[0].src} alt={ship.shipName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
                                     </div>
-                                  )}
-                                </div>
+                                    <div className="grid grid-cols-2 gap-px bg-border/60">
+                                      {allShipImages.slice(1, 3).map((img, idx) => (
+                                        <div
+                                          key={idx}
+                                          className="aspect-[3/2] overflow-hidden cursor-pointer relative group"
+                                          onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, idx + 1); }}
+                                        >
+                                          <img src={img.src} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
+                                          {idx === 1 && allShipImages.length > 3 && (
+                                            <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center">
+                                              <span className="text-background text-sm font-bold flex items-center gap-1.5"><Camera className="h-3.5 w-3.5" />+{allShipImages.length - 3} more</span>
+                                            </div>
+                                          )}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             )}
                             {showShipVideo && (
