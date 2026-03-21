@@ -2351,11 +2351,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               whileInView="visible"
               viewport={{ once: true }}
               custom={0}
-              className="text-center mb-12"
+              className="text-center mb-14"
             >
-              <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">Investment</p>
+              <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-3">Investment</p>
               <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">Trip Pricing</h2>
-              <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
             </motion.div>
 
             {/* Pricing Options Cards — large & prominent */}
