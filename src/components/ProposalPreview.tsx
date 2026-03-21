@@ -339,7 +339,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   const [validationError, setValidationError] = useState<string>("");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showAskQuestion, setShowAskQuestion] = useState(false);
-  const [questionForm, setQuestionForm] = useState({ name: "", email: "", message: "" });
+  const travelerName = data.clientName || "";
+  const travelerEmail = (data as any).clientEmail || "";
+  const [questionForm, setQuestionForm] = useState({ name: travelerName, email: travelerEmail, message: "" });
   const [questionSending, setQuestionSending] = useState(false);
   const [questionSent, setQuestionSent] = useState(false);
   const [isReadOnly, setIsReadOnly] = useState(tripStatus === "approved");
