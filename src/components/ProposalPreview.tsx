@@ -1060,7 +1060,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                         >
                           {/* Option header bar */}
                           {flightOptions.length > 1 && (
-                            <div className="bg-primary/5 border-b border-border/30 px-6 py-3 flex items-center justify-between">
+                            <div className="bg-primary/5 border-b-2 border-border px-6 py-3 flex items-center justify-between">
                               <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary font-body">
                                 Option {optIdx + 1} of {flightOptions.length}
                               </span>
