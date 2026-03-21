@@ -597,7 +597,8 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
     if (revUrl) {
       openModal(revUrl, "Request Revisions");
     } else {
-      navigate(`/revisions${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
+      // Show inline revision modal
+      setShowRevisionModal(true);
     }
   }, [navigate, shareId, brandData, returnTo, revisionsUrl, openModal, isEditor, onEditorSubPage, financials]);
 
