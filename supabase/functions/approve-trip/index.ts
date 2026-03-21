@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
     const deposit = publishedData?.depositAmount || "0";
 
     // 1. Create snapshot
-    const snapshotUrl = `https://your-app-url.com{trip.public_slug}`;
+    const snapshotUrl = `https://studio.journeyswithjoi.com{trip.public_slug}`;
     const { data: snapshot, error: snapError } = await supabase
       .from("snapshots")
       .insert({
