@@ -738,6 +738,17 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               </button>
             ) : null;
 
+          // Computed duration from dates
+          const computedDuration = (() => {
+            const s = (data as any).startDate ? tryParseDate((data as any).startDate) : undefined;
+            const e = (data as any).endDate ? tryParseDate((data as any).endDate) : undefined;
+            if (!s || !e) return null;
+            const diffMs = e.getTime() - s.getTime();
+            const nights = Math.round(diffMs / (1000 * 60 * 60 * 24));
+            if (nights <= 0) return null;
+            return `${nights} ${nights === 1 ? "Night" : "Nights"}`;
+          })();
+
           // Trip metadata bar
           const metadataBar = (
             <motion.div
@@ -746,12 +757,12 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               transition={{ duration: 0.6, delay: 0.5 }}
               className="relative z-10 -mt-8 mx-4 sm:mx-6"
             >
-              <div className="max-w-[540px] mx-auto bg-background/95 backdrop-blur-md rounded-2xl shadow-lg border border-border/30 px-4 py-2.5">
-                <div className="flex items-center justify-center gap-4 flex-wrap">
+              <div className="max-w-[520px] mx-auto bg-background/95 backdrop-blur-md rounded-2xl shadow-lg border border-border/30 px-3 py-2">
+                <div className="flex items-center justify-center gap-3 flex-wrap">
                   {((data as any).startDate || (data as any).endDate) && (
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <Calendar className="h-3.5 w-3.5 text-primary" />
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Calendar className="h-3 w-3 text-primary" />
                       </div>
                       <div>
                         <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-body font-medium">Dates</p>
@@ -760,9 +771,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     </div>
                   )}
                   {data.travelerCount && (
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <Users className="h-3.5 w-3.5 text-primary" />
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Users className="h-3 w-3 text-primary" />
                       </div>
                       <div>
                         <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-body font-medium">Travelers</p>
@@ -770,14 +781,14 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       </div>
                     </div>
                   )}
-                  {(data as any).duration && (
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <Clock className="h-3.5 w-3.5 text-primary" />
+                  {computedDuration && (
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-6 h-6 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Clock className="h-3 w-3 text-primary" />
                       </div>
                       <div>
                         <p className="text-[9px] uppercase tracking-widest text-muted-foreground font-body font-medium">Duration</p>
-                        <p className="text-[13px] font-semibold text-foreground font-body leading-tight">{(data as any).duration}</p>
+                        <p className="text-[13px] font-semibold text-foreground font-body leading-tight">{computedDuration}</p>
                       </div>
                     </div>
                   )}
