@@ -1317,7 +1317,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                         />
                                       </div>
                                     ))}
-                                    {allAccImages.length === 2 && <div className="aspect-[16/10] rounded-xl border border-dashed border-border/70 bg-muted/40" />}
+                                    {allAccImages.length === 2 && <div className="aspect-[16/10] rounded-xl border border-dashed border-border bg-muted/50" />}
                                   </div>
                                 )}
                               </div>
