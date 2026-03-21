@@ -336,6 +336,13 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   const [approving, setApproving] = useState(false);
   const [approveSuccess, setApproveSuccess] = useState(false);
   const [validationError, setValidationError] = useState<string>("");
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showAskQuestion, setShowAskQuestion] = useState(false);
+  const [questionForm, setQuestionForm] = useState({ name: "", email: "", message: "" });
+  const [questionSending, setQuestionSending] = useState(false);
+  const [questionSent, setQuestionSent] = useState(false);
+  const [isReadOnly, setIsReadOnly] = useState(false);
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const vis = data.sectionVisibility || {
     hero: true,
