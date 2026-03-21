@@ -2472,7 +2472,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               whileInView="visible"
               viewport={{ once: true }}
               custom={2}
-              className="bg-background rounded-2xl border border-border/50 shadow-lg p-8"
+              className="bg-background rounded-2xl border border-border/30 shadow-[0_4px_24px_-4px_hsl(var(--foreground)/0.08)] p-8 sm:p-10"
             >
               {/* Selected items summary — only show sections that are enabled AND have data */}
               <div className="space-y-4 mb-6">
