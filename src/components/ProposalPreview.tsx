@@ -933,7 +933,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
         switch (sectionKey) {
           case "overview":
             return (
-              <section key="overview" id="overview" className="py-20 px-6">
+              <section key="overview" id="overview" className="py-24 px-6">
                 <div className="max-w-3xl mx-auto text-center">
                   <motion.p
                     variants={fadeUp}
@@ -941,7 +941,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3"
+                    className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4"
                   >
                     Prepared Exclusively For
                   </motion.p>
@@ -951,7 +951,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={1}
-                    className="font-display text-4xl sm:text-5xl font-bold text-foreground"
+                    className="font-display text-3xl sm:text-5xl font-bold text-foreground"
                   >
                     {data.clientName || "Your Client"}
                   </motion.h2>
@@ -961,7 +961,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={2}
-                    className="w-16 h-0.5 bg-primary mx-auto mt-6 mb-8"
+                    className="w-12 h-[2px] bg-primary/40 mx-auto mt-6 mb-10"
                   />
                   {data.introText && (
                     <motion.div
@@ -970,7 +970,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       whileInView="visible"
                       viewport={{ once: true }}
                       custom={3}
-                      className="text-muted-foreground leading-relaxed text-lg font-body prose prose-lg max-w-none"
+                      className="text-muted-foreground leading-[1.8] text-base sm:text-lg font-body prose prose-lg max-w-none"
                       dangerouslySetInnerHTML={{ __html: data.introText }}
                     />
                   )}
