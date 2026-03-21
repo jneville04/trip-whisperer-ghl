@@ -12,16 +12,8 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const {
-      tripId,
-      selectionSummary,
-      totalPrice,
-      depositAmount,
-      sectionDetails,
-      currency,
-      pricingMode,
-      approvedAt,
-    } = await req.json();
+    const { tripId, selectionSummary, totalPrice, depositAmount, sectionDetails, currency, pricingMode, approvedAt } =
+      await req.json();
 
     if (!tripId) {
       return new Response(JSON.stringify({ error: "Missing tripId" }), {
@@ -30,10 +22,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    );
+    const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
     // 1. FETCH THE TRIP
     const { data: trip, error: tripError } = await supabase
@@ -100,7 +89,7 @@ Deno.serve(async (req) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "Updates @ Journeys with Joi <updates@updates.journeyswithjoi.com>",
+            from: "Journeys with Joi <updates@updates.journeyswithjoi.com>",
             to: [agentEmail],
             reply_to: agentEmail,
             subject: `Trip Approved: ${tripName} - ${travelerName}`,
@@ -134,11 +123,7 @@ Deno.serve(async (req) => {
     }
 
     // 5. FIRE GHL WEBHOOK if configured
-    const { data: settings } = await supabase
-      .from("app_settings")
-      .select("ghl_webhook_approve")
-      .eq("id", 1)
-      .single();
+    const { data: settings } = await supabase.from("app_settings").select("ghl_webhook_approve").eq("id", 1).single();
 
     if (settings?.ghl_webhook_approve) {
       try {
@@ -168,11 +153,7 @@ Deno.serve(async (req) => {
 
     // 6. FIRE ORG WEBHOOK if configured
     if (trip.org_id) {
-      const { data: org } = await supabase
-        .from("organizations")
-        .select("webhook_url")
-        .eq("id", trip.org_id)
-        .single();
+      const { data: org } = await supabase.from("organizations").select("webhook_url").eq("id", trip.org_id).single();
 
       if (org?.webhook_url) {
         try {
@@ -195,15 +176,15 @@ Deno.serve(async (req) => {
       }
     }
 
-    return new Response(
-      JSON.stringify({ success: true, emailSent }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
+    return new Response(JSON.stringify({ success: true, emailSent }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error) {
     console.error("Error in approve-trip:", error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
+    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
