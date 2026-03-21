@@ -111,33 +111,36 @@ function ItinerarySection({
 }) {
   const itineraryDisplayMode = (((data as any).itineraryDisplayMode || "single_open") as "collapsed" | "single_open" | "all_open");
   const visibleDays = useMemo(() => data.days.filter((d) => !d.hidden), [data.days]);
-  const [openDayId, setOpenDayId] = useState<string | null>(() => {
-    if (itineraryDisplayMode === "single_open") return visibleDays[0]?.id ?? null;
-    return null;
+
+  // Build initial open set from agent setting
+  const [openDayIds, setOpenDayIds] = useState<Set<string>>(() => {
+    if (itineraryDisplayMode === "all_open") return new Set(visibleDays.map((d) => d.id));
+    if (itineraryDisplayMode === "single_open") return new Set(visibleDays[0] ? [visibleDays[0].id] : []);
+    return new Set();
   });
 
+  // Re-sync only when the agent setting changes (editor live preview)
   useEffect(() => {
     if (itineraryDisplayMode === "all_open") {
-      setOpenDayId(null);
-      return;
+      setOpenDayIds(new Set(visibleDays.map((d) => d.id)));
+    } else if (itineraryDisplayMode === "single_open") {
+      setOpenDayIds(new Set(visibleDays[0] ? [visibleDays[0].id] : []));
+    } else {
+      setOpenDayIds(new Set());
     }
-    if (itineraryDisplayMode === "single_open") {
-      setOpenDayId((prev) => {
-        if (prev && visibleDays.some((day) => day.id === prev)) return prev;
-        return visibleDays[0]?.id ?? null;
-      });
-      return;
-    }
-    setOpenDayId(null);
-  }, [itineraryDisplayMode, visibleDays]);
+  }, [itineraryDisplayMode, visibleDays.length]);
 
+  // Client can always toggle any day open/closed after load
   const toggleDay = (dayId: string) => {
-    if (itineraryDisplayMode === "all_open") return;
-    if (itineraryDisplayMode === "single_open") {
-      setOpenDayId(dayId);
-      return;
-    }
-    setOpenDayId((prev) => (prev === dayId ? null : dayId));
+    setOpenDayIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(dayId)) {
+        next.delete(dayId);
+      } else {
+        next.add(dayId);
+      }
+      return next;
+    });
   };
 
   return (
@@ -156,7 +159,7 @@ function ItinerarySection({
         </motion.div>
         <div className="space-y-6">
           {visibleDays.map((day, dayIdx) => {
-            const isOpen = itineraryDisplayMode === "all_open" ? true : openDayId === day.id;
+            const isOpen = openDayIds.has(day.id);
             const validActivities = day.activities.filter(
               (act) => act.title?.trim() || act.description?.trim() || (act.imageUrls && act.imageUrls.length > 0) || act.videoUrl
             );
@@ -243,11 +246,7 @@ function ItinerarySection({
                                 </div>
                                 {hasImages && (
                                   <div
-                                    className={`shrink-0 rounded-lg overflow-hidden cursor-pointer group relative ${
-                                      isFeatured
-                                        ? "sm:w-[260px] md:w-[300px] h-[180px] sm:h-[200px]"
-                                        : "sm:w-[180px] md:w-[200px] h-[130px] sm:h-[140px]"
-                                    }`}
+                                    className="shrink-0 rounded-lg overflow-hidden cursor-pointer group relative sm:w-[220px] md:w-[240px] h-[160px]"
                                     onClick={() =>
                                       openLightbox(
                                         act.imageUrls!.map((u) => ({ src: u, alt: act.title })),
@@ -268,7 +267,7 @@ function ItinerarySection({
                                   </div>
                                 )}
                                 {hasVideo && !hasImages && (
-                                  <div className={`shrink-0 ${isFeatured ? "sm:w-[280px] md:w-[320px]" : "sm:w-[220px] md:w-[240px]"}`}>
+                                  <div className="shrink-0 sm:w-[220px] md:w-[240px]">
                                     <VideoEmbed
                                       url={act.videoUrl!}
                                       title={act.title}
