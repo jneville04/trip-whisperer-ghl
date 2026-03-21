@@ -231,7 +231,7 @@ function ItinerarySection({
                           return (
                             <div
                               key={act.id || actIdx}
-                              className="rounded-xl border border-border/60 bg-card p-4 sm:p-5 shadow-[0_10px_28px_-24px_hsl(var(--foreground)/0.6)]"
+                              className="rounded-xl border border-border bg-card p-5 sm:p-6 shadow-[0_8px_24px_-12px_hsl(var(--foreground)/0.12)]"
                             >
                               <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-5`}>
                                 <div className="flex-1">
