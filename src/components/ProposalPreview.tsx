@@ -1292,7 +1292,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           <div className="flex flex-col md:flex-row-reverse">
                             {/* Image Section — Right */}
                             {showAccPhotos && allAccImages.length > 0 && (
-                              <div className="md:w-[380px] lg:w-[420px] shrink-0 p-2.5">
+                              <div className="md:w-[340px] lg:w-[380px] shrink-0 p-3">
                                 {allAccImages.length === 1 ? (
                                   <div
                                     className="w-full h-full overflow-hidden cursor-pointer relative group rounded-xl"
