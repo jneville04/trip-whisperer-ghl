@@ -875,13 +875,13 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                           viewport={{ once: true }}
                           custom={optIdx}
                           className={`bg-background rounded-2xl border-2 shadow-sm relative overflow-hidden transition-all ${
-                            !isGroupBooking
+                            flightsIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
                                 : "border-border/50 hover:border-primary/40 cursor-pointer"
                               : "border-border/50"
                           }`}
-                          onClick={() => !isGroupBooking && setSelectedFlight(isSelected ? "" : opt.id)}
+                          onClick={() => flightsIsChoice && setSelectedFlight(isSelected ? "" : opt.id)}
                         >
                           {/* Option header bar */}
                           {flightOptions.length > 1 && (
