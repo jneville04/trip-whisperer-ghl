@@ -1307,7 +1307,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                     {allAccImages.slice(1, 3).map((img, gi) => (
                                       <div
                                         key={gi}
-                                        className="aspect-[16/10] overflow-hidden cursor-pointer rounded-xl border border-border/60"
+                                        className="aspect-[16/10] overflow-hidden cursor-pointer rounded-xl border border-border"
                                         onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, gi + 1); }}
                                       >
                                         <img
