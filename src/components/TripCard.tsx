@@ -80,7 +80,7 @@ interface TripCardProps {
   isArchived?: boolean;
 }
 
-export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLink }: TripCardProps) {
+export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLink, onArchive, onRestore, onReopen, isArchived }: TripCardProps) {
   const navigate = useNavigate();
   const draftData = trip.draft_data as ProposalData | null;
   const heroImg = draftData?.heroImageUrl || (draftData?.heroImageUrls?.length ? draftData.heroImageUrls[0] : "");
