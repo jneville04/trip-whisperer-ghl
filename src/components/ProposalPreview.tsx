@@ -2364,104 +2364,90 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
             >
               {/* Selected items summary — only show sections that are enabled AND have data */}
               <div className="space-y-4 mb-6">
-                {vis.flights && flightOptions.length > 0 && (
-                  <div className="flex justify-between items-center py-3 border-b border-border/30">
-                    <div className="flex items-center gap-2">
-                      <Plane className="h-4 w-4 text-primary" />
-                      <span className="font-body text-foreground font-medium">Flight</span>
+                {sectionRegistry.filter(s => s.visible && s.items.length > 0).map((section) => {
+                  const isChoice = !isGroupBooking && section.items.length >= 2;
+                  const isSingleIncluded = section.items.length === 1;
+                  const effectiveId = isChoice ? section.selectedId : (isSingleIncluded ? section.items[0].id : "");
+                  const selectedItem = section.items.find(i => i.id === effectiveId);
+
+                  // Build status label
+                  let statusContent: React.ReactNode;
+                  if (isSingleIncluded) {
+                    // Get display name for the included item
+                    const itemName = (() => {
+                      if (section.key === "flights") {
+                        const opt = flightOptions.find(o => o.id === effectiveId);
+                        const dep = opt?.legs.find(l => l.type === "departure");
+                        return dep?.airline || "Flight";
+                      }
+                      if (section.key === "accommodations") return accommodations.find(a => a.id === effectiveId)?.hotelName || "Hotel";
+                      if (section.key === "cruiseShips") return cruiseShips.find(s => s.id === effectiveId)?.shipName || "Cruise";
+                      if (section.key === "busTrips") return busTrips.find(b => b.id === effectiveId)?.routeName || "Bus";
+                      return "Included";
+                    })();
+                    statusContent = (
+                      <span className="text-foreground text-xs font-medium flex items-center gap-1.5">
+                        <Check className="h-3 w-3 text-primary" /> Included in package
+                        {selectedItem?.price && showItemizedPrices && (
+                          <span className="ml-1 text-primary font-semibold">{fmtCurrency(selectedItem.price)}</span>
+                        )}
+                      </span>
+                    );
+                  } else if (isChoice && effectiveId) {
+                    const itemName = (() => {
+                      if (section.key === "flights") {
+                        const opt = flightOptions.find(o => o.id === effectiveId);
+                        const dep = opt?.legs.find(l => l.type === "departure");
+                        return dep?.airline ? `${dep.airline} — ${dep.departureAirport?.split("–")[0]?.trim()} → ${dep.arrivalAirport?.split("–")[0]?.trim()}` : "Flight";
+                      }
+                      if (section.key === "accommodations") return accommodations.find(a => a.id === effectiveId)?.hotelName || "Hotel";
+                      if (section.key === "cruiseShips") return cruiseShips.find(s => s.id === effectiveId)?.shipName || "Cruise";
+                      if (section.key === "busTrips") return busTrips.find(b => b.id === effectiveId)?.routeName || "Bus";
+                      return "Selected";
+                    })();
+                    statusContent = (
+                      <span className="text-foreground text-xs font-medium flex items-center gap-1.5">
+                        <Check className="h-3 w-3 text-primary" /> Selected: {itemName}
+                        {selectedItem?.price && showItemizedPrices && (
+                          <span className="ml-1 text-primary font-semibold">{fmtCurrency(selectedItem.price)}</span>
+                        )}
+                      </span>
+                    );
+                  } else if (isChoice && !effectiveId) {
+                    statusContent = (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          document.getElementById(section.key)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }}
+                        className="text-accent text-xs font-semibold font-body flex items-center gap-1.5 hover:underline cursor-pointer"
+                      >
+                        ⚠ Selection required
+                      </button>
+                    );
+                  } else {
+                    // Informational (0 items visible but section is on — shouldn't happen, but safe fallback)
+                    statusContent = (
+                      <span className="text-muted-foreground italic text-xs">Included in package</span>
+                    );
+                  }
+
+                  const sectionIcon = section.key === "flights" ? <Plane className="h-4 w-4 text-primary" />
+                    : section.key === "accommodations" ? <BedDouble className="h-4 w-4 text-primary" />
+                    : section.key === "cruiseShips" ? <Ship className="h-4 w-4 text-primary" />
+                    : section.key === "busTrips" ? <Bus className="h-4 w-4 text-primary" />
+                    : null;
+
+                  return (
+                    <div key={section.key} className="flex justify-between items-center py-3 border-b border-border/30">
+                      <div className="flex items-center gap-2">
+                        {sectionIcon}
+                        <span className="font-body text-foreground font-medium">{section.label}</span>
+                      </div>
+                      <span className="font-body text-sm">{statusContent}</span>
                     </div>
-                    <span className="font-body text-sm">
-                      {selectedFlight ? (
-                        (() => {
-                          const opt = flightOptions.find((o) => o.id === selectedFlight);
-                          const dep = opt?.legs.find((l) => l.type === "departure");
-                          return (
-                            <span className="text-foreground">
-                              {dep?.airline || "Selected"} — {dep?.departureAirport?.split("–")[0]?.trim()} →{" "}
-                              {dep?.arrivalAirport?.split("–")[0]?.trim()}
-                              {opt?.price ? (
-                                <span className="ml-2 text-primary font-semibold">${opt.price}</span>
-                              ) : null}
-                            </span>
-                          );
-                        })()
-                      ) : (
-                        <span className="text-muted-foreground italic text-xs">Not selected</span>
-                      )}
-                    </span>
-                  </div>
-                )}
-                {vis.accommodations && accommodations.length > 0 && (
-                  <div className="flex justify-between items-center py-3 border-b border-border/30">
-                    <div className="flex items-center gap-2">
-                      <BedDouble className="h-4 w-4 text-primary" />
-                      <span className="font-body text-foreground font-medium">Accommodation</span>
-                    </div>
-                    <span className="font-body text-sm">
-                      {!accommodationsIsChoice ? (
-                        <span className="text-muted-foreground italic text-xs">Informational only</span>
-                      ) : effectiveSelectedAccommodation ? (
-                        (() => {
-                          const a = accommodations.find((a) => a.id === effectiveSelectedAccommodation);
-                          return (
-                            <span className="text-foreground">
-                              {a?.hotelName || "Selected"}
-                              {a?.price ? <span className="ml-2 text-primary font-semibold">${a.price}</span> : null}
-                            </span>
-                          );
-                        })()
-                      ) : (
-                        <span className="text-muted-foreground italic text-xs">Not selected</span>
-                      )}
-                    </span>
-                  </div>
-                )}
-                {vis.cruiseShips && cruiseShips.length > 0 && (
-                  <div className="flex justify-between items-center py-3 border-b border-border/30">
-                    <div className="flex items-center gap-2">
-                      <Ship className="h-4 w-4 text-primary" />
-                      <span className="font-body text-foreground font-medium">Cruise</span>
-                    </div>
-                    <span className="font-body text-sm">
-                      {selectedCruise ? (
-                        (() => {
-                          const s = cruiseShips.find((s) => s.id === selectedCruise);
-                          return (
-                            <span className="text-foreground">
-                              {s?.shipName || "Selected"}
-                              {s?.price ? <span className="ml-2 text-primary font-semibold">${s.price}</span> : null}
-                            </span>
-                          );
-                        })()
-                      ) : (
-                        <span className="text-muted-foreground italic text-xs">Not selected</span>
-                      )}
-                    </span>
-                  </div>
-                )}
-                {vis.busTrips && busTrips.length > 0 && (
-                  <div className="flex justify-between items-center py-3 border-b border-border/30">
-                    <div className="flex items-center gap-2">
-                      <Bus className="h-4 w-4 text-primary" />
-                      <span className="font-body text-foreground font-medium">Bus Trip</span>
-                    </div>
-                    <span className="font-body text-sm">
-                      {selectedBusTrip ? (
-                        (() => {
-                          const b = busTrips.find((b) => b.id === selectedBusTrip);
-                          return (
-                            <span className="text-foreground">
-                              {b?.routeName || "Selected"}
-                              {b?.price ? <span className="ml-2 text-primary font-semibold">${b.price}</span> : null}
-                            </span>
-                          );
-                        })()
-                      ) : (
-                        <span className="text-muted-foreground italic text-xs">Not selected</span>
-                      )}
-                    </span>
-                  </div>
-                )}
+                  );
+                })}
                 {/* Selected pricing option */}
                 {selectedPricingOption &&
                   (() => {
