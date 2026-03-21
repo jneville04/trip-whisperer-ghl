@@ -1169,7 +1169,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
                           {/* Footer: price (if single option) + selection */}
                           {(opt.price || flightsIsChoice) && (
-                            <div className="bg-muted/30 border-t border-border/30 px-6 py-4 flex items-center justify-between">
+                            <div className="bg-muted/50 border-t-2 border-border px-6 py-4 flex items-center justify-between">
                               {opt.price && flightOptions.length <= 1 && showItemizedPrices && (
                                 <span className="font-display text-xl font-bold text-foreground">
                                   {fmtCurrency(opt.price)}
