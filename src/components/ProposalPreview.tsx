@@ -712,7 +712,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               transition={{ duration: 0.6, delay: 0.5 }}
               className="relative z-10 -mt-8 mx-4 sm:mx-6"
             >
-              <div className="max-w-4xl mx-auto bg-background/95 backdrop-blur-md rounded-2xl shadow-xl border border-border/30 px-6 sm:px-8 py-5">
+              <div className="max-w-[1060px] mx-auto bg-background/95 backdrop-blur-md rounded-2xl shadow-lg border border-border/30 px-6 sm:px-8 py-5">
                 <div className="flex items-center justify-between flex-wrap gap-4">
                   {((data as any).startDate || (data as any).endDate) && (
                     <div className="flex items-center gap-3">
