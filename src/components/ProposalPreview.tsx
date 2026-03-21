@@ -2061,7 +2061,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     className="grid grid-cols-1 sm:grid-cols-2 gap-4"
                   >
                     {data.inclusions.filter(Boolean).map((item, i) => (
-                      <div key={i} className="flex items-center gap-3 px-4 py-3.5 border border-border/40 rounded-xl bg-background/90">
+                      <div key={i} className="flex items-center gap-3 px-5 py-4 border border-border rounded-xl bg-background shadow-sm">
                         <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                           <Check className="h-3.5 w-3.5 text-primary" />
                         </div>
