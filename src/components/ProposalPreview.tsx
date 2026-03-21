@@ -731,14 +731,14 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       </div>
                     </div>
                   )}
-                  {data.duration && (
+                  {(data as any).duration && (
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                         <Clock className="h-5 w-5 text-primary" />
                       </div>
                       <div>
                         <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-body font-medium">Duration</p>
-                        <p className="text-sm font-semibold text-foreground font-body">{data.duration}</p>
+                        <p className="text-sm font-semibold text-foreground font-body">{(data as any).duration}</p>
                       </div>
                     </div>
                   )}
