@@ -647,7 +647,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             >
               Book Now
             </Button>
-          ) : !isEditor && !isReadOnly && !approveSuccess ? (
+          ) : !isEditor && !isReadOnly && !approveSuccess && tripStatus !== "revision_requested" && tripStatus !== "reopened" ? (
             <Button
               variant="travel-ghost"
               size="sm"
