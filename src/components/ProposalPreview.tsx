@@ -157,7 +157,7 @@ function ItinerarySection({
   };
 
   return (
-    <section id="itinerary" className="py-20 lg:py-24 border-t-2 border-border/60 bg-[hsl(var(--muted)/0.45)]">
+    <section id="itinerary" className="py-20 lg:py-24 border-t-2 border-border bg-[hsl(var(--muted)/0.45)]">
       <div className="max-w-[1120px] mx-auto px-6">
         <motion.div
           variants={fadeUp}
@@ -971,7 +971,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
         switch (sectionKey) {
           case "overview":
             return (
-              <section key="overview" id="overview" className="py-20 lg:py-24 px-6 border-t-2 border-border/60 bg-background">
+              <section key="overview" id="overview" className="py-20 lg:py-24 px-6 border-t-2 border-border bg-background">
                 <div className="max-w-3xl mx-auto text-center">
                   <motion.p
                     variants={fadeUp}
@@ -1019,7 +1019,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "flights":
             if (flightOptions.length === 0) return null;
             return (
-              <section key="flights" id="flights" className="py-20 lg:py-24 border-t-2 border-border/60 bg-[hsl(var(--muted)/0.45)]">
+              <section key="flights" id="flights" className="py-20 lg:py-24 border-t-2 border-border bg-[hsl(var(--muted)/0.45)]">
                 <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
@@ -1231,7 +1231,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "accommodations":
             if (accommodations.length === 0) return null;
             return (
-              <section key="accommodations" id="accommodations" className="py-20 lg:py-24 border-t-2 border-border/60 bg-background">
+              <section key="accommodations" id="accommodations" className="py-20 lg:py-24 border-t-2 border-border bg-background">
                 <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
@@ -1463,7 +1463,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "cruiseShips":
             if (cruiseShips.length === 0) return null;
             return (
-              <section key="cruiseShips" id="cruiseShips" className="py-20 lg:py-24 border-t-2 border-border/60 bg-[hsl(var(--muted)/0.45)]">
+              <section key="cruiseShips" id="cruiseShips" className="py-20 lg:py-24 border-t-2 border-border bg-[hsl(var(--muted)/0.45)]">
                 <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
@@ -1620,7 +1620,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               {amenities.length > 0 && (
                                 <div className="flex flex-wrap gap-1.5 mt-4">
                                   {amenities.slice(0, 6).map((a, ai) => (
-                                    <span key={ai} className="inline-flex items-center gap-1 bg-muted/70 text-muted-foreground text-[11px] font-body px-2.5 py-1 rounded-full border border-border/60">
+                                    <span key={ai} className="inline-flex items-center gap-1 bg-muted/70 text-muted-foreground text-[11px] font-body px-2.5 py-1 rounded-full border border-border">
                                       <Check className="h-2.5 w-2.5 text-primary" /> {a}
                                     </span>
                                   ))}
@@ -1657,7 +1657,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
                               {/* Footer: selection */}
                               {cruiseIsChoice && !isReadOnly && (
-                                <div className="flex items-center justify-end mt-5 pt-4 border-t border-border/60">
+                                <div className="flex items-center justify-end mt-5 pt-4 border-t-2 border-border">
                                   <div className="flex items-center gap-1.5">
                                     {isSelected ? (
                                       <>
@@ -1699,7 +1699,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "busTrips":
             if (busTrips.length === 0) return null;
             return (
-              <section key="busTrips" id="busTrips" className="py-20 lg:py-24 border-t-2 border-border/60 bg-background">
+              <section key="busTrips" id="busTrips" className="py-20 lg:py-24 border-t-2 border-border bg-background">
                 <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
@@ -2036,7 +2036,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "inclusions":
             if (data.inclusions.filter(Boolean).length === 0) return null;
             return (
-              <section key="inclusions" id="inclusions" className="py-20 lg:py-24 border-t-2 border-border/60 bg-[hsl(var(--muted)/0.45)]">
+              <section key="inclusions" id="inclusions" className="py-20 lg:py-24 border-t-2 border-border bg-[hsl(var(--muted)/0.45)]">
                 <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
@@ -2226,7 +2226,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             const hasTerms = terms.cancellationPolicy || terms.travelInsurance || terms.bookingTerms || terms.liability;
             if (!hasTerms) return null;
             return (
-              <section key="terms" id="terms" className="py-20 lg:py-24 border-t-2 border-border/60 bg-[hsl(var(--muted)/0.35)]">
+              <section key="terms" id="terms" className="py-20 lg:py-24 border-t-2 border-border bg-[hsl(var(--muted)/0.35)]">
                 <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
@@ -2365,7 +2365,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
       {/* PROPOSAL SELECTION SUMMARY — only for Proposal type */}
       {!isGroupBooking && (
-        <section id="pricing" className="py-20 lg:py-24 bg-[hsl(var(--muted)/0.35)] border-t-2 border-border/60">
+        <section id="pricing" className="py-20 lg:py-24 bg-[hsl(var(--muted)/0.35)] border-t-2 border-border">
           <div className="max-w-[1000px] mx-auto px-6">
             <motion.div
               variants={fadeUp}
@@ -2770,7 +2770,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   <Button
                     variant="travel-outline"
                     size="lg"
-                    className="text-lg px-10 py-6 h-auto w-full sm:w-auto border-border/60 bg-background"
+                    className="text-lg px-10 py-6 h-auto w-full sm:w-auto border-border bg-background"
                     onClick={goToRevisions}
                   >
                     <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
@@ -2779,7 +2779,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               )}
               {/* Under Revision passive state */}
               {(tripStatus === "revision_requested" || tripStatus === "reopened") && (
-                <div className="flex items-center justify-center gap-3 pt-4 py-4 px-6 bg-muted/50 rounded-xl border border-border/40">
+                <div className="flex items-center justify-center gap-3 pt-4 py-4 px-6 bg-muted/50 rounded-xl border border-border">
                   <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                     <Sparkles className="h-4 w-4 text-primary" />
                   </div>
@@ -2801,7 +2801,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
       {/* Travel Advisor Footer — for proposal mode, rendered after pricing summary */}
       {!isGroupBooking && agent.name && (
-        <footer className="py-20 px-6 border-t-2 border-border/60 bg-background">
+        <footer className="py-20 px-6 border-t-2 border-border bg-background">
           <div className="max-w-3xl mx-auto text-center">
             <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-6">
               {ct.agent?.subtitle || "Your Travel Advisor"}
