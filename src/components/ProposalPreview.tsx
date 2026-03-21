@@ -159,7 +159,7 @@ function ItinerarySection({
         </motion.div>
         <div className="space-y-6">
           {visibleDays.map((day, dayIdx) => {
-            const isOpen = itineraryDisplayMode === "all_open" ? true : openDayId === day.id;
+            const isOpen = openDayIds.has(day.id);
             const validActivities = day.activities.filter(
               (act) => act.title?.trim() || act.description?.trim() || (act.imageUrls && act.imageUrls.length > 0) || act.videoUrl
             );
