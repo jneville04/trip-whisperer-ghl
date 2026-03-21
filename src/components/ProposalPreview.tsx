@@ -2667,7 +2667,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                 </div>
               )}
 
-              {!isReadOnly && (
+              {/* Status-driven CTAs: hide for revision_requested/reopened */}
+              {!isReadOnly && tripStatus !== "revision_requested" && tripStatus !== "reopened" && (
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                   {!isEditor && tripId ? (
                     !allSelectionsComplete ? (
@@ -2696,7 +2697,6 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                         size="lg"
                         className="text-lg px-10 py-6 h-auto"
                         onClick={() => {
-                          // Final validation before showing review
                           const missing = requiredChoiceSections.filter(s => !s.selectedId).map(s => s.label);
                           if (missing.length > 0) {
                             setValidationError(`Please select an option for: ${missing.join(", ")}`);
@@ -2742,6 +2742,18 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   >
                     <MessageSquare className="h-5 w-5 mr-2" /> Request Revisions
                   </Button>
+                </div>
+              )}
+              {/* Under Revision passive state */}
+              {(tripStatus === "revision_requested" || tripStatus === "reopened") && (
+                <div className="flex items-center justify-center gap-3 pt-4 py-4 px-6 bg-muted/50 rounded-xl border border-border/40">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Sparkles className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-display text-sm font-semibold text-foreground">Under Revision</p>
+                    <p className="text-xs text-muted-foreground font-body">Your travel advisor is updating this proposal. Check back soon.</p>
+                  </div>
                 </div>
               )}
               {data.validUntil && (
