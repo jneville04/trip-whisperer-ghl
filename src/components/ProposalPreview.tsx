@@ -321,13 +321,6 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
     setLightboxOpen(true);
   };
 
-  // Smart section logic: determine selection behavior automatically
-  // Flights default to informational unless explicitly expanded later
-  const flightsIsChoice = !isGroupBooking && flightOptions.length >= 2;
-  const accommodationsIsChoice = !isGroupBooking && accommodations.length >= 2;
-  const cruiseIsChoice = !isGroupBooking && cruiseShips.length >= 2;
-  const busIsChoice = !isGroupBooking && busTrips.length >= 2;
-
   // Selection persistence from data
   const savedSelections: SectionSelections = data.sectionSelections || {};
   const [selectedFlight, setSelectedFlight] = useState<string>(savedSelections.flights || "");
@@ -339,12 +332,6 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   const [approving, setApproving] = useState(false);
   const [approveSuccess, setApproveSuccess] = useState(false);
   const [validationError, setValidationError] = useState<string>("");
-
-  // Auto-include single items
-  const effectiveSelectedFlight = flightsIsChoice ? selectedFlight : (flightOptions.length === 1 ? flightOptions[0].id : "");
-  const effectiveSelectedAccommodation = accommodationsIsChoice ? selectedAccommodation : (accommodations.length === 1 ? accommodations[0].id : "");
-  const effectiveSelectedCruise = cruiseIsChoice ? selectedCruise : (cruiseShips.length === 1 ? cruiseShips[0].id : "");
-  const effectiveSelectedBusTrip = busIsChoice ? selectedBusTrip : (busTrips.length === 1 ? busTrips[0].id : "");
 
   const vis = data.sectionVisibility || {
     hero: true,
@@ -371,14 +358,23 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   const ct = data.sectionCustomTitles || {};
   const flightOptions = (data.flightOptions || []).filter(o => !o.hidden);
   const accommodations = (data.accommodations || []).filter(a => !a.hidden);
-  const accommodationsMode = ((data as any).accommodationsMode || "client_selects_one") as "informational_only" | "client_selects_one";
-  const accommodationSelectionEnabled = !isGroupBooking && accommodationsMode === "client_selects_one";
-  const effectiveSelectedAccommodation = accommodationSelectionEnabled ? selectedAccommodation : "";
   const cruiseShips = (data.cruiseShips || []).filter(s => !s.hidden);
   const busTrips = (data.busTrips || []).filter(t => !(t as any).hidden);
   const pricingOptions = (data.pricingOptions || []).filter(opt => opt.name?.trim() || opt.totalPrice?.trim() || opt.deposit?.trim());
   const financials: FinancialsSettings = data.financials || createDefaultFinancials();
   const hideItemizedPrices = financials.clientView === "package";
+
+  // Smart section logic: auto-detect informational vs choice
+  const flightsIsChoice = !isGroupBooking && flightOptions.length >= 2;
+  const accommodationsIsChoice = !isGroupBooking && accommodations.length >= 2;
+  const cruiseIsChoice = !isGroupBooking && cruiseShips.length >= 2;
+  const busIsChoice = !isGroupBooking && busTrips.length >= 2;
+
+  // Auto-include single required items
+  const effectiveSelectedFlight = flightsIsChoice ? selectedFlight : (flightOptions.length === 1 ? flightOptions[0].id : "");
+  const effectiveSelectedAccommodation = accommodationsIsChoice ? selectedAccommodation : (accommodations.length === 1 ? accommodations[0].id : "");
+  const effectiveSelectedCruise = cruiseIsChoice ? selectedCruise : (cruiseShips.length === 1 ? cruiseShips[0].id : "");
+  const effectiveSelectedBusTrip = busIsChoice ? selectedBusTrip : (busTrips.length === 1 ? busTrips[0].id : "");
   const agent = data.agent || {
     name: "",
     title: "",
