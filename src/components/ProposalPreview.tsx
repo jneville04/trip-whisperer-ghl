@@ -414,6 +414,20 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   // Universal validation: all required choice sections must have a selection
   const missingSelections = requiredChoiceSections.filter((s) => !s.selectedId);
   const allSelectionsComplete = missingSelections.length === 0;
+
+  // ── Auto-clear / update validation error when selections change ──
+  useEffect(() => {
+    if (!validationError) return;
+    if (allSelectionsComplete) {
+      setValidationError("");
+    } else {
+      // Update to show the NEXT missing section instead of stale one
+      const firstMissing = requiredChoiceSections.find(s => !s.selectedId);
+      if (firstMissing) {
+        setValidationError(`Please select an option for ${firstMissing.label} before continuing.`);
+      }
+    }
+  }, [selectedFlight, selectedAccommodation, selectedCruise, selectedBusTrip, allSelectionsComplete]);
   const agent = data.agent || {
     name: "",
     title: "",
