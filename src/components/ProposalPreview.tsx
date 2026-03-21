@@ -1910,7 +1910,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                 </div>
                               </div>
                             )}
-                            <div className="flex items-center gap-6 mt-5 pt-4 border-t border-border/30 text-sm text-muted-foreground font-body flex-wrap">
+                            <div className="flex items-center gap-6 mt-5 pt-4 border-t-2 border-border text-sm text-muted-foreground font-body flex-wrap">
                               {(trip.pickupAddress || trip.pickupLocation) && (
                                 <span className="flex items-center gap-1.5">
                                   <MapPin className="h-3.5 w-3.5" /> Pickup:{" "}
