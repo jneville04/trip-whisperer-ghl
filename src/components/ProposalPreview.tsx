@@ -1609,20 +1609,20 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               )}
 
                               {/* Cruise port details — grouped grid */}
-                              {(ship.embarkPort || ship.disembarkPort || ship.embarkDate || ship.disembarkDate) && (
+                              {(ship.embarkationPort || ship.disembarkationPort || ship.embarkationDate || ship.disembarkationDate) && (
                                 <div className="grid grid-cols-2 gap-3 mt-4 text-xs text-muted-foreground font-body">
-                                  {(ship.embarkPort || ship.embarkDate) && (
+                                  {(ship.embarkationPort || ship.embarkationDate) && (
                                     <div className="bg-muted/30 rounded-lg px-3 py-2">
                                       <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-semibold mb-0.5">Embarkation</p>
-                                      {ship.embarkPort && <p className="text-foreground font-medium">{ship.embarkPort}</p>}
-                                      {ship.embarkDate && <p>{ship.embarkDate}</p>}
+                                      {ship.embarkationPort && <p className="text-foreground font-medium">{ship.embarkationPort}</p>}
+                                      {ship.embarkationDate && <p>{ship.embarkationDate}</p>}
                                     </div>
                                   )}
-                                  {(ship.disembarkPort || ship.disembarkDate) && (
+                                  {(ship.disembarkationPort || ship.disembarkationDate) && (
                                     <div className="bg-muted/30 rounded-lg px-3 py-2">
                                       <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-semibold mb-0.5">Disembarkation</p>
-                                      {ship.disembarkPort && <p className="text-foreground font-medium">{ship.disembarkPort}</p>}
-                                      {ship.disembarkDate && <p>{ship.disembarkDate}</p>}
+                                      {ship.disembarkationPort && <p className="text-foreground font-medium">{ship.disembarkationPort}</p>}
+                                      {ship.disembarkationDate && <p>{ship.disembarkationDate}</p>}
                                     </div>
                                   )}
                                 </div>
