@@ -149,7 +149,7 @@ function ItinerarySection({
   };
 
   return (
-    <section id="itinerary" className="pb-20 pt-20 bg-card">
+    <section id="itinerary" className="pb-24 pt-24">
       <div className="max-w-5xl mx-auto px-6">
         <motion.div
           variants={fadeUp}
@@ -157,10 +157,11 @@ function ItinerarySection({
           whileInView="visible"
           viewport={{ once: true }}
           custom={0}
-          className="text-center mb-16"
+          className="text-center mb-20"
         >
-          <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">{data.sectionCustomTitles?.itinerary?.subtitle || "Your Journey"}</p>
-          <h2 className="font-display text-4xl font-bold text-foreground">{data.sectionCustomTitles?.itinerary?.title || "Day-by-Day Itinerary"}</h2>
+          <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">{data.sectionCustomTitles?.itinerary?.subtitle || "Your Journey"}</p>
+          <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{data.sectionCustomTitles?.itinerary?.title || "Day-by-Day Itinerary"}</h2>
+          <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
         </motion.div>
         <div className="space-y-6">
           {visibleDays.map((day, dayIdx) => {
@@ -608,28 +609,28 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
       {/* STICKY HEADER NAV */}
-      <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/50 shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
-          <div className="flex items-center gap-2 min-w-0">
+      <nav className="sticky top-0 z-50 bg-background/98 backdrop-blur-xl border-b border-border/30">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+          <div className="flex items-center gap-3 min-w-0">
             {brandData.logoUrl && (
               <img
                 src={brandData.logoUrl}
                 alt={`${agent.agencyName || "Agency"} logo`}
-                className="h-8 max-w-[120px] object-contain shrink-0"
+                className="h-9 max-w-[140px] object-contain shrink-0"
               />
             )}
             {(!brandData.logoUrl || showAgencyNameWithLogo) && (
-              <span className="font-display text-lg font-bold text-foreground truncate">
+              <span className="font-display text-lg font-semibold text-foreground truncate tracking-tight">
                 {agent.agencyName || "Travel Co."}
               </span>
             )}
           </div>
-          <div className="hidden sm:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-0.5">
             {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => scrollTo(item.id)}
-                className="px-3 py-1.5 text-sm font-body text-muted-foreground hover:text-primary transition-colors rounded-md hover:bg-muted/50"
+                className="px-3.5 py-2 text-[13px] font-body font-medium text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-muted/60"
               >
                 {item.label}
               </button>
@@ -651,10 +652,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             <Button
               variant="travel-ghost"
               size="sm"
-              className="text-xs"
+              className="text-xs gap-1.5"
               onClick={() => setShowAskQuestion(true)}
             >
-              <HelpCircle className="h-3.5 w-3.5 mr-1" /> Ask a Question
+              <HelpCircle className="h-3.5 w-3.5" /> Ask a Question
             </Button>
           ) : null}
         </div>
@@ -663,11 +664,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
       {/* HERO */}
       {vis.hero &&
         (() => {
-          // Collect all hero media assets — modes are mutually exclusive
           const isVideo = data.heroMediaType === "video" && !!data.heroVideoUrl;
           const mainImg = data.heroImageUrl;
           const sideImgs = (data.heroImageUrls || []).filter(Boolean);
-          // In video mode, only show the video — no side images from photos mode
           const allReal = isVideo
             ? [data.heroVideoUrl!]
             : ([mainImg, ...sideImgs].filter(Boolean) as string[]);
@@ -687,12 +686,12 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   e.stopPropagation();
                   openLightbox(allHeroImgs, 0);
                 }}
-                className="absolute bottom-3 right-3 z-10 flex items-center gap-1.5 md:hidden"
+                className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 md:hidden"
                 style={{
                   background: "rgba(0,0,0,0.55)",
                   color: "white",
-                  borderRadius: 6,
-                  padding: "4px 10px",
+                  borderRadius: 8,
+                  padding: "6px 12px",
                   fontSize: 13,
                 }}
               >
@@ -701,81 +700,76 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               </button>
             ) : null;
 
-          const renderFirstAsset = (className: string, onClick?: () => void) => {
-            if (isVideo) {
-              return (
-                <div className={className} style={{ position: "relative" }}>
-                  <VideoEmbed
-                    url={data.heroVideoUrl!}
-                    title={data.destination}
-                    thumbnailUrl={data.heroVideoThumbnailUrl}
-                    className="!rounded-none !aspect-auto h-full w-full"
-                    autoplay={!!data.heroAutoplay}
-                    muted={!!data.heroMuted}
-                  />
+          // Trip metadata bar
+          const metadataBar = (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="relative z-10 -mt-8 mx-4 sm:mx-6"
+            >
+              <div className="max-w-4xl mx-auto bg-background/95 backdrop-blur-md rounded-2xl shadow-xl border border-border/30 px-6 sm:px-8 py-5">
+                <div className="flex items-center justify-between flex-wrap gap-4">
+                  {((data as any).startDate || (data as any).endDate) && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                        <Calendar className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-body font-medium">Dates</p>
+                        <p className="text-sm font-semibold text-foreground font-body">{formatDateRange((data as any).startDate, (data as any).endDate)}</p>
+                      </div>
+                    </div>
+                  )}
+                  {data.travelerCount && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                        <Users className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-body font-medium">Travelers</p>
+                        <p className="text-sm font-semibold text-foreground font-body">{parseInt(data.travelerCount) === 1 ? "1 Guest" : `${parseInt(data.travelerCount)} Guests`}</p>
+                      </div>
+                    </div>
+                  )}
+                  {(data as any).duration && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                        <Clock className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-body font-medium">Duration</p>
+                        <p className="text-sm font-semibold text-foreground font-body">{(data as any).duration}</p>
+                      </div>
+                    </div>
+                  )}
+                  {agent.agencyName && (
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                        <Globe className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-body font-medium">Prepared by</p>
+                        <p className="text-sm font-semibold text-foreground font-body">{agent.agencyName}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              );
-            }
-            return (
-              <div className={`${className} cursor-pointer`} onClick={onClick}>
-                <img
-                  src={allReal[0]}
-                  alt={data.destination}
-                  className="w-full h-full object-cover"
-                  loading="eager"
-                  decoding="async"
-                />
               </div>
-            );
-          };
+            </motion.div>
+          );
 
           return (
-            <section className="w-full overflow-hidden">
-              {/* ——— Mobile: main image only ——— */}
-              <div className={`md:hidden relative overflow-hidden ${isVideo ? "" : "cursor-pointer"}`} onClick={isVideo ? undefined : () => openLightbox(allHeroImgs, 0)}>
-                {isVideo ? (
-                  <VideoEmbed
-                    url={data.heroVideoUrl!}
-                    title={data.destination}
-                    thumbnailUrl={data.heroVideoThumbnailUrl}
-                    className="!rounded-none !aspect-auto w-full"
-                    autoplay={!!data.heroAutoplay}
-                    muted={!!data.heroMuted}
-                  />
-                ) : (
-                  <img
-                    src={allReal[0]}
-                    alt={data.destination}
-                    className="w-full object-cover object-center"
-                    style={{ height: "45vh" }}
-                    loading="eager"
-                    decoding="async"
-                  />
-                )}
-                {!isVideo && heroMediaBadge}
-              </div>
-
-              {/* ——— Desktop: 1 large left + 2 stacked right ——— */}
-              <div
-                className="hidden md:grid overflow-hidden"
-                style={{
-                  gridTemplateColumns: count >= 3 ? "2fr 1fr" : count === 2 ? "1fr 1fr" : "1fr",
-                  gap: 6,
-                  height: "55vh",
-                }}
-              >
-                {/* Main / left */}
-                <div
-                  className={`overflow-hidden ${isVideo ? "" : "cursor-pointer"}`}
-                  style={{ minHeight: 0 }}
-                  onClick={isVideo ? undefined : () => openLightbox(allHeroImgs, 0)}
-                >
+            <>
+              <section className="relative w-full overflow-hidden">
+                {/* ——— Mobile: main image with overlay ——— */}
+                <div className={`md:hidden relative overflow-hidden ${isVideo ? "" : "cursor-pointer"}`} onClick={isVideo ? undefined : () => openLightbox(allHeroImgs, 0)}>
                   {isVideo ? (
                     <VideoEmbed
                       url={data.heroVideoUrl!}
                       title={data.destination}
                       thumbnailUrl={data.heroVideoThumbnailUrl}
-                      className="!rounded-none !aspect-auto h-full w-full"
+                      className="!rounded-none !aspect-auto w-full"
                       autoplay={!!data.heroAutoplay}
                       muted={!!data.heroMuted}
                     />
@@ -783,92 +777,154 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     <img
                       src={allReal[0]}
                       alt={data.destination}
-                      className="w-full h-full object-cover object-center"
+                      className="w-full object-cover object-center"
+                      style={{ height: "50vh" }}
                       loading="eager"
                       decoding="async"
                     />
                   )}
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                  {/* Title overlay on mobile */}
+                  <div className="absolute bottom-12 left-0 right-0 z-10 px-6">
+                    {data.destination && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                        className="inline-flex items-center gap-1.5 bg-primary/90 text-primary-foreground px-3 py-1 rounded-full text-xs font-body font-semibold mb-3"
+                      >
+                        <MapPin className="h-3 w-3" /> {data.destination}
+                      </motion.div>
+                    )}
+                    <motion.h1
+                      initial={{ opacity: 0, y: 15 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.7, delay: 0.2 }}
+                      className="font-display text-3xl font-bold text-white leading-tight"
+                    >
+                      {(data as any).tripName || data.destination || "Your Destination"}
+                    </motion.h1>
+                    {data.subtitle && (
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.6, delay: 0.4 }}
+                        className="font-body text-white/80 text-sm mt-2"
+                      >
+                        {data.subtitle}
+                      </motion.p>
+                    )}
+                  </div>
+                  {!isVideo && heroMediaBadge}
                 </div>
 
-                {/* Right column: 2 stacked images, 50/50 split */}
-                {count >= 2 && (
+                {/* ——— Desktop: 1 large left + 2 stacked right with overlay ——— */}
+                <div className="hidden md:block relative">
                   <div
-                    className="overflow-hidden"
+                    className="grid overflow-hidden"
                     style={{
-                      display: "grid",
-                      gridTemplateRows: count >= 3 ? "1fr 1fr" : "1fr",
-                      gap: 6,
-                      minHeight: 0,
+                      gridTemplateColumns: count >= 3 ? "2fr 1fr" : count === 2 ? "1fr 1fr" : "1fr",
+                      gap: 4,
+                      height: "60vh",
                     }}
                   >
-                    {allReal.slice(1, 3).map((url, i) => (
-                      <div
-                        key={i}
-                        className="overflow-hidden cursor-pointer"
-                        style={{ minHeight: 0 }}
-                        onClick={() => openLightbox(allHeroImgs, i + 1)}
-                      >
+                    {/* Main / left */}
+                    <div
+                      className={`overflow-hidden ${isVideo ? "" : "cursor-pointer"}`}
+                      style={{ minHeight: 0 }}
+                      onClick={isVideo ? undefined : () => openLightbox(allHeroImgs, 0)}
+                    >
+                      {isVideo ? (
+                        <VideoEmbed
+                          url={data.heroVideoUrl!}
+                          title={data.destination}
+                          thumbnailUrl={data.heroVideoThumbnailUrl}
+                          className="!rounded-none !aspect-auto h-full w-full"
+                          autoplay={!!data.heroAutoplay}
+                          muted={!!data.heroMuted}
+                        />
+                      ) : (
                         <img
-                          src={url}
-                          alt={`${data.destination} ${i + 2}`}
+                          src={allReal[0]}
+                          alt={data.destination}
                           className="w-full h-full object-cover object-center"
-                          loading="lazy"
+                          loading="eager"
                           decoding="async"
                         />
+                      )}
+                    </div>
+
+                    {/* Right column */}
+                    {count >= 2 && (
+                      <div
+                        className="overflow-hidden"
+                        style={{
+                          display: "grid",
+                          gridTemplateRows: count >= 3 ? "1fr 1fr" : "1fr",
+                          gap: 4,
+                          minHeight: 0,
+                        }}
+                      >
+                        {allReal.slice(1, 3).map((url, i) => (
+                          <div
+                            key={i}
+                            className="overflow-hidden cursor-pointer"
+                            style={{ minHeight: 0 }}
+                            onClick={() => openLightbox(allHeroImgs, i + 1)}
+                          >
+                            <img
+                              src={url}
+                              alt={`${data.destination} ${i + 2}`}
+                              className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-700"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    )}
                   </div>
-                )}
-              </div>
-            </section>
+                  {/* Gradient overlay on desktop */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent pointer-events-none" />
+                  {/* Title overlay on desktop */}
+                  <div className="absolute bottom-16 left-0 right-0 z-10 max-w-5xl mx-auto px-8 pointer-events-none">
+                    {data.destination && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                        className="inline-flex items-center gap-1.5 bg-primary/90 text-primary-foreground px-3.5 py-1.5 rounded-full text-xs font-body font-semibold mb-4"
+                      >
+                        <MapPin className="h-3.5 w-3.5" /> {data.destination}
+                      </motion.div>
+                    )}
+                    <motion.h1
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.8, delay: 0.2 }}
+                      className="font-display text-5xl lg:text-6xl font-bold text-white leading-[1.1] max-w-2xl"
+                    >
+                      {(data as any).tripName || data.destination || "Your Destination"}
+                    </motion.h1>
+                    {data.subtitle && (
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.6, delay: 0.4 }}
+                        className="font-body text-white/80 text-base mt-3 max-w-lg"
+                      >
+                        {data.subtitle}
+                      </motion.p>
+                    )}
+                  </div>
+                </div>
+              </section>
+              {/* Floating metadata bar */}
+              {metadataBar}
+            </>
           );
         })()}
-
-      {/* Title section below hero */}
-      {vis.hero && (
-        <div className="max-w-5xl mx-auto px-6 py-10 text-center">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight"
-          >
-            {(data as any).tripName || data.destination || "Your Destination"}
-          </motion.h1>
-          {data.subtitle && (
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="font-display text-lg sm:text-xl text-muted-foreground mt-3 italic"
-            >
-              {data.subtitle}
-            </motion.p>
-          )}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="flex items-center justify-center gap-4 mt-6 flex-wrap"
-          >
-            {((data as any).startDate || (data as any).endDate) && (
-              <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body">
-                <Calendar className="h-4 w-4 text-primary" /> {formatDateRange((data as any).startDate, (data as any).endDate)}
-              </span>
-            )}
-            {data.travelerCount && (
-              <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body">
-                <Users className="h-4 w-4 text-primary" /> {parseInt(data.travelerCount) === 1 ? "1 Traveler" : `${parseInt(data.travelerCount)} Travelers`}
-              </span>
-            )}
-            {data.destination && (
-              <span className="flex items-center gap-1.5 bg-muted text-foreground px-4 py-2 rounded-full text-sm font-body">
-                <MapPin className="h-4 w-4 text-primary" /> {data.destination}
-              </span>
-            )}
-          </motion.div>
-        </div>
-      )}
 
       {/* DYNAMIC SECTIONS */}
       {sectionOrder.map((sectionKey) => {
@@ -877,7 +933,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
         switch (sectionKey) {
           case "overview":
             return (
-              <section key="overview" id="overview" className="py-20 px-6">
+              <section key="overview" id="overview" className="py-24 px-6">
                 <div className="max-w-3xl mx-auto text-center">
                   <motion.p
                     variants={fadeUp}
@@ -885,7 +941,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3"
+                    className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4"
                   >
                     Prepared Exclusively For
                   </motion.p>
@@ -895,7 +951,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={1}
-                    className="font-display text-4xl sm:text-5xl font-bold text-foreground"
+                    className="font-display text-3xl sm:text-5xl font-bold text-foreground"
                   >
                     {data.clientName || "Your Client"}
                   </motion.h2>
@@ -905,7 +961,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={2}
-                    className="w-16 h-0.5 bg-primary mx-auto mt-6 mb-8"
+                    className="w-12 h-[2px] bg-primary/40 mx-auto mt-6 mb-10"
                   />
                   {data.introText && (
                     <motion.div
@@ -914,7 +970,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       whileInView="visible"
                       viewport={{ once: true }}
                       custom={3}
-                      className="text-muted-foreground leading-relaxed text-lg font-body prose prose-lg max-w-none"
+                      className="text-muted-foreground leading-[1.8] text-base sm:text-lg font-body prose prose-lg max-w-none"
                       dangerouslySetInnerHTML={{ __html: data.introText }}
                     />
                   )}
@@ -925,7 +981,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "flights":
             if (flightOptions.length === 0) return null;
             return (
-              <section key="flights" id="flights" className="py-20 bg-card">
+              <section key="flights" id="flights" className="py-24 bg-muted/20">
                 <div className="max-w-4xl mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
@@ -933,14 +989,15 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="text-center mb-12"
+                    className="text-center mb-14"
                   >
-                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+                    <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">
                       {ct.flights?.subtitle || "Your Flights"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.flights?.title || "Air Travel"}</h2>
+                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.flights?.title || "Air Travel"}</h2>
+                    <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
                     {flightsIsChoice && (
-                      <p className="text-sm text-muted-foreground font-body mt-2">Choose one of the options below</p>
+                      <p className="text-sm text-muted-foreground font-body mt-4">Choose one of the options below</p>
                     )}
                   </motion.div>
                   <div className="space-y-8">
@@ -1136,7 +1193,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "accommodations":
             if (accommodations.length === 0) return null;
             return (
-              <section key="accommodations" id="accommodations" className="py-20">
+              <section key="accommodations" id="accommodations" className="py-24">
                 <div className="max-w-5xl mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
@@ -1144,14 +1201,15 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="text-center mb-12"
+                    className="text-center mb-14"
                   >
-                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+                    <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">
                       {ct.accommodations?.subtitle || "Where You'll Stay"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.accommodations?.title || "Accommodations"}</h2>
+                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.accommodations?.title || "Accommodations"}</h2>
+                    <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
                     {accommodationsIsChoice && accommodations.length > 1 && (
-                      <p className="text-sm text-muted-foreground font-body mt-2">Choose one of the options below</p>
+                      <p className="text-sm text-muted-foreground font-body mt-4">Choose one of the options below</p>
                     )}
                   </motion.div>
                   <div className="space-y-10">
@@ -1391,7 +1449,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "cruiseShips":
             if (cruiseShips.length === 0) return null;
             return (
-              <section key="cruiseShips" id="cruiseShips" className="py-20">
+              <section key="cruiseShips" id="cruiseShips" className="py-24">
                 <div className="max-w-5xl mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
@@ -1399,12 +1457,13 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="text-center mb-12"
+                    className="text-center mb-14"
                   >
-                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+                    <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">
                       {ct.cruiseShips?.subtitle || "Your Vessel"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.cruiseShips?.title || "Cruise Ship & Cabin"}</h2>
+                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.cruiseShips?.title || "Cruise Ship & Cabin"}</h2>
+                    <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
                   </motion.div>
                   <div className="space-y-10">
                     {cruiseShips.map((ship) => {
@@ -1669,7 +1728,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "busTrips":
             if (busTrips.length === 0) return null;
             return (
-              <section key="busTrips" id="busTrips" className="py-20">
+              <section key="busTrips" id="busTrips" className="py-24">
                 <div className="max-w-5xl mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
@@ -1677,12 +1736,13 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="text-center mb-12"
+                    className="text-center mb-14"
                   >
-                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+                    <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">
                       {ct.busTrips?.subtitle || "Ground Transport"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.busTrips?.title || "Bus Trips"}</h2>
+                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.busTrips?.title || "Bus Trips"}</h2>
+                    <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
                   </motion.div>
                   <div className="space-y-10">
                     {busTrips.map((trip) => {
@@ -2005,7 +2065,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "inclusions":
             if (data.inclusions.filter(Boolean).length === 0) return null;
             return (
-              <section key="inclusions" id="inclusions" className="py-20">
+              <section key="inclusions" id="inclusions" className="py-24 bg-muted/20">
                 <div className="max-w-4xl mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
@@ -2013,12 +2073,13 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="text-center mb-12"
+                    className="text-center mb-14"
                   >
-                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+                    <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">
                       {ct.inclusions?.subtitle || "Everything Taken Care Of"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.inclusions?.title || "What's Included"}</h2>
+                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.inclusions?.title || "What's Included"}</h2>
+                    <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
                   </motion.div>
                   <motion.div
                     variants={fadeUp}
@@ -2026,14 +2087,14 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={1}
-                    className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-4"
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-3"
                   >
                     {data.inclusions.filter(Boolean).map((item, i) => (
-                      <div key={i} className="flex items-center gap-3 py-2 border-b border-border/50">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <div key={i} className="flex items-center gap-3 py-3 border-b border-border/30">
+                        <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                           <Check className="h-3.5 w-3.5 text-primary" />
                         </div>
-                        <span className="font-body text-foreground">{item}</span>
+                        <span className="font-body text-foreground text-[15px]">{item}</span>
                       </div>
                     ))}
                   </motion.div>
@@ -2194,7 +2255,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             const hasTerms = terms.cancellationPolicy || terms.travelInsurance || terms.bookingTerms || terms.liability;
             if (!hasTerms) return null;
             return (
-              <section key="terms" id="terms" className="py-20 bg-card">
+              <section key="terms" id="terms" className="py-24">
                 <div className="max-w-4xl mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
@@ -2202,12 +2263,13 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="text-center mb-12"
+                    className="text-center mb-14"
                   >
-                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+                    <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">
                       {ct.terms?.subtitle || "Important Information"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.terms?.title || "Terms & Conditions"}</h2>
+                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.terms?.title || "Terms & Conditions"}</h2>
+                    <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
                   </motion.div>
                   <motion.div
                     variants={fadeUp}
@@ -2332,7 +2394,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
       {/* PROPOSAL SELECTION SUMMARY — only for Proposal type */}
       {!isGroupBooking && (
-        <section id="pricing" className="py-20 bg-card border-t border-border/50">
+        <section id="pricing" className="py-24 bg-muted/20 border-t border-border/30">
           <div className="max-w-3xl mx-auto px-6">
             <motion.div
               variants={fadeUp}
@@ -2340,10 +2402,11 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               whileInView="visible"
               viewport={{ once: true }}
               custom={0}
-              className="text-center mb-10"
+              className="text-center mb-12"
             >
-              <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">Investment</p>
-              <h2 className="font-display text-4xl font-bold text-foreground">Trip Pricing</h2>
+              <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">Investment</p>
+              <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">Trip Pricing</h2>
+              <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
             </motion.div>
 
             {/* Pricing Options Cards — large & prominent */}
@@ -2412,7 +2475,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               whileInView="visible"
               viewport={{ once: true }}
               custom={2}
-              className="bg-background rounded-2xl border border-border/50 shadow-lg p-8"
+              className="bg-background rounded-2xl border border-border/30 shadow-[0_4px_24px_-4px_hsl(var(--foreground)/0.08)] p-8 sm:p-10"
             >
               {/* Selected items summary — only show sections that are enabled AND have data */}
               <div className="space-y-4 mb-6">
@@ -2768,40 +2831,46 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
       {/* Travel Advisor Footer — for proposal mode, rendered after pricing summary */}
       {!isGroupBooking && agent.name && (
-        <footer className="py-16 px-6 border-t border-border/50 bg-card">
+        <footer className="py-20 px-6 border-t border-border/30">
           <div className="max-w-3xl mx-auto text-center">
-            <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+            <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-6">
               {ct.agent?.subtitle || "Your Travel Advisor"}
             </p>
-            <div className="flex flex-col items-center gap-4 mb-6">
+            <div className="flex flex-col items-center gap-5 mb-8">
               {agent.photoUrl && (
                 <img
                   src={agent.photoUrl}
                   alt={agent.name}
-                  className="w-20 h-20 rounded-full object-cover border-2 border-primary/20"
+                  className="w-24 h-24 rounded-full object-cover border-3 border-primary/15 shadow-md"
                 />
               )}
               <div>
                 <h3 className="font-display text-2xl font-bold text-foreground">{agent.name}</h3>
-                <p className="text-muted-foreground font-body mt-0.5">{agent.title}</p>
-                <p className="text-sm text-muted-foreground font-body">{agent.agencyName}</p>
+                {agent.title && <p className="text-muted-foreground font-body mt-1">{agent.title}</p>}
+                {agent.agencyName && <p className="text-sm text-muted-foreground/80 font-body mt-0.5">{agent.agencyName}</p>}
               </div>
             </div>
-            <div className="flex items-center justify-center gap-6 text-sm font-body text-muted-foreground flex-wrap">
+            <div className="flex items-center justify-center gap-8 text-sm font-body text-muted-foreground flex-wrap">
               {agent.phone && (
                 <a
                   href={`tel:${agent.phone.replace(/[^\d+]/g, "")}`}
-                  className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                  className="flex items-center gap-2 hover:text-primary transition-colors"
                 >
-                  <Phone className="h-4 w-4" /> {agent.phone}
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Phone className="h-3.5 w-3.5 text-primary" />
+                  </div>
+                  {agent.phone}
                 </a>
               )}
               {agent.email && (
                 <a
                   href={`mailto:${agent.email}`}
-                  className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                  className="flex items-center gap-2 hover:text-primary transition-colors"
                 >
-                  <Mail className="h-4 w-4" /> {agent.email}
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Mail className="h-3.5 w-3.5 text-primary" />
+                  </div>
+                  {agent.email}
                 </a>
               )}
               {agent.website && (
@@ -2809,14 +2878,18 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   href={agent.website.startsWith("http") ? agent.website : `https://${agent.website}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 hover:text-primary transition-colors"
+                  className="flex items-center gap-2 hover:text-primary transition-colors"
                 >
-                  <Globe className="h-4 w-4" /> {agent.website}
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Globe className="h-3.5 w-3.5 text-primary" />
+                  </div>
+                  {agent.website}
                 </a>
               )}
             </div>
-            <p className="text-xs text-muted-foreground/60 mt-10 font-body">
-              © 2026 {agent.agencyName} · All prices in USD · Subject to availability
+            <div className="w-12 h-[1px] bg-border/50 mx-auto mt-12 mb-4" />
+            <p className="text-xs text-muted-foreground/50 font-body">
+              © {new Date().getFullYear()} {agent.agencyName} · All prices in USD · Subject to availability
             </p>
           </div>
         </footer>
