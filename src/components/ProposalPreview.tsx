@@ -1254,7 +1254,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           }`}
                           onClick={() => accommodationsIsChoice && setSelectedAccommodation(isSelected ? "" : acc.id)}
                         >
-                          <div className="flex flex-col md:flex-row">
+                          <div className="flex flex-col md:flex-row-reverse">
                             {/* Image Section — Left */}
                             {showAccPhotos && allAccImages.length > 0 && (
                               <div className="md:w-[360px] lg:w-[380px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-r border-border/60 bg-muted/25">
@@ -1486,7 +1486,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           }`}
                           onClick={() => cruiseIsChoice && setSelectedCruise(isSelected ? "" : ship.id)}
                         >
-                          <div className="flex flex-col md:flex-row">
+                          <div className="flex flex-col md:flex-row-reverse">
                             {/* Image Section — Left */}
                             {showShipPhotos && allShipImages.length > 0 && (
                               <div className="md:w-[360px] lg:w-[380px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-r border-border/60 bg-muted/25">
