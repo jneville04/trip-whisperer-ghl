@@ -57,6 +57,7 @@ Deno.serve(async (req) => {
 
     // 2. Send agent email notification via Resend
     const resendKey = Deno.env.get("RESEND_SECRET_API");
+    console.log("Email check:", { hasResendKey: !!resendKey, agentEmail: agentEmail || "none" });
     if (resendKey && agentEmail) {
       try {
         const selectionsText = currentSelections
