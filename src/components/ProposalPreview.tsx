@@ -2204,8 +2204,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             const hasTerms = terms.cancellationPolicy || terms.travelInsurance || terms.bookingTerms || terms.liability;
             if (!hasTerms) return null;
             return (
-              <section key="terms" id="terms" className="py-24 border-t border-border/30 bg-muted/15">
-                <div className="max-w-4xl mx-auto px-6">
+              <section key="terms" id="terms" className="py-20 lg:py-24 border-t border-border/30 bg-muted/15">
+                <div className="max-w-[1140px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
