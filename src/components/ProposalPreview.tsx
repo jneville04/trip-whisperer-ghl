@@ -1257,7 +1257,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           <div className="flex flex-col md:flex-row-reverse">
                             {/* Image Section — Left */}
                             {showAccPhotos && allAccImages.length > 0 && (
-                              <div className="md:w-[360px] lg:w-[380px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-r border-border/60 bg-muted/25">
+                              <div className="md:w-[360px] lg:w-[380px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-l border-border/60 bg-muted/25">
                                 <div
                                   className="aspect-[16/10] overflow-hidden cursor-pointer relative group rounded-xl border border-border/60"
                                   onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
@@ -1295,7 +1295,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               </div>
                             )}
                             {showAccVideo && (
-                              <div className="md:w-[360px] lg:w-[380px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-r border-border/60 bg-muted/25">
+                              <div className="md:w-[360px] lg:w-[380px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-l border-border/60 bg-muted/25">
                                 <VideoEmbed
                                   url={acc.videoUrl!}
                                   title={acc.hotelName}
@@ -1489,7 +1489,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           <div className="flex flex-col md:flex-row-reverse">
                             {/* Image Section — Left */}
                             {showShipPhotos && allShipImages.length > 0 && (
-                              <div className="md:w-[360px] lg:w-[380px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-r border-border/60 bg-muted/25">
+                              <div className="md:w-[360px] lg:w-[380px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-l border-border/60 bg-muted/25">
                                 <div
                                   className="aspect-[16/10] overflow-hidden cursor-pointer relative group rounded-xl border border-border/60"
                                   onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, 0); }}
@@ -1522,7 +1522,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               </div>
                             )}
                             {showShipVideo && (
-                              <div className="md:w-[360px] lg:w-[380px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-r border-border/60 bg-muted/25">
+                              <div className="md:w-[360px] lg:w-[380px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-l border-border/60 bg-muted/25">
                                 <VideoEmbed url={ship.videoUrl!} title={ship.shipName} thumbnailUrl={ship.videoThumbnailUrl} className="w-full rounded-xl" />
                               </div>
                             )}
