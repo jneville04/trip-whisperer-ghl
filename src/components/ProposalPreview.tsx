@@ -1449,7 +1449,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "cruiseShips":
             if (cruiseShips.length === 0) return null;
             return (
-              <section key="cruiseShips" id="cruiseShips" className="py-20">
+              <section key="cruiseShips" id="cruiseShips" className="py-24">
                 <div className="max-w-5xl mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
@@ -1457,12 +1457,13 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="text-center mb-12"
+                    className="text-center mb-14"
                   >
-                    <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
+                    <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">
                       {ct.cruiseShips?.subtitle || "Your Vessel"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.cruiseShips?.title || "Cruise Ship & Cabin"}</h2>
+                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.cruiseShips?.title || "Cruise Ship & Cabin"}</h2>
+                    <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
                   </motion.div>
                   <div className="space-y-10">
                     {cruiseShips.map((ship) => {
