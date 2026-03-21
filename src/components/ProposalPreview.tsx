@@ -888,7 +888,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                     </p>
                     <h2 className="font-display text-4xl font-bold text-foreground">{ct.flights?.title || "Air Travel"}</h2>
                     {flightsIsChoice && (
-                      <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>
+                      <p className="text-sm text-muted-foreground font-body mt-2">Choose one of the options below</p>
                     )}
                   </motion.div>
                   <div className="space-y-8">
@@ -1042,7 +1042,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                         className="text-xs"
                                         onClick={(e) => e.stopPropagation()}
                                       >
-                                        <Check className="h-3 w-3 mr-1" /> Option selected
+                                        <Check className="h-3 w-3 mr-1" /> Selected ✓
                                       </Button>
                                       <Button
                                         variant="travel-ghost"
@@ -1066,7 +1066,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                         setSelectedFlight(opt.id);
                                       }}
                                     >
-                                      Select option
+                                      Select This Option
                                     </Button>
                                   )}
                                 </div>
@@ -1099,7 +1099,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                     </p>
                     <h2 className="font-display text-4xl font-bold text-foreground">{ct.accommodations?.title || "Accommodations"}</h2>
                     {accommodationsIsChoice && accommodations.length > 1 && (
-                      <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>
+                      <p className="text-sm text-muted-foreground font-body mt-2">Choose one of the options below</p>
                     )}
                   </motion.div>
                   <div className="space-y-10">
@@ -1296,7 +1296,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                           className="text-xs"
                                           onClick={(e) => e.stopPropagation()}
                                         >
-                                          <Check className="h-3 w-3 mr-1" /> Option selected
+                                          <Check className="h-3 w-3 mr-1" /> Selected ✓
                                         </Button>
                                         <Button
                                           variant="travel-ghost"
@@ -1320,7 +1320,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                           setSelectedAccommodation(acc.id);
                                         }}
                                       >
-                                        Select option
+                                        Select This Option
                                       </Button>
                                     )}
                                   </div>
@@ -1574,7 +1574,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                           className="text-xs"
                                           onClick={(e) => e.stopPropagation()}
                                         >
-                                          <Check className="h-3 w-3 mr-1" /> Option selected
+                                          <Check className="h-3 w-3 mr-1" /> Selected ✓
                                         </Button>
                                         <Button
                                           variant="travel-ghost"
@@ -1598,7 +1598,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                           setSelectedCruise(ship.id);
                                         }}
                                       >
-                                        Select option
+                                        Select This Option
                                       </Button>
                                     )}
                                   </div>
@@ -1906,7 +1906,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                           className="text-xs"
                                           onClick={(e) => e.stopPropagation()}
                                         >
-                                          <Check className="h-3 w-3 mr-1" /> Option selected
+                                          <Check className="h-3 w-3 mr-1" /> Selected ✓
                                         </Button>
                                         <Button
                                           variant="travel-ghost"
@@ -1930,7 +1930,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                           setSelectedBusTrip(trip.id);
                                         }}
                                       >
-                                        Select option
+                                        Select This Option
                                       </Button>
                                     )}
                                   </div>
@@ -2364,104 +2364,90 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
             >
               {/* Selected items summary — only show sections that are enabled AND have data */}
               <div className="space-y-4 mb-6">
-                {vis.flights && flightOptions.length > 0 && (
-                  <div className="flex justify-between items-center py-3 border-b border-border/30">
-                    <div className="flex items-center gap-2">
-                      <Plane className="h-4 w-4 text-primary" />
-                      <span className="font-body text-foreground font-medium">Flight</span>
+                {sectionRegistry.filter(s => s.visible && s.items.length > 0).map((section) => {
+                  const isChoice = !isGroupBooking && section.items.length >= 2;
+                  const isSingleIncluded = section.items.length === 1;
+                  const effectiveId = isChoice ? section.selectedId : (isSingleIncluded ? section.items[0].id : "");
+                  const selectedItem = section.items.find(i => i.id === effectiveId);
+
+                  // Build status label
+                  let statusContent: React.ReactNode;
+                  if (isSingleIncluded) {
+                    // Get display name for the included item
+                    const itemName = (() => {
+                      if (section.key === "flights") {
+                        const opt = flightOptions.find(o => o.id === effectiveId);
+                        const dep = opt?.legs.find(l => l.type === "departure");
+                        return dep?.airline || "Flight";
+                      }
+                      if (section.key === "accommodations") return accommodations.find(a => a.id === effectiveId)?.hotelName || "Hotel";
+                      if (section.key === "cruiseShips") return cruiseShips.find(s => s.id === effectiveId)?.shipName || "Cruise";
+                      if (section.key === "busTrips") return busTrips.find(b => b.id === effectiveId)?.routeName || "Bus";
+                      return "Included";
+                    })();
+                    statusContent = (
+                      <span className="text-foreground text-xs font-medium flex items-center gap-1.5">
+                        <Check className="h-3 w-3 text-primary" /> Included in package
+                        {selectedItem?.price && showItemizedPrices && (
+                          <span className="ml-1 text-primary font-semibold">{fmtCurrency(selectedItem.price)}</span>
+                        )}
+                      </span>
+                    );
+                  } else if (isChoice && effectiveId) {
+                    const itemName = (() => {
+                      if (section.key === "flights") {
+                        const opt = flightOptions.find(o => o.id === effectiveId);
+                        const dep = opt?.legs.find(l => l.type === "departure");
+                        return dep?.airline ? `${dep.airline} — ${dep.departureAirport?.split("–")[0]?.trim()} → ${dep.arrivalAirport?.split("–")[0]?.trim()}` : "Flight";
+                      }
+                      if (section.key === "accommodations") return accommodations.find(a => a.id === effectiveId)?.hotelName || "Hotel";
+                      if (section.key === "cruiseShips") return cruiseShips.find(s => s.id === effectiveId)?.shipName || "Cruise";
+                      if (section.key === "busTrips") return busTrips.find(b => b.id === effectiveId)?.routeName || "Bus";
+                      return "Selected";
+                    })();
+                    statusContent = (
+                      <span className="text-foreground text-xs font-medium flex items-center gap-1.5">
+                        <Check className="h-3 w-3 text-primary" /> Selected: {itemName}
+                        {selectedItem?.price && showItemizedPrices && (
+                          <span className="ml-1 text-primary font-semibold">{fmtCurrency(selectedItem.price)}</span>
+                        )}
+                      </span>
+                    );
+                  } else if (isChoice && !effectiveId) {
+                    statusContent = (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          document.getElementById(section.key)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }}
+                        className="text-accent text-xs font-semibold font-body flex items-center gap-1.5 hover:underline cursor-pointer"
+                      >
+                        ⚠ Selection required
+                      </button>
+                    );
+                  } else {
+                    // Informational (0 items visible but section is on — shouldn't happen, but safe fallback)
+                    statusContent = (
+                      <span className="text-muted-foreground italic text-xs">Included in package</span>
+                    );
+                  }
+
+                  const sectionIcon = section.key === "flights" ? <Plane className="h-4 w-4 text-primary" />
+                    : section.key === "accommodations" ? <BedDouble className="h-4 w-4 text-primary" />
+                    : section.key === "cruiseShips" ? <Ship className="h-4 w-4 text-primary" />
+                    : section.key === "busTrips" ? <Bus className="h-4 w-4 text-primary" />
+                    : null;
+
+                  return (
+                    <div key={section.key} className="flex justify-between items-center py-3 border-b border-border/30">
+                      <div className="flex items-center gap-2">
+                        {sectionIcon}
+                        <span className="font-body text-foreground font-medium">{section.label}</span>
+                      </div>
+                      <span className="font-body text-sm">{statusContent}</span>
                     </div>
-                    <span className="font-body text-sm">
-                      {selectedFlight ? (
-                        (() => {
-                          const opt = flightOptions.find((o) => o.id === selectedFlight);
-                          const dep = opt?.legs.find((l) => l.type === "departure");
-                          return (
-                            <span className="text-foreground">
-                              {dep?.airline || "Selected"} — {dep?.departureAirport?.split("–")[0]?.trim()} →{" "}
-                              {dep?.arrivalAirport?.split("–")[0]?.trim()}
-                              {opt?.price ? (
-                                <span className="ml-2 text-primary font-semibold">${opt.price}</span>
-                              ) : null}
-                            </span>
-                          );
-                        })()
-                      ) : (
-                        <span className="text-muted-foreground italic text-xs">Not selected</span>
-                      )}
-                    </span>
-                  </div>
-                )}
-                {vis.accommodations && accommodations.length > 0 && (
-                  <div className="flex justify-between items-center py-3 border-b border-border/30">
-                    <div className="flex items-center gap-2">
-                      <BedDouble className="h-4 w-4 text-primary" />
-                      <span className="font-body text-foreground font-medium">Accommodation</span>
-                    </div>
-                    <span className="font-body text-sm">
-                      {!accommodationsIsChoice ? (
-                        <span className="text-muted-foreground italic text-xs">Informational only</span>
-                      ) : effectiveSelectedAccommodation ? (
-                        (() => {
-                          const a = accommodations.find((a) => a.id === effectiveSelectedAccommodation);
-                          return (
-                            <span className="text-foreground">
-                              {a?.hotelName || "Selected"}
-                              {a?.price ? <span className="ml-2 text-primary font-semibold">${a.price}</span> : null}
-                            </span>
-                          );
-                        })()
-                      ) : (
-                        <span className="text-muted-foreground italic text-xs">Not selected</span>
-                      )}
-                    </span>
-                  </div>
-                )}
-                {vis.cruiseShips && cruiseShips.length > 0 && (
-                  <div className="flex justify-between items-center py-3 border-b border-border/30">
-                    <div className="flex items-center gap-2">
-                      <Ship className="h-4 w-4 text-primary" />
-                      <span className="font-body text-foreground font-medium">Cruise</span>
-                    </div>
-                    <span className="font-body text-sm">
-                      {selectedCruise ? (
-                        (() => {
-                          const s = cruiseShips.find((s) => s.id === selectedCruise);
-                          return (
-                            <span className="text-foreground">
-                              {s?.shipName || "Selected"}
-                              {s?.price ? <span className="ml-2 text-primary font-semibold">${s.price}</span> : null}
-                            </span>
-                          );
-                        })()
-                      ) : (
-                        <span className="text-muted-foreground italic text-xs">Not selected</span>
-                      )}
-                    </span>
-                  </div>
-                )}
-                {vis.busTrips && busTrips.length > 0 && (
-                  <div className="flex justify-between items-center py-3 border-b border-border/30">
-                    <div className="flex items-center gap-2">
-                      <Bus className="h-4 w-4 text-primary" />
-                      <span className="font-body text-foreground font-medium">Bus Trip</span>
-                    </div>
-                    <span className="font-body text-sm">
-                      {selectedBusTrip ? (
-                        (() => {
-                          const b = busTrips.find((b) => b.id === selectedBusTrip);
-                          return (
-                            <span className="text-foreground">
-                              {b?.routeName || "Selected"}
-                              {b?.price ? <span className="ml-2 text-primary font-semibold">${b.price}</span> : null}
-                            </span>
-                          );
-                        })()
-                      ) : (
-                        <span className="text-muted-foreground italic text-xs">Not selected</span>
-                      )}
-                    </span>
-                  </div>
-                )}
+                  );
+                })}
                 {/* Selected pricing option */}
                 {selectedPricingOption &&
                   (() => {
@@ -2532,19 +2518,29 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                   );
                 }
 
-                // Calculated / sum mode — compute from selections
-                const selectedFlightPrice = selectedFlight
-                  ? parseFloat(flightOptions.find((o) => o.id === selectedFlight)?.price || "0")
-                  : 0;
-                const selectedAccPrice = effectiveSelectedAccommodation
-                  ? parseFloat(accommodations.find((a) => a.id === effectiveSelectedAccommodation)?.price || "0")
-                  : 0;
-                const selectedCruisePrice = selectedCruise
-                  ? parseFloat(cruiseShips.find((s) => s.id === selectedCruise)?.price || "0")
-                  : 0;
-                const selectedBusPrice = selectedBusTrip
-                  ? parseFloat(busTrips.find((b) => b.id === selectedBusTrip)?.price || "0")
-                  : 0;
+                // Calculated / sum mode — compute from included + selected
+                // Base: auto-included single items (always counted)
+                const getPrice = (items: { id: string; price?: string }[], id: string) =>
+                  parseFloat(items.find(i => i.id === id)?.price?.replace(/[^0-9.-]/g, "") || "0");
+
+                let baseTotal = 0;
+                let selectedTotal = 0;
+                const pendingSections: string[] = [];
+
+                for (const sec of sectionRegistry) {
+                  if (!sec.visible || sec.items.length === 0) continue;
+                  const isChoice = !isGroupBooking && sec.items.length >= 2;
+                  const isSingle = sec.items.length === 1;
+
+                  if (isSingle) {
+                    baseTotal += getPrice(sec.items, sec.items[0].id);
+                  } else if (isChoice && sec.selectedId) {
+                    selectedTotal += getPrice(sec.items, sec.selectedId);
+                  } else if (isChoice) {
+                    pendingSections.push(sec.label);
+                  }
+                }
+
                 const pricingLinesTotal = data.pricing.reduce(
                   (sum, line) => sum + (parseFloat(line.amount.replace(/[^0-9.-]/g, "")) || 0),
                   0,
@@ -2556,27 +2552,37 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                         ?.totalPrice?.replace(/[^0-9.-]/g, "") || "0",
                     )
                   : 0;
-                const total =
-                  selectedFlightPrice +
-                  selectedAccPrice +
-                  selectedCruisePrice +
-                  selectedBusPrice +
-                  pricingLinesTotal +
-                  selectedOptionPrice;
-                if (total > 0) {
+
+                const currentSubtotal = baseTotal + selectedTotal + pricingLinesTotal + selectedOptionPrice;
+                const hasPendingSelections = pendingSections.length > 0;
+
+                if (currentSubtotal > 0 || hasPendingSelections) {
+                  const currSymbol = financials.currency !== "USD" ? financials.currency + " " : "$";
                   return (
-                    <div className="pt-4 border-t-2 border-primary/30 mb-6 space-y-2">
+                    <div className="pt-4 border-t-2 border-primary/30 mb-6 space-y-3">
                       <div className="flex justify-between items-center">
-                        <span className="font-display text-xl font-bold text-foreground">Estimated Total</span>
+                        <span className="font-display text-xl font-bold text-foreground">
+                          {hasPendingSelections ? "Current Subtotal" : "Estimated Total"}
+                        </span>
                         <span className="font-display text-2xl font-bold text-primary">
-                          ${total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          {currSymbol}{currentSubtotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
                       </div>
+                      {hasPendingSelections && (
+                        <div className="bg-accent/10 border border-accent/30 rounded-lg px-4 py-2.5">
+                          <p className="text-xs font-semibold text-accent font-body">
+                            Pending selections: {pendingSections.join(", ")}
+                          </p>
+                          <p className="text-[11px] text-muted-foreground font-body mt-0.5">
+                            Total will update as you make your selections above.
+                          </p>
+                        </div>
+                      )}
                       {finDeposit > 0 && (
                         <div className="flex justify-between items-center">
                           <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
                           <span className="font-display text-lg font-bold text-accent">
-                            {financials.currency !== "USD" ? financials.currency + " " : "$"}{finDeposit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            {currSymbol}{finDeposit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </span>
                         </div>
                       )}
@@ -2627,61 +2633,97 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
 
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
                 {!isEditor && tripId ? (
-                  <Button
-                    variant="travel"
-                    size="lg"
-                    className="text-lg px-10 py-6 h-auto"
-                    disabled={!termsAccepted || approving || !allSelectionsComplete}
-                    onClick={async () => {
-                      // Universal approval validation using section registry
-                      const missing = requiredChoiceSections
-                        .filter((s) => !s.selectedId)
-                        .map((s) => s.label);
-                      if (missing.length > 0) {
-                        setValidationError(`Please select an option for: ${missing.join(", ")}`);
-                        return;
-                      }
-                      setValidationError("");
-                      setApproving(true);
-                      try {
-                        const { error } = await supabase.functions.invoke("approve-trip", {
-                          body: {
-                            tripId,
-                            selectionSummary: [
-                              selectedFlight && `Flight: ${flightOptions.find(f => f.id === selectedFlight)?.legs?.[0]?.airline || "Selected"}`,
-                              selectedAccommodation && `Hotel: ${accommodations.find(a => a.id === selectedAccommodation)?.hotelName || "Selected"}`,
-                              selectedCruise && `Cruise: ${cruiseShips.find(c => c.id === selectedCruise)?.shipName || "Selected"}`,
-                              selectedPricingOption && `Package: ${pricingOptions.find(p => p.id === selectedPricingOption)?.name || "Selected"}`,
-                            ].filter(Boolean).join(" | "),
-                            totalPrice: (() => {
-                              let t = 0;
-                              if (selectedFlight) t += parseFloat(flightOptions.find(f => f.id === selectedFlight)?.price || "0");
-                              if (selectedAccommodation) t += parseFloat(accommodations.find(a => a.id === selectedAccommodation)?.price || "0");
-                              if (selectedCruise) t += parseFloat(cruiseShips.find(c => c.id === selectedCruise)?.price || "0");
-                              if (selectedPricingOption) t += parseFloat(pricingOptions.find(p => p.id === selectedPricingOption)?.totalPrice?.replace(/[^0-9.-]/g, "") || "0");
-                              t += data.pricing.reduce((sum, l) => sum + (parseFloat(l.amount.replace(/[^0-9.-]/g, "")) || 0), 0);
-                              return t;
-                            })(),
-                          },
-                        });
-                        if (error) throw error;
-                        setApproveSuccess(true);
-                      } catch (err) {
-                        console.error("Approve failed:", err);
-                        setApproveSuccess(true); // Still show success to not block client
-                      }
-                      setApproving(false);
-                    }}
-                  >
-                    {approving ? (
-                      <>Processing...</>
-                    ) : (
-                      <><CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary</>
-                    )}
-                  </Button>
+                  !allSelectionsComplete ? (
+                    <Button
+                      variant="travel"
+                      size="lg"
+                      className="text-lg px-10 py-6 h-auto"
+                      onClick={() => {
+                        const firstMissing = requiredChoiceSections.find(s => !s.selectedId);
+                        if (firstMissing) {
+                          const el = document.getElementById(firstMissing.key);
+                          if (el) {
+                            el.scrollIntoView({ behavior: "smooth", block: "start" });
+                            el.classList.add("ring-2", "ring-accent/50");
+                            setTimeout(() => el.classList.remove("ring-2", "ring-accent/50"), 3000);
+                          }
+                          setValidationError(`Please select an option for ${firstMissing.label} before continuing.`);
+                        }
+                      }}
+                    >
+                      <ArrowRight className="h-5 w-5 mr-2" /> Complete Selections
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="travel"
+                      size="lg"
+                      className="text-lg px-10 py-6 h-auto"
+                      disabled={!termsAccepted || approving}
+                      onClick={async () => {
+                        // Final validation guard
+                        const missing = requiredChoiceSections
+                          .filter((s) => !s.selectedId)
+                          .map((s) => s.label);
+                        if (missing.length > 0) {
+                          setValidationError(`Please select an option for: ${missing.join(", ")}`);
+                          return;
+                        }
+                        setValidationError("");
+                        setApproving(true);
+                        try {
+                          // Build total from section registry
+                          let totalPrice = 0;
+                          for (const sec of sectionRegistry) {
+                            if (!sec.visible || sec.items.length === 0) continue;
+                            const effectiveId = sec.items.length === 1 ? sec.items[0].id : sec.selectedId;
+                            if (effectiveId) {
+                              const item = sec.items.find(i => i.id === effectiveId);
+                              totalPrice += parseFloat(item?.price?.replace(/[^0-9.-]/g, "") || "0");
+                            }
+                          }
+                          totalPrice += data.pricing.reduce((sum, l) => sum + (parseFloat(l.amount.replace(/[^0-9.-]/g, "")) || 0), 0);
+                          if (selectedPricingOption) {
+                            totalPrice += parseFloat(pricingOptions.find(p => p.id === selectedPricingOption)?.totalPrice?.replace(/[^0-9.-]/g, "") || "0");
+                          }
+
+                          const { error } = await supabase.functions.invoke("approve-trip", {
+                            body: {
+                              tripId,
+                              selectionSummary: sectionRegistry
+                                .filter(s => s.visible && s.items.length > 0)
+                                .map(s => {
+                                  const effId = s.items.length === 1 ? s.items[0].id : s.selectedId;
+                                  if (!effId) return null;
+                                  if (s.key === "flights") return `Flight: ${flightOptions.find(f => f.id === effId)?.legs?.[0]?.airline || "Selected"}`;
+                                  if (s.key === "accommodations") return `Hotel: ${accommodations.find(a => a.id === effId)?.hotelName || "Selected"}`;
+                                  if (s.key === "cruiseShips") return `Cruise: ${cruiseShips.find(c => c.id === effId)?.shipName || "Selected"}`;
+                                  if (s.key === "busTrips") return `Bus: ${busTrips.find(b => b.id === effId)?.routeName || "Selected"}`;
+                                  return null;
+                                })
+                                .filter(Boolean)
+                                .join(" | "),
+                              totalPrice,
+                            },
+                          });
+                          if (error) throw error;
+                          setApproveSuccess(true);
+                        } catch (err) {
+                          console.error("Approve failed:", err);
+                          setApproveSuccess(true);
+                        }
+                        setApproving(false);
+                      }}
+                    >
+                      {approving ? (
+                        <>Processing...</>
+                      ) : (
+                        <><CheckCircle2 className="h-5 w-5 mr-2" /> Approve &amp; Secure Booking</>
+                      )}
+                    </Button>
+                  )
                 ) : (
                   <Button variant="travel" size="lg" className="text-lg px-10 py-6 h-auto" onClick={goToApprove}>
-                    <CheckCircle2 className="h-5 w-5 mr-2" /> Approve Itinerary
+                    <CheckCircle2 className="h-5 w-5 mr-2" /> {allSelectionsComplete ? "Approve & Secure Booking" : "Complete Selections"}
                   </Button>
                 )}
                 <Button
