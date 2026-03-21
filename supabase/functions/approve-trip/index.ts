@@ -89,9 +89,14 @@ Deno.serve(async (req) => {
             trip_name: tripName,
             total_price: totalPrice || 0,
             deposit_amount: depositAmount || 0,
+            currency: currency || "USD",
+            pricing_mode: pricingMode || "fixed",
             selection_summary: selectionSummary || "",
+            section_details: sectionDetails || [],
             snapshot_url: snapshotUrl,
             snapshot_id: snapshot?.id,
+            status: "approved",
+            approved_at: approvedAt || new Date().toISOString(),
             timestamp: new Date().toISOString(),
           };
 
