@@ -1894,7 +1894,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               </div>
                             )}
                             {amenities.length > 0 && (
-                              <div className="mt-4 pt-4 border-t border-border/30">
+                              <div className="mt-4 pt-4 border-t-2 border-border">
                                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">
                                   Bus Amenities
                                 </p>
