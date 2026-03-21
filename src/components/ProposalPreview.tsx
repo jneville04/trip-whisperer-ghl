@@ -362,19 +362,47 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   const busTrips = (data.busTrips || []).filter(t => !(t as any).hidden);
   const pricingOptions = (data.pricingOptions || []).filter(opt => opt.name?.trim() || opt.totalPrice?.trim() || opt.deposit?.trim());
   const financials: FinancialsSettings = data.financials || createDefaultFinancials();
-  const hideItemizedPrices = financials.clientView === "package";
+  const showItemizedPrices = financials.clientView === "itemized";
 
-  // Smart section logic: auto-detect informational vs choice
-  const flightsIsChoice = !isGroupBooking && flightOptions.length >= 2;
-  const accommodationsIsChoice = !isGroupBooking && accommodations.length >= 2;
-  const cruiseIsChoice = !isGroupBooking && cruiseShips.length >= 2;
-  const busIsChoice = !isGroupBooking && busTrips.length >= 2;
+  // ── Universal section-driven pattern ──
+  // Each entry describes a proposal section that CAN be selectable.
+  // The system auto-determines behaviour from item count — no hard-coding.
+  interface SelectableSection {
+    key: string;
+    label: string;
+    items: { id: string; price?: string; pricingDisplay?: string }[];
+    visible: boolean;
+    selectedId: string;
+    setSelectedId: (id: string) => void;
+  }
+
+  const sectionRegistry: SelectableSection[] = [
+    { key: "flights", label: "Flight", items: flightOptions, visible: vis.flights, selectedId: selectedFlight, setSelectedId: setSelectedFlight },
+    { key: "accommodations", label: "Accommodation", items: accommodations, visible: vis.accommodations, selectedId: selectedAccommodation, setSelectedId: setSelectedAccommodation },
+    { key: "cruiseShips", label: "Cruise", items: cruiseShips, visible: vis.cruiseShips, selectedId: selectedCruise, setSelectedId: setSelectedCruise },
+    { key: "busTrips", label: "Bus Trip", items: busTrips, visible: vis.busTrips, selectedId: selectedBusTrip, setSelectedId: setSelectedBusTrip },
+  ];
+
+  // A section is a "required choice" if visible, not group-booking, and has 2+ items
+  const requiredChoiceSections = sectionRegistry.filter(
+    (s) => s.visible && !isGroupBooking && s.items.length >= 2
+  );
+
+  // Convenience booleans derived from the universal list
+  const flightsIsChoice = requiredChoiceSections.some((s) => s.key === "flights");
+  const accommodationsIsChoice = requiredChoiceSections.some((s) => s.key === "accommodations");
+  const cruiseIsChoice = requiredChoiceSections.some((s) => s.key === "cruiseShips");
+  const busIsChoice = requiredChoiceSections.some((s) => s.key === "busTrips");
 
   // Auto-include single required items
   const effectiveSelectedFlight = flightsIsChoice ? selectedFlight : (flightOptions.length === 1 ? flightOptions[0].id : "");
   const effectiveSelectedAccommodation = accommodationsIsChoice ? selectedAccommodation : (accommodations.length === 1 ? accommodations[0].id : "");
   const effectiveSelectedCruise = cruiseIsChoice ? selectedCruise : (cruiseShips.length === 1 ? cruiseShips[0].id : "");
   const effectiveSelectedBusTrip = busIsChoice ? selectedBusTrip : (busTrips.length === 1 ? busTrips[0].id : "");
+
+  // Universal validation: all required choice sections must have a selection
+  const missingSelections = requiredChoiceSections.filter((s) => !s.selectedId);
+  const allSelectionsComplete = missingSelections.length === 0;
   const agent = data.agent || {
     name: "",
     title: "",
