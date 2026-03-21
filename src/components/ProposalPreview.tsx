@@ -1257,9 +1257,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           <div className="flex flex-col md:flex-row">
                             {/* Image Section — Left */}
                             {showAccPhotos && allAccImages.length > 0 && (
-                              <div className="md:w-[380px] lg:w-[420px] shrink-0 relative">
+                              <div className="md:w-[360px] lg:w-[380px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-r border-border/60 bg-muted/25">
                                 <div
-                                  className="aspect-[4/3] md:aspect-auto md:h-full overflow-hidden cursor-pointer relative group"
+                                  className="aspect-[16/10] overflow-hidden cursor-pointer relative group rounded-xl border border-border/60"
                                   onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
                                 >
                                   <img
@@ -1267,19 +1267,19 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                     alt={acc.hotelName}
                                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                                   />
-                                  {allAccImages.length > 1 && (
-                                    <div className="absolute bottom-3 right-3 bg-foreground/60 text-background text-xs font-semibold px-2.5 py-1 rounded-full backdrop-blur-sm flex items-center gap-1">
-                                      <Camera className="h-3 w-3" /> {allAccImages.length}
+                                  {allAccImages.length > 3 && (
+                                    <div className="absolute bottom-2 right-2 bg-foreground text-background text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
+                                      <Camera className="h-3 w-3" /> +{allAccImages.length - 3} more
                                     </div>
                                   )}
                                 </div>
-                                {/* Thumbnail strip for desktop */}
+
                                 {allAccImages.length > 1 && (
-                                  <div className="hidden md:flex gap-1 p-1.5 bg-muted/30">
-                                    {allAccImages.slice(1, 5).map((img, gi) => (
+                                  <div className="grid grid-cols-2 gap-2.5 mt-2.5">
+                                    {allAccImages.slice(1, 3).map((img, gi) => (
                                       <div
                                         key={gi}
-                                        className="flex-1 aspect-[4/3] overflow-hidden cursor-pointer rounded"
+                                        className="aspect-[16/10] overflow-hidden cursor-pointer rounded-xl border border-border/60"
                                         onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, gi + 1); }}
                                       >
                                         <img
@@ -1289,20 +1289,13 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                         />
                                       </div>
                                     ))}
-                                    {allAccImages.length > 5 && (
-                                      <div
-                                        className="flex-1 aspect-[4/3] overflow-hidden cursor-pointer rounded bg-muted/60 flex items-center justify-center"
-                                        onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 5); }}
-                                      >
-                                        <span className="text-xs font-body font-semibold text-muted-foreground">+{allAccImages.length - 5}</span>
-                                      </div>
-                                    )}
+                                    {allAccImages.length === 2 && <div className="aspect-[16/10] rounded-xl border border-dashed border-border/70 bg-muted/40" />}
                                   </div>
                                 )}
                               </div>
                             )}
                             {showAccVideo && (
-                              <div className="md:w-[380px] lg:w-[420px] shrink-0 p-4">
+                              <div className="md:w-[360px] lg:w-[380px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-r border-border/60 bg-muted/25">
                                 <VideoEmbed
                                   url={acc.videoUrl!}
                                   title={acc.hotelName}
