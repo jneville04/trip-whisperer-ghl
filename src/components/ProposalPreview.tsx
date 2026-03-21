@@ -3183,18 +3183,15 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
             </div>
             <h1 className="font-display text-4xl font-bold text-foreground mb-4">Trip Approved!</h1>
             <p className="text-muted-foreground font-body text-lg leading-relaxed mb-6">
-              Thank you for approving your itinerary. Your travel advisor will be in touch shortly with booking confirmation and next steps.
+              Your travel advisor has been notified and will follow up with booking confirmation and next steps.
             </p>
             {financials.acceptPayments && financials.redirectUrl && (
               <p className="text-sm text-muted-foreground font-body mb-6">
                 Redirecting you to complete payment in a moment...
               </p>
             )}
-            <div className="flex flex-col gap-3 items-center">
-              <Button variant="travel-outline" size="lg" className="text-base px-8 py-5 h-auto" disabled>
-                <ArrowRight className="h-4 w-4 mr-2" /> Download PDF (Coming Soon)
-              </Button>
-              {financials.acceptPayments && financials.redirectUrl && (
+            {financials.acceptPayments && financials.redirectUrl && (
+              <div className="flex flex-col gap-3 items-center">
                 <Button
                   variant="travel"
                   size="sm"
@@ -3206,8 +3203,8 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                 >
                   Go to Payment Now
                 </Button>
-              )}
-            </div>
+              </div>
+            )}
           </motion.div>
         </div>
       )}
