@@ -252,35 +252,19 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
   return <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1 block font-body">{children}</label>;
 }
 
-// Pricing display mode selector for option sections
-function PricingDisplaySelect({ value, onChange, showPerNight }: { value?: PricingDisplayMode; onChange: (v: PricingDisplayMode) => void; showPerNight?: boolean }) {
-  const mode = value || "total";
-  const options: { value: PricingDisplayMode; label: string }[] = [
-    { value: "hide", label: "Hide" },
-    { value: "total", label: "Total" },
-    { value: "per_person", label: "Per Person" },
-  ];
-  if (showPerNight) options.push({ value: "per_night", label: "Per Night" });
+// Agent Financials Accordion - wraps cost/commission/markup in a collapsed section
+function AgentFinancialsAccordion({ pricing, onChange }: { pricing: AgentPricing | undefined; onChange: (ap: AgentPricing) => void }) {
   return (
-    <div>
-      <FieldLabel>Client Price Display</FieldLabel>
-      <div className="flex gap-1 flex-wrap">
-        {options.map((opt) => (
-          <button
-            key={opt.value}
-            type="button"
-            onClick={() => onChange(opt.value)}
-            className={`px-2 py-1 text-[10px] rounded-md border font-body font-medium transition-colors ${
-              mode === opt.value
-                ? "bg-primary text-primary-foreground border-primary"
-                : "bg-background text-muted-foreground border-border hover:bg-muted"
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
-    </div>
+    <Accordion type="single" collapsible className="mt-2">
+      <AccordionItem value="agent-financials" className="border-0">
+        <AccordionTrigger className="py-2 px-3 rounded-lg border border-dashed border-accent/40 bg-accent/5 hover:no-underline text-[10px] font-semibold uppercase tracking-wider text-accent font-body">
+          🔒 Agent Financials
+        </AccordionTrigger>
+        <AccordionContent className="pt-0 pb-0">
+          <AgentPricingFields pricing={pricing} onChange={onChange} />
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 }
 
