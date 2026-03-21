@@ -1752,7 +1752,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                             </div>
                           )}
                           {showVideo ? (
-                            <div className="p-4 sm:p-6 border-b border-border/30">
+                            <div className="p-4 sm:p-6 border-b-2 border-border">
                               <VideoEmbed
                                 url={trip.videoUrl!}
                                 title={trip.routeName}
@@ -2173,7 +2173,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                         {data.pricing.map((line) => (
                           <div
                             key={line.id}
-                            className="flex justify-between items-center py-2 border-b border-border/30 font-body"
+                            className="flex justify-between items-center py-2 border-b-2 border-border font-body"
                           >
                             <span className="text-muted-foreground">{line.label}</span>
                             <span className="font-semibold text-foreground">{line.amount}</span>
@@ -2524,7 +2524,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     : null;
 
                   return (
-                    <div key={section.key} className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-4 items-start py-3.5 border-b border-border/30">
+                    <div key={section.key} className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-4 items-start py-3.5 border-b-2 border-border">
                       <div className="flex items-center gap-2">
                         {sectionIcon}
                         <span className="font-body text-foreground font-medium">{section.label}</span>
@@ -2539,7 +2539,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     const opt = pricingOptions.find((o) => o.id === selectedPricingOption);
                     if (!opt) return null;
                     return (
-                      <div className="flex justify-between items-center py-3 border-b border-border/30">
+                      <div className="flex justify-between items-center py-3 border-b-2 border-border">
                         <div className="flex items-center gap-2">
                           <CheckCircle2 className="h-4 w-4 text-primary" />
                           <span className="font-body text-foreground font-medium">{opt.name}</span>
@@ -2916,7 +2916,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     : null;
 
                   return (
-                    <div key={section.key} className="flex justify-between items-center py-3 border-b border-border/30">
+                    <div key={section.key} className="flex justify-between items-center py-3 border-b-2 border-border">
                       <div className="flex items-center gap-2">
                         {sectionIcon}
                         <span className="font-body text-foreground font-medium">{section.label}</span>
