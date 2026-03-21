@@ -2056,8 +2056,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             if (!isGroupBooking) return null;
             if (data.pricing.length === 0 && pricingOptions.length === 0) return null;
             return (
-              <section key="pricing" id="pricing" className="py-20 bg-card">
-                <div className="max-w-4xl mx-auto px-6">
+              <section key="pricing" id="pricing" className="py-20 lg:py-24 bg-card">
+                <div className="max-w-[1140px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
