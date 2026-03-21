@@ -2929,7 +2929,28 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                     className="mt-1 h-4 w-4 rounded border-border accent-primary cursor-pointer"
                   />
                   <label htmlFor="review-terms-accept" className="text-sm text-muted-foreground font-body cursor-pointer leading-relaxed">
-                    I have read and agree to the terms and conditions outlined in this proposal.
+                    I agree to the{" "}
+                    <button
+                      type="button"
+                      className="text-primary underline hover:text-primary/80 font-semibold"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // Try terms_url from financials first, then scroll to terms section
+                        const termsUrl = (financials as any).termsUrl;
+                        if (termsUrl) {
+                          window.open(termsUrl, "_blank", "noopener,noreferrer");
+                        } else {
+                          // Scroll to the terms section on the proposal
+                          setShowReviewModal(false);
+                          setTimeout(() => {
+                            document.getElementById("terms")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                          }, 300);
+                        }
+                      }}
+                    >
+                      Terms &amp; Conditions
+                    </button>
                   </label>
                 </div>
               )}
