@@ -74,6 +74,10 @@ interface TripCardProps {
   onDuplicate: () => void;
   onDelete: () => void;
   onCopyLink: () => void;
+  onArchive?: () => void;
+  onRestore?: () => void;
+  onReopen?: () => void;
+  isArchived?: boolean;
 }
 
 export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLink }: TripCardProps) {
