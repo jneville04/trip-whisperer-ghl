@@ -69,6 +69,13 @@ export default function ClientView() {
         return;
       }
 
+      // Reopened trips show under revision for public visitors
+      if (status === "reopened") {
+        setError("under_revision");
+        setLoading(false);
+        return;
+      }
+
       // Public view: only show published_data when status is published/approved
       const isPublic = status === "published" || status === "sent" || status === "approved";
 

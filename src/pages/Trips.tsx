@@ -158,12 +158,16 @@ export default function Trips() {
     }
   };
 
+  const [reopening, setReopening] = useState<string | null>(null);
+
   const reopenTrip = async (id: string) => {
-    if (!confirm("This will reopen the proposal for editing. The previous approval history will be preserved in snapshots. Continue?")) return;
+    if (reopening) return;
+    setReopening(id);
     const { error } = await supabase
       .from("trips")
       .update({ status: "reopened" })
       .eq("id", id);
+    setReopening(null);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {

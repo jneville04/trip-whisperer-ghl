@@ -105,7 +105,8 @@ Deno.serve(async (req) => {
     const agentEmail = publishedData?.agent?.email;
 
     const siteUrl = Deno.env.get("SITE_URL") || "https://trip-whisperer-ghl.lovable.app";
-    const proposalUrl = `${siteUrl}/view/${trip.public_slug}`;
+    // Agent CTA links to internal editor route, not public traveler view
+    const editorUrl = `${siteUrl}/editor/${trip.id}`;
 
     // 1. Update trip status to revision_requested
     const { error: updateError } = await supabase
@@ -151,8 +152,8 @@ Deno.serve(async (req) => {
           introText: "A traveler has requested changes to a proposal.",
           detailsRows,
           summaryHtml: [revisionNoteHtml, categoriesHtml, selectionsHtml].filter(Boolean).join(""),
-          ctaUrl: proposalUrl,
-          ctaLabel: "View Proposal",
+          ctaUrl: editorUrl,
+          ctaLabel: "Open in Editor",
         });
 
         const resendRes = await fetch("https://api.resend.com/emails", {
