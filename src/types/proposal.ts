@@ -277,6 +277,16 @@ export type ProposalType = "group_booking" | "proposal";
 
 export type SectionTitles = Partial<Record<SectionKey, { title?: string; subtitle?: string }>>;
 
+export type SectionType = "informational" | "single_select" | "multi_select";
+
+export interface SectionSelections {
+  flights?: string;
+  accommodations?: string;
+  cruiseShips?: string;
+  busTrips?: string;
+  pricing?: string;
+}
+
 export interface ProposalData {
   proposalType: ProposalType;
   tripName: string;
@@ -321,6 +331,7 @@ export interface ProposalData {
   sectionOrder: SectionKey[];
   sectionCustomTitles?: SectionTitles;
   checkout?: CheckoutSettings;
+  sectionSelections?: SectionSelections;
 }
 
 export const createActivity = (type: Activity["type"] = "activity"): Activity => ({
