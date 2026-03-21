@@ -1323,7 +1323,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               </div>
                             )}
                             {showAccVideo && (
-                              <div className="md:w-[360px] lg:w-[380px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-l border-border/60 bg-muted/25">
+                              <div className="md:w-[400px] lg:w-[440px] shrink-0 p-4 sm:p-5 border-b md:border-b-0 md:border-l-2 border-border bg-muted/30">
                                 <VideoEmbed
                                   url={acc.videoUrl!}
                                   title={acc.hotelName}
