@@ -1564,7 +1564,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                       Option {shipIdx + 1} of {cruiseShips.length}
                                     </span>
                                   )}
-                                  <h3 className="font-display text-xl sm:text-2xl font-bold text-foreground leading-tight">
+                                  <h3 className="font-display text-2xl sm:text-[1.65rem] font-bold text-foreground leading-tight">
                                     {ship.shipName || "Cruise Ship"}
                                   </h3>
                                   {ship.cruiseLine && (
