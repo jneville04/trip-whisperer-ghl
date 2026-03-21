@@ -8,9 +8,12 @@ import { useAdminCheck } from "@/hooks/useAdminCheck";
 import ProposalFilters, { type FilterType, type SortType } from "@/components/ProposalFilters";
 import TripCard from "@/components/TripCard";
 import AppLayout from "@/components/AppLayout";
-import { Search, FileText } from "lucide-react";
+import { Search, FileText, Archive } from "lucide-react";
 import { type ProposalData, type TripRow } from "@/types/proposal";
 import DuplicateTripModal from "@/components/DuplicateTripModal";
+import { Button } from "@/components/ui/button";
+
+type ArchiveFilter = "active" | "archived";
 
 export default function Trips() {
   const { user } = useAuth();
@@ -21,6 +24,7 @@ export default function Trips() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
   const [sort, setSort] = useState<SortType>("newest");
+  const [archiveFilter, setArchiveFilter] = useState<ArchiveFilter>("active");
   const [dupModal, setDupModal] = useState<{ open: boolean; trip: TripRow | null }>({ open: false, trip: null });
 
   useEffect(() => {
@@ -29,6 +33,11 @@ export default function Trips() {
 
   const filtered = useMemo(() => {
     let result = trips.filter((t) => {
+      const row = t as any;
+      // Archive filter
+      if (archiveFilter === "active" && row.archived_at) return false;
+      if (archiveFilter === "archived" && !row.archived_at) return false;
+
       const d = t.draft_data as ProposalData | null;
       const title = d?.tripName || "";
       const clientName = d?.clientName || "";
@@ -63,7 +72,7 @@ export default function Trips() {
     });
 
     return result;
-  }, [trips, search, filter, sort]);
+  }, [trips, search, filter, sort, archiveFilter]);
 
   const loadTrips = async () => {
     const { data, error } = await supabase
@@ -119,6 +128,52 @@ export default function Trips() {
     }
   };
 
+  const archiveTrip = async (id: string) => {
+    const { error } = await supabase
+      .from("trips")
+      .update({ archived_at: new Date().toISOString() } as any)
+      .eq("id", id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Trip archived" });
+      setTrips((prev) =>
+        prev.map((t) => t.id === id ? { ...t, archived_at: new Date().toISOString() } as any : t)
+      );
+    }
+  };
+
+  const restoreTrip = async (id: string) => {
+    const { error } = await supabase
+      .from("trips")
+      .update({ archived_at: null } as any)
+      .eq("id", id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Trip restored" });
+      setTrips((prev) =>
+        prev.map((t) => t.id === id ? { ...t, archived_at: null } as any : t)
+      );
+    }
+  };
+
+  const reopenTrip = async (id: string) => {
+    if (!confirm("This will reopen the proposal for editing. The previous approval history will be preserved in snapshots. Continue?")) return;
+    const { error } = await supabase
+      .from("trips")
+      .update({ status: "reopened" })
+      .eq("id", id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Proposal reopened for editing" });
+      setTrips((prev) =>
+        prev.map((t) => t.id === id ? { ...t, status: "reopened" } : t)
+      );
+    }
+  };
+
   const copyShareLink = (slug: string | null) => {
     if (!slug) return;
     const url = `${window.location.origin}/view/${slug}`;
@@ -126,9 +181,31 @@ export default function Trips() {
     toast({ title: "Link copied!", description: "Share this link with your client." });
   };
 
+  const archivedCount = trips.filter((t) => (t as any).archived_at).length;
+
   return (
     <AppLayout>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        {/* Archive Toggle */}
+        <div className="flex items-center gap-2 mb-6">
+          <Button
+            variant={archiveFilter === "active" ? "travel" : "travel-ghost"}
+            size="sm"
+            className="h-8 text-xs"
+            onClick={() => setArchiveFilter("active")}
+          >
+            Active
+          </Button>
+          <Button
+            variant={archiveFilter === "archived" ? "travel" : "travel-ghost"}
+            size="sm"
+            className="h-8 text-xs"
+            onClick={() => setArchiveFilter("archived")}
+          >
+            <Archive className="h-3 w-3 mr-1" /> Archived {archivedCount > 0 && `(${archivedCount})`}
+          </Button>
+        </div>
+
         <div className="space-y-4 mb-8">
           <div className="relative max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -148,10 +225,10 @@ export default function Trips() {
           <div className="text-center py-20">
             <FileText className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" />
             <h3 className="font-display text-lg font-semibold text-foreground mb-2">
-              {search || filter !== "all" ? "No trips found" : "No trips yet"}
+              {archiveFilter === "archived" ? "No archived trips" : search || filter !== "all" ? "No trips found" : "No trips yet"}
             </h3>
             <p className="text-muted-foreground font-body text-sm leading-relaxed mb-6">
-              {search || filter !== "all" ? "Try a different search or filter" : "Click \"Create Trip\" above to get started."}
+              {archiveFilter === "archived" ? "Archived trips will appear here." : search || filter !== "all" ? "Try a different search or filter" : "Click \"Create Trip\" above to get started."}
             </p>
           </div>
         ) : (
@@ -160,10 +237,14 @@ export default function Trips() {
               <TripCard
                 key={trip.id}
                 trip={trip}
+                isArchived={archiveFilter === "archived"}
                 onOpen={() => navigate(`/editor/${trip.id}`)}
                 onDuplicate={() => setDupModal({ open: true, trip })}
                 onDelete={() => deleteTrip(trip.id)}
                 onCopyLink={() => copyShareLink(trip.public_slug)}
+                onArchive={() => archiveTrip(trip.id)}
+                onRestore={() => restoreTrip(trip.id)}
+                onReopen={() => reopenTrip(trip.id)}
               />
             ))}
           </div>
