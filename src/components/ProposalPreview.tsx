@@ -1076,7 +1076,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           )}
 
                           {/* Flight legs */}
-                          <div className="divide-y divide-border/30">
+                          <div className="divide-y-2 divide-border">
                             {opt.legs.map((leg) => (
                               <div key={leg.id} className="px-6 py-5">
                                 {/* Leg label + date row */}
