@@ -100,6 +100,7 @@ interface Props {
   data: ProposalData;
   shareId?: string;
   tripId?: string;
+  tripStatus?: string;
   isEditor?: boolean;
   onEditorSubPage?: (page: EditorSubPage) => void;
 }
