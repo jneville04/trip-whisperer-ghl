@@ -971,7 +971,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
         switch (sectionKey) {
           case "overview":
             return (
-              <section key="overview" id="overview" className="py-20 lg:py-24 px-6 border-t border-border/30 bg-background">
+              <section key="overview" id="overview" className="py-20 lg:py-24 px-6 border-t-2 border-border/60 bg-background">
                 <div className="max-w-3xl mx-auto text-center">
                   <motion.p
                     variants={fadeUp}
