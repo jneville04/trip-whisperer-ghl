@@ -1053,8 +1053,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                             flightsIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
-                                : "border-border/50 hover:border-primary/40 cursor-pointer"
-                              : "border-border/50"
+                                : "border-border hover:border-primary/40 cursor-pointer"
+                              : "border-border"
                           }`}
                           onClick={() => flightsIsChoice && setSelectedFlight(isSelected ? "" : opt.id)}
                         >
@@ -1634,14 +1634,14 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               {(ship.embarkationPort || ship.disembarkationPort || ship.embarkationDate || ship.disembarkationDate) && (
                                 <div className="grid grid-cols-2 gap-3 mt-4 text-xs text-muted-foreground font-body">
                                   {(ship.embarkationPort || ship.embarkationDate) && (
-                                    <div className="bg-muted/30 rounded-lg px-3 py-2 border border-border/50">
+                                    <div className="bg-muted/30 rounded-lg px-3 py-2 border border-border">
                                       <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-semibold mb-0.5">Embarkation</p>
                                       {ship.embarkationPort && <p className="text-foreground font-medium">{ship.embarkationPort}</p>}
                                       {ship.embarkationDate && <p>{ship.embarkationDate}</p>}
                                     </div>
                                   )}
                                   {(ship.disembarkationPort || ship.disembarkationDate) && (
-                                    <div className="bg-muted/30 rounded-lg px-3 py-2 border border-border/50">
+                                    <div className="bg-muted/30 rounded-lg px-3 py-2 border border-border">
                                       <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-semibold mb-0.5">Disembarkation</p>
                                       {ship.disembarkationPort && <p className="text-foreground font-medium">{ship.disembarkationPort}</p>}
                                       {ship.disembarkationDate && <p>{ship.disembarkationDate}</p>}
@@ -1739,8 +1739,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                             busIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
-                                : "border-border/50 hover:border-primary/40 cursor-pointer"
-                              : "border-border/50"
+                                : "border-border hover:border-primary/40 cursor-pointer"
+                              : "border-border"
                           }`}
                           onClick={() => busIsChoice && setSelectedBusTrip(isSelected ? "" : trip.id)}
                         >
@@ -2116,7 +2116,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                             className={`relative bg-background rounded-2xl border-2 p-8 cursor-pointer transition-all text-left ${
                               isSelected
                                 ? "border-primary ring-2 ring-primary/20 shadow-xl scale-[1.02]"
-                                : "border-border/50 hover:border-primary/40 hover:shadow-md"
+                                : "border-border hover:border-primary/40 hover:shadow-md"
                             }`}
                           >
                             {isSelected && (
@@ -2167,7 +2167,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       whileInView="visible"
                       viewport={{ once: true }}
                       custom={2}
-                      className="bg-background rounded-2xl border border-border/50 shadow-lg p-10 max-w-2xl mx-auto mb-10"
+                      className="bg-background rounded-2xl border border-border shadow-lg p-10 max-w-2xl mx-auto mb-10"
                     >
                       <div className="space-y-4">
                         {data.pricing.map((line) => (
@@ -2304,7 +2304,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             // For proposal mode, render footer after pricing summary below
             if (!isGroupBooking) return null;
             return (
-              <footer key="agent" className="py-16 px-6 border-t border-border/50 bg-card">
+              <footer key="agent" className="py-16 px-6 border-t border-border bg-card">
                 <div className="max-w-3xl mx-auto text-center">
                   <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
                     {ct.agent?.subtitle || "Your Travel Advisor"}
@@ -2398,7 +2398,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       className={`relative bg-background rounded-3xl border-2 p-8 cursor-pointer transition-all text-left h-full flex flex-col ${
                         isSelected
                           ? "border-primary ring-2 ring-primary/20 shadow-xl scale-[1.02]"
-                          : "border-border/50 hover:border-primary/40 hover:shadow-md"
+                          : "border-border hover:border-primary/40 hover:shadow-md"
                       }`}
                     >
                       {isSelected && (
@@ -2880,7 +2880,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 30, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              className="bg-background rounded-2xl border border-border/50 shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-8"
+              className="bg-background rounded-2xl border border-border shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-8"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="text-center mb-6">
@@ -3154,7 +3154,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 30, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              className="bg-background rounded-2xl border border-border/50 shadow-2xl max-w-md w-full p-8"
+              className="bg-background rounded-2xl border border-border shadow-2xl max-w-md w-full p-8"
               onClick={(e) => e.stopPropagation()}
             >
               {questionSent ? (
@@ -3269,7 +3269,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 30, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              className="bg-background rounded-2xl border border-border/50 shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto p-8"
+              className="bg-background rounded-2xl border border-border shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto p-8"
               onClick={(e) => e.stopPropagation()}
             >
               {revisionSent ? (
@@ -3459,7 +3459,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           <Button
             variant="travel-ghost"
             size="sm"
-            className="rounded-full shadow-md bg-background/95 border border-border/50 hover:bg-muted text-xs px-3.5"
+            className="rounded-full shadow-md bg-background/95 border border-border hover:bg-muted text-xs px-3.5"
             onClick={() => setShowAskQuestion(true)}
           >
             <HelpCircle className="h-4 w-4 mr-1.5" /> Ask a Question
