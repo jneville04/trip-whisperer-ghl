@@ -1292,32 +1292,32 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           <div className="flex flex-col md:flex-row-reverse">
                             {/* Image Section — Right */}
                             {showAccPhotos && allAccImages.length > 0 && (
-                              <div className="md:w-[380px] lg:w-[420px] shrink-0 border-b md:border-b-0 md:border-l-2 border-border/60">
+                              <div className="md:w-[380px] lg:w-[420px] shrink-0 p-2.5">
                                 {allAccImages.length === 1 ? (
                                   <div
-                                    className="w-full h-full overflow-hidden cursor-pointer relative group"
+                                    className="w-full h-full overflow-hidden cursor-pointer relative group rounded-xl"
                                     onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
                                   >
-                                    <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
+                                    <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 rounded-xl" />
                                   </div>
                                 ) : (
-                                  <div className="grid grid-rows-[1fr_auto] h-full">
+                                  <div className="flex flex-col gap-2 h-full">
                                     <div
-                                      className="overflow-hidden cursor-pointer relative group"
+                                      className="flex-1 overflow-hidden cursor-pointer relative group rounded-xl"
                                       onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
                                     >
-                                      <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
+                                      <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 rounded-xl" />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-px bg-border/60">
+                                    <div className="grid grid-cols-2 gap-2">
                                       {allAccImages.slice(1, 3).map((img, idx) => (
                                         <div
                                           key={idx}
-                                          className="aspect-[3/2] overflow-hidden cursor-pointer relative group"
+                                          className="aspect-[3/2] overflow-hidden cursor-pointer relative group rounded-lg"
                                           onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, idx + 1); }}
                                         >
-                                          <img src={img.src} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
+                                          <img src={img.src} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 rounded-lg" />
                                           {idx === 1 && allAccImages.length > 3 && (
-                                            <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center">
+                                            <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center rounded-lg">
                                               <span className="text-background text-sm font-bold flex items-center gap-1.5"><Camera className="h-3.5 w-3.5" />+{allAccImages.length - 3} more</span>
                                             </div>
                                           )}
