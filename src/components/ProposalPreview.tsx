@@ -888,7 +888,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                     </p>
                     <h2 className="font-display text-4xl font-bold text-foreground">{ct.flights?.title || "Air Travel"}</h2>
                     {flightsIsChoice && (
-                      <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>
+                      <p className="text-sm text-muted-foreground font-body mt-2">Choose one of the options below</p>
                     )}
                   </motion.div>
                   <div className="space-y-8">
@@ -1042,7 +1042,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                         className="text-xs"
                                         onClick={(e) => e.stopPropagation()}
                                       >
-                                        <Check className="h-3 w-3 mr-1" /> Option selected
+                                        <Check className="h-3 w-3 mr-1" /> Selected ✓
                                       </Button>
                                       <Button
                                         variant="travel-ghost"
@@ -1066,7 +1066,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                         setSelectedFlight(opt.id);
                                       }}
                                     >
-                                      Select option
+                                      Select This Option
                                     </Button>
                                   )}
                                 </div>
@@ -1099,7 +1099,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                     </p>
                     <h2 className="font-display text-4xl font-bold text-foreground">{ct.accommodations?.title || "Accommodations"}</h2>
                     {accommodationsIsChoice && accommodations.length > 1 && (
-                      <p className="text-sm text-muted-foreground font-body mt-2">Select your preferred option</p>
+                      <p className="text-sm text-muted-foreground font-body mt-2">Choose one of the options below</p>
                     )}
                   </motion.div>
                   <div className="space-y-10">
@@ -1296,7 +1296,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                           className="text-xs"
                                           onClick={(e) => e.stopPropagation()}
                                         >
-                                          <Check className="h-3 w-3 mr-1" /> Option selected
+                                          <Check className="h-3 w-3 mr-1" /> Selected ✓
                                         </Button>
                                         <Button
                                           variant="travel-ghost"
@@ -1320,7 +1320,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                           setSelectedAccommodation(acc.id);
                                         }}
                                       >
-                                        Select option
+                                        Select This Option
                                       </Button>
                                     )}
                                   </div>
@@ -1574,7 +1574,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                           className="text-xs"
                                           onClick={(e) => e.stopPropagation()}
                                         >
-                                          <Check className="h-3 w-3 mr-1" /> Option selected
+                                          <Check className="h-3 w-3 mr-1" /> Selected ✓
                                         </Button>
                                         <Button
                                           variant="travel-ghost"
@@ -1598,7 +1598,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                           setSelectedCruise(ship.id);
                                         }}
                                       >
-                                        Select option
+                                        Select This Option
                                       </Button>
                                     )}
                                   </div>
@@ -1906,7 +1906,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                           className="text-xs"
                                           onClick={(e) => e.stopPropagation()}
                                         >
-                                          <Check className="h-3 w-3 mr-1" /> Option selected
+                                          <Check className="h-3 w-3 mr-1" /> Selected ✓
                                         </Button>
                                         <Button
                                           variant="travel-ghost"
@@ -1930,7 +1930,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                                           setSelectedBusTrip(trip.id);
                                         }}
                                       >
-                                        Select option
+                                        Select This Option
                                       </Button>
                                     )}
                                   </div>
