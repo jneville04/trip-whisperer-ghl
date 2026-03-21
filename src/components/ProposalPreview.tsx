@@ -1435,24 +1435,26 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "cruiseShips":
             if (cruiseShips.length === 0) return null;
             return (
-              <section key="cruiseShips" id="cruiseShips" className="py-24 border-t border-border/30 bg-muted/20">
-                <div className="max-w-6xl mx-auto px-6">
+              <section key="cruiseShips" id="cruiseShips" className="py-20 lg:py-24 border-t border-border/30 bg-muted/20">
+                <div className="max-w-[1140px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="text-center mb-14"
+                    className="mb-14"
                   >
-                    <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">
+                    <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-3">
                       {ct.cruiseShips?.subtitle || "Your Vessel"}
                     </p>
                     <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.cruiseShips?.title || "Cruise Ship & Cabin"}</h2>
-                    <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
+                    {cruiseIsChoice && cruiseShips.length > 1 && (
+                      <p className="text-sm text-muted-foreground font-body mt-3">Choose one of the options below</p>
+                    )}
                   </motion.div>
-                  <div className="space-y-12">
-                    {cruiseShips.map((ship) => {
+                  <div className="space-y-8">
+                    {cruiseShips.map((ship, shipIdx) => {
                       const isSelected = selectedCruise === ship.id;
                       const amenities = (ship.amenities || []).filter(Boolean);
                       const highlights = (ship.highlights || []).filter(Boolean);
@@ -1463,6 +1465,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       ];
                       const showShipVideo = (ship.mediaType || "photos") === "video" && !!ship.videoUrl;
                       const showShipPhotos = !showShipVideo;
+                      const primaryPrice = ship.price && showItemizedPrices ? fmtCurrency(ship.price) : null;
+                      const pricingLabel = (ship.pricingDisplay || "total") === "per_person" ? "per person" : (ship.pricingDisplay || "total") === "per_night" ? "per night" : "total";
+
                       return (
                         <motion.div
                           key={ship.id}
@@ -1470,238 +1475,196 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           initial="hidden"
                           whileInView="visible"
                           viewport={{ once: true }}
-                          custom={0}
-                          className={`bg-card rounded-3xl border-2 shadow-[0_24px_50px_-34px_hsl(var(--foreground)/0.75)] overflow-hidden relative transition-all ${
+                          custom={shipIdx * 0.1}
+                          className={`bg-card rounded-2xl border-2 overflow-hidden transition-all shadow-[0_8px_30px_-15px_hsl(var(--foreground)/0.12)] ${
                             cruiseIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
-                                : "border-border/50 hover:border-primary/40 cursor-pointer"
-                              : "border-border/50"
+                                : "border-border/40 hover:border-primary/30 cursor-pointer hover:shadow-[0_12px_40px_-15px_hsl(var(--foreground)/0.18)]"
+                              : "border-border/40"
                           }`}
                           onClick={() => cruiseIsChoice && setSelectedCruise(isSelected ? "" : ship.id)}
                         >
-                          {cruiseIsChoice && cruiseShips.length > 1 && (
-                            <div className="absolute top-4 right-4 z-10">
-                              <span className="inline-block bg-primary/10 text-primary text-[10px] font-semibold uppercase tracking-[0.15em] font-body px-2.5 py-1 rounded-full">
-                                Option {cruiseShips.indexOf(ship) + 1}
-                              </span>
-                            </div>
-                          )}
-                          {showShipPhotos && allShipImages.length > 0 ? (
-                            <div className={allShipImages.length === 1 ? "p-2 bg-background/60" : "grid grid-cols-3 md:grid-cols-4 gap-2 p-2 bg-background/60"}>
-                              {allShipImages.length === 1 ? (
+                          <div className="flex flex-col md:flex-row">
+                            {/* Image Section — Left */}
+                            {showShipPhotos && allShipImages.length > 0 && (
+                              <div className="md:w-[380px] lg:w-[420px] shrink-0 relative">
                                 <div
-                                  className="aspect-[16/8] overflow-hidden cursor-pointer rounded-xl"
-                                  onClick={() => openLightbox(allShipImages, 0)}
+                                  className="aspect-[4/3] md:aspect-auto md:h-full overflow-hidden cursor-pointer relative group"
+                                  onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, 0); }}
                                 >
                                   <img
                                     src={allShipImages[0].src}
                                     alt={ship.shipName}
-                                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
                                   />
+                                  {allShipImages.length > 1 && (
+                                    <div className="absolute bottom-3 right-3 bg-foreground/60 text-background text-xs font-semibold px-2.5 py-1 rounded-full backdrop-blur-sm flex items-center gap-1">
+                                      <Camera className="h-3 w-3" /> {allShipImages.length}
+                                    </div>
+                                  )}
                                 </div>
-                              ) : (
-                                <>
-                                  <div
-                                    className="col-span-2 row-span-2 aspect-[4/3] overflow-hidden cursor-pointer rounded-xl"
-                                    onClick={() => openLightbox(allShipImages, 0)}
-                                  >
-                                    <img
-                                      src={ship.imageUrl}
-                                      alt={ship.shipName}
-                                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
-                                    />
+                                {allShipImages.length > 1 && (
+                                  <div className="hidden md:flex gap-1 p-1.5 bg-muted/30">
+                                    {allShipImages.slice(1, 5).map((img, gi) => (
+                                      <div
+                                        key={gi}
+                                        className="flex-1 aspect-[4/3] overflow-hidden cursor-pointer rounded"
+                                        onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, gi + 1); }}
+                                      >
+                                        <img src={img.src} alt={img.alt || ""} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                                      </div>
+                                    ))}
+                                    {allShipImages.length > 5 && (
+                                      <div
+                                        className="flex-1 aspect-[4/3] overflow-hidden cursor-pointer rounded bg-muted/60 flex items-center justify-center"
+                                        onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, 5); }}
+                                      >
+                                        <span className="text-xs font-body font-semibold text-muted-foreground">+{allShipImages.length - 5}</span>
+                                      </div>
+                                    )}
                                   </div>
-                                  {galleryUrls.slice(0, 6).map((url, gi) => (
-                                    <div
-                                      key={gi}
-                                      className="aspect-[4/3] overflow-hidden cursor-pointer rounded-xl"
-                                      onClick={() => openLightbox(allShipImages, gi + 1)}
-                                    >
-                                      <img
-                                        src={url}
-                                        alt={`${ship.shipName} ${gi + 2}`}
-                                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
-                                      />
+                                )}
+                              </div>
+                            )}
+                            {showShipVideo && (
+                              <div className="md:w-[380px] lg:w-[420px] shrink-0 p-4">
+                                <VideoEmbed url={ship.videoUrl!} title={ship.shipName} thumbnailUrl={ship.videoThumbnailUrl} className="w-full rounded-xl" />
+                              </div>
+                            )}
+
+                            {/* Content Section — Right */}
+                            <div className="flex-1 p-6 sm:p-8 flex flex-col">
+                              <div className="flex items-start justify-between gap-4 mb-1">
+                                <div className="min-w-0">
+                                  {cruiseIsChoice && cruiseShips.length > 1 && (
+                                    <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-primary font-body mb-1.5 block">
+                                      Option {shipIdx + 1} of {cruiseShips.length}
+                                    </span>
+                                  )}
+                                  <h3 className="font-display text-xl sm:text-2xl font-bold text-foreground leading-tight">
+                                    {ship.shipName || "Cruise Ship"}
+                                  </h3>
+                                  {ship.cruiseLine && (
+                                    <p className="text-sm text-muted-foreground font-body flex items-center gap-1 mt-1">
+                                      <Ship className="h-3.5 w-3.5" /> {ship.cruiseLine}
+                                    </p>
+                                  )}
+                                </div>
+                                {primaryPrice && (
+                                  <div className="text-right shrink-0">
+                                    <p className="font-display text-2xl font-bold text-foreground leading-none">{primaryPrice}</p>
+                                    <p className="text-[11px] text-muted-foreground font-body mt-0.5">{pricingLabel}</p>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Cabin details pills */}
+                              <div className="flex flex-wrap gap-2 mt-3">
+                                {ship.cabinType && (
+                                  <span className="inline-flex items-center gap-1 bg-primary/10 text-primary text-xs font-body font-semibold px-2.5 py-1 rounded-full">
+                                    {ship.cabinType}
+                                  </span>
+                                )}
+                                {ship.cabinNumber && (
+                                  <span className="inline-flex items-center bg-muted text-muted-foreground text-xs font-body px-2.5 py-1 rounded-full">
+                                    Cabin {ship.cabinNumber}
+                                  </span>
+                                )}
+                                {ship.deck && (
+                                  <span className="inline-flex items-center bg-muted text-muted-foreground text-xs font-body px-2.5 py-1 rounded-full">
+                                    {ship.deck}
+                                  </span>
+                                )}
+                              </div>
+
+                              {ship.description && (
+                                <div
+                                  className="text-sm text-muted-foreground font-body mt-3 leading-relaxed prose prose-sm max-w-none line-clamp-3"
+                                  dangerouslySetInnerHTML={{ __html: ship.description }}
+                                />
+                              )}
+
+                              {highlights.length > 0 && (
+                                <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3">
+                                  {highlights.slice(0, 4).map((h, hi) => (
+                                    <span key={hi} className="flex items-center gap-1.5 text-sm font-body text-foreground">
+                                      <Sparkles className="h-3 w-3 text-accent shrink-0" /> {h}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+
+                              {amenities.length > 0 && (
+                                <div className="flex flex-wrap gap-1.5 mt-4">
+                                  {amenities.slice(0, 6).map((a, ai) => (
+                                    <span key={ai} className="inline-flex items-center gap-1 bg-muted/50 text-muted-foreground text-[11px] font-body px-2.5 py-1 rounded-full border border-border/30">
+                                      <Check className="h-2.5 w-2.5 text-primary" /> {a}
+                                    </span>
+                                  ))}
+                                  {amenities.length > 6 && (
+                                    <span className="text-[11px] text-muted-foreground font-body px-2.5 py-1">+{amenities.length - 6} more</span>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* Cruise port details — grouped grid */}
+                              {(ship.embarkPort || ship.disembarkPort || ship.embarkDate || ship.disembarkDate) && (
+                                <div className="grid grid-cols-2 gap-3 mt-4 text-xs text-muted-foreground font-body">
+                                  {(ship.embarkPort || ship.embarkDate) && (
+                                    <div className="bg-muted/30 rounded-lg px-3 py-2">
+                                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-semibold mb-0.5">Embarkation</p>
+                                      {ship.embarkPort && <p className="text-foreground font-medium">{ship.embarkPort}</p>}
+                                      {ship.embarkDate && <p>{ship.embarkDate}</p>}
                                     </div>
-                                  ))}
-                                </>
-                              )}
-                            </div>
-                          ) : showShipPhotos ? null : (
-                            <div className="p-4 sm:p-6 border-b border-border/30">
-                              <VideoEmbed
-                                url={ship.videoUrl!}
-                                title={ship.shipName}
-                                thumbnailUrl={ship.videoThumbnailUrl}
-                                className="w-full"
-                              />
-                            </div>
-                          )}
-                          <div className="p-6 sm:p-8">
-                            <div className="flex items-start justify-between mb-3">
-                              <div>
-                                <h3 className="font-display text-2xl font-bold text-foreground mb-1">
-                                  {ship.shipName || "Cruise Ship"}
-                                </h3>
-                                <p className="text-sm text-muted-foreground font-body flex items-center gap-1">
-                                  <Ship className="h-3.5 w-3.5" /> {ship.cruiseLine}
-                                </p>
-                              </div>
-                              <Anchor className="h-6 w-6 text-primary mt-1 shrink-0" />
-                            </div>
-                            {/* Cabin details */}
-                            <div className="flex flex-wrap gap-3 mt-4">
-                              {ship.cabinType && (
-                                <span className="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs font-body font-semibold px-3 py-1.5 rounded-full">
-                                  {ship.cabinType}
-                                </span>
-                              )}
-                              {ship.cabinNumber && (
-                                <span className="inline-flex items-center gap-1.5 bg-muted text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full">
-                                  Cabin {ship.cabinNumber}
-                                </span>
-                              )}
-                              {ship.deck && (
-                                <span className="inline-flex items-center gap-1.5 bg-muted text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full">
-                                  {ship.deck}
-                                </span>
-                              )}
-                            </div>
-                            {ship.description && (
-                              <div
-                                className="text-sm text-muted-foreground font-body mt-4 leading-relaxed prose prose-sm max-w-none"
-                                dangerouslySetInnerHTML={{ __html: ship.description }}
-                              />
-                            )}
-                            {highlights.length > 0 && (
-                              <div className="mt-4">
-                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-2">
-                                  Highlights
-                                </p>
-                                <div className="space-y-1.5">
-                                  {highlights.map((h, hi) => (
-                                    <div key={hi} className="flex items-center gap-2 text-sm font-body text-foreground">
-                                      <Sparkles className="h-3.5 w-3.5 text-accent shrink-0" />
-                                      <span>{h}</span>
+                                  )}
+                                  {(ship.disembarkPort || ship.disembarkDate) && (
+                                    <div className="bg-muted/30 rounded-lg px-3 py-2">
+                                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-semibold mb-0.5">Disembarkation</p>
+                                      {ship.disembarkPort && <p className="text-foreground font-medium">{ship.disembarkPort}</p>}
+                                      {ship.disembarkDate && <p>{ship.disembarkDate}</p>}
                                     </div>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                            {amenities.length > 0 && (
-                              <div className="mt-4 pt-4 border-t border-border/30">
-                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">
-                                  Ship Amenities
-                                </p>
-                                <div className="flex flex-wrap gap-2">
-                                  {amenities.map((a, ai) => (
-                                    <span
-                                      key={ai}
-                                      className="inline-flex items-center gap-1.5 bg-muted/50 text-muted-foreground text-xs font-body px-3 py-1.5 rounded-full border border-border/30"
-                                    >
-                                      <Check className="h-3 w-3 text-primary" /> {a}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-3 mt-5 pt-4 border-t border-border/30 text-sm text-muted-foreground font-body">
-                              {(ship.embarkationPort || ship.embarkationDate) && (
-                                <div className="space-y-0.5">
-                                  <p className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/70">Embarkation</p>
-                                  {ship.embarkationPort && (
-                                    <span className="flex items-center gap-1.5">
-                                      <Anchor className="h-3.5 w-3.5 text-primary/70" /> {ship.embarkationPort}
-                                    </span>
-                                  )}
-                                  {ship.embarkationDate && (
-                                    <span className="flex items-center gap-1.5">
-                                      <Calendar className="h-3.5 w-3.5 text-primary/70" /> {ship.embarkationDate}
-                                    </span>
-                                  )}
-                                </div>
-                              )}
-                              {(ship.disembarkationPort || ship.disembarkationDate) && (
-                                <div className="space-y-0.5">
-                                  <p className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/70">Disembarkation</p>
-                                  {ship.disembarkationPort && (
-                                    <span className="flex items-center gap-1.5">
-                                      <Anchor className="h-3.5 w-3.5 text-primary/70" /> {ship.disembarkationPort}
-                                    </span>
-                                  )}
-                                  {ship.disembarkationDate && (
-                                    <span className="flex items-center gap-1.5">
-                                      <Calendar className="h-3.5 w-3.5 text-primary/70" /> {ship.disembarkationDate}
-                                    </span>
                                   )}
                                 </div>
                               )}
                               {ship.nights && (
-                                <div className="space-y-0.5">
-                                  <p className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground/70">Duration</p>
-                                  <span className="text-primary font-semibold">{ship.nights} Nights</span>
-                                </div>
+                                <p className="text-sm text-primary font-semibold font-body mt-2">{ship.nights}</p>
                               )}
-                            </div>
-                            {(ship.price || cruiseIsChoice) && (
-                              <div className="mt-4 pt-4 border-t border-border/30 flex items-center justify-between">
-                                {ship.price && showItemizedPrices ? (
-                                  <span className="font-display text-xl font-bold text-foreground">
-                                    {fmtCurrency(ship.price)}
-                                    <span className="text-xs text-muted-foreground font-body ml-1">
-                                      {(ship.pricingDisplay || "total") === "per_person" ? "per person" : "total"}
-                                    </span>
-                                  </span>
-                                ) : (
-                                  <span />
-                                )}
-                                {cruiseIsChoice && (
-                                  <div className="flex items-center gap-2">
-                                    {cruiseShips.length > 1 && (
-                                      <span className="text-[10px] text-muted-foreground font-body">
-                                        Option {cruiseShips.indexOf(ship) + 1} of {cruiseShips.length}
-                                      </span>
-                                    )}
+
+                              <div className="flex-1" />
+
+                              {/* Footer: selection */}
+                              {cruiseIsChoice && !isReadOnly && (
+                                <div className="flex items-center justify-end mt-5 pt-4 border-t border-border/20">
+                                  <div className="flex items-center gap-1.5">
                                     {isSelected ? (
-                                      <div className="flex items-center gap-1.5">
-                                        <Button
-                                          variant="travel"
-                                          size="sm"
-                                          className="text-xs"
-                                          onClick={(e) => e.stopPropagation()}
-                                        >
-                                          <Check className="h-3 w-3 mr-1" /> Selected ✓
+                                      <>
+                                        <Button variant="travel" size="sm" className="text-xs h-8" onClick={(e) => e.stopPropagation()}>
+                                          <Check className="h-3 w-3 mr-1" /> Selected
                                         </Button>
                                         <Button
                                           variant="travel-ghost"
                                           size="sm"
-                                          className="text-xs text-destructive hover:text-destructive"
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setSelectedCruise("");
-                                          }}
+                                          className="text-xs text-destructive hover:text-destructive h-8"
+                                          onClick={(e) => { e.stopPropagation(); setSelectedCruise(""); }}
                                         >
-                                          Cancel ✕
+                                          ✕
                                         </Button>
-                                      </div>
+                                      </>
                                     ) : (
                                       <Button
                                         variant="travel-outline"
                                         size="sm"
-                                        className="text-xs"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setSelectedCruise(ship.id);
-                                        }}
+                                        className="text-xs h-8"
+                                        onClick={(e) => { e.stopPropagation(); setSelectedCruise(ship.id); }}
                                       >
                                         Select This Option
                                       </Button>
                                     )}
                                   </div>
-                                )}
-                              </div>
-                            )}
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </motion.div>
                       );
