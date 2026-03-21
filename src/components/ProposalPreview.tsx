@@ -2631,14 +2631,12 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                     variant="travel"
                     size="lg"
                     className="text-lg px-10 py-6 h-auto"
-                    disabled={!termsAccepted || approving}
+                    disabled={!termsAccepted || approving || !allSelectionsComplete}
                     onClick={async () => {
-                      // Approval validation: check required choice sections
-                      const missing: string[] = [];
-                      if (flightsIsChoice && !selectedFlight) missing.push("Flight");
-                      if (accommodationsIsChoice && !selectedAccommodation) missing.push("Accommodation");
-                      if (cruiseIsChoice && !selectedCruise) missing.push("Cruise");
-                      if (busIsChoice && !selectedBusTrip) missing.push("Bus Trip");
+                      // Universal approval validation using section registry
+                      const missing = requiredChoiceSections
+                        .filter((s) => !s.selectedId)
+                        .map((s) => s.label);
                       if (missing.length > 0) {
                         setValidationError(`Please select an option for: ${missing.join(", ")}`);
                         return;
