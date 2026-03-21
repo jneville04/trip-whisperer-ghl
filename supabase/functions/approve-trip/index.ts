@@ -2,8 +2,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 Deno.serve(async (req) => {
@@ -46,6 +45,7 @@ Deno.serve(async (req) => {
 
     // 1. Create snapshot
     const snapshotUrl = `https://studio.journeyswithjoi.com{trip.public_slug}`;
+
     const { data: snapshot, error: snapError } = await supabase
       .from("snapshots")
       .insert({
@@ -60,9 +60,10 @@ Deno.serve(async (req) => {
     // 2. Update trip status to approved
     await supabase.from("trips").update({ status: "approved" }).eq("id", tripId);
 
-    // 3. SEND THE EMAIL (NEW LOGIC)
+    // 3. SEND THE EMAIL (FIXED URL)
     let emailSent = false;
     if (resendApiKey && agentEmail) {
+      console.log(`Attempting to send email to ${agentEmail}`);
       try {
         const emailResp = await fetch("https://api.resend.com", {
           method: "POST",
@@ -76,28 +77,28 @@ Deno.serve(async (req) => {
             reply_to: agentEmail,
             subject: `Trip Approved: ${tripName} - ${travelerName}`,
             html: `
-              <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px;">
+              <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
                 <h2 style="color: #0c7d69;">New Approval Received!</h2>
                 <p><strong>Traveler:</strong> ${travelerName}</p>
                 <p><strong>Trip:</strong> ${tripName}</p>
-                <hr/>
-                <p><strong>Selections:</strong><br/>${selectionSummary || "No specific selections recorded."}</p>
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;"/>
+                <p><strong>Selections:</strong><br/>${selectionSummary || "Standard package selected."}</p>
                 <p><strong>Final Total:</strong> $${totalPrice || 0}</p>
                 <p><strong>Deposit Due:</strong> $${deposit}</p>
                 <br/>
-                <a href="${snapshotUrl}" style="background-color: #0c7d69; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">View Proposal Snapshot</a>
+                <a href="${snapshotUrl}" style="display: inline-block; background-color: #0c7d69; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">View Proposal Snapshot</a>
               </div>
             `,
           }),
         });
+
+        const resendData = await emailResp.json();
+        console.log("Resend API Response:", resendData);
         emailSent = emailResp.ok;
       } catch (err) {
-        console.error("Email failed to send:", err);
+        console.error("Email fetch failed:", err);
       }
     }
-
-    // 4. Fire webhooks (Internal & GHL)
-    // ... (Keep your existing webhook logic here)
 
     return new Response(
       JSON.stringify({
