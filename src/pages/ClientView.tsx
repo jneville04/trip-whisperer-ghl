@@ -11,6 +11,7 @@ export default function ClientView() {
   const isAgentPreview = searchParams.get("preview") === "agent";
   const [data, setData] = useState<ProposalData | null>(null);
   const [tripId, setTripId] = useState<string | null>(null);
+  const [tripStatus, setTripStatus] = useState<string>("draft");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -40,6 +41,7 @@ export default function ClientView() {
 
       const r = row as any;
       const status = r.status || "draft";
+      setTripStatus(status);
       setTripId(r.id);
 
       // Agent preview: show draft_data regardless of status
@@ -110,7 +112,7 @@ export default function ClientView() {
 
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
-      <ProposalPreview data={data} shareId={shareId} tripId={tripId || undefined} />
+      <ProposalPreview data={data} shareId={shareId} tripId={tripId || undefined} tripStatus={tripStatus} />
     </div>
   );
 }

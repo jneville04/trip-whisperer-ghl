@@ -100,6 +100,7 @@ interface Props {
   data: ProposalData;
   shareId?: string;
   tripId?: string;
+  tripStatus?: string;
   isEditor?: boolean;
   onEditorSubPage?: (page: EditorSubPage) => void;
 }
@@ -307,7 +308,7 @@ function ItinerarySection({
   );
 }
 
-export default function ProposalPreview({ data, shareId, tripId, isEditor, onEditorSubPage }: Props) {
+export default function ProposalPreview({ data, shareId, tripId, tripStatus, isEditor, onEditorSubPage }: Props) {
   const isGroupBooking = (data as any).proposalType !== "proposal";
   const navigate = useNavigate();
   const heroImage = data.heroImageUrl || "";
@@ -341,7 +342,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
   const [questionForm, setQuestionForm] = useState({ name: "", email: "", message: "" });
   const [questionSending, setQuestionSending] = useState(false);
   const [questionSent, setQuestionSent] = useState(false);
-  const [isReadOnly, setIsReadOnly] = useState(false);
+  const [isReadOnly, setIsReadOnly] = useState(tripStatus === "approved");
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showRevisionModal, setShowRevisionModal] = useState(false);
   const [revisionForm, setRevisionForm] = useState({ name: "", email: "", message: "" });
@@ -2984,6 +2985,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                       setShowReviewModal(false);
                       return;
                     }
+                    if (isReadOnly) return;
                     setApproving(true);
                     try {
                       let totalPrice = 0;
@@ -3234,6 +3236,7 @@ export default function ProposalPreview({ data, shareId, tripId, isEditor, onEdi
                     onSubmit={async (e) => {
                       e.preventDefault();
                       if (!revisionForm.message.trim()) return;
+                      if (isReadOnly) return;
                       setRevisionSending(true);
                       try {
                         // Build current selections for context
