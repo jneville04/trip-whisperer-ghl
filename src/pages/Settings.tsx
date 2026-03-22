@@ -317,10 +317,23 @@ export default function SettingsPage() {
                       </div>
                     </div>
                   ) : (
-                    <Button variant="travel" size="sm" disabled className="opacity-75">
-                      <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> Connect GoHighLevel
-                      <span className="ml-2 text-[10px] uppercase tracking-wider bg-primary-foreground/20 px-1.5 py-0.5 rounded">Coming Soon</span>
-                    </Button>
+                    <div className="space-y-4">
+                      <div>
+                        <FieldLabel>GHL Webhook URL</FieldLabel>
+                        <Input value={form.ghl_webhook_url || ""} onChange={(e) => updateField("ghl_webhook_url", e.target.value)} className="h-9 text-sm" placeholder="https://services.leadconnectorhq.com/hooks/..." />
+                        <p className="text-xs text-muted-foreground font-body mt-1">In GHL go to Settings → Integrations → Webhooks → Create Webhook. Paste the URL here.</p>
+                      </div>
+                      <div>
+                        <FieldLabel>GHL Location ID</FieldLabel>
+                        <Input value={form.ghl_location_id || ""} onChange={(e) => updateField("ghl_location_id", e.target.value)} className="h-9 text-sm" placeholder="Your GHL Location ID" />
+                        <p className="text-xs text-muted-foreground font-body mt-1">Found in GHL under Settings → Business Profile → Location ID.</p>
+                      </div>
+                      <div>
+                        <FieldLabel>GHL API Key</FieldLabel>
+                        <Input type="password" value={form.ghl_access_token || ""} onChange={(e) => updateField("ghl_access_token", e.target.value)} className="h-9 text-sm" placeholder="Your GHL API Key" />
+                        <p className="text-xs text-muted-foreground font-body mt-1">Found in GHL under Settings → API Keys.</p>
+                      </div>
+                    </div>
                   )}
                 </CardContent>
               </Card>

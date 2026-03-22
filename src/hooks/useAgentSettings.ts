@@ -54,6 +54,8 @@ const defaults: Omit<AgentSettings, "id" | "user_id"> = {
   default_checkout_url: "",
   ghl_connected: false,
   ghl_location_id: "",
+  ghl_access_token: "",
+  ghl_webhook_url: "",
   stripe_connected: false,
   stripe_account_id: "",
 };
