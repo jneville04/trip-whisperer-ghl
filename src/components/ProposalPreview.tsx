@@ -969,16 +969,15 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
         switch (sectionKey) {
           case "overview":
             return (
-              <section key="overview" id="overview" className="py-20 lg:py-24 px-6 border-t-2 border-border bg-background">
-                <div className="max-w-3xl mx-auto">
-                  <div className="border-l-4 border-primary/60 pl-8 sm:pl-10 text-left">
+              <section key="overview" id="overview" className="py-16 lg:py-20 px-6 bg-background">
+                <div className="max-w-[700px] mx-auto text-center">
                   <motion.p
                     variants={fadeUp}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="text-xs tracking-[0.25em] uppercase text-primary font-body font-semibold mb-4"
+                    className="text-xs tracking-[0.3em] uppercase text-primary font-body font-semibold mb-3"
                   >
                     Prepared Exclusively For
                   </motion.p>
@@ -998,7 +997,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={2}
-                    className="w-12 h-[2px] bg-primary/40 mt-6 mb-10"
+                    className="w-16 h-0.5 bg-primary/30 mx-auto mt-5 mb-8"
                   />
                   {data.introText && (
                     <motion.div
@@ -1007,11 +1006,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       whileInView="visible"
                       viewport={{ once: true }}
                       custom={3}
-                      className="text-muted-foreground leading-[1.9] text-base sm:text-lg font-body prose prose-lg max-w-none [&_p]:text-[15px] sm:[&_p]:text-base"
+                      className="text-muted-foreground leading-[1.9] text-base font-body prose prose-lg max-w-none"
                       dangerouslySetInnerHTML={{ __html: data.introText }}
                     />
                   )}
-                  </div>
                 </div>
               </section>
             );
