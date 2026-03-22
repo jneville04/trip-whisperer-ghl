@@ -109,7 +109,15 @@ export default function SettingsPage() {
               <CardContent className="space-y-4">
                 <div>
                   <FieldLabel>Agency Logo</FieldLabel>
-                  <ImageUploadField value={form.logo_url || ""} onChange={(url) => updateField("logo_url", url)} placeholder="Upload or paste logo URL" />
+                  <ImageUploadField value={form.logo_url || ""} onChange={(url) => updateField("logo_url", url)} placeholder="Upload or paste logo URL" showPreview={false} hideValueText />
+                  {form.logo_url && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <img src={form.logo_url} alt="Agency logo" className="max-h-[120px] object-contain rounded-lg" />
+                      <Button variant="ghost" size="sm" className="text-xs text-destructive" onClick={() => updateField("logo_url", "")}>
+                        <X className="h-3 w-3 mr-1" /> Remove
+                      </Button>
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
                   <div>
