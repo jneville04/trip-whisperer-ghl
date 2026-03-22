@@ -1149,9 +1149,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                     </p>
                                   )}
                                   {(leg as any).stops === 0 || (leg as any).stops === undefined ? (
-                                    <p className="text-[10px] font-semibold text-green-600 font-body">Nonstop</p>
+                                    <p className="text-xs font-semibold text-primary font-body">Nonstop</p>
                                   ) : (
-                                    <p className="text-[10px] text-muted-foreground font-body">
+                                    <p className="text-xs text-muted-foreground font-body">
                                       {(leg as any).stops === 1 ? "1 Stop" : `${(leg as any).stops} Stops`}
                                     </p>
                                   )}
