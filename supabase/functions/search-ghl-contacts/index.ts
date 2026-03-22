@@ -66,7 +66,16 @@ Deno.serve(async (req) => {
 
     const url = `https://services.leadconnectorhq.com/contacts/?locationId=${encodeURIComponent(ghlLocationId)}&query=${encodeURIComponent(query.trim())}&limit=10`;
 
-    console.log("Searching GHL contacts:", query.trim(), "locationId:", ghlLocationId);
+    console.log(
+      "Searching GHL contacts:",
+      query.trim(),
+      "locationId:",
+      ghlLocationId,
+      "source:",
+      credentialSource,
+      "tokenLength:",
+      ghlApiKey.length,
+    );
 
     const ghlRes = await fetch(url, {
       method: "GET",
@@ -89,7 +98,7 @@ Deno.serve(async (req) => {
         : ghlRes.status === 429
         ? "Rate limited. Try again shortly."
         : `GHL API error: ${ghlRes.status}`;
-      return new Response(JSON.stringify({ contacts: [], error: errorMsg }), {
+      return new Response(JSON.stringify({ contacts: [], error: errorMsg, statusCode: ghlRes.status, rawResponse: errBody }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
