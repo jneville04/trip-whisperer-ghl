@@ -216,14 +216,39 @@ export default function CreateTripMenu() {
           <div className="space-y-4 py-2">
             <div className="space-y-1.5">
               <Label htmlFor="clientName">Client Name<RequiredMark /></Label>
-              <Input
+              <GhlContactSearch
                 id="clientName"
-                placeholder="Search or enter client name..."
                 value={clientName}
-                onChange={(e) => { setClientName(e.target.value); setProposalErrors((p) => ({ ...p, clientName: undefined })); }}
-                className={cn(proposalErrors.clientName && "border-destructive focus-visible:ring-destructive")}
+                onChange={(val) => { setClientName(val); setProposalErrors((p) => ({ ...p, clientName: undefined })); }}
+                onSelect={(contact: GhlContact) => {
+                  setClientEmail(contact.email);
+                  setClientPhone(contact.phone);
+                }}
+                error={!!proposalErrors.clientName}
               />
               <FieldError message={proposalErrors.clientName} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="clientEmail">Email</Label>
+                <Input
+                  id="clientEmail"
+                  type="email"
+                  placeholder="client@email.com"
+                  value={clientEmail}
+                  onChange={(e) => setClientEmail(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="clientPhone">Phone</Label>
+                <Input
+                  id="clientPhone"
+                  type="tel"
+                  placeholder="+1 (555) 123-4567"
+                  value={clientPhone}
+                  onChange={(e) => setClientPhone(e.target.value)}
+                />
+              </div>
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="tripTitle">Trip Title<RequiredMark /></Label>
