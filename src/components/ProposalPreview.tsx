@@ -213,9 +213,20 @@ function ItinerarySection({
                       </div>
                     </div>
                   </div>
-                  <ChevronDown
-                    className={`h-5 w-5 text-muted-foreground shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-                  />
+                  <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex gap-1">
+                      {day.activities
+                        .filter(a => !UTILITY_ACTIVITY_TYPES.includes(a.type as any) && a.imageUrls && a.imageUrls.length > 0)
+                        .slice(0, 3)
+                        .map((a, i) => (
+                          <div key={i} className="w-11 h-9 rounded-lg overflow-hidden border border-border/40 shrink-0">
+                            <img src={a.imageUrls![0]} alt="" className="w-full h-full object-cover" />
+                          </div>
+                        ))
+                      }
+                    </div>
+                    <ChevronDown className={`h-5 w-5 text-muted-foreground shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                  </div>
                 </button>
                 <AnimatePresence initial={false}>
                   {isOpen && (
@@ -264,7 +275,7 @@ function ItinerarySection({
                                 </div>
                                 {hasImages && (
                                   <div
-                                    className="shrink-0 rounded-xl overflow-hidden cursor-pointer group relative sm:w-[200px] md:w-[200px] h-[200px] border border-border/40 mx-2 my-2"
+                                    className="shrink-0 rounded-xl overflow-hidden cursor-pointer group relative w-[200px] h-[200px] border border-border/40 mx-2 my-2"
                                     onClick={() =>
                                       openLightbox(
                                         act.imageUrls!.map((u) => ({ src: u, alt: act.title })),
@@ -278,7 +289,7 @@ function ItinerarySection({
                                       className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                                     />
                                     {act.imageUrls!.length > 1 && (
-                                      <div className="absolute bottom-2 right-2 bg-foreground/60 text-background text-xs font-semibold px-2 py-1 rounded-full backdrop-blur-sm">
+                                      <div className="absolute bottom-2 right-2 bg-black/55 text-white text-xs font-semibold px-2 py-1 rounded-full backdrop-blur-sm">
                                         +{act.imageUrls!.length - 1} more
                                       </div>
                                     )}
@@ -1059,8 +1070,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           {/* TOP BAR — airline + price */}
                           <div className="bg-muted/60 border-b-2 border-border px-5 py-3.5 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                              <div className="h-9 w-9 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
-                                <Plane className="h-4 w-4 text-blue-500" />
+                              <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+                                <Plane className="h-4 w-4 text-primary" />
                               </div>
                               <div>
                                 <p className="font-body font-semibold text-foreground text-sm">
@@ -1133,14 +1144,14 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                     <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
                                   </div>
                                   {(leg.airline || leg.flightNumber) && (
-                                    <p className="text-[10px] text-muted-foreground font-body text-center leading-tight">
+                                    <p className="text-xs text-muted-foreground font-body text-center leading-tight font-medium">
                                       {leg.airline}{leg.flightNumber ? ` ${leg.flightNumber}` : ""}
                                     </p>
                                   )}
                                   {(leg as any).stops === 0 || (leg as any).stops === undefined ? (
-                                    <p className="text-[10px] font-semibold text-green-600 font-body">Nonstop</p>
+                                    <p className="text-xs font-semibold text-primary font-body">Nonstop</p>
                                   ) : (
-                                    <p className="text-[10px] text-muted-foreground font-body">
+                                    <p className="text-xs text-muted-foreground font-body">
                                       {(leg as any).stops === 1 ? "1 Stop" : `${(leg as any).stops} Stops`}
                                     </p>
                                   )}
