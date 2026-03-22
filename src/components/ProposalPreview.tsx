@@ -365,6 +365,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   const [validationError, setValidationError] = useState<string>("");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showAskQuestion, setShowAskQuestion] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const travelerName = data.clientName || "";
   const travelerEmail = (data as any).clientEmail || "";
   const [questionForm, setQuestionForm] = useState({ name: travelerName, email: travelerEmail, message: "" });
