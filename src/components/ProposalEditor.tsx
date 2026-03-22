@@ -450,6 +450,15 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const addInclusion = () => update("inclusions", [...data.inclusions, ""]);
   const removeInclusion = (index: number) => update("inclusions", data.inclusions.filter((_, i) => i !== index));
 
+  const exclusions = (data as any).exclusions as string[] || [];
+  const updateExclusion = (index: number, value: string) => {
+    const exc = [...exclusions];
+    exc[index] = value;
+    onChange({ ...data, exclusions: exc } as any);
+  };
+  const addExclusion = () => onChange({ ...data, exclusions: [...exclusions, ""] } as any);
+  const removeExclusion = (index: number) => onChange({ ...data, exclusions: exclusions.filter((_: string, i: number) => i !== index) } as any);
+
   const updateFlightLeg = (optIndex: number, legIndex: number, field: keyof FlightLeg, value: string) => {
     const opts = [...(data.flightOptions || [])];
     const legs = [...opts[optIndex].legs];
