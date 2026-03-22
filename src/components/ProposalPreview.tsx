@@ -1300,27 +1300,29 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                     <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
                                   </div>
                                 ) : (
-                                  <div className="grid grid-cols-3 grid-rows-2 gap-2 h-[220px] sm:h-[250px]">
+                                   <div className="flex flex-col gap-2 p-2.5 pb-0">
                                     <div
-                                      className="col-span-2 row-span-2 overflow-hidden cursor-pointer relative group rounded-xl border-2 border-border/70"
+                                      className="overflow-hidden cursor-pointer relative group rounded-xl border-2 border-border/70 h-[180px]"
                                       onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
                                     >
                                       <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
                                     </div>
-                                    {allAccImages.slice(1, 3).map((img, idx) => (
-                                      <div
-                                        key={idx}
-                                        className="overflow-hidden cursor-pointer relative group rounded-xl border-2 border-border/70"
-                                        onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, idx + 1); }}
-                                      >
-                                        <img src={img.src} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
-                                        {idx === 1 && allAccImages.length > 3 && (
-                                          <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center">
-                                            <span className="text-background text-sm font-bold flex items-center gap-1.5"><Camera className="h-3.5 w-3.5" />+{allAccImages.length - 3}</span>
-                                          </div>
-                                        )}
-                                      </div>
-                                    ))}
+                                    <div className="flex gap-2">
+                                      {allAccImages.slice(1, 3).map((img, idx) => (
+                                        <div
+                                          key={idx}
+                                          className="flex-1 overflow-hidden cursor-pointer relative group rounded-xl border-2 border-border/70 h-[90px]"
+                                          onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, idx + 1); }}
+                                        >
+                                          <img src={img.src} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
+                                          {idx === 1 && allAccImages.length > 3 && (
+                                            <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center">
+                                              <span className="text-background text-sm font-bold flex items-center gap-1.5"><Camera className="h-3.5 w-3.5" />+{allAccImages.length - 3}</span>
+                                            </div>
+                                          )}
+                                        </div>
+                                      ))}
+                                    </div>
                                   </div>
                                 )}
                               </div>
