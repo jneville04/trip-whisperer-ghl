@@ -1071,22 +1071,29 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                         >
                           {/* TOP BAR — airline + price */}
                           <div className="bg-muted/60 border-b-2 border-border px-5 py-3.5 flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
-                                <Plane className="h-4 w-4 text-primary" />
-                              </div>
-                              <div>
-                                <p className="font-body font-semibold text-foreground text-sm">
-                                  {opt.legs[0]?.airline || "Airline"}
-                                </p>
-                                <p className="text-xs text-muted-foreground font-body mt-0.5">
-                                  {(opt.legs[0] as any)?.cabinClass || "Economy"}
-                                  {opt.legs.length > 1 ? ` · ${opt.legs.length} legs` : ""}
-                                </p>
+                            <div className="flex items-center gap-3 flex-1">
+                              {flightOptions.length > 1 && (
+                                <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-primary font-body bg-primary/10 border border-primary/20 rounded-full px-2.5 py-1 shrink-0">
+                                  Option {optIdx + 1} of {flightOptions.length}
+                                </span>
+                              )}
+                              <div className="flex items-center gap-3">
+                                <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+                                  <Plane className="h-4 w-4 text-primary" />
+                                </div>
+                                <div>
+                                  <p className="font-body font-semibold text-foreground text-sm">
+                                    {opt.legs[0]?.airline || "Airline"}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground font-body mt-0.5">
+                                    {(opt.legs[0] as any)?.cabinClass || "Economy"}
+                                    {opt.legs.length > 1 ? ` · ${opt.legs.length} legs` : ""}
+                                  </p>
+                                </div>
                               </div>
                             </div>
                             {opt.price && showItemizedPrices && (
-                              <div className="text-right">
+                              <div className="text-right shrink-0">
                                 <p className="font-display text-2xl font-bold text-primary leading-none">
                                   {fmtCurrency(opt.price)}
                                 </p>
