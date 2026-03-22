@@ -36,19 +36,32 @@ export default function ClientView() {
       setError("");
       setData(null);
 
-      const { data: row, error: err } = await supabase
-        .from("trips")
-        .select("id, status, published_data, draft_data, org_id, archived_at")
-        .eq("public_slug", shareId)
-        .single();
+      // Use a direct fetch with no-cache to guarantee fresh data from the database
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      const res = await fetch(
+        `${supabaseUrl}/rest/v1/trips?select=id,status,published_data,draft_data,org_id,archived_at&public_slug=eq.${encodeURIComponent(shareId)}`,
+        {
+          headers: {
+            apikey: supabaseKey,
+            Authorization: `Bearer ${supabaseKey}`,
+            Accept: "application/vnd.pgrst.object+json",
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            Pragma: "no-cache",
+          },
+          cache: "no-store",
+        }
+      );
 
       if (cancelled) return;
 
-      if (err || !row) {
+      if (!res.ok) {
         setError("Proposal not found or link has expired.");
         setLoading(false);
         return;
       }
+
+      const row = await res.json();
 
       const r = row as any;
       const status = r.status || "draft";
