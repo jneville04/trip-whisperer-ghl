@@ -289,7 +289,7 @@ function ItinerarySection({
                                       className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                                     />
                                     {act.imageUrls!.length > 1 && (
-                                      <div className="absolute bottom-2 right-2 bg-foreground/60 text-background text-xs font-semibold px-2 py-1 rounded-full backdrop-blur-sm">
+                                      <div className="absolute bottom-2 right-2 bg-black/55 text-white text-xs font-semibold px-2 py-1 rounded-full backdrop-blur-sm">
                                         +{act.imageUrls!.length - 1} more
                                       </div>
                                     )}
