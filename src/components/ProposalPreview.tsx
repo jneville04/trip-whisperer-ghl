@@ -761,44 +761,32 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               transition={{ duration: 0.6, delay: 0.5 }}
               className="relative z-10 -mt-8 mx-4 sm:mx-6"
             >
-              <div className="max-w-[70%] w-full mx-auto bg-background/95 backdrop-blur-md rounded-2xl shadow-xl border border-border/40 px-6 sm:px-10 py-5">
-                <div className="flex items-center justify-center gap-5 sm:gap-8 flex-wrap">
+              <div className="max-w-[620px] w-full mx-auto bg-background rounded-xl shadow-lg border border-border px-5 sm:px-8 py-4">
+                <div className="flex items-center justify-center divide-x divide-border">
                   {((data as any).startDate || (data as any).endDate) && (
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                        <Calendar className="h-5 w-5 text-primary" />
-                      </div>
+                    <div className="flex items-center gap-2.5 px-4 sm:px-6 first:pl-0 last:pr-0">
+                      <Calendar className="h-4 w-4 text-primary shrink-0" />
                       <div>
-                        <p className="text-xs uppercase tracking-widest text-muted-foreground font-body font-medium">Dates</p>
-                        <p className="text-base font-bold text-foreground font-body leading-tight">{formatDateRange((data as any).startDate, (data as any).endDate)}</p>
+                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-body font-medium">Dates</p>
+                        <p className="text-sm font-bold text-foreground font-body leading-tight">{formatDateRange((data as any).startDate, (data as any).endDate)}</p>
                       </div>
                     </div>
-                  )}
-                  {((data as any).startDate || (data as any).endDate) && data.travelerCount && (
-                    <div className="h-10 w-px bg-border/50 hidden sm:block" />
                   )}
                   {data.travelerCount && (
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                        <Users className="h-5 w-5 text-primary" />
-                      </div>
+                    <div className="flex items-center gap-2.5 px-4 sm:px-6 first:pl-0 last:pr-0">
+                      <Users className="h-4 w-4 text-primary shrink-0" />
                       <div>
-                        <p className="text-xs uppercase tracking-widest text-muted-foreground font-body font-medium">Travelers</p>
-                        <p className="text-base font-bold text-foreground font-body leading-tight">{parseInt(data.travelerCount) === 1 ? "1 Guest" : `${parseInt(data.travelerCount)} Guests`}</p>
+                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-body font-medium">Travelers</p>
+                        <p className="text-sm font-bold text-foreground font-body leading-tight">{parseInt(data.travelerCount) === 1 ? "1 Guest" : `${parseInt(data.travelerCount)} Guests`}</p>
                       </div>
                     </div>
                   )}
-                  {data.travelerCount && computedDuration && (
-                    <div className="h-10 w-px bg-border/50 hidden sm:block" />
-                  )}
                   {computedDuration && (
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                        <Clock className="h-5 w-5 text-primary" />
-                      </div>
+                    <div className="flex items-center gap-2.5 px-4 sm:px-6 first:pl-0 last:pr-0">
+                      <Clock className="h-4 w-4 text-primary shrink-0" />
                       <div>
-                        <p className="text-xs uppercase tracking-widest text-muted-foreground font-body font-medium">Duration</p>
-                        <p className="text-base font-bold text-foreground font-body leading-tight">{computedDuration}</p>
+                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-body font-medium">Duration</p>
+                        <p className="text-sm font-bold text-foreground font-body leading-tight">{computedDuration}</p>
                       </div>
                     </div>
                   )}
