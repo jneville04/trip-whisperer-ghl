@@ -1991,7 +1991,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             return <ItinerarySection key="itinerary" data={data} fadeUp={fadeUp} openLightbox={openLightbox} />;
 
           case "inclusions":
-            if (data.inclusions.filter(Boolean).length === 0) return null;
+            const exclusions = (data as any).exclusions as string[] || [];
+            if (data.inclusions.filter(Boolean).length === 0 && exclusions.filter(Boolean).length === 0) return null;
             return (
               <section key="inclusions" id="inclusions" className="py-16 lg:py-20 bg-muted/40">
                 <div className="max-w-[960px] mx-auto px-6">
@@ -2003,11 +2004,13 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     custom={0}
                     className="text-center mb-14"
                   >
-                    <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">
+                    <p className="text-xs tracking-[0.3em] uppercase text-primary font-body font-semibold mb-3">
                       {ct.inclusions?.subtitle || "Everything Taken Care Of"}
                     </p>
-                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.inclusions?.title || "What's Included"}</h2>
-                    <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
+                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">
+                      {ct.inclusions?.title || "Inclusions & Exclusions"}
+                    </h2>
+                    <div className="w-16 h-0.5 bg-primary/30 mx-auto mt-5" />
                   </motion.div>
                   <motion.div
                     variants={fadeUp}
@@ -2017,14 +2020,46 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     custom={1}
                     className="grid grid-cols-1 sm:grid-cols-2 gap-4"
                   >
-                    {data.inclusions.filter(Boolean).map((item, i) => (
-                      <div key={i} className="flex items-center gap-3 px-5 py-4 border border-border rounded-xl bg-background shadow-sm">
-                        <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                          <Check className="h-3.5 w-3.5 text-primary" />
+                    {data.inclusions.filter(Boolean).length > 0 && (
+                      <div className="bg-card rounded-2xl border-2 border-border overflow-hidden shadow-[0_14px_32px_-20px_hsl(var(--foreground)/0.35)]">
+                        <div className="flex items-center gap-2.5 px-6 py-4 border-b-2 border-border bg-primary/5">
+                          <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
+                          <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary font-body">
+                            What's Included
+                          </p>
                         </div>
-                        <span className="font-body text-foreground text-base">{item}</span>
+                        <div className="px-6 py-4 flex flex-col divide-y divide-border">
+                          {data.inclusions.filter(Boolean).map((item, i) => (
+                            <div key={i} className="flex items-start gap-3 py-3">
+                              <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                                <Check className="h-3 w-3 text-primary" />
+                              </div>
+                              <span className="font-body text-foreground text-[14px] leading-snug">{item}</span>
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    ))}
+                    )}
+                    {exclusions.filter(Boolean).length > 0 && (
+                      <div className="bg-card rounded-2xl border-2 border-border overflow-hidden shadow-[0_14px_32px_-20px_hsl(var(--foreground)/0.35)]">
+                        <div className="flex items-center gap-2.5 px-6 py-4 border-b-2 border-border bg-destructive/5">
+                          <div className="w-2 h-2 rounded-full bg-destructive shrink-0" />
+                          <p className="text-xs font-bold uppercase tracking-[0.15em] text-destructive font-body">
+                            Not Included
+                          </p>
+                        </div>
+                        <div className="px-6 py-4 flex flex-col divide-y divide-border">
+                          {exclusions.filter(Boolean).map((item: string, i: number) => (
+                            <div key={i} className="flex items-start gap-3 py-3">
+                              <div className="w-5 h-5 rounded-full bg-destructive/10 flex items-center justify-center shrink-0 mt-0.5">
+                                <X className="h-3 w-3 text-destructive" />
+                              </div>
+                              <span className="font-body text-muted-foreground text-[14px] leading-snug">{item}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </motion.div>
                 </div>
               </section>

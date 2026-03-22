@@ -450,6 +450,15 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const addInclusion = () => update("inclusions", [...data.inclusions, ""]);
   const removeInclusion = (index: number) => update("inclusions", data.inclusions.filter((_, i) => i !== index));
 
+  const exclusions = (data as any).exclusions as string[] || [];
+  const updateExclusion = (index: number, value: string) => {
+    const exc = [...exclusions];
+    exc[index] = value;
+    onChange({ ...data, exclusions: exc } as any);
+  };
+  const addExclusion = () => onChange({ ...data, exclusions: [...exclusions, ""] } as any);
+  const removeExclusion = (index: number) => onChange({ ...data, exclusions: exclusions.filter((_: string, i: number) => i !== index) } as any);
+
   const updateFlightLeg = (optIndex: number, legIndex: number, field: keyof FlightLeg, value: string) => {
     const opts = [...(data.flightOptions || [])];
     const legs = [...opts[optIndex].legs];
@@ -1975,18 +1984,39 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   case "inclusions":
                     return (
                       <CollapsibleSection title={sectionTitles.inclusions} defaultOpen={false} sectionKey="inclusions" visible={vis.inclusions} onToggleVisible={() => toggleSection("inclusions")} sectionCustomTitle={customTitles.inclusions?.title} sectionCustomSubtitle={customTitles.inclusions?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("inclusions", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("inclusions", v)}>
-                        <div className="space-y-2">
-                          {data.inclusions.map((item, i) => (
-                            <div key={i} className="flex gap-2">
-                              <Input value={item} onChange={(e) => updateInclusion(i, e.target.value)} placeholder="Inclusion item" className="h-8 text-sm" />
-                              <Button variant="travel-ghost" size="icon" onClick={() => removeInclusion(i)} className="h-8 w-8 text-muted-foreground/40 hover:text-destructive shrink-0">
-                                <Trash2 className="h-3 w-3" />
+                        <div className="grid grid-cols-2 gap-6">
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-2">What's Included</p>
+                            <div className="space-y-2">
+                              {data.inclusions.map((item, i) => (
+                                <div key={i} className="flex gap-2">
+                                  <Input value={item} onChange={(e) => updateInclusion(i, e.target.value)} placeholder="Inclusion item" className="h-8 text-sm" />
+                                  <Button variant="travel-ghost" size="icon" onClick={() => removeInclusion(i)} className="h-8 w-8 text-muted-foreground/40 hover:text-destructive shrink-0">
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ))}
+                              <Button variant="travel-ghost" size="sm" onClick={addInclusion} className="text-primary text-xs h-7">
+                                <Plus className="h-3 w-3 mr-1" /> Add Inclusion
                               </Button>
                             </div>
-                          ))}
-                          <Button variant="travel-ghost" size="sm" onClick={addInclusion} className="text-primary text-xs h-7">
-                            <Plus className="h-3 w-3 mr-1" /> Add Inclusion
-                          </Button>
+                          </div>
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-wider text-destructive mb-2">Not Included</p>
+                            <div className="space-y-2">
+                              {exclusions.map((item: string, i: number) => (
+                                <div key={i} className="flex gap-2">
+                                  <Input value={item} onChange={(e) => updateExclusion(i, e.target.value)} placeholder="Exclusion item" className="h-8 text-sm" />
+                                  <Button variant="travel-ghost" size="icon" onClick={() => removeExclusion(i)} className="h-8 w-8 text-muted-foreground/40 hover:text-destructive shrink-0">
+                                    <Trash2 className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              ))}
+                              <Button variant="travel-ghost" size="sm" onClick={addExclusion} className="text-destructive text-xs h-7">
+                                <Plus className="h-3 w-3 mr-1" /> Add Exclusion
+                              </Button>
+                            </div>
+                          </div>
                         </div>
                       </CollapsibleSection>
                     );
