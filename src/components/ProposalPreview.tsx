@@ -1019,6 +1019,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       dangerouslySetInnerHTML={{ __html: data.introText }}
                     />
                   )}
+                  </div>
                 </div>
               </section>
             );
