@@ -189,7 +189,7 @@ function ItinerarySection({
               >
                 <button
                   onClick={() => toggleDay(day.id)}
-                  className="w-full flex items-center justify-between gap-3 px-6 py-5 cursor-pointer group text-left"
+                  className="w-full flex items-center justify-between gap-3 px-6 py-5 cursor-pointer group text-left bg-[hsl(var(--muted)/0.4)]"
                 >
                   <div>
                     <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
