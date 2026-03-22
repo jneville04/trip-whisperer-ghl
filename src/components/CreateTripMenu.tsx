@@ -78,6 +78,8 @@ export default function CreateTripMenu() {
 
   const resetProposal = () => {
     setClientName("");
+    setClientEmail("");
+    setClientPhone("");
     setTripTitle("");
     setStartDate(undefined);
     setEndDate(undefined);
