@@ -1057,7 +1057,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           whileInView="visible"
                           viewport={{ once: true }}
                           custom={optIdx}
-                          className={`max-w-[860px] mx-auto bg-[hsl(var(--muted)/0.35)] rounded-3xl border-2 shadow-[0_10px_30px_-12px_hsl(var(--foreground)/0.15)] relative overflow-hidden transition-all ${
+                          className={`max-w-[860px] mx-auto bg-card rounded-3xl border-2 shadow-[0_10px_30px_-10px_hsl(var(--foreground)/0.2)] relative overflow-hidden transition-all ${
                             flightsIsChoice
                               ? isSelected
                                 ? "border-primary ring-2 ring-primary/20"
