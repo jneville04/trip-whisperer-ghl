@@ -33,6 +33,7 @@ export type Database = {
           ghl_access_token: string
           ghl_connected: boolean
           ghl_location_id: string
+          ghl_webhook_url: string
           id: string
           logo_url: string
           primary_color: string
@@ -61,6 +62,7 @@ export type Database = {
           ghl_access_token?: string
           ghl_connected?: boolean
           ghl_location_id?: string
+          ghl_webhook_url?: string
           id?: string
           logo_url?: string
           primary_color?: string
@@ -89,6 +91,7 @@ export type Database = {
           ghl_access_token?: string
           ghl_connected?: boolean
           ghl_location_id?: string
+          ghl_webhook_url?: string
           id?: string
           logo_url?: string
           primary_color?: string

@@ -1,0 +1,1 @@
+ALTER TABLE public.agent_settings ADD COLUMN IF NOT EXISTS ghl_webhook_url text NOT NULL DEFAULT '';

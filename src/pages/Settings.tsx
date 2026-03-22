@@ -109,7 +109,15 @@ export default function SettingsPage() {
               <CardContent className="space-y-4">
                 <div>
                   <FieldLabel>Agency Logo</FieldLabel>
-                  <ImageUploadField value={form.logo_url || ""} onChange={(url) => updateField("logo_url", url)} placeholder="Upload or paste logo URL" />
+                  <ImageUploadField value={form.logo_url || ""} onChange={(url) => updateField("logo_url", url)} placeholder="Upload or paste logo URL" showPreview={false} hideValueText />
+                  {form.logo_url && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <img src={form.logo_url} alt="Agency logo" className="max-h-[120px] object-contain rounded-lg" />
+                      <Button variant="ghost" size="sm" className="text-xs text-destructive" onClick={() => updateField("logo_url", "")}>
+                        <X className="h-3 w-3 mr-1" /> Remove
+                      </Button>
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 px-3 py-2">
                   <div>
@@ -309,10 +317,23 @@ export default function SettingsPage() {
                       </div>
                     </div>
                   ) : (
-                    <Button variant="travel" size="sm" disabled className="opacity-75">
-                      <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> Connect GoHighLevel
-                      <span className="ml-2 text-[10px] uppercase tracking-wider bg-primary-foreground/20 px-1.5 py-0.5 rounded">Coming Soon</span>
-                    </Button>
+                    <div className="space-y-4">
+                      <div>
+                        <FieldLabel>GHL Webhook URL</FieldLabel>
+                        <Input value={form.ghl_webhook_url || ""} onChange={(e) => updateField("ghl_webhook_url", e.target.value)} className="h-9 text-sm" placeholder="https://services.leadconnectorhq.com/hooks/..." />
+                        <p className="text-xs text-muted-foreground font-body mt-1">In GHL go to Settings → Integrations → Webhooks → Create Webhook. Paste the URL here.</p>
+                      </div>
+                      <div>
+                        <FieldLabel>GHL Location ID</FieldLabel>
+                        <Input value={form.ghl_location_id || ""} onChange={(e) => updateField("ghl_location_id", e.target.value)} className="h-9 text-sm" placeholder="Your GHL Location ID" />
+                        <p className="text-xs text-muted-foreground font-body mt-1">Found in GHL under Settings → Business Profile → Location ID.</p>
+                      </div>
+                      <div>
+                        <FieldLabel>GHL API Key</FieldLabel>
+                        <Input type="password" value={form.ghl_access_token || ""} onChange={(e) => updateField("ghl_access_token", e.target.value)} className="h-9 text-sm" placeholder="Your GHL API Key" />
+                        <p className="text-xs text-muted-foreground font-body mt-1">Found in GHL under Settings → API Keys.</p>
+                      </div>
+                    </div>
                   )}
                 </CardContent>
               </Card>
