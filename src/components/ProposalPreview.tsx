@@ -1281,121 +1281,55 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           }`}
                           onClick={() => accommodationsIsChoice && setSelectedAccommodation(isSelected ? "" : acc.id)}
                         >
-                          <div className="relative">
-                            {accommodationsIsChoice && accommodations.length > 1 && (
-                              <div className="absolute top-5 right-5 z-20">
-                                <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-primary font-body bg-background/90 border border-border rounded-full px-2.5 py-1">
-                                  Option {accIdx + 1} of {accommodations.length}
-                                </span>
-                              </div>
-                            )}
-
-                            {showAccPhotos && allAccImages.length > 0 && (
-                              <div className="p-4 sm:p-5 pb-0">
-                                {allAccImages.length === 1 ? (
-                                  <div
-                                    className="h-[220px] sm:h-[250px] overflow-hidden cursor-pointer relative group rounded-xl border-2 border-border/70"
-                                    onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
-                                  >
-                                    <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
-                                  </div>
-                                ) : (
-                                   <div className="flex flex-col gap-2 p-2.5 pb-0">
-                                    <div
-                                      className="overflow-hidden cursor-pointer relative group rounded-xl border-2 border-border/70 h-[180px]"
-                                      onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
-                                    >
-                                      <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
-                                    </div>
-                                    <div className="flex gap-2">
-                                      {allAccImages.slice(1, 3).map((img, idx) => (
-                                        <div
-                                          key={idx}
-                                          className="flex-1 overflow-hidden cursor-pointer relative group rounded-xl border-2 border-border/70 h-[90px]"
-                                          onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, idx + 1); }}
-                                        >
-                                          <img src={img.src} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
-                                          {idx === 1 && allAccImages.length > 3 && (
-                                            <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center">
-                                              <span className="text-background text-sm font-bold flex items-center gap-1.5"><Camera className="h-3.5 w-3.5" />+{allAccImages.length - 3}</span>
-                                            </div>
-                                          )}
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-
-                            {showAccVideo && (
-                              <div className="p-4 sm:p-5 pb-0">
-                                <div className="rounded-xl overflow-hidden border-2 border-border/70">
-                                  <VideoEmbed
-                                    url={acc.videoUrl!}
-                                    title={acc.hotelName}
-                                    thumbnailUrl={acc.videoThumbnailUrl}
-                                    className="w-full"
-                                  />
-                                </div>
-                              </div>
-                            )}
-
+                          <div className="flex flex-row">
+                            {/* LEFT — all text content */}
                             <div className="flex-1 p-6 sm:p-7 flex flex-col">
-                              {/* Header: name + price */}
-                              <div className="flex items-start justify-between gap-4 mb-2">
-                                <div className="min-w-0">
-                                  <h3 className="font-display text-2xl sm:text-[1.65rem] font-bold text-foreground leading-tight">
-                                    {acc.hotelName || "Hotel"}
-                                  </h3>
-                                  {acc.location && (
-                                    <p className="text-sm text-muted-foreground font-body flex items-center gap-1 mt-1">
-                                      <MapPin className="h-3.5 w-3.5" /> {acc.location}
-                                    </p>
-                                  )}
+                              {accommodationsIsChoice && accommodations.length > 1 && (
+                                <div className="mb-3">
+                                  <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-primary font-body bg-primary/10 border border-primary/20 rounded-full px-2.5 py-1">
+                                    Option {accIdx + 1} of {accommodations.length}
+                                  </span>
                                 </div>
-                                {primaryPrice && (
-                                  <div className="text-right shrink-0 bg-muted/40 rounded-lg px-3 py-2 border border-border">
-                                    <p className="font-display text-2xl font-bold text-foreground leading-none">{primaryPrice}</p>
-                                    {pricingLabel && <p className="text-[11px] text-muted-foreground font-body mt-0.5">{pricingLabel}</p>}
-                                  </div>
-                                )}
-                              </div>
-
+                              )}
+                              <h3 className="font-display text-2xl sm:text-[1.65rem] font-bold text-foreground leading-tight">
+                                {acc.hotelName || "Hotel"}
+                              </h3>
+                              {acc.location && (
+                                <p className="text-sm text-muted-foreground font-body flex items-center gap-1 mt-1">
+                                  <MapPin className="h-3.5 w-3.5" /> {acc.location}
+                                </p>
+                              )}
+                              {primaryPrice && (
+                                <div className="mt-3">
+                                  <p className="font-display text-2xl font-bold text-primary leading-none">{primaryPrice}</p>
+                                  {pricingLabel && <p className="text-[11px] text-muted-foreground font-body mt-0.5">{pricingLabel}</p>}
+                                </div>
+                              )}
                               {acc.description && (
                                 <div
                                   className="text-[14px] text-muted-foreground font-body mt-3 leading-relaxed prose prose-sm max-w-none"
                                   dangerouslySetInnerHTML={{ __html: acc.description }}
                                 />
                               )}
-
-                              {/* Room + guests */}
                               {acc.roomType && (
                                 <div className="flex items-center gap-2 mt-3 text-sm font-body text-foreground">
                                   <BedDouble className="h-3.5 w-3.5 text-primary" />
                                   <span className="font-medium">{acc.roomType}</span>
                                 </div>
                               )}
-
-                              {/* Highlights */}
                               {highlights.length > 0 && (
                                 <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3">
                                   {highlights.slice(0, 4).map((h, hi) => (
-                                    <span key={hi} className="flex items-center gap-1.5 text-[15px] font-body text-foreground">
+                                    <span key={hi} className="flex items-center gap-1.5 text-[14px] font-body text-foreground">
                                       <Sparkles className="h-3 w-3 text-accent shrink-0" /> {h}
                                     </span>
                                   ))}
                                 </div>
                               )}
-
-                              {/* Amenities pills */}
                               {amenities.length > 0 && (
                                 <div className="flex flex-wrap gap-1.5 mt-4">
                                   {amenities.slice(0, 6).map((a, ai) => (
-                                    <span
-                                      key={ai}
-                                      className="inline-flex items-center gap-1 bg-muted text-muted-foreground text-xs font-body px-2.5 py-1 rounded-full border border-border"
-                                    >
+                                    <span key={ai} className="inline-flex items-center gap-1 bg-muted text-muted-foreground text-xs font-body px-2.5 py-1 rounded-full border border-border">
                                       <Check className="h-2.5 w-2.5 text-primary" /> {a}
                                     </span>
                                   ))}
@@ -1404,23 +1338,11 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                   )}
                                 </div>
                               )}
-
-                              {/* Spacer */}
                               <div className="flex-1" />
-
-                              {/* Footer: dates + selection */}
                               <div className="flex items-center justify-between mt-5 pt-4 border-t-2 border-border">
                                 <div className="flex items-center gap-4 text-xs text-muted-foreground font-body flex-wrap">
-                                  {acc.checkIn && (
-                                    <span className="flex items-center gap-1">
-                                      <Calendar className="h-3 w-3" /> In: {acc.checkIn}
-                                    </span>
-                                  )}
-                                  {acc.checkOut && (
-                                    <span className="flex items-center gap-1">
-                                      <Calendar className="h-3 w-3" /> Out: {acc.checkOut}
-                                    </span>
-                                  )}
+                                  {acc.checkIn && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> In: {acc.checkIn}</span>}
+                                  {acc.checkOut && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> Out: {acc.checkOut}</span>}
                                   {acc.nights && <span className="text-primary font-semibold">{formatNightsLabel(acc.nights)}</span>}
                                 </div>
                                 {accommodationsIsChoice && !isReadOnly && (
@@ -1430,22 +1352,14 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                         <Button variant="travel" size="sm" className="text-xs h-8" onClick={(e) => e.stopPropagation()}>
                                           <Check className="h-3 w-3 mr-1" /> Selected
                                         </Button>
-                                        <Button
-                                          variant="travel-ghost"
-                                          size="sm"
-                                          className="text-xs text-destructive hover:text-destructive h-8"
-                                          onClick={(e) => { e.stopPropagation(); setSelectedAccommodation(""); }}
-                                        >
+                                        <Button variant="travel-ghost" size="sm" className="text-xs text-destructive hover:text-destructive h-8"
+                                          onClick={(e) => { e.stopPropagation(); setSelectedAccommodation(""); }}>
                                           ✕
                                         </Button>
                                       </>
                                     ) : (
-                                      <Button
-                                        variant="travel"
-                                        size="sm"
-                                        className="text-xs h-8 font-semibold"
-                                        onClick={(e) => { e.stopPropagation(); setSelectedAccommodation(acc.id); }}
-                                      >
+                                      <Button variant="travel" size="sm" className="text-xs h-8 font-semibold"
+                                        onClick={(e) => { e.stopPropagation(); setSelectedAccommodation(acc.id); }}>
                                         Select This Option
                                       </Button>
                                     )}
@@ -1453,6 +1367,59 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                 )}
                               </div>
                             </div>
+
+                            {/* RIGHT — photo stack, fixed width, fills card height */}
+                            {showAccPhotos && allAccImages.length > 0 && (
+                              <div className="w-[260px] shrink-0 flex flex-col gap-[5px] p-[10px] pl-0">
+                                <div
+                                  className="flex-[2] overflow-hidden rounded-xl cursor-pointer relative group border border-border/40 min-h-[180px]"
+                                  onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
+                                >
+                                  <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
+                                </div>
+                                {allAccImages.length === 2 && (
+                                  <div
+                                    className="flex-1 overflow-hidden rounded-xl cursor-pointer relative group border border-border/40 min-h-[90px]"
+                                    onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 1); }}
+                                  >
+                                    <img src={allAccImages[1].src} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
+                                  </div>
+                                )}
+                                {allAccImages.length >= 3 && (
+                                  <div className="flex gap-[5px] flex-1">
+                                    {allAccImages.slice(1, 3).map((img, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="flex-1 overflow-hidden rounded-xl cursor-pointer relative group border border-border/40 min-h-[90px]"
+                                        onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, idx + 1); }}
+                                      >
+                                        <img src={img.src} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
+                                        {idx === 1 && allAccImages.length > 3 && (
+                                          <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center rounded-xl">
+                                            <span className="text-background text-sm font-bold flex items-center gap-1.5">
+                                              <Camera className="h-3.5 w-3.5" />+{allAccImages.length - 3}
+                                            </span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {showAccVideo && (
+                              <div className="w-[260px] shrink-0 p-[10px] pl-0">
+                                <div className="rounded-xl overflow-hidden border border-border/40">
+                                  <VideoEmbed
+                                    url={acc.videoUrl!}
+                                    title={acc.hotelName}
+                                    thumbnailUrl={acc.videoThumbnailUrl}
+                                    className="w-full"
+                                  />
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </motion.div>
                       );
