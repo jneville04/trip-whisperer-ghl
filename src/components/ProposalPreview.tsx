@@ -2992,7 +2992,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               })()}
 
               {/* Terms checkbox */}
-              {!isEditor && tripId && (
+              {!isEditor && tripId && (terms.cancellationPolicy || terms.travelInsurance || terms.bookingTerms || terms.liability) && (
                 <div className="flex items-start gap-3 py-3 mb-4">
                   <input
                     type="checkbox"
