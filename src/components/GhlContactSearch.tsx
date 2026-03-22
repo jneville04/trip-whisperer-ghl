@@ -61,7 +61,7 @@ export default function GhlContactSearch({
         } else {
           const contacts = data?.contacts || [];
           const errMsg = data?.error || null;
-          console.log("GHL search response:", { contacts: contacts.length, error: errMsg });
+          console.log("GHL search raw response:", data);
           setResults(contacts);
           setOpen(contacts.length > 0);
           if (errMsg && contacts.length === 0) {
