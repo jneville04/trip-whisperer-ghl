@@ -1395,10 +1395,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                       >
                                         <img src={img.src} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
                                         {idx === 1 && allAccImages.length > 3 && (
-                                          <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center rounded-xl">
-                                            <span className="text-background text-sm font-bold flex items-center gap-1.5">
-                                              <Camera className="h-3.5 w-3.5" />+{allAccImages.length - 3}
-                                            </span>
+                                          <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs font-bold px-2 py-1 rounded-full backdrop-blur-sm">
+                                            <span>+{allAccImages.length - 3} more</span>
                                           </div>
                                         )}
                                       </div>
