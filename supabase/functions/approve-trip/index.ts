@@ -201,33 +201,62 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 5. FIRE GHL WEBHOOK if configured
-    const { data: settings } = await supabase.from("app_settings").select("ghl_webhook_approve").eq("id", 1).single();
+    // 5. FIRE GHL WEBHOOK if configured (check agent_settings first, then app_settings)
+    let ghlWebhookUrl = "";
 
-    if (settings?.ghl_webhook_approve) {
+    // Try agent-level webhook from agent_settings (set in Settings → Integrations)
+    if (agentEmail) {
+      const { data: agentRow } = await supabase
+        .from("agent_settings")
+        .select("ghl_webhook_url")
+        .eq("agent_email", agentEmail)
+        .maybeSingle();
+      if (agentRow?.ghl_webhook_url) {
+        ghlWebhookUrl = agentRow.ghl_webhook_url;
+        console.log("Using agent-level GHL webhook URL");
+      }
+    }
+
+    // Fallback to app-level webhook from app_settings
+    if (!ghlWebhookUrl) {
+      const { data: appRow } = await supabase.from("app_settings").select("ghl_webhook_approve").eq("id", 1).single();
+      if (appRow?.ghl_webhook_approve) {
+        ghlWebhookUrl = appRow.ghl_webhook_approve;
+        console.log("Using app-level GHL webhook URL");
+      }
+    }
+
+    if (ghlWebhookUrl) {
       try {
-        await fetch(settings.ghl_webhook_approve, {
+        console.log("Sending GHL webhook to:", ghlWebhookUrl);
+        const webhookPayload = {
+          type: "approval",
+          tripId,
+          tripName,
+          travelerName,
+          selectionSummary: selectionSummary || "",
+          totalPrice: totalPrice || 0,
+          depositAmount: deposit,
+          currency: currency || "USD",
+          pricingMode: pricingMode || "fixed",
+          sectionDetails: sectionDetails || [],
+          status: "approved",
+          approvedAt: approvedAt || new Date().toISOString(),
+          timestamp: new Date().toISOString(),
+        };
+        const webhookResp = await fetch(ghlWebhookUrl, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            type: "approval",
-            tripId,
-            tripName,
-            travelerName,
-            selectionSummary: selectionSummary || "",
-            totalPrice: totalPrice || 0,
-            depositAmount: deposit,
-            currency: currency || "USD",
-            pricingMode: pricingMode || "fixed",
-            sectionDetails: sectionDetails || [],
-            status: "approved",
-            approvedAt: approvedAt || new Date().toISOString(),
-            timestamp: new Date().toISOString(),
-          }),
+          body: JSON.stringify(webhookPayload),
         });
+        console.log("GHL webhook response status:", webhookResp.status);
+        const respText = await webhookResp.text();
+        console.log("GHL webhook response body:", respText);
       } catch (err) {
         console.error("GHL webhook failed:", err);
       }
+    } else {
+      console.warn("No GHL webhook URL configured (checked agent_settings and app_settings)");
     }
 
     // 6. FIRE ORG WEBHOOK if configured
