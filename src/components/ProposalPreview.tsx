@@ -2813,7 +2813,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
       {/* Travel Advisor Footer — for proposal mode, rendered after pricing summary */}
       {!isGroupBooking && agent.name && (
-        <footer className="py-20 px-6 border-t-2 border-border bg-background">
+        <footer className="py-20 px-6 border-t-2 border-border bg-[hsl(var(--muted)/0.3)]">
           <div className="max-w-3xl mx-auto text-center">
             <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-6">
               {ct.agent?.subtitle || "Your Travel Advisor"}
