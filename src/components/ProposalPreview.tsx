@@ -1067,7 +1067,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                   {opt.legs[0]?.airline || "Airline"}
                                 </p>
                                 <p className="text-xs text-muted-foreground font-body mt-0.5">
-                                  {opt.legs[0]?.cabinClass || "Economy"}
+                                  {(opt.legs[0] as any)?.cabinClass || "Economy"}
                                   {opt.legs.length > 1 ? ` · ${opt.legs.length} legs` : ""}
                                 </p>
                               </div>
