@@ -64,27 +64,33 @@ Deno.serve(async (req) => {
       });
     }
 
-    const url = `https://services.leadconnectorhq.com/contacts/?locationId=${encodeURIComponent(ghlLocationId)}&query=${encodeURIComponent(query.trim())}&limit=10`;
+    // Detect if token is a JWT (Location API key → use v1) or opaque (Private Integration → use v2)
+    const isJwt = ghlApiKey.startsWith("eyJ");
 
-    console.log(
-      "Searching GHL contacts:",
-      query.trim(),
-      "locationId:",
-      ghlLocationId,
-      "source:",
-      credentialSource,
-      "tokenLength:",
-      ghlApiKey.length,
-    );
+    const searchQuery = query.trim();
+    let url: string;
+    let headers: Record<string, string>;
 
-    const ghlRes = await fetch(url, {
-      method: "GET",
-      headers: {
+    if (isJwt) {
+      // v1 API for Location API keys
+      url = `https://rest.gohighlevel.com/v1/contacts/?query=${encodeURIComponent(searchQuery)}&limit=10`;
+      headers = {
+        Authorization: `Bearer ${ghlApiKey}`,
+        "Content-Type": "application/json",
+      };
+      console.log("Using GHL v1 API (Location key)", "query:", searchQuery, "source:", credentialSource, "tokenLength:", ghlApiKey.length);
+    } else {
+      // v2 API for Private Integration / OAuth tokens
+      url = `https://services.leadconnectorhq.com/contacts/?locationId=${encodeURIComponent(ghlLocationId)}&query=${encodeURIComponent(searchQuery)}&limit=10`;
+      headers = {
         Authorization: `Bearer ${ghlApiKey}`,
         Version: "2021-07-28",
         Accept: "application/json",
-      },
-    });
+      };
+      console.log("Using GHL v2 API (Integration key)", "query:", searchQuery, "locationId:", ghlLocationId, "source:", credentialSource, "tokenLength:", ghlApiKey.length);
+    }
+
+    const ghlRes = await fetch(url, { method: "GET", headers });
 
     console.log("GHL response status:", ghlRes.status);
 
@@ -98,7 +104,7 @@ Deno.serve(async (req) => {
         : ghlRes.status === 429
         ? "Rate limited. Try again shortly."
         : `GHL API error: ${ghlRes.status}`;
-      return new Response(JSON.stringify({ contacts: [], error: errorMsg, statusCode: ghlRes.status, rawResponse: errBody }), {
+      return new Response(JSON.stringify({ contacts: [], error: errorMsg, statusCode: ghlRes.status }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
