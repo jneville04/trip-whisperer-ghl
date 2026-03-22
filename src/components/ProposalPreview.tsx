@@ -1036,7 +1036,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       <p className="text-sm text-muted-foreground font-body mt-3">Choose one of the options below</p>
                     )}
                   </motion.div>
-                  <div className="space-y-8">
+                  <div className="space-y-6">
                     {flightOptions.map((opt, optIdx) => {
                       const isSelected = selectedFlight === opt.id;
                       return (
@@ -1056,169 +1056,164 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           }`}
                           onClick={() => flightsIsChoice && setSelectedFlight(isSelected ? "" : opt.id)}
                         >
-                          {/* Option header bar */}
-                          {flightOptions.length > 1 && (
-                              <div className="bg-muted/60 border-b-2 border-border px-5 py-2.5 flex items-center justify-between">
-                              <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary font-body">
-                                Option {optIdx + 1} of {flightOptions.length}
-                              </span>
-                              {opt.price && showItemizedPrices && (
-                                <span className="font-display text-lg font-bold text-foreground">
+                          {/* TOP BAR — airline + price */}
+                          <div className="bg-muted/60 border-b-2 border-border px-5 py-3.5 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="h-9 w-9 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
+                                <Plane className="h-4 w-4 text-blue-500" />
+                              </div>
+                              <div>
+                                <p className="font-body font-semibold text-foreground text-sm">
+                                  {opt.legs[0]?.airline || "Airline"}
+                                </p>
+                                <p className="text-xs text-muted-foreground font-body mt-0.5">
+                                  {opt.legs[0]?.cabinClass || "Economy"}
+                                  {opt.legs.length > 1 ? ` · ${opt.legs.length} legs` : ""}
+                                </p>
+                              </div>
+                            </div>
+                            {opt.price && showItemizedPrices && (
+                              <div className="text-right">
+                                <p className="font-display text-2xl font-bold text-primary leading-none">
                                   {fmtCurrency(opt.price)}
-                                  <span className="text-xs text-muted-foreground font-body ml-1">
-                                    {(opt.pricingDisplay || "total") === "per_person" ? "per person" : "total"}
-                                  </span>
-                                </span>
-                              )}
-                            </div>
-                          )}
-
-                          {/* Flight legs – stacked mini-cards */}
-                          <div className="p-4 sm:p-5">
-                            <div className={`space-y-3 ${opt.legs.length === 1 ? "max-w-[560px] mx-auto" : ""}`}>
-                              {opt.legs.map((leg) => (
-                                <div key={leg.id} className="bg-background rounded-xl border-2 border-border/70 p-4 sm:p-5">
-                                  {/* Leg label + date row */}
-                                  <div className="flex items-center justify-between mb-3">
-                                    <div className="flex items-center gap-2">
-                                      <div className="h-7 w-7 rounded-full bg-primary/12 flex items-center justify-center">
-                                        {leg.type === "departure" ? (
-                                          <PlaneTakeoff className="h-3.5 w-3.5 text-primary" />
-                                        ) : (
-                                          <PlaneLanding className="h-3.5 w-3.5 text-primary" />
-                                        )}
-                                      </div>
-                                      <span className="font-body font-bold text-foreground text-xs uppercase tracking-[0.12em]">
-                                        {leg.type === "departure" ? "Departure" : "Return"}
-                                      </span>
-                                    </div>
-                                    {leg.date && (
-                                      <span className="text-xs text-muted-foreground font-body bg-muted px-2 py-1 rounded-full">
-                                        {leg.date}
-                                      </span>
-                                    )}
-                                  </div>
-
-                                  <div className="flex items-center gap-3">
-                                    {/* Origin */}
-                                    <div className="flex-1">
-                                      {(() => {
-                                        const ap = parseAirportValue(leg.departureAirport);
-                                        return (
-                                          <>
-                                            <p className="font-display text-2xl font-bold text-foreground leading-none">
-                                              {ap.code || leg.departureAirport.slice(0, 3).toUpperCase() || "—"}
-                                            </p>
-                                            <p className="text-xs text-muted-foreground font-body mt-1 truncate">
-                                              {ap.city || leg.departureAirport}
-                                            </p>
-                                          </>
-                                        );
-                                      })()}
-                                      {leg.departureTime && (
-                                        <p className="text-sm font-semibold text-foreground font-body mt-1">
-                                          {leg.departureTime}
-                                        </p>
-                                      )}
-                                    </div>
-
-                                    {/* Flight path visual */}
-                                    <div className="flex-1 flex flex-col items-center gap-1 min-w-[120px] max-w-[170px] mx-1">
-                                      <div className="flex items-center w-full">
-                                        <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
-                                        <div className="flex-1 border-t-2 border-dashed border-primary/40 mx-1" />
-                                        <Plane className="h-3 w-3 text-primary shrink-0" />
-                                        <div className="flex-1 border-t-2 border-dashed border-primary/40 mx-1" />
-                                        <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
-                                      </div>
-                                      {(leg.airline || leg.flightNumber) && (
-                                        <p className="text-[10px] text-muted-foreground font-body whitespace-nowrap font-medium">
-                                          {leg.airline}
-                                          {leg.flightNumber ? ` · ${leg.flightNumber}` : ""}
-                                        </p>
-                                      )}
-                                    </div>
-
-                                    {/* Destination */}
-                                    <div className="flex-1 text-right">
-                                      {(() => {
-                                        const ap = parseAirportValue(leg.arrivalAirport);
-                                        return (
-                                          <>
-                                            <p className="font-display text-2xl font-bold text-foreground leading-none">
-                                              {ap.code || leg.arrivalAirport.slice(0, 3).toUpperCase() || "—"}
-                                            </p>
-                                            <p className="text-xs text-muted-foreground font-body mt-1 truncate">
-                                              {ap.city || leg.arrivalAirport}
-                                            </p>
-                                          </>
-                                        );
-                                      })()}
-                                      {leg.arrivalTime && (
-                                        <p className="text-sm font-semibold text-foreground font-body mt-1">
-                                          {leg.arrivalTime}
-                                        </p>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
+                                </p>
+                                <p className="text-xs text-muted-foreground font-body mt-0.5">
+                                  {(opt.pricingDisplay || "total") === "per_person" ? "per person" : "total"}
+                                </p>
+                              </div>
+                            )}
                           </div>
 
-                          {/* Footer: price (if single option) + selection */}
-                          {(opt.price || flightsIsChoice) && (
-                            <div className="bg-muted/40 border-t-2 border-border px-5 py-3.5 flex items-center justify-between">
-                              {opt.price && flightOptions.length <= 1 && showItemizedPrices && (
-                                <span className="font-display text-xl font-bold text-foreground">
-                                  {fmtCurrency(opt.price)}
-                                  <span className="text-xs text-muted-foreground font-body ml-1">
-                                    {(opt.pricingDisplay || "total") === "per_person" ? "per person" : "total"}
+                          {/* LEGS — stacked inside one card */}
+                          <div className="px-5">
+                            {opt.legs.map((leg, legIdx) => (
+                              <div
+                                key={leg.id}
+                                className={`py-5 flex items-center gap-2 ${legIdx > 0 ? "border-t border-dashed border-border" : ""}`}
+                              >
+                                {/* Departure/Return label */}
+                                <div className="w-[72px] shrink-0">
+                                  <span className="text-[10px] font-bold uppercase tracking-[0.13em] text-primary/70 font-body">
+                                    {leg.type === "departure" ? "Departure" : "Return"}
                                   </span>
-                                </span>
-                              )}
-                              {(!opt.price || flightOptions.length > 1 || !showItemizedPrices) && <span />}
-                              {flightsIsChoice && (
-                                <div className="flex items-center gap-2">
-                                  {isSelected ? (
-                                    <div className="flex items-center gap-1.5">
-                                      <Button
-                                        variant="travel"
-                                        size="sm"
-                                        className="text-xs"
-                                        onClick={(e) => e.stopPropagation()}
-                                      >
-                                        <Check className="h-3 w-3 mr-1" /> Selected ✓
-                                      </Button>
-                                      <Button
-                                        variant="travel-ghost"
-                                        size="sm"
-                                        className="text-xs text-destructive hover:text-destructive"
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setSelectedFlight("");
-                                        }}
-                                      >
-                                        Cancel ✕
-                                      </Button>
-                                    </div>
-                                  ) : (
-                                      <Button
-                                        variant="travel"
-                                      size="sm"
-                                        className="text-xs font-semibold"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setSelectedFlight(opt.id);
-                                      }}
-                                    >
-                                      Select This Option
-                                    </Button>
+                                  {leg.date && (
+                                    <p className="text-[10px] text-muted-foreground font-body mt-0.5">{leg.date}</p>
                                   )}
                                 </div>
+
+                                {/* Origin */}
+                                <div className="flex-1">
+                                  {(() => {
+                                    const ap = parseAirportValue(leg.departureAirport);
+                                    return (
+                                      <>
+                                        <p className="font-display text-3xl font-bold text-foreground leading-none">
+                                          {ap.code || leg.departureAirport.slice(0, 3).toUpperCase() || "—"}
+                                        </p>
+                                        <p className="text-sm text-muted-foreground font-body mt-1">
+                                          {ap.city || leg.departureAirport}
+                                        </p>
+                                      </>
+                                    );
+                                  })()}
+                                  {leg.departureTime && (
+                                    <p className="text-base font-semibold text-foreground font-body mt-1.5">
+                                      {leg.departureTime}
+                                    </p>
+                                  )}
+                                </div>
+
+                                {/* Path visual */}
+                                <div className="flex-1 flex flex-col items-center gap-1.5 min-w-[100px] max-w-[160px] mx-1">
+                                  <div className="flex items-center w-full">
+                                    <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+                                    <div className="flex-1 border-t-2 border-dashed border-primary/40 mx-1" />
+                                    <Plane className="h-3.5 w-3.5 text-primary shrink-0" />
+                                    <div className="flex-1 border-t-2 border-dashed border-primary/40 mx-1" />
+                                    <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+                                  </div>
+                                  {(leg.airline || leg.flightNumber) && (
+                                    <p className="text-[10px] text-muted-foreground font-body text-center leading-tight">
+                                      {leg.airline}{leg.flightNumber ? ` ${leg.flightNumber}` : ""}
+                                    </p>
+                                  )}
+                                  {leg.stops === 0 || leg.stops === undefined ? (
+                                    <p className="text-[10px] font-semibold text-green-600 font-body">Nonstop</p>
+                                  ) : (
+                                    <p className="text-[10px] text-muted-foreground font-body">
+                                      {leg.stops === 1 ? "1 Stop" : `${leg.stops} Stops`}
+                                    </p>
+                                  )}
+                                </div>
+
+                                {/* Destination */}
+                                <div className="flex-1 text-right">
+                                  {(() => {
+                                    const ap = parseAirportValue(leg.arrivalAirport);
+                                    return (
+                                      <>
+                                        <p className="font-display text-3xl font-bold text-foreground leading-none">
+                                          {ap.code || leg.arrivalAirport.slice(0, 3).toUpperCase() || "—"}
+                                        </p>
+                                        <p className="text-sm text-muted-foreground font-body mt-1">
+                                          {ap.city || leg.arrivalAirport}
+                                        </p>
+                                      </>
+                                    );
+                                  })()}
+                                  {leg.arrivalTime && (
+                                    <p className="text-base font-semibold text-foreground font-body mt-1.5">
+                                      {leg.arrivalTime}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* FOOTER — date tags + select button */}
+                          <div className="bg-muted/40 border-t-2 border-border px-5 py-3.5 flex items-center justify-between">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {opt.legs.find(l => l.type === "departure")?.date && (
+                                <span className="text-xs text-muted-foreground font-body bg-background border border-border px-3 py-1 rounded-full">
+                                  Departs {opt.legs.find(l => l.type === "departure")?.date}
+                                </span>
+                              )}
+                              {opt.legs.find(l => l.type === "return")?.date && (
+                                <span className="text-xs text-muted-foreground font-body bg-background border border-border px-3 py-1 rounded-full">
+                                  Returns {opt.legs.find(l => l.type === "return")?.date}
+                                </span>
                               )}
                             </div>
-                          )}
+                            {flightsIsChoice && (
+                              <div className="flex items-center gap-2 shrink-0">
+                                {isSelected ? (
+                                  <div className="flex items-center gap-1.5">
+                                    <Button variant="travel" size="sm" className="text-xs" onClick={(e) => e.stopPropagation()}>
+                                      <Check className="h-3 w-3 mr-1" /> Selected ✓
+                                    </Button>
+                                    <Button
+                                      variant="travel-ghost"
+                                      size="sm"
+                                      className="text-xs text-destructive hover:text-destructive"
+                                      onClick={(e) => { e.stopPropagation(); setSelectedFlight(""); }}
+                                    >
+                                      Cancel ✕
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <Button
+                                    variant="travel"
+                                    size="sm"
+                                    className="text-xs font-semibold"
+                                    onClick={(e) => { e.stopPropagation(); setSelectedFlight(opt.id); }}
+                                  >
+                                    Select This Option
+                                  </Button>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </motion.div>
                       );
                     })}
