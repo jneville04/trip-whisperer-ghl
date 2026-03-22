@@ -57,6 +57,8 @@ export default function CreateTripMenu() {
 
   // Proposal fields
   const [clientName, setClientName] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
   const [tripTitle, setTripTitle] = useState("");
   const [startDate, setStartDate] = useState<Date>();
   const [endDate, setEndDate] = useState<Date>();
