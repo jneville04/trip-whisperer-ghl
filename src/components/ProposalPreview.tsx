@@ -1543,7 +1543,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                 </div>
                               )}
                               {(ship.embarkationPort || ship.disembarkationPort || ship.embarkationDate || ship.disembarkationDate) && (
-                                <div className="grid grid-cols-2 gap-3 mt-4 text-xs text-muted-foreground font-body">
+                                <div className="grid grid-cols-2 gap-3 mt-5 pt-4 border-t-2 border-border text-xs text-muted-foreground font-body">
                                   {(ship.embarkationPort || ship.embarkationDate) && (
                                     <div className="bg-muted/30 rounded-lg px-3 py-2 border border-border">
                                       <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-semibold mb-0.5">Embarkation</p>
