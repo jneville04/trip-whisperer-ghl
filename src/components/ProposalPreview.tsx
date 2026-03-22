@@ -157,7 +157,7 @@ function ItinerarySection({
   };
 
   return (
-    <section id="itinerary" className="py-16 lg:py-20 bg-background">
+    <section id="itinerary" className="py-16 lg:py-20 bg-muted/20">
       <div className="max-w-[960px] mx-auto px-6">
         <motion.div
           variants={fadeUp}
@@ -171,7 +171,7 @@ function ItinerarySection({
           <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{data.sectionCustomTitles?.itinerary?.title || "Day-by-Day Itinerary"}</h2>
           <div className="w-16 h-0.5 bg-primary/30 mx-auto mt-5" />
         </motion.div>
-        <div className="space-y-4">
+        <div className="space-y-5">
           {visibleDays.map((day, dayIdx) => {
             const isOpen = openDayIds.has(day.id);
             const validActivities = day.activities.filter(
@@ -185,28 +185,28 @@ function ItinerarySection({
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
                 custom={0}
-                className="rounded-xl border border-border bg-background overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                className="rounded-2xl border-2 border-border bg-card overflow-hidden shadow-[0_14px_36px_-20px_hsl(var(--foreground)/0.35)] hover:shadow-[0_18px_42px_-18px_hsl(var(--foreground)/0.35)] transition-shadow"
               >
                 <button
                   onClick={() => toggleDay(day.id)}
-                  className="w-full flex items-center justify-between gap-3 px-5 sm:px-6 py-4 cursor-pointer group text-left hover:bg-muted/30 transition-colors"
+                  className="w-full flex items-center justify-between gap-3 px-6 sm:px-7 py-5 cursor-pointer group text-left bg-muted/35 hover:bg-muted/55 transition-colors"
                 >
-                  <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
-                    <span className="bg-primary text-primary-foreground w-10 h-10 rounded-full flex items-center justify-center text-sm font-body font-bold shrink-0">
-                      {dayIdx + 1}
+                  <div className="flex items-start gap-3 sm:gap-4 flex-wrap">
+                    <span className="inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground px-4 py-1.5 text-xs font-body font-bold uppercase tracking-[0.14em] shrink-0">
+                      Day {dayIdx + 1}
                     </span>
-                    <div>
+                    <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-display text-lg sm:text-xl font-semibold text-foreground leading-tight">{day.title}</h3>
+                        <h3 className="font-display text-xl sm:text-2xl font-bold text-foreground leading-tight">{day.title || `Day ${dayIdx + 1}`}</h3>
                       </div>
-                      <div className="flex items-center gap-3 mt-1 flex-wrap">
+                      <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                         {day.date && (
-                          <span className="text-xs text-muted-foreground font-body flex items-center gap-1">
+                          <span className="text-sm text-muted-foreground font-body flex items-center gap-1.5">
                             <Calendar className="h-3 w-3" /> {day.date}
                           </span>
                         )}
                         {day.location && (
-                          <span className="text-xs text-muted-foreground font-body flex items-center gap-1">
+                          <span className="text-sm text-muted-foreground font-body flex items-center gap-1.5">
                             <MapPin className="h-3 w-3" /> {day.location}
                           </span>
                         )}
@@ -226,7 +226,7 @@ function ItinerarySection({
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="px-5 sm:px-6 pb-5 pt-2 space-y-3 border-t border-border">
+                      <div className="px-6 sm:px-7 pb-6 pt-3 space-y-3.5 border-t-2 border-border bg-background">
                         {validActivities.map((act, actIdx) => {
                           const isUtility = UTILITY_ACTIVITY_TYPES.includes(act.type as any);
                           const hasImages = act.imageUrls && act.imageUrls.length > 0 && !isUtility;
@@ -235,7 +235,7 @@ function ItinerarySection({
                           return (
                             <div
                               key={act.id || actIdx}
-                              className="rounded-lg border border-border/60 bg-muted/20 p-4 sm:p-5"
+                                className="rounded-xl border-2 border-border/70 bg-muted/25 p-4 sm:p-5"
                             >
                               <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-4`}>
                                 <div className="flex-1">
@@ -642,8 +642,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
       {/* STICKY HEADER NAV */}
-      <nav className="sticky top-0 z-[90] bg-background/98 backdrop-blur-sm border-b border-border">
-        <div className="max-w-[960px] mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
+      <nav className="sticky top-0 z-[90] bg-background border-b-2 border-border shadow-sm">
+        <div className="max-w-[960px] mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
           {/* LEFT: Logo + Brand */}
           <div className="flex items-center gap-2.5 min-w-0 shrink-0">
             {brandData.logoUrl && (
@@ -667,10 +667,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                 <button
                   key={item.id}
                   onClick={() => scrollTo(item.id)}
-                  className={`shrink-0 px-3 py-1.5 text-xs sm:text-[13px] font-body font-medium transition-all rounded-md ${
+                  className={`shrink-0 px-3.5 py-2 text-sm font-body font-semibold transition-all rounded-full border ${
                     activeNavId === item.id
-                      ? "text-primary border-b-2 border-primary"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                      : "bg-background text-foreground/80 border-transparent hover:text-foreground hover:bg-muted hover:border-border"
                   }`}
                 >
                   {item.label}
@@ -691,9 +691,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               </Button>
             ) : !isEditor && !isReadOnly && !approveSuccess && tripStatus !== "revision_requested" && tripStatus !== "reopened" ? (
               <Button
-                variant="ghost"
+                variant="travel"
                 size="sm"
-                className="text-xs gap-1 shrink-0 ml-1 text-muted-foreground"
+                className="text-xs gap-1 shrink-0 ml-1 h-8"
                 onClick={() => setShowAskQuestion(true)}
               >
                 <HelpCircle className="h-3.5 w-3.5" /> Ask
@@ -1047,18 +1047,18 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           whileInView="visible"
                           viewport={{ once: true }}
                           custom={optIdx}
-                          className={`max-w-[780px] mx-auto bg-background rounded-xl border shadow-sm relative overflow-hidden transition-all ${
+                          className={`max-w-[780px] mx-auto bg-card rounded-2xl border-2 shadow-[0_14px_30px_-18px_hsl(var(--foreground)/0.35)] relative overflow-hidden transition-all ${
                             flightsIsChoice
                               ? isSelected
-                                ? "border-primary ring-1 ring-primary/20"
-                                : "border-border hover:border-primary/40 cursor-pointer hover:shadow-md"
+                                ? "border-primary ring-2 ring-primary/20"
+                                : "border-border hover:border-primary/40 cursor-pointer hover:shadow-[0_18px_34px_-16px_hsl(var(--foreground)/0.35)]"
                               : "border-border"
                           }`}
                           onClick={() => flightsIsChoice && setSelectedFlight(isSelected ? "" : opt.id)}
                         >
                           {/* Option header bar */}
                           {flightOptions.length > 1 && (
-                            <div className="bg-muted/50 border-b border-border px-5 py-2 flex items-center justify-between">
+                              <div className="bg-muted/60 border-b-2 border-border px-5 py-2.5 flex items-center justify-between">
                               <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary font-body">
                                 Option {optIdx + 1} of {flightOptions.length}
                               </span>
@@ -1073,66 +1073,66 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                             </div>
                           )}
 
-                          {/* Flight legs – side-by-side mini-cards */}
-                          <div className="p-3 sm:p-4">
-                            <div className={`grid gap-2.5 ${opt.legs.length === 1 ? "grid-cols-1 max-w-sm mx-auto" : "grid-cols-1 md:grid-cols-2"}`}>
+                          {/* Flight legs – stacked mini-cards */}
+                          <div className="p-4 sm:p-5">
+                            <div className={`space-y-3 ${opt.legs.length === 1 ? "max-w-[560px] mx-auto" : ""}`}>
                               {opt.legs.map((leg) => (
-                                <div key={leg.id} className="bg-muted/30 rounded-lg border border-border/50 p-3 sm:p-4">
+                                <div key={leg.id} className="bg-background rounded-xl border-2 border-border/70 p-4 sm:p-5">
                                   {/* Leg label + date row */}
-                                  <div className="flex items-center justify-between mb-2">
-                                    <div className="flex items-center gap-1.5">
-                                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center">
+                                  <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-2">
+                                      <div className="h-7 w-7 rounded-full bg-primary/12 flex items-center justify-center">
                                         {leg.type === "departure" ? (
-                                          <PlaneTakeoff className="h-3 w-3 text-primary" />
+                                          <PlaneTakeoff className="h-3.5 w-3.5 text-primary" />
                                         ) : (
-                                          <PlaneLanding className="h-3 w-3 text-primary" />
+                                          <PlaneLanding className="h-3.5 w-3.5 text-primary" />
                                         )}
                                       </div>
-                                      <span className="font-body font-semibold text-foreground text-[10px] uppercase tracking-wider">
+                                      <span className="font-body font-bold text-foreground text-xs uppercase tracking-[0.12em]">
                                         {leg.type === "departure" ? "Departure" : "Return"}
                                       </span>
                                     </div>
                                     {leg.date && (
-                                      <span className="text-[10px] text-muted-foreground font-body bg-muted/60 px-1.5 py-0.5 rounded-full">
+                                      <span className="text-xs text-muted-foreground font-body bg-muted px-2 py-1 rounded-full">
                                         {leg.date}
                                       </span>
                                     )}
                                   </div>
 
-                                  <div className="flex items-center gap-2">
+                                  <div className="flex items-center gap-3">
                                     {/* Origin */}
                                     <div className="flex-1">
                                       {(() => {
                                         const ap = parseAirportValue(leg.departureAirport);
                                         return (
                                           <>
-                                            <p className="font-display text-xl font-bold text-foreground leading-none">
+                                            <p className="font-display text-2xl font-bold text-foreground leading-none">
                                               {ap.code || leg.departureAirport.slice(0, 3).toUpperCase() || "—"}
                                             </p>
-                                            <p className="text-[10px] text-muted-foreground font-body mt-0.5 truncate">
+                                            <p className="text-xs text-muted-foreground font-body mt-1 truncate">
                                               {ap.city || leg.departureAirport}
                                             </p>
                                           </>
                                         );
                                       })()}
                                       {leg.departureTime && (
-                                        <p className="text-[11px] font-semibold text-foreground font-body mt-0.5">
+                                        <p className="text-sm font-semibold text-foreground font-body mt-1">
                                           {leg.departureTime}
                                         </p>
                                       )}
                                     </div>
 
                                     {/* Flight path visual */}
-                                    <div className="flex-1 flex flex-col items-center gap-0.5 min-w-[60px] max-w-[100px]">
+                                    <div className="flex-1 flex flex-col items-center gap-1 min-w-[120px] max-w-[170px] mx-1">
                                       <div className="flex items-center w-full">
                                         <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
-                                        <div className="flex-1 border-t-2 border-dashed border-primary/30 mx-0.5" />
+                                        <div className="flex-1 border-t-2 border-dashed border-primary/40 mx-1" />
                                         <Plane className="h-3 w-3 text-primary shrink-0" />
-                                        <div className="flex-1 border-t-2 border-dashed border-primary/30 mx-0.5" />
+                                        <div className="flex-1 border-t-2 border-dashed border-primary/40 mx-1" />
                                         <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
                                       </div>
                                       {(leg.airline || leg.flightNumber) && (
-                                        <p className="text-[8px] text-muted-foreground font-body whitespace-nowrap">
+                                        <p className="text-[10px] text-muted-foreground font-body whitespace-nowrap font-medium">
                                           {leg.airline}
                                           {leg.flightNumber ? ` · ${leg.flightNumber}` : ""}
                                         </p>
@@ -1145,17 +1145,17 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                         const ap = parseAirportValue(leg.arrivalAirport);
                                         return (
                                           <>
-                                            <p className="font-display text-xl font-bold text-foreground leading-none">
+                                            <p className="font-display text-2xl font-bold text-foreground leading-none">
                                               {ap.code || leg.arrivalAirport.slice(0, 3).toUpperCase() || "—"}
                                             </p>
-                                            <p className="text-[10px] text-muted-foreground font-body mt-0.5 truncate">
+                                            <p className="text-xs text-muted-foreground font-body mt-1 truncate">
                                               {ap.city || leg.arrivalAirport}
                                             </p>
                                           </>
                                         );
                                       })()}
                                       {leg.arrivalTime && (
-                                        <p className="text-[11px] font-semibold text-foreground font-body mt-0.5">
+                                        <p className="text-sm font-semibold text-foreground font-body mt-1">
                                           {leg.arrivalTime}
                                         </p>
                                       )}
@@ -1168,7 +1168,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
                           {/* Footer: price (if single option) + selection */}
                           {(opt.price || flightsIsChoice) && (
-                            <div className="bg-muted/30 border-t border-border px-5 py-3 flex items-center justify-between">
+                            <div className="bg-muted/40 border-t-2 border-border px-5 py-3.5 flex items-center justify-between">
                               {opt.price && flightOptions.length <= 1 && showItemizedPrices && (
                                 <span className="font-display text-xl font-bold text-foreground">
                                   {fmtCurrency(opt.price)}
@@ -1203,10 +1203,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                       </Button>
                                     </div>
                                   ) : (
-                                    <Button
-                                      variant="travel-outline"
+                                      <Button
+                                        variant="travel"
                                       size="sm"
-                                      className="text-xs"
+                                        className="text-xs font-semibold"
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         setSelectedFlight(opt.id);
@@ -1272,75 +1272,77 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           whileInView="visible"
                           viewport={{ once: true }}
                           custom={accIdx * 0.1}
-                          className={`bg-background rounded-xl border overflow-hidden transition-all shadow-sm hover:shadow-md ${
+                          className={`bg-card rounded-2xl border-2 overflow-hidden transition-all shadow-[0_14px_32px_-20px_hsl(var(--foreground)/0.35)] hover:shadow-[0_18px_40px_-20px_hsl(var(--foreground)/0.35)] ${
                             accommodationsIsChoice
                               ? isSelected
-                                ? "border-primary ring-1 ring-primary/20"
+                                ? "border-primary ring-2 ring-primary/20"
                                 : "border-border hover:border-primary/40 cursor-pointer"
                               : "border-border"
                           }`}
                           onClick={() => accommodationsIsChoice && setSelectedAccommodation(isSelected ? "" : acc.id)}
                         >
-                          <div className="flex flex-col md:flex-row-reverse">
-                            {/* Image Section — Right */}
+                          <div className="relative">
+                            {accommodationsIsChoice && accommodations.length > 1 && (
+                              <div className="absolute top-5 right-5 z-20">
+                                <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-primary font-body bg-background/90 border border-border rounded-full px-2.5 py-1">
+                                  Option {accIdx + 1} of {accommodations.length}
+                                </span>
+                              </div>
+                            )}
+
                             {showAccPhotos && allAccImages.length > 0 && (
-                              <div className="md:w-[320px] lg:w-[360px] shrink-0 p-2.5">
+                              <div className="p-4 sm:p-5 pb-0">
                                 {allAccImages.length === 1 ? (
                                   <div
-                                    className="w-full h-full overflow-hidden cursor-pointer relative group rounded-lg"
+                                    className="h-[220px] sm:h-[250px] overflow-hidden cursor-pointer relative group rounded-xl border-2 border-border/70"
                                     onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
                                   >
-                                    <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 rounded-lg" />
+                                    <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
                                   </div>
                                 ) : (
-                                  <div className="flex flex-col gap-2 h-full">
+                                  <div className="grid grid-cols-3 grid-rows-2 gap-2 h-[220px] sm:h-[250px]">
                                     <div
-                                      className="flex-1 overflow-hidden cursor-pointer relative group rounded-xl"
+                                      className="col-span-2 row-span-2 overflow-hidden cursor-pointer relative group rounded-xl border-2 border-border/70"
                                       onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
                                     >
-                                      <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 rounded-xl" />
+                                      <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-2">
-                                      {allAccImages.slice(1, 3).map((img, idx) => (
-                                        <div
-                                          key={idx}
-                                          className="aspect-[3/2] overflow-hidden cursor-pointer relative group rounded-lg"
-                                          onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, idx + 1); }}
-                                        >
-                                          <img src={img.src} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 rounded-lg" />
-                                          {idx === 1 && allAccImages.length > 3 && (
-                                            <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center rounded-lg">
-                                              <span className="text-background text-sm font-bold flex items-center gap-1.5"><Camera className="h-3.5 w-3.5" />+{allAccImages.length - 3} more</span>
-                                            </div>
-                                          )}
-                                        </div>
-                                      ))}
-                                    </div>
+                                    {allAccImages.slice(1, 3).map((img, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="overflow-hidden cursor-pointer relative group rounded-xl border-2 border-border/70"
+                                        onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, idx + 1); }}
+                                      >
+                                        <img src={img.src} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
+                                        {idx === 1 && allAccImages.length > 3 && (
+                                          <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center">
+                                            <span className="text-background text-sm font-bold flex items-center gap-1.5"><Camera className="h-3.5 w-3.5" />+{allAccImages.length - 3}</span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    ))}
                                   </div>
                                 )}
                               </div>
                             )}
+
                             {showAccVideo && (
-                              <div className="md:w-[380px] lg:w-[420px] shrink-0 border-b md:border-b-0 md:border-l-2 border-border/60">
-                                <VideoEmbed
-                                  url={acc.videoUrl!}
-                                  title={acc.hotelName}
-                                  thumbnailUrl={acc.videoThumbnailUrl}
-                                  className="w-full h-full"
-                                />
+                              <div className="p-4 sm:p-5 pb-0">
+                                <div className="rounded-xl overflow-hidden border-2 border-border/70">
+                                  <VideoEmbed
+                                    url={acc.videoUrl!}
+                                    title={acc.hotelName}
+                                    thumbnailUrl={acc.videoThumbnailUrl}
+                                    className="w-full"
+                                  />
+                                </div>
                               </div>
                             )}
 
-                            {/* Content Section — Right */}
-                            <div className="flex-1 p-6 sm:p-8 flex flex-col">
+                            <div className="flex-1 p-6 sm:p-7 flex flex-col">
                               {/* Header: name + price */}
-                              <div className="flex items-start justify-between gap-4 mb-1">
+                              <div className="flex items-start justify-between gap-4 mb-2">
                                 <div className="min-w-0">
-                                  {accommodationsIsChoice && accommodations.length > 1 && (
-                                    <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-primary font-body mb-1.5 block">
-                                      Option {accIdx + 1} of {accommodations.length}
-                                    </span>
-                                  )}
                                   <h3 className="font-display text-2xl sm:text-[1.65rem] font-bold text-foreground leading-tight">
                                     {acc.hotelName || "Hotel"}
                                   </h3>
@@ -1351,7 +1353,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                   )}
                                 </div>
                                 {primaryPrice && (
-                                  <div className="text-right shrink-0">
+                                  <div className="text-right shrink-0 bg-muted/40 rounded-lg px-3 py-2 border border-border">
                                     <p className="font-display text-2xl font-bold text-foreground leading-none">{primaryPrice}</p>
                                     {pricingLabel && <p className="text-[11px] text-muted-foreground font-body mt-0.5">{pricingLabel}</p>}
                                   </div>
@@ -1405,7 +1407,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               <div className="flex-1" />
 
                               {/* Footer: dates + selection */}
-                              <div className="flex items-center justify-between mt-5 pt-4 border-t border-border">
+                              <div className="flex items-center justify-between mt-5 pt-4 border-t-2 border-border">
                                 <div className="flex items-center gap-4 text-xs text-muted-foreground font-body flex-wrap">
                                   {acc.checkIn && (
                                     <span className="flex items-center gap-1">
@@ -1437,9 +1439,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                       </>
                                     ) : (
                                       <Button
-                                        variant="travel-outline"
+                                        variant="travel"
                                         size="sm"
-                                        className="text-xs h-8"
+                                        className="text-xs h-8 font-semibold"
                                         onClick={(e) => { e.stopPropagation(); setSelectedAccommodation(acc.id); }}
                                       >
                                         Select This Option
@@ -1503,69 +1505,71 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           whileInView="visible"
                           viewport={{ once: true }}
                           custom={shipIdx * 0.1}
-                          className={`bg-background rounded-xl border overflow-hidden transition-all shadow-sm hover:shadow-md ${
+                          className={`bg-card rounded-2xl border-2 overflow-hidden transition-all shadow-[0_14px_32px_-20px_hsl(var(--foreground)/0.35)] hover:shadow-[0_18px_40px_-20px_hsl(var(--foreground)/0.35)] ${
                             cruiseIsChoice
                               ? isSelected
-                                ? "border-primary ring-1 ring-primary/20"
+                                ? "border-primary ring-2 ring-primary/20"
                                 : "border-border hover:border-primary/40 cursor-pointer"
                               : "border-border"
                           }`}
                           onClick={() => cruiseIsChoice && setSelectedCruise(isSelected ? "" : ship.id)}
                         >
-                          <div className="flex flex-col md:flex-row-reverse">
-                            {/* Image Section — Right */}
+                          <div className="relative">
+                            {cruiseIsChoice && cruiseShips.length > 1 && (
+                              <div className="absolute top-5 right-5 z-20">
+                                <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-primary font-body bg-background/90 border border-border rounded-full px-2.5 py-1">
+                                  Option {shipIdx + 1} of {cruiseShips.length}
+                                </span>
+                              </div>
+                            )}
+
                             {showShipPhotos && allShipImages.length > 0 && (
-                              <div className="md:w-[320px] lg:w-[360px] shrink-0 p-2.5">
+                              <div className="p-4 sm:p-5 pb-0">
                                 {allShipImages.length === 1 ? (
                                   <div
-                                    className="w-full h-full overflow-hidden cursor-pointer relative group rounded-xl"
+                                    className="h-[220px] sm:h-[250px] overflow-hidden cursor-pointer relative group rounded-xl border-2 border-border/70"
                                     onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, 0); }}
                                   >
-                                    <img src={allShipImages[0].src} alt={ship.shipName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 rounded-xl" />
+                                    <img src={allShipImages[0].src} alt={ship.shipName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
                                   </div>
                                 ) : (
-                                  <div className="flex flex-col gap-2 h-full">
+                                  <div className="grid grid-cols-3 grid-rows-2 gap-2 h-[220px] sm:h-[250px]">
                                     <div
-                                      className="flex-1 overflow-hidden cursor-pointer relative group rounded-xl"
+                                      className="col-span-2 row-span-2 overflow-hidden cursor-pointer relative group rounded-xl border-2 border-border/70"
                                       onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, 0); }}
                                     >
-                                      <img src={allShipImages[0].src} alt={ship.shipName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 rounded-xl" />
+                                      <img src={allShipImages[0].src} alt={ship.shipName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-2">
-                                      {allShipImages.slice(1, 3).map((img, idx) => (
-                                        <div
-                                          key={idx}
-                                          className="aspect-[3/2] overflow-hidden cursor-pointer relative group rounded-lg"
-                                          onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, idx + 1); }}
-                                        >
-                                          <img src={img.src} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 rounded-lg" />
-                                          {idx === 1 && allShipImages.length > 3 && (
-                                            <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center rounded-lg">
-                                              <span className="text-background text-sm font-bold flex items-center gap-1.5"><Camera className="h-3.5 w-3.5" />+{allShipImages.length - 3} more</span>
-                                            </div>
-                                          )}
-                                        </div>
-                                      ))}
-                                    </div>
+                                    {allShipImages.slice(1, 3).map((img, idx) => (
+                                      <div
+                                        key={idx}
+                                        className="overflow-hidden cursor-pointer relative group rounded-xl border-2 border-border/70"
+                                        onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, idx + 1); }}
+                                      >
+                                        <img src={img.src} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
+                                        {idx === 1 && allShipImages.length > 3 && (
+                                          <div className="absolute inset-0 bg-foreground/50 flex items-center justify-center">
+                                            <span className="text-background text-sm font-bold flex items-center gap-1.5"><Camera className="h-3.5 w-3.5" />+{allShipImages.length - 3}</span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    ))}
                                   </div>
                                 )}
                               </div>
                             )}
+
                             {showShipVideo && (
-                              <div className="md:w-[380px] lg:w-[420px] shrink-0 border-b md:border-b-0 md:border-l-2 border-border/60">
-                                <VideoEmbed url={ship.videoUrl!} title={ship.shipName} thumbnailUrl={ship.videoThumbnailUrl} className="w-full h-full" />
+                              <div className="p-4 sm:p-5 pb-0">
+                                <div className="rounded-xl overflow-hidden border-2 border-border/70">
+                                  <VideoEmbed url={ship.videoUrl!} title={ship.shipName} thumbnailUrl={ship.videoThumbnailUrl} className="w-full" />
+                                </div>
                               </div>
                             )}
 
-                            {/* Content Section — Right */}
-                            <div className="flex-1 p-6 sm:p-8 flex flex-col">
+                            <div className="flex-1 p-6 sm:p-7 flex flex-col">
                               <div className="flex items-start justify-between gap-4 mb-1">
                                 <div className="min-w-0">
-                                  {cruiseIsChoice && cruiseShips.length > 1 && (
-                                    <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-primary font-body mb-1.5 block">
-                                      Option {shipIdx + 1} of {cruiseShips.length}
-                                    </span>
-                                  )}
                                   <h3 className="font-display text-2xl sm:text-[1.65rem] font-bold text-foreground leading-tight">
                                     {ship.shipName || "Cruise Ship"}
                                   </h3>
@@ -1576,7 +1580,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                   )}
                                 </div>
                                 {primaryPrice && (
-                                  <div className="text-right shrink-0">
+                                  <div className="text-right shrink-0 bg-muted/40 rounded-lg px-3 py-2 border border-border">
                                     <p className="font-display text-2xl font-bold text-foreground leading-none">{primaryPrice}</p>
                                     {pricingLabel && <p className="text-[11px] text-muted-foreground font-body mt-0.5">{pricingLabel}</p>}
                                   </div>
@@ -1677,9 +1681,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                       </>
                                     ) : (
                                       <Button
-                                        variant="travel-outline"
+                                        variant="travel"
                                         size="sm"
-                                        className="text-xs h-8"
+                                        className="text-xs h-8 font-semibold"
                                         onClick={(e) => { e.stopPropagation(); setSelectedCruise(ship.id); }}
                                       >
                                         Select This Option
