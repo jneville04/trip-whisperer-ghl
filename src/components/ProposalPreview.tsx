@@ -1070,8 +1070,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           {/* TOP BAR — airline + price */}
                           <div className="bg-muted/60 border-b-2 border-border px-5 py-3.5 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                              <div className="h-9 w-9 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center">
-                                <Plane className="h-4 w-4 text-blue-500" />
+                              <div className="h-9 w-9 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center">
+                                <Plane className="h-4 w-4 text-primary" />
                               </div>
                               <div>
                                 <p className="font-body font-semibold text-foreground text-sm">
