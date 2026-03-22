@@ -1230,21 +1230,21 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "accommodations":
             if (accommodations.length === 0) return null;
             return (
-              <section key="accommodations" id="accommodations" className="py-20 lg:py-24 border-t-2 border-border bg-[hsl(var(--muted)/0.55)]">
-                <div className="max-w-[1120px] mx-auto px-6">
+              <section key="accommodations" id="accommodations" className="py-16 lg:py-20 bg-background">
+                <div className="max-w-[960px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="text-center mb-14"
+                    className="text-center mb-10"
                   >
-                    <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-3">
+                    <p className="text-xs tracking-[0.3em] uppercase text-primary font-body font-semibold mb-3">
                       {ct.accommodations?.subtitle || "Accommodations"}
                     </p>
                     <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.accommodations?.title || "Hotel Options"}</h2>
-                    <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
+                    <div className="w-16 h-0.5 bg-primary/30 mx-auto mt-4" />
                     {accommodationsIsChoice && accommodations.length > 1 && (
                       <p className="text-sm text-muted-foreground font-body mt-3">Choose one of the options below</p>
                     )}
