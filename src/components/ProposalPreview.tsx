@@ -2228,11 +2228,13 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     custom={0}
                     className="text-center mb-14"
                   >
-                    <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">
+                    <p className="text-xs tracking-[0.3em] uppercase text-primary font-body font-semibold mb-3">
                       {ct.terms?.subtitle || "Important Information"}
                     </p>
-                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.terms?.title || "Terms & Conditions"}</h2>
-                    <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
+                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">
+                      {ct.terms?.title || "Terms & Conditions"}
+                    </h2>
+                    <div className="w-16 h-0.5 bg-primary/30 mx-auto mt-5" />
                   </motion.div>
                   <motion.div
                     variants={fadeUp}
@@ -2240,50 +2242,42 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={1}
-                    className="space-y-6"
+                    className="flex flex-col gap-3"
                   >
                     {terms.showCancellation !== false && terms.cancellationPolicy && (
-                      <div className="bg-background rounded-2xl border-2 border-border p-6 shadow-[0_8px_24px_-12px_hsl(var(--foreground)/0.1)]">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">
-                          Cancellation Policy
-                        </p>
-                        <div
-                          className="prose prose-sm max-w-none text-foreground font-body"
-                          dangerouslySetInnerHTML={{ __html: terms.cancellationPolicy }}
-                        />
+                      <div className="bg-card rounded-2xl border-2 border-border overflow-hidden shadow-[0_14px_32px_-20px_hsl(var(--foreground)/0.35)]">
+                        <div className="flex items-center gap-2.5 px-6 py-4 border-b-2 border-border bg-muted/30">
+                          <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
+                          <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary font-body">Cancellation Policy</p>
+                        </div>
+                        <div className="px-6 py-5 text-[14px] text-muted-foreground font-body leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: terms.cancellationPolicy }} />
                       </div>
                     )}
                     {terms.showInsurance !== false && terms.travelInsurance && (
-                      <div className="bg-background rounded-2xl border-2 border-border p-6 shadow-[0_8px_24px_-12px_hsl(var(--foreground)/0.1)]">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">
-                          Travel Insurance
-                        </p>
-                        <div
-                          className="prose prose-sm max-w-none text-foreground font-body"
-                          dangerouslySetInnerHTML={{ __html: terms.travelInsurance }}
-                        />
+                      <div className="bg-card rounded-2xl border-2 border-border overflow-hidden shadow-[0_14px_32px_-20px_hsl(var(--foreground)/0.35)]">
+                        <div className="flex items-center gap-2.5 px-6 py-4 border-b-2 border-border bg-muted/30">
+                          <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
+                          <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary font-body">Travel Insurance</p>
+                        </div>
+                        <div className="px-6 py-5 text-[14px] text-muted-foreground font-body leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: terms.travelInsurance }} />
                       </div>
                     )}
                     {terms.showBookingTerms !== false && terms.bookingTerms && (
-                      <div className="bg-background rounded-2xl border-2 border-border p-6 shadow-[0_8px_24px_-12px_hsl(var(--foreground)/0.1)]">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">
-                          Booking Terms
-                        </p>
-                        <div
-                          className="prose prose-sm max-w-none text-foreground font-body"
-                          dangerouslySetInnerHTML={{ __html: terms.bookingTerms }}
-                        />
+                      <div className="bg-card rounded-2xl border-2 border-border overflow-hidden shadow-[0_14px_32px_-20px_hsl(var(--foreground)/0.35)]">
+                        <div className="flex items-center gap-2.5 px-6 py-4 border-b-2 border-border bg-muted/30">
+                          <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
+                          <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary font-body">Booking Terms</p>
+                        </div>
+                        <div className="px-6 py-5 text-[14px] text-muted-foreground font-body leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: terms.bookingTerms }} />
                       </div>
                     )}
                     {terms.showLiability !== false && terms.liability && (
-                      <div className="bg-background rounded-2xl border-2 border-border p-6 shadow-[0_8px_24px_-12px_hsl(var(--foreground)/0.1)]">
-                        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-body mb-3">
-                          Liability
-                        </p>
-                        <div
-                          className="prose prose-sm max-w-none text-foreground font-body"
-                          dangerouslySetInnerHTML={{ __html: terms.liability }}
-                        />
+                      <div className="bg-card rounded-2xl border-2 border-border overflow-hidden shadow-[0_14px_32px_-20px_hsl(var(--foreground)/0.35)]">
+                        <div className="flex items-center gap-2.5 px-6 py-4 border-b-2 border-border bg-muted/30">
+                          <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
+                          <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary font-body">Liability</p>
+                        </div>
+                        <div className="px-6 py-5 text-[14px] text-muted-foreground font-body leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: terms.liability }} />
                       </div>
                     )}
                   </motion.div>
