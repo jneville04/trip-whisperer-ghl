@@ -3467,7 +3467,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
       {/* ═══ FLOATING UTILITY — Ask a Question only ═══ */}
       {!isGroupBooking && !approveSuccess && !isReadOnly && !isEditor && tripStatus !== "revision_requested" && tripStatus !== "reopened" && (
-        <div className="fixed bottom-6 right-6 z-[100]">
+        <div className="fixed bottom-6 right-6 z-[100] hidden sm:block">
           <Button
             variant="travel-ghost"
             size="sm"
