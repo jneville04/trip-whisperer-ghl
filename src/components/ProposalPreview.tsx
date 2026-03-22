@@ -642,35 +642,35 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
       {/* STICKY HEADER NAV */}
-      <nav className="sticky top-0 z-[90] border-b-2 border-border bg-background shadow-[0_4px_20px_-4px_hsl(var(--foreground)/0.12)]">
-        <div className="max-w-[1120px] mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+      <nav className="sticky top-0 z-[90] bg-background/98 backdrop-blur-sm border-b border-border">
+        <div className="max-w-[960px] mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
           {/* LEFT: Logo + Brand */}
-          <div className="flex items-center gap-3 min-w-0 shrink-0">
+          <div className="flex items-center gap-2.5 min-w-0 shrink-0">
             {brandData.logoUrl && (
               <img
                 src={brandData.logoUrl}
                 alt={`${agent.agencyName || "Agency"} logo`}
-                className="h-9 max-w-[140px] object-contain shrink-0"
+                className="h-8 max-w-[120px] object-contain shrink-0"
               />
             )}
             {(!brandData.logoUrl || showAgencyNameWithLogo) && (
-              <span className="font-display text-lg font-bold text-foreground truncate tracking-tight">
+              <span className="font-display text-base font-bold text-foreground truncate">
                 {agent.agencyName || "Travel Co."}
               </span>
             )}
           </div>
 
           {/* RIGHT: Nav items + action */}
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+            <div className="flex items-center gap-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {navItems.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => scrollTo(item.id)}
-                  className={`shrink-0 rounded-full px-3.5 py-1.5 text-[13px] sm:text-sm font-body font-semibold transition-all ${
+                  className={`shrink-0 px-3 py-1.5 text-xs sm:text-[13px] font-body font-medium transition-all rounded-md ${
                     activeNavId === item.id
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      ? "text-primary border-b-2 border-primary"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {item.label}
@@ -681,7 +681,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               <Button
                 variant="travel"
                 size="sm"
-                className="text-xs shrink-0 ml-2"
+                className="text-xs shrink-0 ml-1"
                 onClick={() => {
                   if (checkoutEnabled) goToCheckout();
                   else if (bookingUrl) openModal(bookingUrl, "Book Now");
@@ -691,12 +691,12 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               </Button>
             ) : !isEditor && !isReadOnly && !approveSuccess && tripStatus !== "revision_requested" && tripStatus !== "reopened" ? (
               <Button
-                variant="travel-ghost"
+                variant="ghost"
                 size="sm"
-                className="text-xs gap-1.5 shrink-0 ml-2"
+                className="text-xs gap-1 shrink-0 ml-1 text-muted-foreground"
                 onClick={() => setShowAskQuestion(true)}
               >
-                <HelpCircle className="h-3.5 w-3.5" /> Ask a Question
+                <HelpCircle className="h-3.5 w-3.5" /> Ask
               </Button>
             ) : null}
           </div>
