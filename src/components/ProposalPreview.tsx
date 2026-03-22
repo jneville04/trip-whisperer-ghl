@@ -1370,9 +1370,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
                             {/* RIGHT — photo stack, fixed width, fills card height */}
                             {showAccPhotos && allAccImages.length > 0 && (
-                              <div className="w-[260px] shrink-0 flex flex-col gap-[5px] p-[10px] pl-0">
+                              <div className="w-[280px] shrink-0 flex flex-col gap-[5px] p-[10px] pl-0">
                                 <div
-                                  className="flex-[2] overflow-hidden rounded-xl cursor-pointer relative group border border-border/40 min-h-[180px]"
+                                  className="flex-[2] overflow-hidden rounded-xl cursor-pointer relative group border border-border/40 min-h-[200px]"
                                   onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
                                 >
                                   <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
