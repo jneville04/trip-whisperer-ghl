@@ -978,7 +978,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "overview":
             return (
               <section key="overview" id="overview" className="py-20 lg:py-24 px-6 border-t-2 border-border bg-background">
-                <div className="max-w-3xl mx-auto text-center">
+                <div className="max-w-3xl mx-auto">
+                  <div className="border-l-4 border-primary/60 pl-8 sm:pl-10 text-left">
                   <motion.p
                     variants={fadeUp}
                     initial="hidden"
