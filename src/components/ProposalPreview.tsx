@@ -1137,11 +1137,11 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                       {leg.airline}{leg.flightNumber ? ` ${leg.flightNumber}` : ""}
                                     </p>
                                   )}
-                                  {leg.stops === 0 || leg.stops === undefined ? (
+                                  {(leg as any).stops === 0 || (leg as any).stops === undefined ? (
                                     <p className="text-[10px] font-semibold text-green-600 font-body">Nonstop</p>
                                   ) : (
                                     <p className="text-[10px] text-muted-foreground font-body">
-                                      {leg.stops === 1 ? "1 Stop" : `${leg.stops} Stops`}
+                                      {(leg as any).stops === 1 ? "1 Stop" : `${(leg as any).stops} Stops`}
                                     </p>
                                   )}
                                 </div>
