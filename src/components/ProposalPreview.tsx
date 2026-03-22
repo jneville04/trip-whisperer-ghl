@@ -1015,7 +1015,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       whileInView="visible"
                       viewport={{ once: true }}
                       custom={3}
-                      className="text-muted-foreground leading-[1.8] text-base sm:text-lg font-body prose prose-lg max-w-none [&_p]:text-[15px] sm:[&_p]:text-base"
+                      className="text-muted-foreground leading-[1.9] text-base sm:text-lg font-body prose prose-lg max-w-none [&_p]:text-[15px] sm:[&_p]:text-base"
                       dangerouslySetInnerHTML={{ __html: data.introText }}
                     />
                   )}
