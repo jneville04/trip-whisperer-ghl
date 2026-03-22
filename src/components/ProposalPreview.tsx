@@ -986,7 +986,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4"
+                    className="text-xs tracking-[0.25em] uppercase text-primary font-body font-semibold mb-4"
                   >
                     Prepared Exclusively For
                   </motion.p>
