@@ -276,6 +276,8 @@ Deno.serve(async (req) => {
               type: "approved",
               trip_name: tripName,
               traveler_name: travelerName,
+              traveler_email: trip.traveler_email || "",
+              traveler_phone: trip.traveler_phone || "",
               selection_summary: selectionSummary || "",
               total_price: totalPrice || 0,
               deposit,
