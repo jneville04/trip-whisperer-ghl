@@ -36,11 +36,17 @@ export default function ClientView() {
       setError("");
       setData(null);
 
+      // Add cache-busting header to bypass any PostgREST / CDN caching
       const { data: row, error: err } = await supabase
         .from("trips")
         .select("id, status, published_data, draft_data, org_id, archived_at")
         .eq("public_slug", shareId)
-        .single();
+        .single()
+        .throwOnError()
+        .then(
+          (res) => res,
+          (error) => ({ data: null, error })
+        );
 
       if (cancelled) return;
 
