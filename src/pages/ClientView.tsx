@@ -40,16 +40,6 @@ export default function ClientView() {
         .from("trips")
         .select("id, status, published_data, draft_data, org_id, archived_at")
         .eq("public_slug", shareId)
-        .single()
-        .then(res => res, err => err)  // force fresh evaluation
-        ;
-
-      // Re-fetch to bypass any client-side query cache
-      const freshResult = await supabase
-        .from("trips")
-        .select("id, status, published_data, draft_data, org_id, archived_at")
-        .eq("public_slug", shareId)
-        .abortSignal(new AbortController().signal)
         .single();
 
       if (cancelled) return;
