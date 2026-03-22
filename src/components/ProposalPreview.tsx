@@ -1006,7 +1006,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={2}
-                    className="w-12 h-[2px] bg-primary/40 mx-auto mt-6 mb-10"
+                    className="w-12 h-[2px] bg-primary/40 mt-6 mb-10"
                   />
                   {data.introText && (
                     <motion.div
