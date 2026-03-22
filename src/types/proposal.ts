@@ -65,6 +65,8 @@ export interface FlightLeg {
   departureTime: string;
   arrivalTime: string;
   date: string;
+  cabinClass?: string;
+  stops?: number;
   price?: string;
   agentPricing?: AgentPricing;
 }
