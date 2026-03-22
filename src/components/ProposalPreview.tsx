@@ -2250,7 +2250,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
                           <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary font-body">Cancellation Policy</p>
                         </div>
-                        <div className="px-6 py-5 text-[14px] text-muted-foreground font-body leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: terms.cancellationPolicy }} />
+                        <div className="px-6 py-5 text-[14px] text-foreground font-body leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: terms.cancellationPolicy }} />
                       </div>
                     )}
                     {terms.showInsurance !== false && terms.travelInsurance && (
@@ -2259,7 +2259,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
                           <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary font-body">Travel Insurance</p>
                         </div>
-                        <div className="px-6 py-5 text-[14px] text-muted-foreground font-body leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: terms.travelInsurance }} />
+                        <div className="px-6 py-5 text-[14px] text-foreground font-body leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: terms.travelInsurance }} />
                       </div>
                     )}
                     {terms.showBookingTerms !== false && terms.bookingTerms && (
@@ -2268,7 +2268,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
                           <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary font-body">Booking Terms</p>
                         </div>
-                        <div className="px-6 py-5 text-[14px] text-muted-foreground font-body leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: terms.bookingTerms }} />
+                        <div className="px-6 py-5 text-[14px] text-foreground font-body leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: terms.bookingTerms }} />
                       </div>
                     )}
                     {terms.showLiability !== false && terms.liability && (
@@ -2277,7 +2277,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
                           <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary font-body">Liability</p>
                         </div>
-                        <div className="px-6 py-5 text-[14px] text-muted-foreground font-body leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: terms.liability }} />
+                        <div className="px-6 py-5 text-[14px] text-foreground font-body leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: terms.liability }} />
                       </div>
                     )}
                   </motion.div>
