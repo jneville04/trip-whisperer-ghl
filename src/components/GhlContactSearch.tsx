@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
-import { Search, User, Loader2 } from "lucide-react";
+import { Search, User, Loader2, AlertCircle } from "lucide-react";
 
 export interface GhlContact {
   id: string;
@@ -32,6 +32,7 @@ export default function GhlContactSearch({
 }: GhlContactSearchProps) {
   const [results, setResults] = useState<GhlContact[]>([]);
   const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -42,11 +43,13 @@ export default function GhlContactSearch({
     if (!value || value.trim().length < 2) {
       setResults([]);
       setOpen(false);
+      setApiError(null);
       return;
     }
 
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
+      setApiError(null);
       try {
         const { data, error: fnErr } = await supabase.functions.invoke("search-ghl-contacts", {
           body: { query: value.trim() },
@@ -54,14 +57,21 @@ export default function GhlContactSearch({
         if (fnErr) {
           console.error("GHL search error:", fnErr);
           setResults([]);
+          setApiError("Check GHL API Key in Settings.");
         } else {
           const contacts = data?.contacts || [];
+          const errMsg = data?.error || null;
+          console.log("GHL search response:", { contacts: contacts.length, error: errMsg });
           setResults(contacts);
           setOpen(contacts.length > 0);
+          if (errMsg && contacts.length === 0) {
+            setApiError(errMsg);
+          }
         }
       } catch (err) {
         console.error("GHL search error:", err);
         setResults([]);
+        setApiError("Check GHL API Key in Settings.");
       } finally {
         setLoading(false);
       }
@@ -72,7 +82,6 @@ export default function GhlContactSearch({
     };
   }, [value]);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -110,6 +119,13 @@ export default function GhlContactSearch({
           <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground animate-spin" />
         )}
       </div>
+
+      {apiError && !loading && value.trim().length >= 2 && (
+        <div className="flex items-center gap-1.5 mt-1.5 text-xs text-destructive">
+          <AlertCircle className="h-3 w-3 shrink-0" />
+          <span>{apiError}</span>
+        </div>
+      )}
 
       {open && results.length > 0 && (
         <div className="absolute z-[300] top-full left-0 right-0 mt-1 bg-popover border border-border rounded-lg shadow-lg overflow-hidden max-h-[220px] overflow-y-auto">

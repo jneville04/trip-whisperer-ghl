@@ -19,32 +19,40 @@ Deno.serve(async (req) => {
       });
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, serviceRoleKey);
+    // Try env secrets first (most reliable), then agent_settings, then app_settings
+    let ghlApiKey = Deno.env.get("GHL_API_KEY") || "";
+    let ghlLocationId = Deno.env.get("GHL_LOCATION_ID") || "";
 
-    // Get GHL credentials from agent_settings (first match with ghl keys set)
-    const { data: agentRow } = await supabase
-      .from("agent_settings")
-      .select("ghl_access_token, ghl_location_id")
-      .neq("ghl_access_token", "")
-      .neq("ghl_location_id", "")
-      .limit(1)
-      .maybeSingle();
+    if (!ghlApiKey || !ghlLocationId) {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+      const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-    if (!agentRow?.ghl_access_token || !agentRow?.ghl_location_id) {
-      console.log("No GHL credentials configured in agent_settings");
-      return new Response(JSON.stringify({ contacts: [], error: "GHL not configured" }), {
+      // Try agent_settings
+      if (!ghlApiKey || !ghlLocationId) {
+        const { data: agentRow } = await supabase
+          .from("agent_settings")
+          .select("ghl_access_token, ghl_location_id")
+          .neq("ghl_access_token", "")
+          .neq("ghl_location_id", "")
+          .limit(1)
+          .maybeSingle();
+
+        if (agentRow?.ghl_access_token) ghlApiKey = ghlApiKey || agentRow.ghl_access_token;
+        if (agentRow?.ghl_location_id) ghlLocationId = ghlLocationId || agentRow.ghl_location_id;
+      }
+    }
+
+    if (!ghlApiKey || !ghlLocationId) {
+      console.log("No GHL credentials found in secrets, agent_settings, or app_settings");
+      return new Response(JSON.stringify({ contacts: [], error: "GHL not configured. Check GHL API Key in Settings." }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const ghlApiKey = agentRow.ghl_access_token;
-    const ghlLocationId = agentRow.ghl_location_id;
-
     const url = `https://services.leadconnectorhq.com/contacts/?locationId=${encodeURIComponent(ghlLocationId)}&query=${encodeURIComponent(query.trim())}&limit=10`;
 
-    console.log("Searching GHL contacts:", query.trim());
+    console.log("Searching GHL contacts:", query.trim(), "locationId:", ghlLocationId);
 
     const ghlRes = await fetch(url, {
       method: "GET",
@@ -55,15 +63,26 @@ Deno.serve(async (req) => {
       },
     });
 
+    console.log("GHL response status:", ghlRes.status);
+
     if (!ghlRes.ok) {
       const errBody = await ghlRes.text();
       console.error(`GHL API error [${ghlRes.status}]:`, errBody);
-      return new Response(JSON.stringify({ contacts: [], error: `GHL API error: ${ghlRes.status}` }), {
+      const errorMsg = ghlRes.status === 401
+        ? "Unauthorized. Check GHL API Key in Settings."
+        : ghlRes.status === 403
+        ? "Forbidden. Check GHL permissions."
+        : ghlRes.status === 429
+        ? "Rate limited. Try again shortly."
+        : `GHL API error: ${ghlRes.status}`;
+      return new Response(JSON.stringify({ contacts: [], error: errorMsg }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     const ghlData = await ghlRes.json();
+    console.log("GHL contacts found:", (ghlData.contacts || []).length);
+
     const contacts = (ghlData.contacts || []).map((c: any) => ({
       id: c.id,
       name: [c.firstNameLowerCase || c.firstName || "", c.lastNameLowerCase || c.lastName || ""]
