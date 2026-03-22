@@ -40,7 +40,7 @@ export default function ClientView() {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
       const res = await fetch(
-        `${supabaseUrl}/rest/v1/trips?select=id,status,published_data,draft_data,org_id,archived_at&public_slug=eq.${encodeURIComponent(shareId)}`,
+        `${supabaseUrl}/rest/v1/trips?select=id,status,published_data,draft_data,org_id,archived_at,traveler_email,traveler_phone&public_slug=eq.${encodeURIComponent(shareId)}`,
         {
           headers: {
             apikey: supabaseKey,
@@ -70,7 +70,10 @@ export default function ClientView() {
 
       // Agent preview: show draft_data regardless of status
       if (isAgentPreview) {
-        setData((r.draft_data || r.published_data) as ProposalData);
+        const previewData = (r.draft_data || r.published_data) as any;
+        if (r.traveler_email) previewData.clientEmail = r.traveler_email;
+        if (r.traveler_phone) previewData.clientPhone = r.traveler_phone;
+        setData(previewData as ProposalData);
         setLoading(false);
         return;
       }
@@ -93,7 +96,10 @@ export default function ClientView() {
       const isPublic = status === "published" || status === "sent" || status === "approved";
 
       if (isPublic && r.published_data) {
-        setData(r.published_data as ProposalData);
+        const pubData = r.published_data as any;
+        if (r.traveler_email) pubData.clientEmail = r.traveler_email;
+        if (r.traveler_phone) pubData.clientPhone = r.traveler_phone;
+        setData(pubData as ProposalData);
         setLoading(false);
         return;
       }

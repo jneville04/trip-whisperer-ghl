@@ -137,6 +137,8 @@ export default function CreateTripMenu() {
         trip_type: "individual",
         status: "draft",
         draft_data: proposalData as any,
+        traveler_email: clientEmail.trim(),
+        traveler_phone: clientPhone.trim(),
       })
       .select()
       .single();

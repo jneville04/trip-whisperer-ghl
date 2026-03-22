@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
     // 1. FETCH THE TRIP
     const { data: trip, error: tripError } = await supabase
       .from("trips")
-      .select("id, published_data, org_id, public_slug, status")
+      .select("id, published_data, org_id, public_slug, status, traveler_email, traveler_phone")
       .eq("id", tripId)
       .single();
 
@@ -233,7 +233,11 @@ Deno.serve(async (req) => {
           type: "approval",
           tripId,
           tripName,
-          travelerName,
+          traveler_name: travelerName,
+          traveler_email: trip.traveler_email || "",
+          traveler_phone: trip.traveler_phone || "",
+          trip_name: tripName,
+          total_price: totalPrice || 0,
           selectionSummary: selectionSummary || "",
           totalPrice: totalPrice || 0,
           depositAmount: deposit,
@@ -272,6 +276,8 @@ Deno.serve(async (req) => {
               type: "approved",
               trip_name: tripName,
               traveler_name: travelerName,
+              traveler_email: trip.traveler_email || "",
+              traveler_phone: trip.traveler_phone || "",
               selection_summary: selectionSummary || "",
               total_price: totalPrice || 0,
               deposit,
