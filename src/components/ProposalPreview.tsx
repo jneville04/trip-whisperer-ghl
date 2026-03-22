@@ -2434,7 +2434,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               className="bg-background rounded-2xl border-2 border-border shadow-[0_10px_32px_-10px_hsl(var(--foreground)/0.18)] p-8 sm:p-10"
             >
               {/* Selected items summary — only show sections that are enabled AND have data */}
-              <div className="space-y-4 mb-6">
+              <div className="space-y-0 mb-6">
                 {sectionRegistry.filter(s => s.visible && s.items.length > 0).map((section) => {
                   const isChoice = !isGroupBooking && section.items.length >= 2;
                   const isSingleIncluded = section.items.length === 1;
