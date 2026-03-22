@@ -1322,7 +1322,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           }`}
                           onClick={() => accommodationsIsChoice && setSelectedAccommodation(isSelected ? "" : acc.id)}
                         >
-                          <div className="flex flex-row">
+                          <div className="flex flex-col sm:flex-row">
                             {/* LEFT — all text content */}
                             <div className="flex-1 p-6 sm:p-7 flex flex-col">
                               {accommodationsIsChoice && accommodations.length > 1 && (
