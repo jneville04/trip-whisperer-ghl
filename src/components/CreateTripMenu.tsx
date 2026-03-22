@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Plus, BookOpen, Users } from "lucide-react";
 import { blankProposal, type ProposalData } from "@/types/proposal";
+import GhlContactSearch, { type GhlContact } from "@/components/GhlContactSearch";
 import {
   DropdownMenu,
   DropdownMenuContent,
