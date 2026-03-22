@@ -157,21 +157,21 @@ function ItinerarySection({
   };
 
   return (
-    <section id="itinerary" className="py-20 lg:py-24 border-t-2 border-border bg-[hsl(var(--muted)/0.6)]">
-      <div className="max-w-[1120px] mx-auto px-6">
+    <section id="itinerary" className="py-16 lg:py-20 bg-background">
+      <div className="max-w-[960px] mx-auto px-6">
         <motion.div
           variants={fadeUp}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           custom={0}
-          className="text-center mb-20"
+          className="text-center mb-14"
         >
-          <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">{data.sectionCustomTitles?.itinerary?.subtitle || "Your Journey"}</p>
+          <p className="text-xs tracking-[0.3em] uppercase text-primary font-body font-semibold mb-3">{data.sectionCustomTitles?.itinerary?.subtitle || "Your Journey"}</p>
           <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{data.sectionCustomTitles?.itinerary?.title || "Day-by-Day Itinerary"}</h2>
-          <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
+          <div className="w-16 h-0.5 bg-primary/30 mx-auto mt-5" />
         </motion.div>
-        <div className="space-y-6">
+        <div className="space-y-4">
           {visibleDays.map((day, dayIdx) => {
             const isOpen = openDayIds.has(day.id);
             const validActivities = day.activities.filter(
@@ -185,29 +185,33 @@ function ItinerarySection({
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
                 custom={0}
-                className="rounded-2xl border-2 border-border bg-[hsl(var(--muted)/0.5)] overflow-hidden shadow-[0_16px_40px_-16px_hsl(var(--foreground)/0.22)]"
+                className="rounded-xl border border-border bg-background overflow-hidden shadow-sm hover:shadow-md transition-shadow"
               >
                 <button
                   onClick={() => toggleDay(day.id)}
-                  className="w-full flex items-center justify-between gap-3 px-6 py-5 cursor-pointer group text-left bg-[hsl(var(--muted)/0.4)]"
+                  className="w-full flex items-center justify-between gap-3 px-5 sm:px-6 py-4 cursor-pointer group text-left hover:bg-muted/30 transition-colors"
                 >
-                  <div>
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
-                      <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-body font-semibold">
-                        Day {dayIdx + 1}
-                      </span>
-                      {day.date && (
-                        <span className="text-sm text-muted-foreground font-body flex items-center gap-1">
-                          <Calendar className="h-3.5 w-3.5" /> {day.date}
-                        </span>
-                      )}
-                      {day.location && (
-                        <span className="text-sm text-muted-foreground font-body flex items-center gap-1">
-                          <MapPin className="h-3.5 w-3.5" /> {day.location}
-                        </span>
-                      )}
+                  <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+                    <span className="bg-primary text-primary-foreground w-10 h-10 rounded-full flex items-center justify-center text-sm font-body font-bold shrink-0">
+                      {dayIdx + 1}
+                    </span>
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-display text-lg sm:text-xl font-semibold text-foreground leading-tight">{day.title}</h3>
+                      </div>
+                      <div className="flex items-center gap-3 mt-1 flex-wrap">
+                        {day.date && (
+                          <span className="text-xs text-muted-foreground font-body flex items-center gap-1">
+                            <Calendar className="h-3 w-3" /> {day.date}
+                          </span>
+                        )}
+                        {day.location && (
+                          <span className="text-xs text-muted-foreground font-body flex items-center gap-1">
+                            <MapPin className="h-3 w-3" /> {day.location}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <h3 className="font-display text-xl sm:text-2xl font-semibold text-foreground leading-tight">{day.title}</h3>
                   </div>
                   <ChevronDown
                     className={`h-5 w-5 text-muted-foreground shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
@@ -222,7 +226,7 @@ function ItinerarySection({
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="px-6 pb-6 pt-4 space-y-4">
+                      <div className="px-5 sm:px-6 pb-5 pt-2 space-y-3 border-t border-border">
                         {validActivities.map((act, actIdx) => {
                           const isUtility = UTILITY_ACTIVITY_TYPES.includes(act.type as any);
                           const hasImages = act.imageUrls && act.imageUrls.length > 0 && !isUtility;
@@ -231,12 +235,12 @@ function ItinerarySection({
                           return (
                             <div
                               key={act.id || actIdx}
-                              className="rounded-xl border border-border bg-card p-5 sm:p-6 shadow-[0_8px_24px_-10px_hsl(var(--foreground)/0.16)]"
+                              className="rounded-lg border border-border/60 bg-muted/20 p-4 sm:p-5"
                             >
-                              <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-5`}>
+                              <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-4`}>
                                 <div className="flex-1">
                                   <div className="flex items-start gap-3">
-                                    <div className="relative z-10 mt-0.5 w-8 h-8 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                    <div className="relative z-10 mt-0.5 w-7 h-7 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                                       {getActivityIcon(act.type)}
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -246,12 +250,12 @@ function ItinerarySection({
                                         </span>
                                       )}
                                       {act.title?.trim() && (
-                                        <p className="font-display text-lg sm:text-xl font-semibold text-foreground leading-snug">
+                                        <p className="font-display text-base sm:text-lg font-semibold text-foreground leading-snug">
                                           {act.title}
                                         </p>
                                       )}
                                       {act.description && (
-                                        <p className="text-[15px] text-muted-foreground font-body mt-2 leading-relaxed">
+                                        <p className="text-sm text-muted-foreground font-body mt-1.5 leading-relaxed">
                                           {act.description}
                                         </p>
                                       )}
@@ -260,7 +264,7 @@ function ItinerarySection({
                                 </div>
                                 {hasImages && (
                                   <div
-                                    className="shrink-0 rounded-xl overflow-hidden cursor-pointer group relative sm:w-[280px] md:w-[320px] h-[200px] border border-border"
+                                    className="shrink-0 rounded-lg overflow-hidden cursor-pointer group relative sm:w-[240px] md:w-[280px] h-[180px] border border-border/40"
                                     onClick={() =>
                                       openLightbox(
                                         act.imageUrls!.map((u) => ({ src: u, alt: act.title })),
@@ -281,7 +285,7 @@ function ItinerarySection({
                                   </div>
                                 )}
                                 {hasVideo && !hasImages && (
-                                  <div className="shrink-0 sm:w-[280px] md:w-[320px]">
+                                  <div className="shrink-0 sm:w-[240px] md:w-[280px]">
                                     <VideoEmbed
                                       url={act.videoUrl!}
                                       title={act.title}
