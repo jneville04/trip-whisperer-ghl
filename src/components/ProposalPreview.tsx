@@ -1290,7 +1290,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                     className="w-full h-full overflow-hidden cursor-pointer relative group rounded-lg"
                                     onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
                                   >
-                                    <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 rounded-xl" />
+                                    <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 rounded-lg" />
                                   </div>
                                 ) : (
                                   <div className="flex flex-col gap-2 h-full">
