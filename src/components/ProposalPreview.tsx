@@ -2040,7 +2040,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                         </div>
                       </div>
                     )}
-                    {exclusions.filter(Boolean).length > 0 && (
+                    {exclusions.length > 0 && (
                       <div className="bg-card rounded-2xl border-2 border-border overflow-hidden shadow-[0_14px_32px_-20px_hsl(var(--foreground)/0.35)]">
                         <div className="flex items-center gap-2.5 px-6 py-4 border-b-2 border-border bg-destructive/5">
                           <div className="w-2 h-2 rounded-full bg-destructive shrink-0" />
@@ -2049,7 +2049,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           </p>
                         </div>
                         <div className="px-6 py-4 flex flex-col divide-y divide-border">
-                          {exclusions.filter(Boolean).map((item: string, i: number) => (
+                          {exclusions.map((item, i) => (
                             <div key={i} className="flex items-start gap-3 py-3">
                               <div className="w-5 h-5 rounded-full bg-destructive/10 flex items-center justify-center shrink-0 mt-0.5">
                                 <X className="h-3 w-3 text-destructive" />
