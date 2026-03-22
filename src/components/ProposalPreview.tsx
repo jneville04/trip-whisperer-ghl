@@ -2435,15 +2435,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             >
               {/* Selected items summary — only show sections that are enabled AND have data */}
               <div className="space-y-4 mb-6">
-                {sectionRegistry.filter(s => {
-                  if (!s.visible || s.items.length === 0) return false;
-                  const isChoice = !isGroupBooking && s.items.length >= 2;
-                  const isSingle = s.items.length === 1;
-                  if (isChoice) return true;
-                  if (isSingle && showItemizedPrices) return true;
-                  if (isSingle && !showItemizedPrices) return false;
-                  return false;
-                }).map((section) => {
+                {sectionRegistry.filter(s => s.visible && s.items.length > 0).map((section) => {
                   const isChoice = !isGroupBooking && section.items.length >= 2;
                   const isSingleIncluded = section.items.length === 1;
                   const effectiveId = isChoice ? section.selectedId : (isSingleIncluded ? section.items[0].id : "");
@@ -2887,15 +2879,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
               {/* Selection summary rows */}
               <div className="space-y-3 mb-6">
-                {sectionRegistry.filter(s => {
-                  if (!s.visible || s.items.length === 0) return false;
-                  const isChoice = !isGroupBooking && s.items.length >= 2;
-                  const isSingle = s.items.length === 1;
-                  if (isChoice) return true;
-                  if (isSingle && showItemizedPrices) return true;
-                  if (isSingle && !showItemizedPrices) return false;
-                  return false;
-                }).map((section) => {
+                {sectionRegistry.filter(s => s.visible && s.items.length > 0).map((section) => {
                   const isChoice = !isGroupBooking && section.items.length >= 2;
                   const isSingle = section.items.length === 1;
                   const effectiveId = isChoice ? section.selectedId : (isSingle ? section.items[0].id : "");
