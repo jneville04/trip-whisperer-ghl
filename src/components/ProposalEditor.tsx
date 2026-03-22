@@ -942,6 +942,34 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                       <InlineTimePicker value={leg.arrivalTime} onChange={(val) => updateFlightLeg(oi, li, "arrivalTime", val)} />
                                     </div>
                                   </div>
+                                  <div className="grid grid-cols-2 gap-2 mt-2">
+                                    <div>
+                                      <FieldLabel>Cabin Class</FieldLabel>
+                                      <select
+                                        className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm font-body focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                                        value={leg.cabinClass || "Economy"}
+                                        onChange={(e) => updateFlightLeg(oi, li, "cabinClass", e.target.value)}
+                                      >
+                                        <option value="Economy">Economy</option>
+                                        <option value="Premium Economy">Premium Economy</option>
+                                        <option value="Business">Business</option>
+                                        <option value="First Class">First Class</option>
+                                      </select>
+                                    </div>
+                                    <div>
+                                      <FieldLabel>Stops</FieldLabel>
+                                      <select
+                                        className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm font-body focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                                        value={leg.stops ?? 0}
+                                        onChange={(e) => updateFlightLeg(oi, li, "stops", parseInt(e.target.value) as any)}
+                                      >
+                                        <option value={0}>Nonstop</option>
+                                        <option value={1}>1 Stop</option>
+                                        <option value={2}>2 Stops</option>
+                                        <option value={3}>3 Stops</option>
+                                      </select>
+                                    </div>
+                                  </div>
                                 </div>
                               ))}
                               <div className="flex gap-2">
