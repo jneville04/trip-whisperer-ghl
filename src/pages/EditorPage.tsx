@@ -373,7 +373,7 @@ export default function EditorPage() {
                 <Send className="h-4 w-4 mr-1.5" /> Send Proposal <ChevronDown className="h-3.5 w-3.5 ml-1" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuContent align="end" className="w-48 z-[200]" sideOffset={5}>
               <DropdownMenuItem onClick={handlePublishAndCopy}>
                 <Link2 className="h-4 w-4 mr-2" /> Copy Link
               </DropdownMenuItem>
