@@ -1522,7 +1522,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           }`}
                           onClick={() => cruiseIsChoice && setSelectedCruise(isSelected ? "" : ship.id)}
                         >
-                          <div className="flex flex-row">
+                          <div className="flex flex-col sm:flex-row">
                             {/* LEFT — all text content */}
                             <div className="flex-1 p-6 sm:p-7 flex flex-col">
                               {cruiseIsChoice && cruiseShips.length > 1 && (
