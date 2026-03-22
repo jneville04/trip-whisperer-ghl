@@ -1240,7 +1240,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "accommodations":
             if (accommodations.length === 0) return null;
             return (
-              <section key="accommodations" id="accommodations" className="py-20 lg:py-24 border-t-2 border-border/80 bg-[hsl(var(--muted)/0.3)]">
+              <section key="accommodations" id="accommodations" className="py-20 lg:py-24 border-t-2 border-border bg-[hsl(var(--muted)/0.55)]">
                 <div className="max-w-[1120px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
