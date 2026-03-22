@@ -110,12 +110,13 @@ Deno.serve(async (req) => {
     }
 
     const ghlData = await ghlRes.json();
-    console.log("GHL contacts found:", (ghlData.contacts || []).length);
+    const rawContacts = ghlData.contacts || [];
+    console.log("GHL contacts found:", rawContacts.length);
 
-    const contacts = (ghlData.contacts || []).map((c: any) => ({
+    const contacts = rawContacts.map((c: any) => ({
       id: c.id,
-      name: [c.firstNameLowerCase || c.firstName || "", c.lastNameLowerCase || c.lastName || ""]
-        .map((s: string) => s.charAt(0).toUpperCase() + s.slice(1))
+      name: [c.firstName || c.firstNameLowerCase || "", c.lastName || c.lastNameLowerCase || ""]
+        .map((s: string) => s ? s.charAt(0).toUpperCase() + s.slice(1) : "")
         .filter(Boolean)
         .join(" "),
       email: c.email || "",
