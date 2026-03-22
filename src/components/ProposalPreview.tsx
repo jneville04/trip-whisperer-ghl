@@ -726,6 +726,22 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
         </div>
       </nav>
 
+      {mobileMenuOpen && (
+        <div className="sm:hidden fixed inset-0 z-[89] bg-black/40" onClick={() => setMobileMenuOpen(false)}>
+          <div className="absolute top-16 left-0 right-0 bg-background border-b-2 border-border shadow-lg px-4 py-3 flex flex-col gap-1" onClick={e => e.stopPropagation()}>
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => { scrollTo(item.id); setMobileMenuOpen(false); }}
+                className="text-left px-4 py-3 text-sm font-body font-semibold text-foreground hover:bg-muted rounded-lg transition-colors"
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* HERO */}
       {vis.hero &&
         (() => {
