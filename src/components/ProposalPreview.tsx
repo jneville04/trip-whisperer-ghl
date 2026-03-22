@@ -1364,7 +1364,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
                               {acc.description && (
                                 <div
-                                  className="text-[15px] text-muted-foreground font-body mt-3 leading-relaxed prose prose-sm max-w-none line-clamp-3"
+                                  className="text-[14px] text-muted-foreground font-body mt-3 leading-relaxed prose prose-sm max-w-none"
                                   dangerouslySetInnerHTML={{ __html: acc.description }}
                                 />
                               )}
