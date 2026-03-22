@@ -2377,7 +2377,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
       {/* PROPOSAL SELECTION SUMMARY — only for Proposal type */}
       {!isGroupBooking && (
-        <section id="pricing" className="py-20 lg:py-24 bg-[hsl(var(--muted)/0.35)] border-t-2 border-border">
+        <section id="pricing" className="py-20 lg:py-24 bg-[hsl(var(--muted)/0.55)] border-t-2 border-border">
           <div className="max-w-[1000px] mx-auto px-6">
             <motion.div
               variants={fadeUp}
