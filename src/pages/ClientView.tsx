@@ -96,7 +96,10 @@ export default function ClientView() {
       const isPublic = status === "published" || status === "sent" || status === "approved";
 
       if (isPublic && r.published_data) {
-        setData(r.published_data as ProposalData);
+        const pubData = r.published_data as any;
+        if (r.traveler_email) pubData.clientEmail = r.traveler_email;
+        if (r.traveler_phone) pubData.clientPhone = r.traveler_phone;
+        setData(pubData as ProposalData);
         setLoading(false);
         return;
       }
