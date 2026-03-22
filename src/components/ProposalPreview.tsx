@@ -1991,8 +1991,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             return <ItinerarySection key="itinerary" data={data} fadeUp={fadeUp} openLightbox={openLightbox} />;
 
           case "inclusions":
-            const exclusions = (data as any).exclusions as string[] || [];
-            if (data.inclusions.filter(Boolean).length === 0 && exclusions.filter(Boolean).length === 0) return null;
+            const exclusions = ((data as any).exclusions as string[] || []).filter(Boolean);
+            if (data.inclusions.filter(Boolean).length === 0 && exclusions.length === 0) return null;
             return (
               <section key="inclusions" id="inclusions" className="py-16 lg:py-20 bg-muted/40">
                 <div className="max-w-[960px] mx-auto px-6">
