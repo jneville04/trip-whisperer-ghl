@@ -70,7 +70,10 @@ export default function ClientView() {
 
       // Agent preview: show draft_data regardless of status
       if (isAgentPreview) {
-        setData((r.draft_data || r.published_data) as ProposalData);
+        const previewData = (r.draft_data || r.published_data) as any;
+        if (r.traveler_email) previewData.clientEmail = r.traveler_email;
+        if (r.traveler_phone) previewData.clientPhone = r.traveler_phone;
+        setData(previewData as ProposalData);
         setLoading(false);
         return;
       }
