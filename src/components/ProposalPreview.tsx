@@ -1635,7 +1635,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                             </div>
                             {/* RIGHT — photo stack, same as hotel */}
                             {showShipPhotos && allShipImages.length > 0 && (
-                              <div className="w-[260px] shrink-0 flex flex-col gap-[5px] p-[10px] pl-0">
+                              <div className="w-full sm:w-[260px] shrink-0 flex flex-col gap-[5px] p-[10px] sm:pl-0">
                                 <div
                                   className="flex-[2] overflow-hidden rounded-xl cursor-pointer relative group border border-border/40 min-h-[180px]"
                                   onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, 0); }}
