@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
     // 1. FETCH THE TRIP
     const { data: trip, error: tripError } = await supabase
       .from("trips")
-      .select("id, published_data, org_id, public_slug, status")
+      .select("id, published_data, org_id, public_slug, status, traveler_email, traveler_phone")
       .eq("id", tripId)
       .single();
 
