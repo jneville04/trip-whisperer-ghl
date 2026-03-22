@@ -277,7 +277,7 @@ function ItinerarySection({
                                 </div>
                                 {hasImages && (
                                   <div
-                                    className="shrink-0 rounded-xl overflow-hidden cursor-pointer group relative w-[200px] h-[200px] border border-border/40 mx-2 my-2"
+                                    className="shrink-0 rounded-xl overflow-hidden cursor-pointer group relative w-full sm:w-[200px] h-[200px] border border-border/40 mx-0 sm:mx-2 my-2"
                                     onClick={() =>
                                       openLightbox(
                                         act.imageUrls!.map((u) => ({ src: u, alt: act.title })),
@@ -365,6 +365,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   const [validationError, setValidationError] = useState<string>("");
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showAskQuestion, setShowAskQuestion] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const travelerName = data.clientName || "";
   const travelerEmail = (data as any).clientEmail || "";
   const [questionForm, setQuestionForm] = useState({ name: travelerName, email: travelerEmail, message: "" });
@@ -675,7 +676,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
           {/* RIGHT: Nav items + action */}
           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-            <div className="flex items-center gap-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {/* Desktop nav links */}
+            <div className="hidden sm:flex items-center gap-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {navItems.map((item) => (
                 <button
                   key={item.id}
@@ -690,31 +692,55 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                 </button>
               ))}
             </div>
-            {isGroupBooking ? (
+            {/* Mobile hamburger */}
+            {!isGroupBooking && !isEditor && !isReadOnly && !approveSuccess && tripStatus !== "revision_requested" && tripStatus !== "reopened" && (
               <Button
                 variant="travel"
                 size="sm"
-                className="text-xs shrink-0 ml-1"
-                onClick={() => {
-                  if (checkoutEnabled) goToCheckout();
-                  else if (bookingUrl) openModal(bookingUrl, "Book Now");
-                }}
+                className="text-xs gap-1 shrink-0 h-8 sm:hidden"
+                onClick={() => setShowAskQuestion(true)}
               >
+                <HelpCircle className="h-3.5 w-3.5" /> Ask
+              </Button>
+            )}
+            <button
+              className="sm:hidden flex flex-col gap-1 p-2 rounded-lg hover:bg-muted transition-colors"
+              onClick={() => setMobileMenuOpen(prev => !prev)}
+            >
+              <span className="w-5 h-0.5 bg-foreground rounded-full block" />
+              <span className="w-5 h-0.5 bg-foreground rounded-full block" />
+              <span className="w-5 h-0.5 bg-foreground rounded-full block" />
+            </button>
+            {isGroupBooking ? (
+              <Button variant="travel" size="sm" className="text-xs shrink-0 ml-1 hidden sm:flex"
+                onClick={() => { if (checkoutEnabled) goToCheckout(); else if (bookingUrl) openModal(bookingUrl, "Book Now"); }}>
                 Book Now
               </Button>
             ) : !isEditor && !isReadOnly && !approveSuccess && tripStatus !== "revision_requested" && tripStatus !== "reopened" ? (
-              <Button
-                variant="travel"
-                size="sm"
-                className="text-xs gap-1 shrink-0 ml-1 h-8"
-                onClick={() => setShowAskQuestion(true)}
-              >
+              <Button variant="travel" size="sm" className="text-xs gap-1 shrink-0 ml-1 h-8 hidden sm:flex"
+                onClick={() => setShowAskQuestion(true)}>
                 <HelpCircle className="h-3.5 w-3.5" /> Ask
               </Button>
             ) : null}
           </div>
         </div>
       </nav>
+
+      {mobileMenuOpen && (
+        <div className="sm:hidden fixed inset-0 z-[89] bg-black/40" onClick={() => setMobileMenuOpen(false)}>
+          <div className="absolute top-16 left-0 right-0 bg-background border-b-2 border-border shadow-lg px-4 py-3 flex flex-col gap-1" onClick={e => e.stopPropagation()}>
+            {navItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => { scrollTo(item.id); setMobileMenuOpen(false); }}
+                className="text-left px-4 py-3 text-sm font-body font-semibold text-foreground hover:bg-muted rounded-lg transition-colors"
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* HERO */}
       {vis.hero &&
@@ -1296,7 +1322,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           }`}
                           onClick={() => accommodationsIsChoice && setSelectedAccommodation(isSelected ? "" : acc.id)}
                         >
-                          <div className="flex flex-row">
+                          <div className="flex flex-col sm:flex-row">
                             {/* LEFT — all text content */}
                             <div className="flex-1 p-6 sm:p-7 flex flex-col">
                               {accommodationsIsChoice && accommodations.length > 1 && (
@@ -1385,7 +1411,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
                             {/* RIGHT — photo stack, fixed width, fills card height */}
                             {showAccPhotos && allAccImages.length > 0 && (
-                              <div className="w-[280px] shrink-0 flex flex-col gap-[5px] p-[10px] pl-0">
+                              <div className="w-full sm:w-[280px] shrink-0 flex flex-col gap-[5px] p-[10px] sm:pl-0">
                                 <div
                                   className="flex-[2] overflow-hidden rounded-xl cursor-pointer relative group border border-border/40 min-h-[200px]"
                                   onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
@@ -1496,7 +1522,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           }`}
                           onClick={() => cruiseIsChoice && setSelectedCruise(isSelected ? "" : ship.id)}
                         >
-                          <div className="flex flex-row">
+                          <div className="flex flex-col sm:flex-row">
                             {/* LEFT — all text content */}
                             <div className="flex-1 p-6 sm:p-7 flex flex-col">
                               {cruiseIsChoice && cruiseShips.length > 1 && (
@@ -1609,7 +1635,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                             </div>
                             {/* RIGHT — photo stack, same as hotel */}
                             {showShipPhotos && allShipImages.length > 0 && (
-                              <div className="w-[260px] shrink-0 flex flex-col gap-[5px] p-[10px] pl-0">
+                              <div className="w-full sm:w-[260px] shrink-0 flex flex-col gap-[5px] p-[10px] sm:pl-0">
                                 <div
                                   className="flex-[2] overflow-hidden rounded-xl cursor-pointer relative group border border-border/40 min-h-[180px]"
                                   onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, 0); }}
@@ -2806,7 +2832,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                 {agent.agencyName && <p className="text-sm text-muted-foreground/80 font-body mt-0.5">{agent.agencyName}</p>}
               </div>
             </div>
-            <div className="flex items-center justify-center gap-8 text-sm font-body text-muted-foreground flex-wrap">
+            <div className="flex items-center justify-center gap-4 text-sm font-body text-muted-foreground flex-wrap">
               {agent.phone && (
                 <a
                   href={`tel:${agent.phone.replace(/[^\d+]/g, "")}`}
@@ -3441,7 +3467,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
       {/* ═══ FLOATING UTILITY — Ask a Question only ═══ */}
       {!isGroupBooking && !approveSuccess && !isReadOnly && !isEditor && tripStatus !== "revision_requested" && tripStatus !== "reopened" && (
-        <div className="fixed bottom-6 right-6 z-[100]">
+        <div className="fixed bottom-6 right-6 z-[100] hidden sm:block">
           <Button
             variant="travel-ghost"
             size="sm"
