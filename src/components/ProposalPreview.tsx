@@ -157,21 +157,21 @@ function ItinerarySection({
   };
 
   return (
-    <section id="itinerary" className="py-20 lg:py-24 border-t-2 border-border bg-[hsl(var(--muted)/0.6)]">
-      <div className="max-w-[1120px] mx-auto px-6">
+    <section id="itinerary" className="py-16 lg:py-20 bg-background">
+      <div className="max-w-[960px] mx-auto px-6">
         <motion.div
           variants={fadeUp}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
           custom={0}
-          className="text-center mb-20"
+          className="text-center mb-14"
         >
-          <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">{data.sectionCustomTitles?.itinerary?.subtitle || "Your Journey"}</p>
+          <p className="text-xs tracking-[0.3em] uppercase text-primary font-body font-semibold mb-3">{data.sectionCustomTitles?.itinerary?.subtitle || "Your Journey"}</p>
           <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{data.sectionCustomTitles?.itinerary?.title || "Day-by-Day Itinerary"}</h2>
-          <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
+          <div className="w-16 h-0.5 bg-primary/30 mx-auto mt-5" />
         </motion.div>
-        <div className="space-y-6">
+        <div className="space-y-4">
           {visibleDays.map((day, dayIdx) => {
             const isOpen = openDayIds.has(day.id);
             const validActivities = day.activities.filter(
@@ -185,29 +185,33 @@ function ItinerarySection({
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
                 custom={0}
-                className="rounded-2xl border-2 border-border bg-[hsl(var(--muted)/0.5)] overflow-hidden shadow-[0_16px_40px_-16px_hsl(var(--foreground)/0.22)]"
+                className="rounded-xl border border-border bg-background overflow-hidden shadow-sm hover:shadow-md transition-shadow"
               >
                 <button
                   onClick={() => toggleDay(day.id)}
-                  className="w-full flex items-center justify-between gap-3 px-6 py-5 cursor-pointer group text-left bg-[hsl(var(--muted)/0.4)]"
+                  className="w-full flex items-center justify-between gap-3 px-5 sm:px-6 py-4 cursor-pointer group text-left hover:bg-muted/30 transition-colors"
                 >
-                  <div>
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
-                      <span className="bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-body font-semibold">
-                        Day {dayIdx + 1}
-                      </span>
-                      {day.date && (
-                        <span className="text-sm text-muted-foreground font-body flex items-center gap-1">
-                          <Calendar className="h-3.5 w-3.5" /> {day.date}
-                        </span>
-                      )}
-                      {day.location && (
-                        <span className="text-sm text-muted-foreground font-body flex items-center gap-1">
-                          <MapPin className="h-3.5 w-3.5" /> {day.location}
-                        </span>
-                      )}
+                  <div className="flex items-center gap-3 sm:gap-4 flex-wrap">
+                    <span className="bg-primary text-primary-foreground w-10 h-10 rounded-full flex items-center justify-center text-sm font-body font-bold shrink-0">
+                      {dayIdx + 1}
+                    </span>
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-display text-lg sm:text-xl font-semibold text-foreground leading-tight">{day.title}</h3>
+                      </div>
+                      <div className="flex items-center gap-3 mt-1 flex-wrap">
+                        {day.date && (
+                          <span className="text-xs text-muted-foreground font-body flex items-center gap-1">
+                            <Calendar className="h-3 w-3" /> {day.date}
+                          </span>
+                        )}
+                        {day.location && (
+                          <span className="text-xs text-muted-foreground font-body flex items-center gap-1">
+                            <MapPin className="h-3 w-3" /> {day.location}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <h3 className="font-display text-xl sm:text-2xl font-semibold text-foreground leading-tight">{day.title}</h3>
                   </div>
                   <ChevronDown
                     className={`h-5 w-5 text-muted-foreground shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
@@ -222,7 +226,7 @@ function ItinerarySection({
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="px-6 pb-6 pt-4 space-y-4">
+                      <div className="px-5 sm:px-6 pb-5 pt-2 space-y-3 border-t border-border">
                         {validActivities.map((act, actIdx) => {
                           const isUtility = UTILITY_ACTIVITY_TYPES.includes(act.type as any);
                           const hasImages = act.imageUrls && act.imageUrls.length > 0 && !isUtility;
@@ -231,12 +235,12 @@ function ItinerarySection({
                           return (
                             <div
                               key={act.id || actIdx}
-                              className="rounded-xl border border-border bg-card p-5 sm:p-6 shadow-[0_8px_24px_-10px_hsl(var(--foreground)/0.16)]"
+                              className="rounded-lg border border-border/60 bg-muted/20 p-4 sm:p-5"
                             >
-                              <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-5`}>
+                              <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-4`}>
                                 <div className="flex-1">
                                   <div className="flex items-start gap-3">
-                                    <div className="relative z-10 mt-0.5 w-8 h-8 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                    <div className="relative z-10 mt-0.5 w-7 h-7 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                                       {getActivityIcon(act.type)}
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -246,12 +250,12 @@ function ItinerarySection({
                                         </span>
                                       )}
                                       {act.title?.trim() && (
-                                        <p className="font-display text-lg sm:text-xl font-semibold text-foreground leading-snug">
+                                        <p className="font-display text-base sm:text-lg font-semibold text-foreground leading-snug">
                                           {act.title}
                                         </p>
                                       )}
                                       {act.description && (
-                                        <p className="text-[15px] text-muted-foreground font-body mt-2 leading-relaxed">
+                                        <p className="text-sm text-muted-foreground font-body mt-1.5 leading-relaxed">
                                           {act.description}
                                         </p>
                                       )}
@@ -260,7 +264,7 @@ function ItinerarySection({
                                 </div>
                                 {hasImages && (
                                   <div
-                                    className="shrink-0 rounded-xl overflow-hidden cursor-pointer group relative sm:w-[280px] md:w-[320px] h-[200px] border border-border"
+                                    className="shrink-0 rounded-lg overflow-hidden cursor-pointer group relative sm:w-[240px] md:w-[280px] h-[180px] border border-border/40"
                                     onClick={() =>
                                       openLightbox(
                                         act.imageUrls!.map((u) => ({ src: u, alt: act.title })),
@@ -281,7 +285,7 @@ function ItinerarySection({
                                   </div>
                                 )}
                                 {hasVideo && !hasImages && (
-                                  <div className="shrink-0 sm:w-[280px] md:w-[320px]">
+                                  <div className="shrink-0 sm:w-[240px] md:w-[280px]">
                                     <VideoEmbed
                                       url={act.videoUrl!}
                                       title={act.title}
@@ -638,35 +642,35 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   return (
     <div className="min-h-screen bg-background" style={brandStyles as React.CSSProperties}>
       {/* STICKY HEADER NAV */}
-      <nav className="sticky top-0 z-[90] border-b-2 border-border bg-background shadow-[0_4px_20px_-4px_hsl(var(--foreground)/0.12)]">
-        <div className="max-w-[1120px] mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+      <nav className="sticky top-0 z-[90] bg-background/98 backdrop-blur-sm border-b border-border">
+        <div className="max-w-[960px] mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
           {/* LEFT: Logo + Brand */}
-          <div className="flex items-center gap-3 min-w-0 shrink-0">
+          <div className="flex items-center gap-2.5 min-w-0 shrink-0">
             {brandData.logoUrl && (
               <img
                 src={brandData.logoUrl}
                 alt={`${agent.agencyName || "Agency"} logo`}
-                className="h-9 max-w-[140px] object-contain shrink-0"
+                className="h-8 max-w-[120px] object-contain shrink-0"
               />
             )}
             {(!brandData.logoUrl || showAgencyNameWithLogo) && (
-              <span className="font-display text-lg font-bold text-foreground truncate tracking-tight">
+              <span className="font-display text-base font-bold text-foreground truncate">
                 {agent.agencyName || "Travel Co."}
               </span>
             )}
           </div>
 
           {/* RIGHT: Nav items + action */}
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div className="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+            <div className="flex items-center gap-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {navItems.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => scrollTo(item.id)}
-                  className={`shrink-0 rounded-full px-3.5 py-1.5 text-[13px] sm:text-sm font-body font-semibold transition-all ${
+                  className={`shrink-0 px-3 py-1.5 text-xs sm:text-[13px] font-body font-medium transition-all rounded-md ${
                     activeNavId === item.id
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                      ? "text-primary border-b-2 border-primary"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {item.label}
@@ -677,7 +681,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               <Button
                 variant="travel"
                 size="sm"
-                className="text-xs shrink-0 ml-2"
+                className="text-xs shrink-0 ml-1"
                 onClick={() => {
                   if (checkoutEnabled) goToCheckout();
                   else if (bookingUrl) openModal(bookingUrl, "Book Now");
@@ -687,12 +691,12 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               </Button>
             ) : !isEditor && !isReadOnly && !approveSuccess && tripStatus !== "revision_requested" && tripStatus !== "reopened" ? (
               <Button
-                variant="travel-ghost"
+                variant="ghost"
                 size="sm"
-                className="text-xs gap-1.5 shrink-0 ml-2"
+                className="text-xs gap-1 shrink-0 ml-1 text-muted-foreground"
                 onClick={() => setShowAskQuestion(true)}
               >
-                <HelpCircle className="h-3.5 w-3.5" /> Ask a Question
+                <HelpCircle className="h-3.5 w-3.5" /> Ask
               </Button>
             ) : null}
           </div>
@@ -757,44 +761,32 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               transition={{ duration: 0.6, delay: 0.5 }}
               className="relative z-10 -mt-8 mx-4 sm:mx-6"
             >
-              <div className="max-w-[70%] w-full mx-auto bg-background/95 backdrop-blur-md rounded-2xl shadow-xl border border-border/40 px-6 sm:px-10 py-5">
-                <div className="flex items-center justify-center gap-5 sm:gap-8 flex-wrap">
+              <div className="max-w-[620px] w-full mx-auto bg-background rounded-xl shadow-lg border border-border px-5 sm:px-8 py-4">
+                <div className="flex items-center justify-center divide-x divide-border">
                   {((data as any).startDate || (data as any).endDate) && (
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                        <Calendar className="h-5 w-5 text-primary" />
-                      </div>
+                    <div className="flex items-center gap-2.5 px-4 sm:px-6 first:pl-0 last:pr-0">
+                      <Calendar className="h-4 w-4 text-primary shrink-0" />
                       <div>
-                        <p className="text-xs uppercase tracking-widest text-muted-foreground font-body font-medium">Dates</p>
-                        <p className="text-base font-bold text-foreground font-body leading-tight">{formatDateRange((data as any).startDate, (data as any).endDate)}</p>
+                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-body font-medium">Dates</p>
+                        <p className="text-sm font-bold text-foreground font-body leading-tight">{formatDateRange((data as any).startDate, (data as any).endDate)}</p>
                       </div>
                     </div>
-                  )}
-                  {((data as any).startDate || (data as any).endDate) && data.travelerCount && (
-                    <div className="h-10 w-px bg-border/50 hidden sm:block" />
                   )}
                   {data.travelerCount && (
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                        <Users className="h-5 w-5 text-primary" />
-                      </div>
+                    <div className="flex items-center gap-2.5 px-4 sm:px-6 first:pl-0 last:pr-0">
+                      <Users className="h-4 w-4 text-primary shrink-0" />
                       <div>
-                        <p className="text-xs uppercase tracking-widest text-muted-foreground font-body font-medium">Travelers</p>
-                        <p className="text-base font-bold text-foreground font-body leading-tight">{parseInt(data.travelerCount) === 1 ? "1 Guest" : `${parseInt(data.travelerCount)} Guests`}</p>
+                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-body font-medium">Travelers</p>
+                        <p className="text-sm font-bold text-foreground font-body leading-tight">{parseInt(data.travelerCount) === 1 ? "1 Guest" : `${parseInt(data.travelerCount)} Guests`}</p>
                       </div>
                     </div>
                   )}
-                  {data.travelerCount && computedDuration && (
-                    <div className="h-10 w-px bg-border/50 hidden sm:block" />
-                  )}
                   {computedDuration && (
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                        <Clock className="h-5 w-5 text-primary" />
-                      </div>
+                    <div className="flex items-center gap-2.5 px-4 sm:px-6 first:pl-0 last:pr-0">
+                      <Clock className="h-4 w-4 text-primary shrink-0" />
                       <div>
-                        <p className="text-xs uppercase tracking-widest text-muted-foreground font-body font-medium">Duration</p>
-                        <p className="text-base font-bold text-foreground font-body leading-tight">{computedDuration}</p>
+                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-body font-medium">Duration</p>
+                        <p className="text-sm font-bold text-foreground font-body leading-tight">{computedDuration}</p>
                       </div>
                     </div>
                   )}
@@ -977,16 +969,15 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
         switch (sectionKey) {
           case "overview":
             return (
-              <section key="overview" id="overview" className="py-20 lg:py-24 px-6 border-t-2 border-border bg-background">
-                <div className="max-w-3xl mx-auto">
-                  <div className="border-l-4 border-primary/60 pl-8 sm:pl-10 text-left">
+              <section key="overview" id="overview" className="py-16 lg:py-20 px-6 bg-background">
+                <div className="max-w-[700px] mx-auto text-center">
                   <motion.p
                     variants={fadeUp}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="text-xs tracking-[0.25em] uppercase text-primary font-body font-semibold mb-4"
+                    className="text-xs tracking-[0.3em] uppercase text-primary font-body font-semibold mb-3"
                   >
                     Prepared Exclusively For
                   </motion.p>
@@ -1006,7 +997,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={2}
-                    className="w-12 h-[2px] bg-primary/40 mt-6 mb-10"
+                    className="w-16 h-0.5 bg-primary/30 mx-auto mt-5 mb-8"
                   />
                   {data.introText && (
                     <motion.div
@@ -1015,11 +1006,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       whileInView="visible"
                       viewport={{ once: true }}
                       custom={3}
-                      className="text-muted-foreground leading-[1.9] text-base sm:text-lg font-body prose prose-lg max-w-none [&_p]:text-[15px] sm:[&_p]:text-base"
+                      className="text-muted-foreground leading-[1.9] text-base font-body prose prose-lg max-w-none"
                       dangerouslySetInnerHTML={{ __html: data.introText }}
                     />
                   )}
-                  </div>
                 </div>
               </section>
             );
@@ -1027,23 +1017,23 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "flights":
             if (flightOptions.length === 0) return null;
             return (
-              <section key="flights" id="flights" className="py-20 lg:py-24 border-t-2 border-border bg-[hsl(var(--muted)/0.6)]">
-                <div className="max-w-[1120px] mx-auto px-6">
+              <section key="flights" id="flights" className="py-16 lg:py-20 bg-muted/40">
+                <div className="max-w-[960px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="text-center mb-14"
+                    className="text-center mb-10"
                   >
-                    <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">
+                    <p className="text-xs tracking-[0.3em] uppercase text-primary font-body font-semibold mb-3">
                       {ct.flights?.subtitle || "Your Flights"}
                     </p>
-                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground tracking-tight">{ct.flights?.title || "Air Travel"}</h2>
-                    <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
+                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.flights?.title || "Air Travel"}</h2>
+                    <div className="w-16 h-0.5 bg-primary/30 mx-auto mt-4" />
                     {flightsIsChoice && (
-                      <p className="text-sm text-muted-foreground font-body mt-4">Choose one of the options below</p>
+                      <p className="text-sm text-muted-foreground font-body mt-3">Choose one of the options below</p>
                     )}
                   </motion.div>
                   <div className="space-y-8">
@@ -1057,18 +1047,18 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           whileInView="visible"
                           viewport={{ once: true }}
                           custom={optIdx}
-                          className={`max-w-[860px] mx-auto bg-card rounded-3xl border-2 shadow-[0_10px_30px_-10px_hsl(var(--foreground)/0.2)] relative overflow-hidden transition-all ${
+                          className={`max-w-[780px] mx-auto bg-background rounded-xl border shadow-sm relative overflow-hidden transition-all ${
                             flightsIsChoice
                               ? isSelected
-                                ? "border-primary ring-2 ring-primary/20"
-                                : "border-border hover:border-primary/40 cursor-pointer"
+                                ? "border-primary ring-1 ring-primary/20"
+                                : "border-border hover:border-primary/40 cursor-pointer hover:shadow-md"
                               : "border-border"
                           }`}
                           onClick={() => flightsIsChoice && setSelectedFlight(isSelected ? "" : opt.id)}
                         >
                           {/* Option header bar */}
                           {flightOptions.length > 1 && (
-                            <div className="bg-primary/5 border-b-2 border-border px-5 py-2.5 flex items-center justify-between">
+                            <div className="bg-muted/50 border-b border-border px-5 py-2 flex items-center justify-between">
                               <span className="text-xs font-semibold uppercase tracking-[0.15em] text-primary font-body">
                                 Option {optIdx + 1} of {flightOptions.length}
                               </span>
@@ -1087,7 +1077,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           <div className="p-3 sm:p-4">
                             <div className={`grid gap-2.5 ${opt.legs.length === 1 ? "grid-cols-1 max-w-sm mx-auto" : "grid-cols-1 md:grid-cols-2"}`}>
                               {opt.legs.map((leg) => (
-                                <div key={leg.id} className="bg-[hsl(var(--muted)/0.5)] rounded-2xl border border-border p-3 sm:p-4">
+                                <div key={leg.id} className="bg-muted/30 rounded-lg border border-border/50 p-3 sm:p-4">
                                   {/* Leg label + date row */}
                                   <div className="flex items-center justify-between mb-2">
                                     <div className="flex items-center gap-1.5">
@@ -1178,7 +1168,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
                           {/* Footer: price (if single option) + selection */}
                           {(opt.price || flightsIsChoice) && (
-                            <div className="bg-muted/50 border-t-2 border-border px-5 py-3 flex items-center justify-between">
+                            <div className="bg-muted/30 border-t border-border px-5 py-3 flex items-center justify-between">
                               {opt.price && flightOptions.length <= 1 && showItemizedPrices && (
                                 <span className="font-display text-xl font-bold text-foreground">
                                   {fmtCurrency(opt.price)}
@@ -1240,26 +1230,26 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "accommodations":
             if (accommodations.length === 0) return null;
             return (
-              <section key="accommodations" id="accommodations" className="py-20 lg:py-24 border-t-2 border-border bg-[hsl(var(--muted)/0.55)]">
-                <div className="max-w-[1120px] mx-auto px-6">
+              <section key="accommodations" id="accommodations" className="py-16 lg:py-20 bg-background">
+                <div className="max-w-[960px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="text-center mb-14"
+                    className="text-center mb-10"
                   >
-                    <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-3">
+                    <p className="text-xs tracking-[0.3em] uppercase text-primary font-body font-semibold mb-3">
                       {ct.accommodations?.subtitle || "Accommodations"}
                     </p>
                     <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.accommodations?.title || "Hotel Options"}</h2>
-                    <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
+                    <div className="w-16 h-0.5 bg-primary/30 mx-auto mt-4" />
                     {accommodationsIsChoice && accommodations.length > 1 && (
                       <p className="text-sm text-muted-foreground font-body mt-3">Choose one of the options below</p>
                     )}
                   </motion.div>
-                  <div className="space-y-8">
+                  <div className="space-y-6">
                     {accommodations.map((acc, accIdx) => {
                       const isSelected = effectiveSelectedAccommodation === acc.id;
                       const amenities = (acc.amenities || []).filter(Boolean);
@@ -1282,11 +1272,11 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           whileInView="visible"
                           viewport={{ once: true }}
                           custom={accIdx * 0.1}
-                          className={`bg-card rounded-2xl border-2 overflow-hidden transition-all shadow-[0_10px_30px_-8px_hsl(var(--foreground)/0.2)] ${
+                          className={`bg-background rounded-xl border overflow-hidden transition-all shadow-sm hover:shadow-md ${
                             accommodationsIsChoice
                               ? isSelected
-                                ? "border-primary ring-2 ring-primary/20"
-                                : "border-border hover:border-primary/40 cursor-pointer hover:shadow-[0_14px_36px_-10px_hsl(var(--foreground)/0.25)]"
+                                ? "border-primary ring-1 ring-primary/20"
+                                : "border-border hover:border-primary/40 cursor-pointer"
                               : "border-border"
                           }`}
                           onClick={() => accommodationsIsChoice && setSelectedAccommodation(isSelected ? "" : acc.id)}
@@ -1294,13 +1284,13 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           <div className="flex flex-col md:flex-row-reverse">
                             {/* Image Section — Right */}
                             {showAccPhotos && allAccImages.length > 0 && (
-                              <div className="md:w-[360px] lg:w-[400px] shrink-0 p-3">
+                              <div className="md:w-[320px] lg:w-[360px] shrink-0 p-2.5">
                                 {allAccImages.length === 1 ? (
                                   <div
-                                    className="w-full h-full overflow-hidden cursor-pointer relative group rounded-xl"
+                                    className="w-full h-full overflow-hidden cursor-pointer relative group rounded-lg"
                                     onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
                                   >
-                                    <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 rounded-xl" />
+                                    <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 rounded-lg" />
                                   </div>
                                 ) : (
                                   <div className="flex flex-col gap-2 h-full">
@@ -1471,21 +1461,21 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "cruiseShips":
             if (cruiseShips.length === 0) return null;
             return (
-              <section key="cruiseShips" id="cruiseShips" className="py-20 lg:py-24 border-t-2 border-border bg-[hsl(var(--muted)/0.55)]">
-                <div className="max-w-[1120px] mx-auto px-6">
+              <section key="cruiseShips" id="cruiseShips" className="py-16 lg:py-20 bg-muted/40">
+                <div className="max-w-[960px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
                     whileInView="visible"
                     viewport={{ once: true }}
                     custom={0}
-                    className="text-center mb-14"
+                    className="text-center mb-10"
                   >
-                    <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-3">
+                    <p className="text-xs tracking-[0.3em] uppercase text-primary font-body font-semibold mb-3">
                       {ct.cruiseShips?.subtitle || "Your Vessel"}
                     </p>
                     <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.cruiseShips?.title || "Cruise Ship & Cabin"}</h2>
-                    <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
+                    <div className="w-16 h-0.5 bg-primary/30 mx-auto mt-4" />
                     {cruiseIsChoice && cruiseShips.length > 1 && (
                       <p className="text-sm text-muted-foreground font-body mt-3">Choose one of the options below</p>
                     )}
@@ -1513,11 +1503,11 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           whileInView="visible"
                           viewport={{ once: true }}
                           custom={shipIdx * 0.1}
-                          className={`bg-card rounded-2xl border-2 overflow-hidden transition-all shadow-[0_10px_30px_-8px_hsl(var(--foreground)/0.2)] ${
+                          className={`bg-background rounded-xl border overflow-hidden transition-all shadow-sm hover:shadow-md ${
                             cruiseIsChoice
                               ? isSelected
-                                ? "border-primary ring-2 ring-primary/20"
-                                : "border-border hover:border-primary/40 cursor-pointer hover:shadow-[0_14px_36px_-10px_hsl(var(--foreground)/0.25)]"
+                                ? "border-primary ring-1 ring-primary/20"
+                                : "border-border hover:border-primary/40 cursor-pointer"
                               : "border-border"
                           }`}
                           onClick={() => cruiseIsChoice && setSelectedCruise(isSelected ? "" : ship.id)}
@@ -1525,7 +1515,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           <div className="flex flex-col md:flex-row-reverse">
                             {/* Image Section — Right */}
                             {showShipPhotos && allShipImages.length > 0 && (
-                              <div className="md:w-[360px] lg:w-[400px] shrink-0 p-3">
+                              <div className="md:w-[320px] lg:w-[360px] shrink-0 p-2.5">
                                 {allShipImages.length === 1 ? (
                                   <div
                                     className="w-full h-full overflow-hidden cursor-pointer relative group rounded-xl"
@@ -2048,8 +2038,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           case "inclusions":
             if (data.inclusions.filter(Boolean).length === 0) return null;
             return (
-              <section key="inclusions" id="inclusions" className="py-20 lg:py-24 border-t-2 border-border bg-[hsl(var(--muted)/0.6)]">
-                <div className="max-w-[1120px] mx-auto px-6">
+              <section key="inclusions" id="inclusions" className="py-16 lg:py-20 bg-muted/40">
+                <div className="max-w-[960px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
@@ -2238,8 +2228,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             const hasTerms = terms.cancellationPolicy || terms.travelInsurance || terms.bookingTerms || terms.liability;
             if (!hasTerms) return null;
             return (
-              <section key="terms" id="terms" className="py-20 lg:py-24 border-t-2 border-border bg-[hsl(var(--muted)/0.55)]">
-                <div className="max-w-[1120px] mx-auto px-6">
+              <section key="terms" id="terms" className="py-16 lg:py-20 bg-background">
+                <div className="max-w-[960px] mx-auto px-6">
                   <motion.div
                     variants={fadeUp}
                     initial="hidden"
@@ -2377,8 +2367,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
       {/* PROPOSAL SELECTION SUMMARY — only for Proposal type */}
       {!isGroupBooking && (
-        <section id="pricing" className="py-20 lg:py-24 bg-[hsl(var(--muted)/0.55)] border-t-2 border-border">
-          <div className="max-w-[1000px] mx-auto px-6">
+        <section id="pricing" className="py-16 lg:py-20 bg-muted/40">
+          <div className="max-w-[860px] mx-auto px-6">
             <motion.div
               variants={fadeUp}
               initial="hidden"
@@ -2813,7 +2803,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
       {/* Travel Advisor Footer — for proposal mode, rendered after pricing summary */}
       {!isGroupBooking && agent.name && (
-        <footer className="py-20 px-6 border-t-2 border-border bg-[hsl(var(--muted)/0.3)]">
+        <footer className="py-16 px-6 border-t border-border bg-background">
           <div className="max-w-3xl mx-auto text-center">
             <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-6">
               {ct.agent?.subtitle || "Your Travel Advisor"}
