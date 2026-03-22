@@ -1249,7 +1249,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       <p className="text-sm text-muted-foreground font-body mt-3">Choose one of the options below</p>
                     )}
                   </motion.div>
-                  <div className="space-y-8">
+                  <div className="space-y-6">
                     {accommodations.map((acc, accIdx) => {
                       const isSelected = effectiveSelectedAccommodation === acc.id;
                       const amenities = (acc.amenities || []).filter(Boolean);
