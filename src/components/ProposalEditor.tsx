@@ -1984,38 +1984,31 @@ export default function ProposalEditor({ data, onChange }: Props) {
                   case "inclusions":
                     return (
                       <CollapsibleSection title={sectionTitles.inclusions} defaultOpen={false} sectionKey="inclusions" visible={vis.inclusions} onToggleVisible={() => toggleSection("inclusions")} sectionCustomTitle={customTitles.inclusions?.title} sectionCustomSubtitle={customTitles.inclusions?.subtitle} onCustomTitleChange={(v) => updateCustomTitle("inclusions", v)} onCustomSubtitleChange={(v) => updateCustomSubtitle("inclusions", v)}>
-                        <div className="grid grid-cols-2 gap-6">
+                        <div className="flex flex-col gap-4">
                           <div>
-                            <p className="text-xs font-semibold uppercase tracking-wider text-primary mb-2">What's Included</p>
-                            <div className="space-y-2">
-                              {data.inclusions.map((item, i) => (
-                                <div key={i} className="flex gap-2">
-                                  <Input value={item} onChange={(e) => updateInclusion(i, e.target.value)} placeholder="Inclusion item" className="h-8 text-sm" />
-                                  <Button variant="travel-ghost" size="icon" onClick={() => removeInclusion(i)} className="h-8 w-8 text-muted-foreground/40 hover:text-destructive shrink-0">
-                                    <Trash2 className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              ))}
-                              <Button variant="travel-ghost" size="sm" onClick={addInclusion} className="text-primary text-xs h-7">
-                                <Plus className="h-3 w-3 mr-1" /> Add Inclusion
-                              </Button>
-                            </div>
+                            <p className="text-xs font-semibold uppercase tracking-wider text-primary font-body mb-2">What's Included</p>
+                            <textarea
+                              placeholder={"Type each item on a new line\nRound-trip flights\nHotel accommodations\nAll meals included"}
+                              className="w-full min-h-[140px] rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary resize-y"
+                              value={(data.inclusions || []).join('\n')}
+                              onChange={(e) => {
+                                const lines = e.target.value.split('\n');
+                                onChange({ ...data, inclusions: lines });
+                              }}
+                            />
                           </div>
+                          <div className="border-t border-border" />
                           <div>
-                            <p className="text-xs font-semibold uppercase tracking-wider text-destructive mb-2">Not Included</p>
-                            <div className="space-y-2">
-                              {exclusions.map((item: string, i: number) => (
-                                <div key={i} className="flex gap-2">
-                                  <Input value={item} onChange={(e) => updateExclusion(i, e.target.value)} placeholder="Exclusion item" className="h-8 text-sm" />
-                                  <Button variant="travel-ghost" size="icon" onClick={() => removeExclusion(i)} className="h-8 w-8 text-muted-foreground/40 hover:text-destructive shrink-0">
-                                    <Trash2 className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              ))}
-                              <Button variant="travel-ghost" size="sm" onClick={addExclusion} className="text-destructive text-xs h-7">
-                                <Plus className="h-3 w-3 mr-1" /> Add Exclusion
-                              </Button>
-                            </div>
+                            <p className="text-xs font-semibold uppercase tracking-wider text-destructive font-body mb-2">Not Included</p>
+                            <textarea
+                              placeholder={"Type each item on a new line\nInternational flights\nTravel insurance\nPersonal expenses"}
+                              className="w-full min-h-[140px] rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive resize-y"
+                              value={exclusions.join('\n')}
+                              onChange={(e) => {
+                                const lines = e.target.value.split('\n');
+                                onChange({ ...data, exclusions: lines } as any);
+                              }}
+                            />
                           </div>
                         </div>
                       </CollapsibleSection>
