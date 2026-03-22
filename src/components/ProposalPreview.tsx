@@ -1503,11 +1503,11 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           whileInView="visible"
                           viewport={{ once: true }}
                           custom={shipIdx * 0.1}
-                          className={`bg-card rounded-2xl border-2 overflow-hidden transition-all shadow-[0_10px_30px_-8px_hsl(var(--foreground)/0.2)] ${
+                          className={`bg-background rounded-xl border overflow-hidden transition-all shadow-sm hover:shadow-md ${
                             cruiseIsChoice
                               ? isSelected
-                                ? "border-primary ring-2 ring-primary/20"
-                                : "border-border hover:border-primary/40 cursor-pointer hover:shadow-[0_14px_36px_-10px_hsl(var(--foreground)/0.25)]"
+                                ? "border-primary ring-1 ring-primary/20"
+                                : "border-border hover:border-primary/40 cursor-pointer"
                               : "border-border"
                           }`}
                           onClick={() => cruiseIsChoice && setSelectedCruise(isSelected ? "" : ship.id)}
