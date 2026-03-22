@@ -28,6 +28,8 @@ export interface AgentSettings {
   // Integrations
   ghl_connected: boolean;
   ghl_location_id: string;
+  ghl_access_token: string;
+  ghl_webhook_url: string;
   stripe_connected: boolean;
   stripe_account_id: string;
 }
