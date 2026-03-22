@@ -1144,7 +1144,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                     <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
                                   </div>
                                   {(leg.airline || leg.flightNumber) && (
-                                    <p className="text-[10px] text-muted-foreground font-body text-center leading-tight">
+                                    <p className="text-xs text-muted-foreground font-body text-center leading-tight font-medium">
                                       {leg.airline}{leg.flightNumber ? ` ${leg.flightNumber}` : ""}
                                     </p>
                                   )}
