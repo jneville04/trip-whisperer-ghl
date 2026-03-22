@@ -157,7 +157,7 @@ function ItinerarySection({
   };
 
   return (
-    <section id="itinerary" className="py-20 lg:py-24 border-t-2 border-border bg-[hsl(var(--muted)/0.45)]">
+    <section id="itinerary" className="py-20 lg:py-24 border-t-2 border-border bg-[hsl(var(--muted)/0.6)]">
       <div className="max-w-[1120px] mx-auto px-6">
         <motion.div
           variants={fadeUp}
