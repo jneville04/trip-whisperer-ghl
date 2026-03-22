@@ -1077,7 +1077,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           <div className="p-3 sm:p-4">
                             <div className={`grid gap-2.5 ${opt.legs.length === 1 ? "grid-cols-1 max-w-sm mx-auto" : "grid-cols-1 md:grid-cols-2"}`}>
                               {opt.legs.map((leg) => (
-                                <div key={leg.id} className="bg-[hsl(var(--muted)/0.5)] rounded-2xl border border-border p-3 sm:p-4">
+                                <div key={leg.id} className="bg-muted/30 rounded-lg border border-border/50 p-3 sm:p-4">
                                   {/* Leg label + date row */}
                                   <div className="flex items-center justify-between mb-2">
                                     <div className="flex items-center gap-1.5">
