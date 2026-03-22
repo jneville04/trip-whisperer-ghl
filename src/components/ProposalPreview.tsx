@@ -213,9 +213,20 @@ function ItinerarySection({
                       </div>
                     </div>
                   </div>
-                  <ChevronDown
-                    className={`h-5 w-5 text-muted-foreground shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-                  />
+                  <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex gap-1">
+                      {day.activities
+                        .filter(a => !UTILITY_ACTIVITY_TYPES.includes(a.type as any) && a.imageUrls && a.imageUrls.length > 0)
+                        .slice(0, 3)
+                        .map((a, i) => (
+                          <div key={i} className="w-11 h-9 rounded-lg overflow-hidden border border-border/40 shrink-0">
+                            <img src={a.imageUrls![0]} alt="" className="w-full h-full object-cover" />
+                          </div>
+                        ))
+                      }
+                    </div>
+                    <ChevronDown className={`h-5 w-5 text-muted-foreground shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                  </div>
                 </button>
                 <AnimatePresence initial={false}>
                   {isOpen && (
