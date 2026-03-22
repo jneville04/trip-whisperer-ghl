@@ -676,7 +676,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
           {/* RIGHT: Nav items + action */}
           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
-            <div className="flex items-center gap-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {/* Desktop nav links */}
+            <div className="hidden sm:flex items-center gap-0.5 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {navItems.map((item) => (
                 <button
                   key={item.id}
@@ -691,25 +692,33 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                 </button>
               ))}
             </div>
-            {isGroupBooking ? (
+            {/* Mobile hamburger */}
+            {!isGroupBooking && !isEditor && !isReadOnly && !approveSuccess && tripStatus !== "revision_requested" && tripStatus !== "reopened" && (
               <Button
                 variant="travel"
                 size="sm"
-                className="text-xs shrink-0 ml-1"
-                onClick={() => {
-                  if (checkoutEnabled) goToCheckout();
-                  else if (bookingUrl) openModal(bookingUrl, "Book Now");
-                }}
+                className="text-xs gap-1 shrink-0 h-8 sm:hidden"
+                onClick={() => setShowAskQuestion(true)}
               >
+                <HelpCircle className="h-3.5 w-3.5" /> Ask
+              </Button>
+            )}
+            <button
+              className="sm:hidden flex flex-col gap-1 p-2 rounded-lg hover:bg-muted transition-colors"
+              onClick={() => setMobileMenuOpen(prev => !prev)}
+            >
+              <span className="w-5 h-0.5 bg-foreground rounded-full block" />
+              <span className="w-5 h-0.5 bg-foreground rounded-full block" />
+              <span className="w-5 h-0.5 bg-foreground rounded-full block" />
+            </button>
+            {isGroupBooking ? (
+              <Button variant="travel" size="sm" className="text-xs shrink-0 ml-1 hidden sm:flex"
+                onClick={() => { if (checkoutEnabled) goToCheckout(); else if (bookingUrl) openModal(bookingUrl, "Book Now"); }}>
                 Book Now
               </Button>
             ) : !isEditor && !isReadOnly && !approveSuccess && tripStatus !== "revision_requested" && tripStatus !== "reopened" ? (
-              <Button
-                variant="travel"
-                size="sm"
-                className="text-xs gap-1 shrink-0 ml-1 h-8"
-                onClick={() => setShowAskQuestion(true)}
-              >
+              <Button variant="travel" size="sm" className="text-xs gap-1 shrink-0 ml-1 h-8 hidden sm:flex"
+                onClick={() => setShowAskQuestion(true)}>
                 <HelpCircle className="h-3.5 w-3.5" /> Ask
               </Button>
             ) : null}
