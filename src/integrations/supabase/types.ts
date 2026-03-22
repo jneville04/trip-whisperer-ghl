@@ -436,6 +436,8 @@ export type Database = {
           public_slug: string | null
           published_data: Json | null
           status: string | null
+          traveler_email: string
+          traveler_phone: string
           trip_type: string | null
         }
         Insert: {
@@ -449,6 +451,8 @@ export type Database = {
           public_slug?: string | null
           published_data?: Json | null
           status?: string | null
+          traveler_email?: string
+          traveler_phone?: string
           trip_type?: string | null
         }
         Update: {
@@ -462,6 +466,8 @@ export type Database = {
           public_slug?: string | null
           published_data?: Json | null
           status?: string | null
+          traveler_email?: string
+          traveler_phone?: string
           trip_type?: string | null
         }
         Relationships: [
