@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import ProposalPreview from "@/components/ProposalPreview";
 import type { ProposalData } from "@/types/proposal";
@@ -11,6 +11,7 @@ export default function ClientView() {
   const { shareId } = useParams<{ shareId: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const isAgentPreview = searchParams.get("preview") === "agent";
   const previewFrom = searchParams.get("from") || "";
   const [data, setData] = useState<ProposalData | null>(null);
@@ -19,11 +20,29 @@ export default function ClientView() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [refreshTick, setRefreshTick] = useState(0);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsLoggedIn(!!session?.user);
     });
+  }, []);
+
+  useEffect(() => {
+    const onFocus = () => setRefreshTick(Date.now());
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        setRefreshTick(Date.now());
+      }
+    };
+
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -36,25 +55,38 @@ export default function ClientView() {
       setError("");
       setData(null);
 
-      // Use a direct fetch with no-cache to guarantee fresh data from the database
+      // Force-fetch from trips table (published_data source of truth), keyed by public_slug
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-      const cacheBust = Date.now();
-      const res = await fetch(
-        `${supabaseUrl}/rest/v1/trips?select=id,status,published_data,draft_data,org_id,archived_at,traveler_email,traveler_phone&public_slug=eq.${encodeURIComponent(shareId)}`,
-        {
-          headers: {
-            apikey: supabaseKey,
-            Authorization: `Bearer ${supabaseKey}`,
-            Accept: "application/vnd.pgrst.object+json",
-            "Cache-Control": "no-cache, no-store, must-revalidate",
-            Pragma: "no-cache",
-            Expires: "0",
-            "X-Cache-Bust": String(cacheBust),
-          },
-          cache: "no-store",
+
+      const headers: HeadersInit = {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+        Accept: "application/vnd.pgrst.object+json",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        Pragma: "no-cache",
+        Expires: "0",
+      };
+
+      const baseUrl = `${supabaseUrl}/rest/v1/trips?select=id,status,published_data,draft_data,org_id,archived_at,traveler_email,traveler_phone&public_slug=eq.${encodeURIComponent(shareId)}&status=not.eq.draft`;
+      const primaryUrl = `${baseUrl}&v=${Date.now()}`;
+
+      // Primary request includes URL-level cache buster (?v=timestamp)
+      let res = await fetch(primaryUrl, {
+        headers,
+        cache: "no-store",
+      });
+
+      // Safety fallback: if PostgREST rejects unknown query keys, retry without v
+      if (!res.ok) {
+        const rawError = await res.text();
+        if (rawError.includes('column "v" does not exist') || rawError.includes("trips.v")) {
+          res = await fetch(baseUrl, {
+            headers,
+            cache: "no-store",
+          });
         }
-      );
+      }
 
       if (cancelled) return;
 
@@ -82,7 +114,8 @@ export default function ClientView() {
       }
 
       // Archived trip — show inactive message for public visitors
-      if (r.archived_at) {
+      const isArchived = Boolean(r.is_archived ?? r.archived_at);
+      if (isArchived) {
         setError("archived");
         setLoading(false);
         return;
@@ -114,7 +147,7 @@ export default function ClientView() {
 
     run();
     return () => { cancelled = true; };
-  }, [shareId, isAgentPreview]);
+  }, [shareId, isAgentPreview, location.key, refreshTick]);
 
   const brandStyles = buildBrandCssVars(data?.brand);
 
