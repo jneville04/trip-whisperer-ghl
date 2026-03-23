@@ -68,22 +68,12 @@ export default function ClientView() {
         Expires: "0",
       };
 
-      const baseUrl = `${supabaseUrl}/rest/v1/trips?select=id,status,published_data,draft_data,org_id,archived_at,traveler_email,traveler_phone&public_slug=eq.${encodeURIComponent(shareId)}&status=not.eq.draft`;
-      const primaryUrl = `${baseUrl}&v=${Date.now()}`;
+      const url = `${supabaseUrl}/rest/v1/trips?select=id,status,published_data,draft_data,org_id,archived_at,traveler_email,traveler_phone&public_slug=eq.${encodeURIComponent(shareId)}`;
 
-      // Primary request includes URL-level cache buster (?v=timestamp)
-      let res = await fetch(primaryUrl, {
+      const res = await fetch(url, {
         headers,
         cache: "no-store",
       });
-
-      // PostgREST treats unknown query params as filters; retry without v if needed
-      if (!res.ok) {
-        res = await fetch(baseUrl, {
-          headers,
-          cache: "no-store",
-        });
-      }
 
       if (cancelled) return;
 
