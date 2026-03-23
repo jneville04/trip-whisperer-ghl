@@ -106,7 +106,7 @@ Deno.serve(async (req) => {
     const deposit = depositAmount || 0;
 
     // Build public proposal URL using the published app URL pattern
-    const siteUrl = Deno.env.get("SITE_URL") || "https://trip-whisperer-ghl.lovable.app";
+    const siteUrl = Deno.env.get("SITE_URL") || "https://studio.journeyswithjoi.com";
     const proposalUrl = `${siteUrl}/view/${trip.public_slug}`;
 
     // 2. UPDATE TRIP STATUS

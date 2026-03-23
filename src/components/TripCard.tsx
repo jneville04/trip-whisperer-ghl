@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Copy, Trash2, ExternalLink, MapPin, Calendar, Eye, Clock, MoreVertical, Pencil, RotateCcw } from "lucide-react";
+import { Copy, Trash2, ExternalLink, MapPin, Calendar, Eye, Clock, MoreVertical, Pencil, RotateCcw, ArchiveRestore } from "lucide-react";
 import { type ProposalData, type TripRow } from "@/types/proposal";
 import { format } from "date-fns";
 
@@ -78,9 +78,12 @@ interface TripCardProps {
   onRestore?: () => void;
   onReopen?: () => void;
   isArchived?: boolean;
+  isTrashed?: boolean;
+  onRestoreFromTrash?: () => void;
+  onPermanentDelete?: () => void;
 }
 
-export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLink, onArchive, onRestore, onReopen, isArchived }: TripCardProps) {
+export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLink, onArchive, onRestore, onReopen, isArchived, isTrashed, onRestoreFromTrash, onPermanentDelete }: TripCardProps) {
   const navigate = useNavigate();
   const draftData = trip.draft_data as ProposalData | null;
   const heroImg = draftData?.heroImageUrl || (draftData?.heroImageUrls?.length ? draftData.heroImageUrls[0] : "");
@@ -90,6 +93,8 @@ export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLi
   const destination = draftData?.destination || "";
   const sc = statusConfig[trip.status || "draft"] || statusConfig.draft;
   const isApproved = trip.status === "approved";
+  const isDraft = trip.status === "draft";
+  const isPublished = ["published", "sent", "approved", "reopened", "revision_requested"].includes(trip.status || "");
 
   const formatCreatedAt = (dateStr: string | null) => {
     if (!dateStr) return "";
@@ -176,60 +181,74 @@ export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLi
         {/* Actions */}
         <div className="flex items-center justify-between pt-3 border-t border-border mt-1">
           <div className="flex items-center gap-1">
-            <Button variant="travel-ghost" size="sm" className="h-7 text-xs px-2 font-medium" onClick={(e) => { e.stopPropagation(); onOpen(); }}>
-              {isApproved ? (
-                <><Eye className="h-3 w-3 mr-1" /> View</>
-              ) : (
-                <><Pencil className="h-3 w-3 mr-1" /> Edit</>
-              )}
-            </Button>
-            <Button
-              variant="travel-ghost"
-              size="sm"
-              className="h-7 text-xs px-2 font-medium"
-              onClick={(e) => {
-                e.stopPropagation();
-                const fromSource = window.location.pathname === "/" ? "dashboard" : "trips";
-                navigate(`/view/${trip.public_slug}?preview=agent&from=${fromSource}`);
-              }}
-            >
-              <Eye className="h-3 w-3 mr-1" /> Preview
-            </Button>
-          </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="travel-ghost" size="sm" className="h-7 w-7 p-0" onClick={(e) => e.stopPropagation()}>
-                <MoreVertical className="h-4 w-4" />
+            {isTrashed ? (
+              <>
+                {onRestoreFromTrash && (
+                  <Button variant="travel-ghost" size="sm" className="h-7 text-xs px-2 font-medium" onClick={(e) => { e.stopPropagation(); onRestoreFromTrash(); }}>
+                    <ArchiveRestore className="h-3 w-3 mr-1" /> Restore
+                  </Button>
+                )}
+                {onPermanentDelete && (
+                  <Button variant="travel-ghost" size="sm" className="h-7 text-xs px-2 font-medium text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); onPermanentDelete(); }}>
+                    <Trash2 className="h-3 w-3 mr-1" /> Delete Forever
+                  </Button>
+                )}
+              </>
+            ) : (
+              <Button variant="travel-ghost" size="sm" className="h-7 text-xs px-2 font-medium" onClick={(e) => { e.stopPropagation(); onOpen(); }}>
+                {isApproved ? (
+                  <><Eye className="h-3 w-3 mr-1" /> View Booking</>
+                ) : (
+                  <><Pencil className="h-3 w-3 mr-1" /> Edit Trip</>
+                )}
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onCopyLink(); }}>
-                <ExternalLink className="h-3.5 w-3.5 mr-2" /> Share
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDuplicate(); }}>
-                <Copy className="h-3.5 w-3.5 mr-2" /> Duplicate
-              </DropdownMenuItem>
-              {isApproved && onReopen && (
-                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onReopen(); }}>
-                  <RotateCcw className="h-3.5 w-3.5 mr-2" /> Reopen for Editing
+            )}
+          </div>
+          {!isTrashed && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="travel-ghost" size="sm" className="h-7 w-7 p-0" onClick={(e) => e.stopPropagation()}>
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={(e) => {
+                  e.stopPropagation();
+                  const fromSource = window.location.pathname === "/" ? "dashboard" : "trips";
+                  navigate(`/view/${trip.public_slug}?preview=agent&from=${fromSource}`);
+                }}>
+                  <Eye className="h-3.5 w-3.5 mr-2" /> Preview
                 </DropdownMenuItem>
-              )}
-              {isArchived && onRestore ? (
-                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onRestore(); }}>
-                  <MapPin className="h-3.5 w-3.5 mr-2" /> Restore
+                {/* Share only visible for non-draft trips */}
+                {!isDraft && (
+                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onCopyLink(); }}>
+                    <ExternalLink className="h-3.5 w-3.5 mr-2" /> Share
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDuplicate(); }}>
+                  <Copy className="h-3.5 w-3.5 mr-2" /> Duplicate
                 </DropdownMenuItem>
-              ) : onArchive ? (
-                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onArchive(); }}>
-                  <Clock className="h-3.5 w-3.5 mr-2" /> Archive
-                </DropdownMenuItem>
-              ) : null}
-              {!isApproved && (
+                {isApproved && onReopen && (
+                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onReopen(); }}>
+                    <RotateCcw className="h-3.5 w-3.5 mr-2" /> Reopen for Editing
+                  </DropdownMenuItem>
+                )}
+                {isArchived && onRestore ? (
+                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onRestore(); }}>
+                    <MapPin className="h-3.5 w-3.5 mr-2" /> Restore
+                  </DropdownMenuItem>
+                ) : onArchive ? (
+                  <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onArchive(); }}>
+                    <Clock className="h-3.5 w-3.5 mr-2" /> Archive
+                  </DropdownMenuItem>
+                ) : null}
+                {/* Delete available for ALL statuses — soft-deletes to Trash */}
                 <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={(e) => { e.stopPropagation(); onDelete(); }}>
                   <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
                 </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </div>
     </div>
