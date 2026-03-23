@@ -261,14 +261,9 @@ export default function EditorPage() {
     setTimeout(() => setLinkCopiedAlert(false), 2500);
   };
 
-  const handlePublishAndCopy = () => {
-    if (currentStatus !== "published") {
-      saveTrip("published").then(() => {
-        copyShareLink();
-      });
-    } else {
-      copyShareLink();
-    }
+  const handlePublishAndCopy = async () => {
+    const ok = await saveTrip("published");
+    if (ok) copyShareLink();
   };
 
   const previewData = useMemo<ProposalData>(() => {
