@@ -77,15 +77,12 @@ export default function ClientView() {
         cache: "no-store",
       });
 
-      // Safety fallback: if PostgREST rejects unknown query keys, retry without v
+      // PostgREST treats unknown query params as filters; retry without v if needed
       if (!res.ok) {
-        const rawError = await res.text();
-        if (rawError.includes('column "v" does not exist') || rawError.includes("trips.v")) {
-          res = await fetch(baseUrl, {
-            headers,
-            cache: "no-store",
-          });
-        }
+        res = await fetch(baseUrl, {
+          headers,
+          cache: "no-store",
+        });
       }
 
       if (cancelled) return;
