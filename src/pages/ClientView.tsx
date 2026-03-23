@@ -39,8 +39,9 @@ export default function ClientView() {
       // Use a direct fetch with no-cache to guarantee fresh data from the database
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      const cacheBust = Date.now();
       const res = await fetch(
-        `${supabaseUrl}/rest/v1/trips?select=id,status,published_data,draft_data,org_id,archived_at,traveler_email,traveler_phone&public_slug=eq.${encodeURIComponent(shareId)}&_t=${Date.now()}`,
+        `${supabaseUrl}/rest/v1/trips?select=id,status,published_data,draft_data,org_id,archived_at,traveler_email,traveler_phone&public_slug=eq.${encodeURIComponent(shareId)}`,
         {
           headers: {
             apikey: supabaseKey,
@@ -49,6 +50,7 @@ export default function ClientView() {
             "Cache-Control": "no-cache, no-store, must-revalidate",
             Pragma: "no-cache",
             Expires: "0",
+            "X-Cache-Bust": String(cacheBust),
           },
           cache: "no-store",
         }
