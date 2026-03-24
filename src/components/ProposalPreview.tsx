@@ -1408,7 +1408,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       {ct.accommodations?.subtitle || "Accommodations"}
                     </p>
                     <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">
-                      {ct.accommodations?.title || "Accommodations Options"}
+                      {ct.accommodations?.title || "Your Stay"}
                     </h2>
                     <div className="w-16 h-0.5 bg-primary/30 mx-auto mt-4" />
                     {accommodationsIsChoice && accommodations.length > 1 && (
