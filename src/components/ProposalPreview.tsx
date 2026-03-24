@@ -3060,7 +3060,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   variant="travel"
                   size="lg"
                   className="w-full text-base py-5 h-auto"
-                  disabled={(!isEditor && tripId && !termsAccepted) || approving}
+                  disabled={(!isEditor && tripId && !!((terms.showCancellation !== false && terms.cancellationPolicy?.trim()) || (terms.showInsurance !== false && terms.travelInsurance?.trim()) || (terms.showBookingTerms !== false && terms.bookingTerms?.trim()) || (terms.showLiability !== false && terms.liability?.trim())) && !termsAccepted) || approving}
                   onClick={async () => {
                     // Final guard
                     const missing = requiredChoiceSections.filter(s => !s.selectedId).map(s => s.label);
