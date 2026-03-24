@@ -1380,7 +1380,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                 </div>
                               )}
                               <div className="flex-1" />
-                              <div <div className="flex flex-wrap items-center justify-between mt-5 pt-4 border-t-2 border-border gap-y-2">>
+                              <div className="flex flex-wrap items-center justify-between mt-5 pt-4 border-t-2 border-border gap-y-2">
                                 <div className="flex items-center gap-4 text-xs text-muted-foreground font-body flex-wrap">
                                   {acc.checkIn && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> In: {acc.checkIn}</span>}
                                   {acc.checkOut && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> Out: {acc.checkOut}</span>}
