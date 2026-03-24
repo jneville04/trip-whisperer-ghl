@@ -1379,34 +1379,6 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                   )}
                                 </div>
                               )}
-                              <div className="flex-1" />
-                              <div className="flex flex-wrap items-center justify-between mt-5 pt-4 border-t-2 border-border gap-y-2">
-                                <div className="flex items-center gap-4 text-xs text-muted-foreground font-body flex-wrap">
-                                  {acc.checkIn && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> In: {acc.checkIn}</span>}
-                                  {acc.checkOut && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> Out: {acc.checkOut}</span>}
-                                  {acc.nights && <span className="text-primary font-semibold">{formatNightsLabel(acc.nights)}</span>}
-                                </div>
-                                {accommodationsIsChoice && !isReadOnly && (
-                                  <div className="flex items-center gap-1.5 shrink-0">
-                                    {isSelected ? (
-                                      <>
-                                        <Button variant="travel" size="sm" className="text-xs h-8" onClick={(e) => e.stopPropagation()}>
-                                          <Check className="h-3 w-3 mr-1" /> Selected
-                                        </Button>
-                                        <Button variant="travel-ghost" size="sm" className="text-xs text-destructive hover:text-destructive h-8"
-                                          onClick={(e) => { e.stopPropagation(); setSelectedAccommodation(""); }}>
-                                          ✕
-                                        </Button>
-                                      </>
-                                    ) : (
-                                      <Button variant="travel" size="sm" className="text-xs h-8 font-semibold"
-                                        onClick={(e) => { e.stopPropagation(); setSelectedAccommodation(acc.id); }}>
-                                        Select This Option
-                                      </Button>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
                             </div>
 
                             {/* RIGHT — photo stack, fixed width, fills card height */}
@@ -1457,6 +1429,33 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                     className="w-full"
                                   />
                                 </div>
+                              </div>
+                            )}
+                          </div>
+                          <div className="bg-muted/40 border-t-2 border-border px-5 sm:px-7 py-3.5 flex items-center justify-between">
+                            <div className="flex items-center gap-4 text-xs text-muted-foreground font-body flex-wrap">
+                              {acc.checkIn && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> In: {acc.checkIn}</span>}
+                              {acc.checkOut && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> Out: {acc.checkOut}</span>}
+                              {acc.nights && <span className="text-primary font-semibold">{formatNightsLabel(acc.nights)}</span>}
+                            </div>
+                            {accommodationsIsChoice && !isReadOnly && (
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                {isSelected ? (
+                                  <>
+                                    <Button variant="travel" size="sm" className="text-xs h-8" onClick={(e) => e.stopPropagation()}>
+                                      <Check className="h-3 w-3 mr-1" /> Selected
+                                    </Button>
+                                    <Button variant="travel-ghost" size="sm" className="text-xs text-destructive hover:text-destructive h-8"
+                                      onClick={(e) => { e.stopPropagation(); setSelectedAccommodation(""); }}>
+                                      ✕
+                                    </Button>
+                                  </>
+                                ) : (
+                                  <Button variant="travel" size="sm" className="text-xs h-8 font-semibold"
+                                    onClick={(e) => { e.stopPropagation(); setSelectedAccommodation(acc.id); }}>
+                                    Select This Option
+                                  </Button>
+                                )}
                               </div>
                             )}
                           </div>
@@ -1609,29 +1608,6 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               {ship.nights && (
                                 <p className="text-sm text-primary font-semibold font-body mt-2">{formatNightsLabel(ship.nights)}</p>
                               )}
-                              <div className="flex-1" />
-                              {cruiseIsChoice && !isReadOnly && (
-                                <div className="flex flex-wrap items-center justify-end mt-5 pt-4 border-t-2 border-border gap-y-2">
-                                  <div className="flex items-center gap-1.5">
-                                    {isSelected ? (
-                                      <>
-                                        <Button variant="travel" size="sm" className="text-xs h-8" onClick={(e) => e.stopPropagation()}>
-                                          <Check className="h-3 w-3 mr-1" /> Selected
-                                        </Button>
-                                        <Button variant="travel-ghost" size="sm" className="text-xs text-destructive hover:text-destructive h-8"
-                                          onClick={(e) => { e.stopPropagation(); setSelectedCruise(""); }}>
-                                          ✕
-                                        </Button>
-                                      </>
-                                    ) : (
-                                      <Button variant="travel" size="sm" className="text-xs h-8 font-semibold"
-                                        onClick={(e) => { e.stopPropagation(); setSelectedCruise(ship.id); }}>
-                                        Select This Option
-                                      </Button>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
                             </div>
                             {/* RIGHT — photo stack, same as hotel */}
                             {showShipPhotos && allShipImages.length > 0 && (
@@ -1667,6 +1643,33 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                       </div>
                                     ))}
                                   </div>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                          <div className="bg-muted/40 border-t-2 border-border px-5 sm:px-7 py-3.5 flex items-center justify-between">
+                            <div className="flex items-center gap-4 text-xs text-muted-foreground font-body flex-wrap">
+                              {ship.embarkationDate && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> Embark: {ship.embarkationDate}</span>}
+                              {ship.disembarkationDate && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> Disembark: {ship.disembarkationDate}</span>}
+                              {ship.nights && <span className="text-primary font-semibold">{formatNightsLabel(ship.nights)}</span>}
+                            </div>
+                            {cruiseIsChoice && !isReadOnly && (
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                {isSelected ? (
+                                  <>
+                                    <Button variant="travel" size="sm" className="text-xs h-8" onClick={(e) => e.stopPropagation()}>
+                                      <Check className="h-3 w-3 mr-1" /> Selected
+                                    </Button>
+                                    <Button variant="travel-ghost" size="sm" className="text-xs text-destructive hover:text-destructive h-8"
+                                      onClick={(e) => { e.stopPropagation(); setSelectedCruise(""); }}>
+                                      ✕
+                                    </Button>
+                                  </>
+                                ) : (
+                                  <Button variant="travel" size="sm" className="text-xs h-8 font-semibold"
+                                    onClick={(e) => { e.stopPropagation(); setSelectedCruise(ship.id); }}>
+                                    Select This Option
+                                  </Button>
                                 )}
                               </div>
                             )}
