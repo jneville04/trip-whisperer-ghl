@@ -45,8 +45,14 @@ import { buildBrandCssVars } from "@/lib/brand";
 const PARSE_FMTS = ["MMMM d, yyyy", "MMM d, yyyy", "yyyy-MM-dd", "MM/dd/yyyy"];
 function tryParseDate(v: string): Date | undefined {
   if (!v) return undefined;
-  for (const f of PARSE_FMTS) { try { const d = parse(v.trim(), f, new Date()); if (!isNaN(d.getTime())) return d; } catch {} }
-  const d = new Date(v); return isNaN(d.getTime()) ? undefined : d;
+  for (const f of PARSE_FMTS) {
+    try {
+      const d = parse(v.trim(), f, new Date());
+      if (!isNaN(d.getTime())) return d;
+    } catch {}
+  }
+  const d = new Date(v);
+  return isNaN(d.getTime()) ? undefined : d;
 }
 function formatDateRange(startStr?: string, endStr?: string): string {
   const s = startStr ? tryParseDate(startStr) : undefined;
@@ -122,7 +128,10 @@ function ItinerarySection({
   fadeUp: any;
   openLightbox: (images: { src: string; alt?: string }[], index?: number) => void;
 }) {
-  const itineraryDisplayMode = (((data as any).itineraryDisplayMode || "single_open") as "collapsed" | "single_open" | "all_open");
+  const itineraryDisplayMode = ((data as any).itineraryDisplayMode || "single_open") as
+    | "collapsed"
+    | "single_open"
+    | "all_open";
   const visibleDays = useMemo(() => data.days.filter((d) => !d.hidden), [data.days]);
 
   // Build initial open set from agent setting
@@ -167,15 +176,23 @@ function ItinerarySection({
           custom={0}
           className="text-center mb-14"
         >
-          <p className="text-xs tracking-[0.3em] uppercase text-primary font-body font-semibold mb-3">{data.sectionCustomTitles?.itinerary?.subtitle || "Your Journey"}</p>
-          <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{data.sectionCustomTitles?.itinerary?.title || "Day-by-Day Itinerary"}</h2>
+          <p className="text-xs tracking-[0.3em] uppercase text-primary font-body font-semibold mb-3">
+            {data.sectionCustomTitles?.itinerary?.subtitle || "Your Journey"}
+          </p>
+          <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">
+            {data.sectionCustomTitles?.itinerary?.title || "Day-by-Day Itinerary"}
+          </h2>
           <div className="w-16 h-0.5 bg-primary/30 mx-auto mt-5" />
         </motion.div>
         <div className="space-y-5">
           {visibleDays.map((day, dayIdx) => {
             const isOpen = openDayIds.has(day.id);
             const validActivities = day.activities.filter(
-              (act) => act.title?.trim() || act.description?.trim() || (act.imageUrls && act.imageUrls.length > 0) || act.videoUrl
+              (act) =>
+                act.title?.trim() ||
+                act.description?.trim() ||
+                (act.imageUrls && act.imageUrls.length > 0) ||
+                act.videoUrl,
             );
             return (
               <motion.div
@@ -197,7 +214,9 @@ function ItinerarySection({
                     </span>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-display text-xl sm:text-2xl font-bold text-foreground leading-tight">{day.title || `Day ${dayIdx + 1}`}</h3>
+                        <h3 className="font-display text-xl sm:text-2xl font-bold text-foreground leading-tight">
+                          {day.title || `Day ${dayIdx + 1}`}
+                        </h3>
                       </div>
                       <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                         {day.date && (
@@ -217,17 +236,24 @@ function ItinerarySection({
                     {!isOpen && (
                       <div className="flex gap-1">
                         {day.activities
-                          .filter(a => !UTILITY_ACTIVITY_TYPES.includes(a.type as any) && a.imageUrls && a.imageUrls.length > 0)
+                          .filter(
+                            (a) =>
+                              !UTILITY_ACTIVITY_TYPES.includes(a.type as any) && a.imageUrls && a.imageUrls.length > 0,
+                          )
                           .slice(0, 3)
                           .map((a, i) => (
-                            <div key={i} className="w-11 h-9 rounded-lg overflow-hidden border border-border/40 shrink-0">
+                            <div
+                              key={i}
+                              className="w-11 h-9 rounded-lg overflow-hidden border border-border/40 shrink-0"
+                            >
                               <img src={a.imageUrls![0]} alt="" className="w-full h-full object-cover" />
                             </div>
-                          ))
-                        }
+                          ))}
                       </div>
                     )}
-                    <ChevronDown className={`h-5 w-5 text-muted-foreground shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+                    <ChevronDown
+                      className={`h-5 w-5 text-muted-foreground shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                    />
                   </div>
                 </button>
                 <AnimatePresence initial={false}>
@@ -248,7 +274,7 @@ function ItinerarySection({
                           return (
                             <div
                               key={act.id || actIdx}
-                                className="rounded-xl border-2 border-border/70 bg-muted/25 p-4 sm:p-5"
+                              className="rounded-xl border-2 border-border/70 bg-muted/25 p-4 sm:p-5"
                             >
                               <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-4`}>
                                 <div className="flex-1">
@@ -411,11 +437,13 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   };
   const sectionOrder = data.sectionOrder || defaultSectionOrder;
   const ct = data.sectionCustomTitles || {};
-  const flightOptions = (data.flightOptions || []).filter(o => !o.hidden);
-  const accommodations = (data.accommodations || []).filter(a => !a.hidden);
-  const cruiseShips = (data.cruiseShips || []).filter(s => !s.hidden);
-  const busTrips = (data.busTrips || []).filter(t => !(t as any).hidden);
-  const pricingOptions = (data.pricingOptions || []).filter(opt => opt.name?.trim() || opt.totalPrice?.trim() || opt.deposit?.trim());
+  const flightOptions = (data.flightOptions || []).filter((o) => !o.hidden);
+  const accommodations = (data.accommodations || []).filter((a) => !a.hidden);
+  const cruiseShips = (data.cruiseShips || []).filter((s) => !s.hidden);
+  const busTrips = (data.busTrips || []).filter((t) => !(t as any).hidden);
+  const pricingOptions = (data.pricingOptions || []).filter(
+    (opt) => opt.name?.trim() || opt.totalPrice?.trim() || opt.deposit?.trim(),
+  );
   const financials: FinancialsSettings = data.financials || createDefaultFinancials();
   const showItemizedPrices = financials.clientView === "itemized";
 
@@ -432,16 +460,42 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   }
 
   const sectionRegistry: SelectableSection[] = [
-    { key: "flights", label: "Flight", items: flightOptions, visible: vis.flights, selectedId: selectedFlight, setSelectedId: setSelectedFlight },
-    { key: "accommodations", label: "Accommodation", items: accommodations, visible: vis.accommodations, selectedId: selectedAccommodation, setSelectedId: setSelectedAccommodation },
-    { key: "cruiseShips", label: "Cruise", items: cruiseShips, visible: vis.cruiseShips, selectedId: selectedCruise, setSelectedId: setSelectedCruise },
-    { key: "busTrips", label: "Bus Trip", items: busTrips, visible: vis.busTrips, selectedId: selectedBusTrip, setSelectedId: setSelectedBusTrip },
+    {
+      key: "flights",
+      label: "Flight",
+      items: flightOptions,
+      visible: vis.flights,
+      selectedId: selectedFlight,
+      setSelectedId: setSelectedFlight,
+    },
+    {
+      key: "accommodations",
+      label: "Accommodation",
+      items: accommodations,
+      visible: vis.accommodations,
+      selectedId: selectedAccommodation,
+      setSelectedId: setSelectedAccommodation,
+    },
+    {
+      key: "cruiseShips",
+      label: "Cruise",
+      items: cruiseShips,
+      visible: vis.cruiseShips,
+      selectedId: selectedCruise,
+      setSelectedId: setSelectedCruise,
+    },
+    {
+      key: "busTrips",
+      label: "Bus Trip",
+      items: busTrips,
+      visible: vis.busTrips,
+      selectedId: selectedBusTrip,
+      setSelectedId: setSelectedBusTrip,
+    },
   ];
 
   // A section is a "required choice" if visible, not group-booking, and has 2+ items
-  const requiredChoiceSections = sectionRegistry.filter(
-    (s) => s.visible && !isGroupBooking && s.items.length >= 2
-  );
+  const requiredChoiceSections = sectionRegistry.filter((s) => s.visible && !isGroupBooking && s.items.length >= 2);
 
   // Convenience booleans derived from the universal list
   const flightsIsChoice = requiredChoiceSections.some((s) => s.key === "flights");
@@ -450,10 +504,18 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   const busIsChoice = requiredChoiceSections.some((s) => s.key === "busTrips");
 
   // Auto-include single required items
-  const effectiveSelectedFlight = flightsIsChoice ? selectedFlight : (flightOptions.length === 1 ? flightOptions[0].id : "");
-  const effectiveSelectedAccommodation = accommodationsIsChoice ? selectedAccommodation : (accommodations.length === 1 ? accommodations[0].id : "");
-  const effectiveSelectedCruise = cruiseIsChoice ? selectedCruise : (cruiseShips.length === 1 ? cruiseShips[0].id : "");
-  const effectiveSelectedBusTrip = busIsChoice ? selectedBusTrip : (busTrips.length === 1 ? busTrips[0].id : "");
+  const effectiveSelectedFlight = flightsIsChoice
+    ? selectedFlight
+    : flightOptions.length === 1
+      ? flightOptions[0].id
+      : "";
+  const effectiveSelectedAccommodation = accommodationsIsChoice
+    ? selectedAccommodation
+    : accommodations.length === 1
+      ? accommodations[0].id
+      : "";
+  const effectiveSelectedCruise = cruiseIsChoice ? selectedCruise : cruiseShips.length === 1 ? cruiseShips[0].id : "";
+  const effectiveSelectedBusTrip = busIsChoice ? selectedBusTrip : busTrips.length === 1 ? busTrips[0].id : "";
 
   // Universal validation: all required choice sections must have a selection
   const missingSelections = requiredChoiceSections.filter((s) => !s.selectedId);
@@ -466,7 +528,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
       setValidationError("");
     } else {
       // Update to show the NEXT missing section instead of stale one
-      const firstMissing = requiredChoiceSections.find(s => !s.selectedId);
+      const firstMissing = requiredChoiceSections.find((s) => !s.selectedId);
       if (firstMissing) {
         setValidationError(`Please select an option for ${firstMissing.label} before continuing.`);
       }
@@ -527,7 +589,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
       accommodations: accommodations.length > 0,
       cruiseShips: cruiseShips.length > 0,
       busTrips: busTrips.length > 0,
-      itinerary: (data.days || []).filter(d => !d.hidden).length > 0,
+      itinerary: (data.days || []).filter((d) => !d.hidden).length > 0,
       inclusions: (data.inclusions || []).length > 0,
       pricing: (data.pricing || []).length > 0 || (data.pricingOptions || []).length > 0,
       essentials: !!(
@@ -560,7 +622,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           }
         }
       },
-      { rootMargin: "-80px 0px -60% 0px", threshold: 0.1 }
+      { rootMargin: "-80px 0px -60% 0px", threshold: 0.1 },
     );
     for (const item of navItems) {
       const el = document.getElementById(item.id);
@@ -634,8 +696,18 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
       navigate(`/approve${shareId ? `?share=${shareId}` : ""}`, { state: { brand: brandData, returnTo } });
     }
   }, [
-    navigate, shareId, brandData, returnTo, bookingUrl, approveUrl, openModal,
-    checkoutEnabled, goToCheckout, isEditor, onEditorSubPage, financials,
+    navigate,
+    shareId,
+    brandData,
+    returnTo,
+    bookingUrl,
+    approveUrl,
+    openModal,
+    checkoutEnabled,
+    goToCheckout,
+    isEditor,
+    onEditorSubPage,
+    financials,
   ]);
 
   const goToRevisions = useCallback(() => {
@@ -693,32 +765,52 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               ))}
             </div>
             {/* Mobile hamburger */}
-            {!isGroupBooking && !isEditor && !isReadOnly && !approveSuccess && tripStatus !== "revision_requested" && tripStatus !== "reopened" && (
-              <Button
-                variant="travel"
-                size="sm"
-                className="text-xs gap-1 shrink-0 h-8 sm:hidden"
-                onClick={() => setShowAskQuestion(true)}
-              >
-                <HelpCircle className="h-3.5 w-3.5" /> Ask
-              </Button>
-            )}
+            {!isGroupBooking &&
+              !isEditor &&
+              !isReadOnly &&
+              !approveSuccess &&
+              tripStatus !== "revision_requested" &&
+              tripStatus !== "reopened" && (
+                <Button
+                  variant="travel"
+                  size="sm"
+                  className="text-xs gap-1 shrink-0 h-8 sm:hidden"
+                  onClick={() => setShowAskQuestion(true)}
+                >
+                  <HelpCircle className="h-3.5 w-3.5" /> Ask
+                </Button>
+              )}
             <button
               className="sm:hidden flex flex-col gap-1 p-2 rounded-lg hover:bg-muted transition-colors"
-              onClick={() => setMobileMenuOpen(prev => !prev)}
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
             >
               <span className="w-5 h-0.5 bg-foreground rounded-full block" />
               <span className="w-5 h-0.5 bg-foreground rounded-full block" />
               <span className="w-5 h-0.5 bg-foreground rounded-full block" />
             </button>
             {isGroupBooking ? (
-              <Button variant="travel" size="sm" className="text-xs shrink-0 ml-1 hidden sm:flex"
-                onClick={() => { if (checkoutEnabled) goToCheckout(); else if (bookingUrl) openModal(bookingUrl, "Book Now"); }}>
+              <Button
+                variant="travel"
+                size="sm"
+                className="text-xs shrink-0 ml-1 hidden sm:flex"
+                onClick={() => {
+                  if (checkoutEnabled) goToCheckout();
+                  else if (bookingUrl) openModal(bookingUrl, "Book Now");
+                }}
+              >
                 Book Now
               </Button>
-            ) : !isEditor && !isReadOnly && !approveSuccess && tripStatus !== "revision_requested" && tripStatus !== "reopened" ? (
-              <Button variant="travel" size="sm" className="text-xs gap-1 shrink-0 ml-1 h-8 hidden sm:flex"
-                onClick={() => setShowAskQuestion(true)}>
+            ) : !isEditor &&
+              !isReadOnly &&
+              !approveSuccess &&
+              tripStatus !== "revision_requested" &&
+              tripStatus !== "reopened" ? (
+              <Button
+                variant="travel"
+                size="sm"
+                className="text-xs gap-1 shrink-0 ml-1 h-8 hidden sm:flex"
+                onClick={() => setShowAskQuestion(true)}
+              >
                 <HelpCircle className="h-3.5 w-3.5" /> Ask
               </Button>
             ) : null}
@@ -728,11 +820,17 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
       {mobileMenuOpen && (
         <div className="sm:hidden fixed inset-0 z-[89] bg-black/40" onClick={() => setMobileMenuOpen(false)}>
-          <div className="absolute top-16 left-0 right-0 bg-background border-b-2 border-border shadow-lg px-4 py-3 flex flex-col gap-1" onClick={e => e.stopPropagation()}>
+          <div
+            className="absolute top-16 left-0 right-0 bg-background border-b-2 border-border shadow-lg px-4 py-3 flex flex-col gap-1"
+            onClick={(e) => e.stopPropagation()}
+          >
             {navItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => { scrollTo(item.id); setMobileMenuOpen(false); }}
+                onClick={() => {
+                  scrollTo(item.id);
+                  setMobileMenuOpen(false);
+                }}
                 className="text-left px-4 py-3 text-sm font-body font-semibold text-foreground hover:bg-muted rounded-lg transition-colors"
               >
                 {item.label}
@@ -748,9 +846,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           const isVideo = data.heroMediaType === "video" && !!data.heroVideoUrl;
           const mainImg = data.heroImageUrl;
           const sideImgs = (data.heroImageUrls || []).filter(Boolean);
-          const allReal = isVideo
-            ? [data.heroVideoUrl!]
-            : ([mainImg, ...sideImgs].filter(Boolean) as string[]);
+          const allReal = isVideo ? [data.heroVideoUrl!] : ([mainImg, ...sideImgs].filter(Boolean) as string[]);
           const allHeroImgs = allReal.map((u, i) => ({
             src: u,
             alt: `${data.destination || "Hero"} ${i + 1}`,
@@ -806,8 +902,12 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     <div className="flex items-center gap-2.5 px-4 sm:px-6 first:pl-0 last:pr-0">
                       <Calendar className="h-4 w-4 text-primary shrink-0" />
                       <div>
-                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-body font-medium">Dates</p>
-                        <p className="text-sm font-bold text-foreground font-body leading-tight">{formatDateRange((data as any).startDate, (data as any).endDate)}</p>
+                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-body font-medium">
+                          Dates
+                        </p>
+                        <p className="text-sm font-bold text-foreground font-body leading-tight">
+                          {formatDateRange((data as any).startDate, (data as any).endDate)}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -815,8 +915,12 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     <div className="flex items-center gap-2.5 px-4 sm:px-6 first:pl-0 last:pr-0">
                       <Users className="h-4 w-4 text-primary shrink-0" />
                       <div>
-                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-body font-medium">Travelers</p>
-                        <p className="text-sm font-bold text-foreground font-body leading-tight">{parseInt(data.travelerCount) === 1 ? "1 Guest" : `${parseInt(data.travelerCount)} Guests`}</p>
+                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-body font-medium">
+                          Travelers
+                        </p>
+                        <p className="text-sm font-bold text-foreground font-body leading-tight">
+                          {parseInt(data.travelerCount) === 1 ? "1 Guest" : `${parseInt(data.travelerCount)} Guests`}
+                        </p>
                       </div>
                     </div>
                   )}
@@ -824,7 +928,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     <div className="flex items-center gap-2.5 px-4 sm:px-6 first:pl-0 last:pr-0">
                       <Clock className="h-4 w-4 text-primary shrink-0" />
                       <div>
-                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-body font-medium">Duration</p>
+                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-body font-medium">
+                          Duration
+                        </p>
                         <p className="text-sm font-bold text-foreground font-body leading-tight">{computedDuration}</p>
                       </div>
                     </div>
@@ -838,7 +944,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             <>
               <section className="relative w-full overflow-hidden">
                 {/* ——— Mobile: main image with overlay ——— */}
-                <div className={`md:hidden relative overflow-hidden ${isVideo ? "" : "cursor-pointer"}`} onClick={isVideo ? undefined : () => openLightbox(allHeroImgs, 0)}>
+                <div
+                  className={`md:hidden relative overflow-hidden ${isVideo ? "" : "cursor-pointer"}`}
+                  onClick={isVideo ? undefined : () => openLightbox(allHeroImgs, 0)}
+                >
                   {isVideo ? (
                     <VideoEmbed
                       url={data.heroVideoUrl!}
@@ -1069,7 +1178,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     <p className="text-xs tracking-[0.3em] uppercase text-primary font-body font-semibold mb-3">
                       {ct.flights?.subtitle || "Your Flights"}
                     </p>
-                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.flights?.title || "Air Travel"}</h2>
+                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">
+                      {ct.flights?.title || "Air Travel"}
+                    </h2>
                     <div className="w-16 h-0.5 bg-primary/30 mx-auto mt-4" />
                     {flightsIsChoice && (
                       <p className="text-sm text-muted-foreground font-body mt-3">Choose one of the options below</p>
@@ -1180,7 +1291,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                   </div>
                                   {(leg.airline || leg.flightNumber) && (
                                     <p className="text-xs text-muted-foreground font-body text-center leading-tight font-medium">
-                                      {leg.airline}{leg.flightNumber ? ` ${leg.flightNumber}` : ""}
+                                      {leg.airline}
+                                      {leg.flightNumber ? ` ${leg.flightNumber}` : ""}
                                     </p>
                                   )}
                                   {(leg as any).stops === 0 || (leg as any).stops === undefined ? (
@@ -1220,14 +1332,14 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           {/* FOOTER — date tags + select button */}
                           <div className="bg-muted/40 border-t-2 border-border px-5 py-3.5 flex items-center justify-between">
                             <div className="flex items-center gap-2 flex-wrap">
-                              {opt.legs.find(l => l.type === "departure")?.date && (
+                              {opt.legs.find((l) => l.type === "departure")?.date && (
                                 <span className="text-xs text-muted-foreground font-body bg-background border border-border px-3 py-1 rounded-full">
-                                  Departs {opt.legs.find(l => l.type === "departure")?.date}
+                                  Departs {opt.legs.find((l) => l.type === "departure")?.date}
                                 </span>
                               )}
-                              {opt.legs.find(l => l.type === "return")?.date && (
+                              {opt.legs.find((l) => l.type === "return")?.date && (
                                 <span className="text-xs text-muted-foreground font-body bg-background border border-border px-3 py-1 rounded-full">
-                                  Returns {opt.legs.find(l => l.type === "return")?.date}
+                                  Returns {opt.legs.find((l) => l.type === "return")?.date}
                                 </span>
                               )}
                             </div>
@@ -1235,14 +1347,22 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               <div className="flex items-center gap-2 shrink-0">
                                 {isSelected ? (
                                   <div className="flex items-center gap-1.5">
-                                    <Button variant="travel" size="sm" className="text-xs" onClick={(e) => e.stopPropagation()}>
+                                    <Button
+                                      variant="travel"
+                                      size="sm"
+                                      className="text-xs"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
                                       <Check className="h-3 w-3 mr-1" /> Selected ✓
                                     </Button>
                                     <Button
                                       variant="travel-ghost"
                                       size="sm"
                                       className="text-xs text-destructive hover:text-destructive"
-                                      onClick={(e) => { e.stopPropagation(); setSelectedFlight(""); }}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedFlight("");
+                                      }}
                                     >
                                       Cancel ✕
                                     </Button>
@@ -1252,7 +1372,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                     variant="travel"
                                     size="sm"
                                     className="text-xs font-semibold"
-                                    onClick={(e) => { e.stopPropagation(); setSelectedFlight(opt.id); }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedFlight(opt.id);
+                                    }}
                                   >
                                     Select This Option
                                   </Button>
@@ -1284,7 +1407,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     <p className="text-xs tracking-[0.3em] uppercase text-primary font-body font-semibold mb-3">
                       {ct.accommodations?.subtitle || "Accommodations"}
                     </p>
-                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.accommodations?.title || "Hotel Options"}</h2>
+                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">
+                      {ct.accommodations?.title || "Hotel Options"}
+                    </h2>
                     <div className="w-16 h-0.5 bg-primary/30 mx-auto mt-4" />
                     {accommodationsIsChoice && accommodations.length > 1 && (
                       <p className="text-sm text-muted-foreground font-body mt-3">Choose one of the options below</p>
@@ -1303,7 +1428,12 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       const showAccVideo = (acc.mediaType || "photos") === "video" && !!acc.videoUrl;
                       const showAccPhotos = !showAccVideo;
                       const primaryPrice = acc.price && showItemizedPrices ? fmtCurrency(acc.price) : null;
-                      const pricingLabel = (acc.pricingDisplay || "total") === "per_person" ? "Per Person" : (acc.pricingDisplay || "total") === "per_night" ? "Per Night" : "";
+                      const pricingLabel =
+                        (acc.pricingDisplay || "total") === "per_person"
+                          ? "Per Person"
+                          : (acc.pricingDisplay || "total") === "per_night"
+                            ? "Per Night"
+                            : "";
 
                       return (
                         <motion.div
@@ -1342,8 +1472,12 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               )}
                               {primaryPrice && (
                                 <div className="mt-3">
-                                  <p className="font-display text-2xl font-bold text-primary leading-none">{primaryPrice}</p>
-                                  {pricingLabel && <p className="text-[11px] text-muted-foreground font-body mt-0.5">{pricingLabel}</p>}
+                                  <p className="font-display text-2xl font-bold text-primary leading-none">
+                                    {primaryPrice}
+                                  </p>
+                                  {pricingLabel && (
+                                    <p className="text-[11px] text-muted-foreground font-body mt-0.5">{pricingLabel}</p>
+                                  )}
                                 </div>
                               )}
                               {acc.description && (
@@ -1361,7 +1495,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               {highlights.length > 0 && (
                                 <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3">
                                   {highlights.slice(0, 4).map((h, hi) => (
-                                    <span key={hi} className="flex items-center gap-1.5 text-[14px] font-body text-foreground">
+                                    <span
+                                      key={hi}
+                                      className="flex items-center gap-1.5 text-[14px] font-body text-foreground"
+                                    >
                                       <Sparkles className="h-3 w-3 text-accent shrink-0" /> {h}
                                     </span>
                                   ))}
@@ -1370,12 +1507,17 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               {amenities.length > 0 && (
                                 <div className="flex flex-wrap gap-1.5 mt-4">
                                   {amenities.slice(0, 6).map((a, ai) => (
-                                    <span key={ai} className="inline-flex items-center gap-1 bg-muted text-muted-foreground text-xs font-body px-2.5 py-1 rounded-full border border-border">
+                                    <span
+                                      key={ai}
+                                      className="inline-flex items-center gap-1 bg-muted text-muted-foreground text-xs font-body px-2.5 py-1 rounded-full border border-border"
+                                    >
                                       <Check className="h-2.5 w-2.5 text-primary" /> {a}
                                     </span>
                                   ))}
                                   {amenities.length > 6 && (
-                                    <span className="text-[11px] text-muted-foreground font-body px-2.5 py-1">+{amenities.length - 6} more</span>
+                                    <span className="text-[11px] text-muted-foreground font-body px-2.5 py-1">
+                                      +{amenities.length - 6} more
+                                    </span>
                                   )}
                                 </div>
                               )}
@@ -1386,16 +1528,30 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               <div className="w-full sm:w-[280px] shrink-0 flex flex-col gap-[5px] p-[10px] sm:pl-0">
                                 <div
                                   className="flex-[2] overflow-hidden rounded-xl cursor-pointer relative group border border-border/40 min-h-[200px]"
-                                  onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 0); }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openLightbox(allAccImages, 0);
+                                  }}
                                 >
-                                  <img src={allAccImages[0].src} alt={acc.hotelName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
+                                  <img
+                                    src={allAccImages[0].src}
+                                    alt={acc.hotelName}
+                                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                                  />
                                 </div>
                                 {allAccImages.length === 2 && (
                                   <div
                                     className="flex-1 overflow-hidden rounded-xl cursor-pointer relative group border border-border/40 min-h-[90px]"
-                                    onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, 1); }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openLightbox(allAccImages, 1);
+                                    }}
                                   >
-                                    <img src={allAccImages[1].src} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
+                                    <img
+                                      src={allAccImages[1].src}
+                                      alt=""
+                                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                                    />
                                   </div>
                                 )}
                                 {allAccImages.length >= 3 && (
@@ -1404,9 +1560,16 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                       <div
                                         key={idx}
                                         className="flex-1 overflow-hidden rounded-xl cursor-pointer relative group border border-border/40 min-h-[90px]"
-                                        onClick={(e) => { e.stopPropagation(); openLightbox(allAccImages, idx + 1); }}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          openLightbox(allAccImages, idx + 1);
+                                        }}
                                       >
-                                        <img src={img.src} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
+                                        <img
+                                          src={img.src}
+                                          alt=""
+                                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                                        />
                                         {idx === 1 && allAccImages.length > 3 && (
                                           <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs font-bold px-2 py-1 rounded-full backdrop-blur-sm">
                                             <span>+{allAccImages.length - 3} more</span>
@@ -1434,25 +1597,54 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           </div>
                           <div className="bg-muted/40 border-t-2 border-border px-5 sm:px-7 py-3.5 flex items-center justify-between">
                             <div className="flex items-center gap-4 text-xs text-muted-foreground font-body flex-wrap">
-                              {acc.checkIn && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> In: {acc.checkIn}</span>}
-                              {acc.checkOut && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> Out: {acc.checkOut}</span>}
-                              {acc.nights && <span className="text-primary font-semibold">{formatNightsLabel(acc.nights)}</span>}
+                              {acc.checkIn && (
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="h-3 w-3" /> In: {acc.checkIn}
+                                </span>
+                              )}
+                              {acc.checkOut && (
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="h-3 w-3" /> Out: {acc.checkOut}
+                                </span>
+                              )}
+                              {acc.nights && (
+                                <span className="text-primary font-semibold">{formatNightsLabel(acc.nights)}</span>
+                              )}
                             </div>
                             {accommodationsIsChoice && !isReadOnly && (
                               <div className="flex items-center gap-1.5 shrink-0">
                                 {isSelected ? (
                                   <>
-                                    <Button variant="travel" size="sm" className="text-xs h-8" onClick={(e) => e.stopPropagation()}>
+                                    <Button
+                                      variant="travel"
+                                      size="sm"
+                                      className="text-xs h-8"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
                                       <Check className="h-3 w-3 mr-1" /> Selected
                                     </Button>
-                                    <Button variant="travel-ghost" size="sm" className="text-xs text-destructive hover:text-destructive h-8"
-                                      onClick={(e) => { e.stopPropagation(); setSelectedAccommodation(""); }}>
+                                    <Button
+                                      variant="travel-ghost"
+                                      size="sm"
+                                      className="text-xs text-destructive hover:text-destructive h-8"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedAccommodation("");
+                                      }}
+                                    >
                                       ✕
                                     </Button>
                                   </>
                                 ) : (
-                                  <Button variant="travel" size="sm" className="text-xs h-8 font-semibold"
-                                    onClick={(e) => { e.stopPropagation(); setSelectedAccommodation(acc.id); }}>
+                                  <Button
+                                    variant="travel"
+                                    size="sm"
+                                    className="text-xs h-8 font-semibold"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedAccommodation(acc.id);
+                                    }}
+                                  >
                                     Select This Option
                                   </Button>
                                 )}
@@ -1483,7 +1675,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     <p className="text-xs tracking-[0.3em] uppercase text-primary font-body font-semibold mb-3">
                       {ct.cruiseShips?.subtitle || "Your Vessel"}
                     </p>
-                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.cruiseShips?.title || "Cruise Ship & Cabin"}</h2>
+                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">
+                      {ct.cruiseShips?.title || "Cruise Ship & Cabin"}
+                    </h2>
                     <div className="w-16 h-0.5 bg-primary/30 mx-auto mt-4" />
                     {cruiseIsChoice && cruiseShips.length > 1 && (
                       <p className="text-sm text-muted-foreground font-body mt-3">Choose one of the options below</p>
@@ -1502,7 +1696,12 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       const showShipVideo = (ship.mediaType || "photos") === "video" && !!ship.videoUrl;
                       const showShipPhotos = !showShipVideo;
                       const primaryPrice = ship.price && showItemizedPrices ? fmtCurrency(ship.price) : null;
-                      const pricingLabel = (ship.pricingDisplay || "total") === "per_person" ? "Per Person" : (ship.pricingDisplay || "total") === "per_night" ? "Per Night" : "";
+                      const pricingLabel =
+                        (ship.pricingDisplay || "total") === "per_person"
+                          ? "Per Person"
+                          : (ship.pricingDisplay || "total") === "per_night"
+                            ? "Per Night"
+                            : "";
 
                       return (
                         <motion.div
@@ -1539,8 +1738,12 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               )}
                               {primaryPrice && (
                                 <div className="mt-3">
-                                  <p className="font-display text-2xl font-bold text-primary leading-none">{primaryPrice}</p>
-                                  {pricingLabel && <p className="text-[11px] text-muted-foreground font-body mt-0.5">{pricingLabel}</p>}
+                                  <p className="font-display text-2xl font-bold text-primary leading-none">
+                                    {primaryPrice}
+                                  </p>
+                                  {pricingLabel && (
+                                    <p className="text-[11px] text-muted-foreground font-body mt-0.5">{pricingLabel}</p>
+                                  )}
                                 </div>
                               )}
                               {ship.description && (
@@ -1569,7 +1772,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               {highlights.length > 0 && (
                                 <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3">
                                   {highlights.slice(0, 4).map((h, hi) => (
-                                    <span key={hi} className="flex items-center gap-1.5 text-[14px] font-body text-foreground">
+                                    <span
+                                      key={hi}
+                                      className="flex items-center gap-1.5 text-[14px] font-body text-foreground"
+                                    >
                                       <Sparkles className="h-3 w-3 text-accent shrink-0" /> {h}
                                     </span>
                                   ))}
@@ -1578,35 +1784,53 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               {amenities.length > 0 && (
                                 <div className="flex flex-wrap gap-1.5 mt-4">
                                   {amenities.slice(0, 6).map((a, ai) => (
-                                    <span key={ai} className="inline-flex items-center gap-1 bg-muted text-muted-foreground text-xs font-body px-2.5 py-1 rounded-full border border-border">
+                                    <span
+                                      key={ai}
+                                      className="inline-flex items-center gap-1 bg-muted text-muted-foreground text-xs font-body px-2.5 py-1 rounded-full border border-border"
+                                    >
                                       <Check className="h-2.5 w-2.5 text-primary" /> {a}
                                     </span>
                                   ))}
                                   {amenities.length > 6 && (
-                                    <span className="text-[11px] text-muted-foreground font-body px-2.5 py-1">+{amenities.length - 6} more</span>
+                                    <span className="text-[11px] text-muted-foreground font-body px-2.5 py-1">
+                                      +{amenities.length - 6} more
+                                    </span>
                                   )}
                                 </div>
                               )}
-                              {(ship.embarkationPort || ship.disembarkationPort || ship.embarkationDate || ship.disembarkationDate) && (
+                              {(ship.embarkationPort ||
+                                ship.disembarkationPort ||
+                                ship.embarkationDate ||
+                                ship.disembarkationDate) && (
                                 <div className="grid grid-cols-2 gap-3 mt-5 pt-4 border-t-2 border-border text-xs text-muted-foreground font-body">
                                   {(ship.embarkationPort || ship.embarkationDate) && (
                                     <div className="bg-muted/30 rounded-lg px-3 py-2 border border-border">
-                                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-semibold mb-0.5">Embarkation</p>
-                                      {ship.embarkationPort && <p className="text-foreground font-medium">{ship.embarkationPort}</p>}
+                                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-semibold mb-0.5">
+                                        Embarkation
+                                      </p>
+                                      {ship.embarkationPort && (
+                                        <p className="text-foreground font-medium">{ship.embarkationPort}</p>
+                                      )}
                                       {ship.embarkationDate && <p>{ship.embarkationDate}</p>}
                                     </div>
                                   )}
                                   {(ship.disembarkationPort || ship.disembarkationDate) && (
                                     <div className="bg-muted/30 rounded-lg px-3 py-2 border border-border">
-                                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-semibold mb-0.5">Disembarkation</p>
-                                      {ship.disembarkationPort && <p className="text-foreground font-medium">{ship.disembarkationPort}</p>}
+                                      <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-semibold mb-0.5">
+                                        Disembarkation
+                                      </p>
+                                      {ship.disembarkationPort && (
+                                        <p className="text-foreground font-medium">{ship.disembarkationPort}</p>
+                                      )}
                                       {ship.disembarkationDate && <p>{ship.disembarkationDate}</p>}
                                     </div>
                                   )}
                                 </div>
                               )}
                               {ship.nights && (
-                                <p className="text-sm text-primary font-semibold font-body mt-2">{formatNightsLabel(ship.nights)}</p>
+                                <p className="text-sm text-primary font-semibold font-body mt-2">
+                                  {formatNightsLabel(ship.nights)}
+                                </p>
                               )}
                             </div>
                             {/* RIGHT — photo stack, same as hotel */}
@@ -1614,16 +1838,30 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               <div className="w-full sm:w-[260px] shrink-0 flex flex-col gap-[5px] p-[10px] sm:pl-0">
                                 <div
                                   className="flex-[2] overflow-hidden rounded-xl cursor-pointer relative group border border-border/40 min-h-[180px]"
-                                  onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, 0); }}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openLightbox(allShipImages, 0);
+                                  }}
                                 >
-                                  <img src={allShipImages[0].src} alt={ship.shipName} className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700" />
+                                  <img
+                                    src={allShipImages[0].src}
+                                    alt={ship.shipName}
+                                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                                  />
                                 </div>
                                 {allShipImages.length === 2 && (
                                   <div
                                     className="flex-1 overflow-hidden rounded-xl cursor-pointer relative group border border-border/40 min-h-[90px]"
-                                    onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, 1); }}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openLightbox(allShipImages, 1);
+                                    }}
                                   >
-                                    <img src={allShipImages[1].src} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
+                                    <img
+                                      src={allShipImages[1].src}
+                                      alt=""
+                                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                                    />
                                   </div>
                                 )}
                                 {allShipImages.length >= 3 && (
@@ -1632,9 +1870,16 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                       <div
                                         key={idx}
                                         className="flex-1 overflow-hidden rounded-xl cursor-pointer relative group border border-border/40 min-h-[90px]"
-                                        onClick={(e) => { e.stopPropagation(); openLightbox(allShipImages, idx + 1); }}
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          openLightbox(allShipImages, idx + 1);
+                                        }}
                                       >
-                                        <img src={img.src} alt="" className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500" />
+                                        <img
+                                          src={img.src}
+                                          alt=""
+                                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                                        />
                                         {idx === 1 && allShipImages.length > 3 && (
                                           <div className="absolute bottom-2 right-2 bg-black/60 text-white text-xs font-bold px-2 py-1 rounded-full backdrop-blur-sm">
                                             <span>+{allShipImages.length - 3} more</span>
@@ -1649,25 +1894,54 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           </div>
                           <div className="bg-muted/40 border-t-2 border-border px-5 sm:px-7 py-3.5 flex items-center justify-between">
                             <div className="flex items-center gap-4 text-xs text-muted-foreground font-body flex-wrap">
-                              {ship.embarkationDate && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> Embark: {ship.embarkationDate}</span>}
-                              {ship.disembarkationDate && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> Disembark: {ship.disembarkationDate}</span>}
-                              {ship.nights && <span className="text-primary font-semibold">{formatNightsLabel(ship.nights)}</span>}
+                              {ship.embarkationDate && (
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="h-3 w-3" /> Embark: {ship.embarkationDate}
+                                </span>
+                              )}
+                              {ship.disembarkationDate && (
+                                <span className="flex items-center gap-1">
+                                  <Calendar className="h-3 w-3" /> Disembark: {ship.disembarkationDate}
+                                </span>
+                              )}
+                              {ship.nights && (
+                                <span className="text-primary font-semibold">{formatNightsLabel(ship.nights)}</span>
+                              )}
                             </div>
                             {cruiseIsChoice && !isReadOnly && (
                               <div className="flex items-center gap-1.5 shrink-0">
                                 {isSelected ? (
                                   <>
-                                    <Button variant="travel" size="sm" className="text-xs h-8" onClick={(e) => e.stopPropagation()}>
+                                    <Button
+                                      variant="travel"
+                                      size="sm"
+                                      className="text-xs h-8"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
                                       <Check className="h-3 w-3 mr-1" /> Selected
                                     </Button>
-                                    <Button variant="travel-ghost" size="sm" className="text-xs text-destructive hover:text-destructive h-8"
-                                      onClick={(e) => { e.stopPropagation(); setSelectedCruise(""); }}>
+                                    <Button
+                                      variant="travel-ghost"
+                                      size="sm"
+                                      className="text-xs text-destructive hover:text-destructive h-8"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        setSelectedCruise("");
+                                      }}
+                                    >
                                       ✕
                                     </Button>
                                   </>
                                 ) : (
-                                  <Button variant="travel" size="sm" className="text-xs h-8 font-semibold"
-                                    onClick={(e) => { e.stopPropagation(); setSelectedCruise(ship.id); }}>
+                                  <Button
+                                    variant="travel"
+                                    size="sm"
+                                    className="text-xs h-8 font-semibold"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedCruise(ship.id);
+                                    }}
+                                  >
                                     Select This Option
                                   </Button>
                                 )}
@@ -1698,7 +1972,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-4">
                       {ct.busTrips?.subtitle || "Ground Transport"}
                     </p>
-                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">{ct.busTrips?.title || "Bus Trips"}</h2>
+                    <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">
+                      {ct.busTrips?.title || "Bus Trips"}
+                    </h2>
                     <div className="w-12 h-[2px] bg-primary/40 mx-auto mt-5" />
                   </motion.div>
                   <div className="space-y-12">
@@ -1747,7 +2023,13 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               />
                             </div>
                           ) : allTripImages.length > 0 ? (
-                            <div className={allTripImages.length === 1 ? "p-2 bg-muted/25" : "grid grid-cols-3 md:grid-cols-4 gap-2 p-2 bg-muted/25"}>
+                            <div
+                              className={
+                                allTripImages.length === 1
+                                  ? "p-2 bg-muted/25"
+                                  : "grid grid-cols-3 md:grid-cols-4 gap-2 p-2 bg-muted/25"
+                              }
+                            >
                               {allTripImages.length === 1 ? (
                                 <div
                                   className="aspect-[16/8] overflow-hidden cursor-pointer rounded-xl"
@@ -2016,11 +2298,11 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             );
 
           case "itinerary":
-            if (data.days.filter(d => !d.hidden).length === 0) return null;
+            if (data.days.filter((d) => !d.hidden).length === 0) return null;
             return <ItinerarySection key="itinerary" data={data} fadeUp={fadeUp} openLightbox={openLightbox} />;
 
           case "inclusions":
-            const exclusions = ((data as any).exclusions as string[] || []).filter(Boolean);
+            const exclusions = (((data as any).exclusions as string[]) || []).filter(Boolean);
             if (data.inclusions.filter(Boolean).length === 0 && exclusions.length === 0) return null;
             return (
               <section key="inclusions" id="inclusions" className="py-16 lg:py-20 bg-muted/40">
@@ -2112,7 +2394,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground font-body mb-3">
                       {ct.pricing?.subtitle || "Investment"}
                     </p>
-                    <h2 className="font-display text-4xl font-bold text-foreground">{ct.pricing?.title || "Choose Your Package"}</h2>
+                    <h2 className="font-display text-4xl font-bold text-foreground">
+                      {ct.pricing?.title || "Choose Your Package"}
+                    </h2>
                     {pricingOptions.length > 1 && (
                       <p className="text-muted-foreground font-body mt-2">Select the option that works best for you</p>
                     )}
@@ -2145,9 +2429,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                 <Check className="h-4 w-4 text-primary-foreground" />
                               </div>
                             )}
-                            <h3 className="font-display text-xl font-bold text-foreground mb-3">
-                              {opt.name}
-                            </h3>
+                            <h3 className="font-display text-xl font-bold text-foreground mb-3">{opt.name}</h3>
                             {opt.totalPrice && (
                               <p className="font-display text-3xl font-bold text-primary mb-4">
                                 {fmtCurrency(opt.totalPrice)}
@@ -2277,36 +2559,56 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       <div className="bg-card rounded-2xl border-2 border-border overflow-hidden shadow-[0_14px_32px_-20px_hsl(var(--foreground)/0.35)]">
                         <div className="flex items-center gap-2.5 px-6 py-4 border-b-2 border-border bg-muted/30">
                           <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
-                          <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary font-body">Cancellation Policy</p>
+                          <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary font-body">
+                            Cancellation Policy
+                          </p>
                         </div>
-                        <div className="px-6 py-5 text-[14px] text-foreground font-body leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: terms.cancellationPolicy }} />
+                        <div
+                          className="px-6 py-5 text-[16px] text-foreground font-body leading-relaxed prose prose-sm max-w-none"
+                          dangerouslySetInnerHTML={{ __html: terms.cancellationPolicy }}
+                        />
                       </div>
                     )}
                     {terms.showInsurance !== false && terms.travelInsurance && (
                       <div className="bg-card rounded-2xl border-2 border-border overflow-hidden shadow-[0_14px_32px_-20px_hsl(var(--foreground)/0.35)]">
                         <div className="flex items-center gap-2.5 px-6 py-4 border-b-2 border-border bg-muted/30">
                           <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
-                          <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary font-body">Travel Insurance</p>
+                          <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary font-body">
+                            Travel Insurance
+                          </p>
                         </div>
-                        <div className="px-6 py-5 text-[14px] text-foreground font-body leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: terms.travelInsurance }} />
+                        <div
+                          className="px-6 py-5 text-[16px] text-foreground font-body leading-relaxed prose prose-sm max-w-none"
+                          dangerouslySetInnerHTML={{ __html: terms.travelInsurance }}
+                        />
                       </div>
                     )}
                     {terms.showBookingTerms !== false && terms.bookingTerms && (
                       <div className="bg-card rounded-2xl border-2 border-border overflow-hidden shadow-[0_14px_32px_-20px_hsl(var(--foreground)/0.35)]">
                         <div className="flex items-center gap-2.5 px-6 py-4 border-b-2 border-border bg-muted/30">
                           <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
-                          <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary font-body">Booking Terms</p>
+                          <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary font-body">
+                            Booking Terms
+                          </p>
                         </div>
-                        <div className="px-6 py-5 text-[14px] text-foreground font-body leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: terms.bookingTerms }} />
+                        <div
+                          className="px-6 py-5 text-[16px] text-foreground font-body leading-relaxed prose prose-sm max-w-none"
+                          dangerouslySetInnerHTML={{ __html: terms.bookingTerms }}
+                        />
                       </div>
                     )}
                     {terms.showLiability !== false && terms.liability && (
                       <div className="bg-card rounded-2xl border-2 border-border overflow-hidden shadow-[0_14px_32px_-20px_hsl(var(--foreground)/0.35)]">
                         <div className="flex items-center gap-2.5 px-6 py-4 border-b-2 border-border bg-muted/30">
                           <div className="w-2 h-2 rounded-full bg-primary shrink-0" />
-                          <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary font-body">Liability</p>
+                          <p className="text-xs font-bold uppercase tracking-[0.15em] text-primary font-body">
+                            Liability
+                          </p>
                         </div>
-                        <div className="px-6 py-5 text-[14px] text-foreground font-body leading-relaxed prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: terms.liability }} />
+                        <div
+                          className="px-6 py-5 text-[16px] text-foreground font-body leading-relaxed prose prose-sm max-w-none"
+                          dangerouslySetInnerHTML={{ __html: terms.liability }}
+                        />
                       </div>
                     )}
                   </motion.div>
@@ -2390,7 +2692,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               custom={0}
               className="text-center mb-14"
             >
-              <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-3">Investment</p>
+              <p className="text-xs tracking-[0.25em] uppercase text-primary/70 font-body font-semibold mb-3">
+                Investment
+              </p>
               <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground">Trip Pricing</h2>
             </motion.div>
 
@@ -2421,9 +2725,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           <Check className="h-4 w-4 text-primary-foreground" />
                         </div>
                       )}
-                      <h3 className="font-display text-xl font-bold text-foreground mb-3">
-                        {opt.name}
-                      </h3>
+                      <h3 className="font-display text-xl font-bold text-foreground mb-3">{opt.name}</h3>
                       {opt.totalPrice && (
                         <p className="font-display text-3xl font-bold text-primary mb-4">
                           {fmtCurrency(opt.totalPrice)}
@@ -2464,90 +2766,110 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
             >
               {/* Selected items summary — only show sections that are enabled AND have data */}
               <div className="space-y-0 mb-6">
-                {sectionRegistry.filter(s => s.visible && s.items.length > 0).map((section) => {
-                  const isChoice = !isGroupBooking && section.items.length >= 2;
-                  const isSingleIncluded = section.items.length === 1;
-                  const effectiveId = isChoice ? section.selectedId : (isSingleIncluded ? section.items[0].id : "");
-                  const selectedItem = section.items.find(i => i.id === effectiveId);
+                {sectionRegistry
+                  .filter((s) => s.visible && s.items.length > 0)
+                  .map((section) => {
+                    const isChoice = !isGroupBooking && section.items.length >= 2;
+                    const isSingleIncluded = section.items.length === 1;
+                    const effectiveId = isChoice ? section.selectedId : isSingleIncluded ? section.items[0].id : "";
+                    const selectedItem = section.items.find((i) => i.id === effectiveId);
 
-                  // Build status label
-                  let statusContent: React.ReactNode;
-                  if (isSingleIncluded) {
-                    // Get display name for the included item
-                    const itemName = (() => {
-                      if (section.key === "flights") {
-                        const opt = flightOptions.find(o => o.id === effectiveId);
-                        const dep = opt?.legs.find(l => l.type === "departure");
-                        return dep?.airline || "Flight";
-                      }
-                      if (section.key === "accommodations") return accommodations.find(a => a.id === effectiveId)?.hotelName || "Hotel";
-                      if (section.key === "cruiseShips") return cruiseShips.find(s => s.id === effectiveId)?.shipName || "Cruise";
-                      if (section.key === "busTrips") return busTrips.find(b => b.id === effectiveId)?.routeName || "Bus";
-                      return "Included";
-                    })();
-                    statusContent = (
-                      <span className="text-foreground text-xs font-medium flex items-center gap-1.5">
-                        <Check className="h-3 w-3 text-primary" /> Included in package
-                        {selectedItem?.price && showItemizedPrices && (
-                          <span className="ml-1 text-primary font-semibold">{fmtCurrency(selectedItem.price)}</span>
-                        )}
-                      </span>
-                    );
-                  } else if (isChoice && effectiveId) {
-                    const itemName = (() => {
-                      if (section.key === "flights") {
-                        const opt = flightOptions.find(o => o.id === effectiveId);
-                        const dep = opt?.legs.find(l => l.type === "departure");
-                        return dep?.airline ? `${dep.airline} — ${dep.departureAirport?.split("–")[0]?.trim()} → ${dep.arrivalAirport?.split("–")[0]?.trim()}` : "Flight";
-                      }
-                      if (section.key === "accommodations") return accommodations.find(a => a.id === effectiveId)?.hotelName || "Hotel";
-                      if (section.key === "cruiseShips") return cruiseShips.find(s => s.id === effectiveId)?.shipName || "Cruise";
-                      if (section.key === "busTrips") return busTrips.find(b => b.id === effectiveId)?.routeName || "Bus";
-                      return "Selected";
-                    })();
-                    statusContent = (
-                      <span className="text-foreground text-xs font-medium flex items-center gap-1.5">
-                        <Check className="h-3 w-3 text-primary" /> Selected: {itemName}
-                        {selectedItem?.price && showItemizedPrices && (
-                          <span className="ml-1 text-primary font-semibold">{fmtCurrency(selectedItem.price)}</span>
-                        )}
-                      </span>
-                    );
-                  } else if (isChoice && !effectiveId) {
-                    statusContent = (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          document.getElementById(section.key)?.scrollIntoView({ behavior: "smooth", block: "start" });
-                        }}
-                        className="text-accent text-xs font-semibold font-body flex items-center gap-1.5 hover:underline cursor-pointer"
+                    // Build status label
+                    let statusContent: React.ReactNode;
+                    if (isSingleIncluded) {
+                      // Get display name for the included item
+                      const itemName = (() => {
+                        if (section.key === "flights") {
+                          const opt = flightOptions.find((o) => o.id === effectiveId);
+                          const dep = opt?.legs.find((l) => l.type === "departure");
+                          return dep?.airline || "Flight";
+                        }
+                        if (section.key === "accommodations")
+                          return accommodations.find((a) => a.id === effectiveId)?.hotelName || "Hotel";
+                        if (section.key === "cruiseShips")
+                          return cruiseShips.find((s) => s.id === effectiveId)?.shipName || "Cruise";
+                        if (section.key === "busTrips")
+                          return busTrips.find((b) => b.id === effectiveId)?.routeName || "Bus";
+                        return "Included";
+                      })();
+                      statusContent = (
+                        <span className="text-foreground text-xs font-medium flex items-center gap-1.5">
+                          <Check className="h-3 w-3 text-primary" /> Included in package
+                          {selectedItem?.price && showItemizedPrices && (
+                            <span className="ml-1 text-primary font-semibold">{fmtCurrency(selectedItem.price)}</span>
+                          )}
+                        </span>
+                      );
+                    } else if (isChoice && effectiveId) {
+                      const itemName = (() => {
+                        if (section.key === "flights") {
+                          const opt = flightOptions.find((o) => o.id === effectiveId);
+                          const dep = opt?.legs.find((l) => l.type === "departure");
+                          return dep?.airline
+                            ? `${dep.airline} — ${dep.departureAirport?.split("–")[0]?.trim()} → ${dep.arrivalAirport?.split("–")[0]?.trim()}`
+                            : "Flight";
+                        }
+                        if (section.key === "accommodations")
+                          return accommodations.find((a) => a.id === effectiveId)?.hotelName || "Hotel";
+                        if (section.key === "cruiseShips")
+                          return cruiseShips.find((s) => s.id === effectiveId)?.shipName || "Cruise";
+                        if (section.key === "busTrips")
+                          return busTrips.find((b) => b.id === effectiveId)?.routeName || "Bus";
+                        return "Selected";
+                      })();
+                      statusContent = (
+                        <span className="text-foreground text-xs font-medium flex items-center gap-1.5">
+                          <Check className="h-3 w-3 text-primary" /> Selected: {itemName}
+                          {selectedItem?.price && showItemizedPrices && (
+                            <span className="ml-1 text-primary font-semibold">{fmtCurrency(selectedItem.price)}</span>
+                          )}
+                        </span>
+                      );
+                    } else if (isChoice && !effectiveId) {
+                      statusContent = (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            document
+                              .getElementById(section.key)
+                              ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                          }}
+                          className="text-accent text-xs font-semibold font-body flex items-center gap-1.5 hover:underline cursor-pointer"
+                        >
+                          ⚠ Selection required
+                        </button>
+                      );
+                    } else {
+                      // Informational (0 items visible but section is on — shouldn't happen, but safe fallback)
+                      statusContent = <span className="text-muted-foreground italic text-xs">Included in package</span>;
+                    }
+
+                    const sectionIcon =
+                      section.key === "flights" ? (
+                        <Plane className="h-4 w-4 text-primary" />
+                      ) : section.key === "accommodations" ? (
+                        <BedDouble className="h-4 w-4 text-primary" />
+                      ) : section.key === "cruiseShips" ? (
+                        <Ship className="h-4 w-4 text-primary" />
+                      ) : section.key === "busTrips" ? (
+                        <Bus className="h-4 w-4 text-primary" />
+                      ) : null;
+
+                    return (
+                      <div
+                        key={section.key}
+                        className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-4 items-start py-3.5 border-b-2 border-border last:border-b-0"
                       >
-                        ⚠ Selection required
-                      </button>
-                    );
-                  } else {
-                    // Informational (0 items visible but section is on — shouldn't happen, but safe fallback)
-                    statusContent = (
-                      <span className="text-muted-foreground italic text-xs">Included in package</span>
-                    );
-                  }
-
-                  const sectionIcon = section.key === "flights" ? <Plane className="h-4 w-4 text-primary" />
-                    : section.key === "accommodations" ? <BedDouble className="h-4 w-4 text-primary" />
-                    : section.key === "cruiseShips" ? <Ship className="h-4 w-4 text-primary" />
-                    : section.key === "busTrips" ? <Bus className="h-4 w-4 text-primary" />
-                    : null;
-
-                  return (
-                    <div key={section.key} className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-4 items-start py-3.5 border-b-2 border-border last:border-b-0">
-                      <div className="flex items-center gap-2">
-                        {sectionIcon}
-                        <span className="font-body text-foreground font-medium">{section.label}</span>
+                        <div className="flex items-center gap-2">
+                          {sectionIcon}
+                          <span className="font-body text-foreground font-medium">{section.label}</span>
+                        </div>
+                        <span className="font-body text-sm text-left sm:text-right sm:justify-self-end">
+                          {statusContent}
+                        </span>
                       </div>
-                      <span className="font-body text-sm text-left sm:text-right sm:justify-self-end">{statusContent}</span>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
                 {/* Selected pricing option */}
                 {selectedPricingOption &&
                   (() => {
@@ -2591,27 +2913,33 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       <div className="flex justify-between items-center">
                         <span className="font-display text-xl font-bold text-foreground">Total Price</span>
                         <span className="font-display text-2xl font-bold text-primary">
-                          {financials.currency !== "USD" ? financials.currency + " " : "$"}{finTotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          {financials.currency !== "USD" ? financials.currency + " " : "$"}
+                          {finTotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
                       </div>
                       {finDeposit > 0 && (
                         <div className="flex justify-between items-center">
                           <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
                           <span className="font-display text-lg font-bold text-accent">
-                            {financials.currency !== "USD" ? financials.currency + " " : "$"}{finDeposit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            {financials.currency !== "USD" ? financials.currency + " " : "$"}
+                            {finDeposit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </span>
                         </div>
                       )}
                       {financials.depositDueDate && (
                         <div className="flex justify-between items-center">
                           <span className="font-body text-sm text-muted-foreground">Deposit Due By</span>
-                          <span className="font-body text-sm font-medium text-foreground">{financials.depositDueDate}</span>
+                          <span className="font-body text-sm font-medium text-foreground">
+                            {financials.depositDueDate}
+                          </span>
                         </div>
                       )}
                       {financials.finalPaymentDueDate && (
                         <div className="flex justify-between items-center">
                           <span className="font-body text-sm text-muted-foreground">Final Balance Due By</span>
-                          <span className="font-body text-sm font-medium text-foreground">{financials.finalPaymentDueDate}</span>
+                          <span className="font-body text-sm font-medium text-foreground">
+                            {financials.finalPaymentDueDate}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -2621,7 +2949,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                 // Calculated / sum mode — compute from included + selected
                 // Base: auto-included single items (always counted)
                 const getPrice = (items: { id: string; price?: string }[], id: string) =>
-                  parseFloat(items.find(i => i.id === id)?.price?.replace(/[^0-9.-]/g, "") || "0");
+                  parseFloat(items.find((i) => i.id === id)?.price?.replace(/[^0-9.-]/g, "") || "0");
 
                 let baseTotal = 0;
                 let selectedTotal = 0;
@@ -2665,7 +2993,11 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           {hasPendingSelections ? "Current Subtotal" : "Estimated Total"}
                         </span>
                         <span className="font-display text-2xl font-bold text-primary">
-                          {currSymbol}{currentSubtotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          {currSymbol}
+                          {currentSubtotal.toLocaleString("en-US", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
                         </span>
                       </div>
                       {hasPendingSelections && (
@@ -2682,20 +3014,25 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                         <div className="flex justify-between items-center">
                           <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
                           <span className="font-display text-lg font-bold text-accent">
-                            {currSymbol}{finDeposit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            {currSymbol}
+                            {finDeposit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </span>
                         </div>
                       )}
                       {financials.depositDueDate && (
                         <div className="flex justify-between items-center">
                           <span className="font-body text-sm text-muted-foreground">Deposit Due By</span>
-                          <span className="font-body text-sm font-medium text-foreground">{financials.depositDueDate}</span>
+                          <span className="font-body text-sm font-medium text-foreground">
+                            {financials.depositDueDate}
+                          </span>
                         </div>
                       )}
                       {financials.finalPaymentDueDate && (
                         <div className="flex justify-between items-center">
                           <span className="font-body text-sm text-muted-foreground">Final Balance Due By</span>
-                          <span className="font-body text-sm font-medium text-foreground">{financials.finalPaymentDueDate}</span>
+                          <span className="font-body text-sm font-medium text-foreground">
+                            {financials.finalPaymentDueDate}
+                          </span>
                         </div>
                       )}
                     </div>
@@ -2706,7 +3043,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
               {data.paymentTerms && <p className="text-xs text-muted-foreground mb-6 font-body">{data.paymentTerms}</p>}
 
-              {financials.paymentNotes && <p className="text-xs text-muted-foreground mb-6 font-body">{financials.paymentNotes}</p>}
+              {financials.paymentNotes && (
+                <p className="text-xs text-muted-foreground mb-6 font-body">{financials.paymentNotes}</p>
+              )}
 
               {/* Validation error */}
               {validationError && (
@@ -2725,7 +3064,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                         size="lg"
                         className="text-lg px-10 py-6 h-auto w-full sm:w-auto"
                         onClick={() => {
-                          const firstMissing = requiredChoiceSections.find(s => !s.selectedId);
+                          const firstMissing = requiredChoiceSections.find((s) => !s.selectedId);
                           if (firstMissing) {
                             const el = document.getElementById(firstMissing.key);
                             if (el) {
@@ -2745,7 +3084,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                         size="lg"
                         className="text-lg px-10 py-6 h-auto w-full sm:w-auto"
                         onClick={() => {
-                          const missing = requiredChoiceSections.filter(s => !s.selectedId).map(s => s.label);
+                          const missing = requiredChoiceSections.filter((s) => !s.selectedId).map((s) => s.label);
                           if (missing.length > 0) {
                             setValidationError(`Please select an option for: ${missing.join(", ")}`);
                             return;
@@ -2764,7 +3103,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       className="text-lg px-10 py-6 h-auto w-full sm:w-auto"
                       onClick={() => {
                         if (!allSelectionsComplete) {
-                          const firstMissing = requiredChoiceSections.find(s => !s.selectedId);
+                          const firstMissing = requiredChoiceSections.find((s) => !s.selectedId);
                           if (firstMissing) {
                             const el = document.getElementById(firstMissing.key);
                             if (el) {
@@ -2779,7 +3118,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                         }
                       }}
                     >
-                      <CheckCircle2 className="h-5 w-5 mr-2" /> {allSelectionsComplete ? "Review & Approve" : "Complete Selections"}
+                      <CheckCircle2 className="h-5 w-5 mr-2" />{" "}
+                      {allSelectionsComplete ? "Review & Approve" : "Complete Selections"}
                     </Button>
                   )}
                   <Button
@@ -2800,7 +3140,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   </div>
                   <div>
                     <p className="font-display text-sm font-semibold text-foreground">Under Revision</p>
-                    <p className="text-xs text-muted-foreground font-body">Your travel advisor is updating this proposal. Check back soon.</p>
+                    <p className="text-xs text-muted-foreground font-body">
+                      Your travel advisor is updating this proposal. Check back soon.
+                    </p>
                   </div>
                 </div>
               )}
@@ -2832,7 +3174,9 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               <div>
                 <h3 className="font-display text-2xl font-bold text-foreground">{agent.name}</h3>
                 {agent.title && <p className="text-muted-foreground font-body mt-1">{agent.title}</p>}
-                {agent.agencyName && <p className="text-sm text-muted-foreground/80 font-body mt-0.5">{agent.agencyName}</p>}
+                {agent.agencyName && (
+                  <p className="text-sm text-muted-foreground/80 font-body mt-0.5">{agent.agencyName}</p>
+                )}
               </div>
             </div>
             <div className="flex items-center justify-center gap-4 text-sm font-body text-muted-foreground flex-wrap">
@@ -2903,51 +3247,70 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   <CheckCircle2 className="h-7 w-7 text-primary" />
                 </div>
                 <h2 className="font-display text-2xl font-bold text-foreground">Review Your Selections</h2>
-                <p className="text-sm text-muted-foreground font-body mt-1">Confirm everything looks good before approving.</p>
+                <p className="text-sm text-muted-foreground font-body mt-1">
+                  Confirm everything looks good before approving.
+                </p>
               </div>
 
               {/* Selection summary rows */}
               <div className="space-y-3 mb-6">
-                {sectionRegistry.filter(s => s.visible && s.items.length > 0).map((section) => {
-                  const isChoice = !isGroupBooking && section.items.length >= 2;
-                  const isSingle = section.items.length === 1;
-                  const effectiveId = isChoice ? section.selectedId : (isSingle ? section.items[0].id : "");
-                  const selectedItem = section.items.find(i => i.id === effectiveId);
-                  const itemName = (() => {
-                    if (section.key === "flights") {
-                      const opt = flightOptions.find(o => o.id === effectiveId);
-                      const dep = opt?.legs.find(l => l.type === "departure");
-                      return dep?.airline ? `${dep.airline} — ${dep.departureAirport?.split("–")[0]?.trim()} → ${dep.arrivalAirport?.split("–")[0]?.trim()}` : "Flight";
-                    }
-                    if (section.key === "accommodations") return accommodations.find(a => a.id === effectiveId)?.hotelName || "Hotel";
-                    if (section.key === "cruiseShips") return cruiseShips.find(s => s.id === effectiveId)?.shipName || "Cruise";
-                    if (section.key === "busTrips") return busTrips.find(b => b.id === effectiveId)?.routeName || "Bus";
-                    return "Selected";
-                  })();
-                  const sectionIcon = section.key === "flights" ? <Plane className="h-4 w-4 text-primary" />
-                    : section.key === "accommodations" ? <BedDouble className="h-4 w-4 text-primary" />
-                    : section.key === "cruiseShips" ? <Ship className="h-4 w-4 text-primary" />
-                    : section.key === "busTrips" ? <Bus className="h-4 w-4 text-primary" />
-                    : null;
+                {sectionRegistry
+                  .filter((s) => s.visible && s.items.length > 0)
+                  .map((section) => {
+                    const isChoice = !isGroupBooking && section.items.length >= 2;
+                    const isSingle = section.items.length === 1;
+                    const effectiveId = isChoice ? section.selectedId : isSingle ? section.items[0].id : "";
+                    const selectedItem = section.items.find((i) => i.id === effectiveId);
+                    const itemName = (() => {
+                      if (section.key === "flights") {
+                        const opt = flightOptions.find((o) => o.id === effectiveId);
+                        const dep = opt?.legs.find((l) => l.type === "departure");
+                        return dep?.airline
+                          ? `${dep.airline} — ${dep.departureAirport?.split("–")[0]?.trim()} → ${dep.arrivalAirport?.split("–")[0]?.trim()}`
+                          : "Flight";
+                      }
+                      if (section.key === "accommodations")
+                        return accommodations.find((a) => a.id === effectiveId)?.hotelName || "Hotel";
+                      if (section.key === "cruiseShips")
+                        return cruiseShips.find((s) => s.id === effectiveId)?.shipName || "Cruise";
+                      if (section.key === "busTrips")
+                        return busTrips.find((b) => b.id === effectiveId)?.routeName || "Bus";
+                      return "Selected";
+                    })();
+                    const sectionIcon =
+                      section.key === "flights" ? (
+                        <Plane className="h-4 w-4 text-primary" />
+                      ) : section.key === "accommodations" ? (
+                        <BedDouble className="h-4 w-4 text-primary" />
+                      ) : section.key === "cruiseShips" ? (
+                        <Ship className="h-4 w-4 text-primary" />
+                      ) : section.key === "busTrips" ? (
+                        <Bus className="h-4 w-4 text-primary" />
+                      ) : null;
 
-                  return (
-                    <div key={section.key} className="flex justify-between items-center py-3 border-b-2 border-border">
-                      <div className="flex items-center gap-2">
-                        {sectionIcon}
-                        <span className="font-body text-foreground font-medium">{section.label}</span>
+                    return (
+                      <div
+                        key={section.key}
+                        className="flex justify-between items-center py-3 border-b-2 border-border"
+                      >
+                        <div className="flex items-center gap-2">
+                          {sectionIcon}
+                          <span className="font-body text-foreground font-medium">{section.label}</span>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-foreground text-sm font-medium font-body flex items-center gap-1.5">
+                            <Check className="h-3 w-3 text-primary" />
+                            {isSingle ? "Included" : `Selected: ${itemName}`}
+                          </span>
+                          {selectedItem?.price && showItemizedPrices && (
+                            <span className="text-xs text-primary font-semibold">
+                              {fmtCurrency(selectedItem.price)}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <span className="text-foreground text-sm font-medium font-body flex items-center gap-1.5">
-                          <Check className="h-3 w-3 text-primary" />
-                          {isSingle ? "Included" : `Selected: ${itemName}`}
-                        </span>
-                        {selectedItem?.price && showItemizedPrices && (
-                          <span className="text-xs text-primary font-semibold">{fmtCurrency(selectedItem.price)}</span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
               </div>
 
               {/* Pricing summary */}
@@ -2963,10 +3326,19 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   for (const sec of sectionRegistry) {
                     if (!sec.visible || sec.items.length === 0) continue;
                     const effId = sec.items.length === 1 ? sec.items[0].id : sec.selectedId;
-                    if (effId) calc += parseFloat(sec.items.find(i => i.id === effId)?.price?.replace(/[^0-9.-]/g, "") || "0");
+                    if (effId)
+                      calc += parseFloat(sec.items.find((i) => i.id === effId)?.price?.replace(/[^0-9.-]/g, "") || "0");
                   }
-                  calc += data.pricing.reduce((sum, l) => sum + (parseFloat(l.amount.replace(/[^0-9.-]/g, "")) || 0), 0);
-                  if (selectedPricingOption) calc += parseFloat(pricingOptions.find(p => p.id === selectedPricingOption)?.totalPrice?.replace(/[^0-9.-]/g, "") || "0");
+                  calc += data.pricing.reduce(
+                    (sum, l) => sum + (parseFloat(l.amount.replace(/[^0-9.-]/g, "")) || 0),
+                    0,
+                  );
+                  if (selectedPricingOption)
+                    calc += parseFloat(
+                      pricingOptions
+                        .find((p) => p.id === selectedPricingOption)
+                        ?.totalPrice?.replace(/[^0-9.-]/g, "") || "0",
+                    );
                   displayTotal = calc;
                 }
 
@@ -2976,7 +3348,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       <div className="flex justify-between items-center">
                         <span className="font-display text-lg font-bold text-foreground">Total Price</span>
                         <span className="font-display text-xl font-bold text-primary">
-                          {currSymbol}{displayTotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          {currSymbol}
+                          {displayTotal.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
                       </div>
                     )}
@@ -2984,20 +3357,25 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       <div className="flex justify-between items-center">
                         <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
                         <span className="font-display text-base font-bold text-accent">
-                          {currSymbol}{finDeposit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                          {currSymbol}
+                          {finDeposit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
                       </div>
                     )}
                     {financials.depositDueDate && (
                       <div className="flex justify-between items-center">
                         <span className="font-body text-xs text-muted-foreground">Deposit Due By</span>
-                        <span className="font-body text-xs font-medium text-foreground">{financials.depositDueDate}</span>
+                        <span className="font-body text-xs font-medium text-foreground">
+                          {financials.depositDueDate}
+                        </span>
                       </div>
                     )}
                     {financials.finalPaymentDueDate && (
                       <div className="flex justify-between items-center">
                         <span className="font-body text-xs text-muted-foreground">Final Balance Due By</span>
-                        <span className="font-body text-xs font-medium text-foreground">{financials.finalPaymentDueDate}</span>
+                        <span className="font-body text-xs font-medium text-foreground">
+                          {financials.finalPaymentDueDate}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -3005,51 +3383,72 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               })()}
 
               {/* Terms checkbox */}
-              {!isEditor && tripId && !!(vis.terms && ((terms.showCancellation !== false && terms.cancellationPolicy?.trim()) || (terms.showInsurance !== false && terms.travelInsurance?.trim()) || (terms.showBookingTerms !== false && terms.bookingTerms?.trim()) || (terms.showLiability !== false && terms.liability?.trim()))) && (
-                <div className="flex items-start gap-3 py-3 mb-4">
-                  <input
-                    type="checkbox"
-                    id="review-terms-accept"
-                    checked={termsAccepted}
-                    onChange={(e) => setTermsAccepted(e.target.checked)}
-                    className="mt-1 h-4 w-4 rounded border-border accent-primary cursor-pointer"
-                  />
-                  <label htmlFor="review-terms-accept" className="text-sm text-muted-foreground font-body cursor-pointer leading-relaxed">
-                    I agree to the{" "}
-                    <button
-                      type="button"
-                      className="text-primary underline hover:text-primary/80 font-semibold"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        // Try terms_url from financials first, then scroll to terms section
-                        const termsUrl = (financials as any).termsUrl;
-                        if (termsUrl) {
-                          window.open(termsUrl, "_blank", "noopener,noreferrer");
-                        } else {
-                          // Scroll to the terms section on the proposal
-                          setShowReviewModal(false);
-                          setTimeout(() => {
-                            document.getElementById("terms")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                          }, 300);
-                        }
-                      }}
+              {!isEditor &&
+                tripId &&
+                !!(
+                  (terms.showCancellation !== false && terms.cancellationPolicy?.trim()) ||
+                  (terms.showInsurance !== false && terms.travelInsurance?.trim()) ||
+                  (terms.showBookingTerms !== false && terms.bookingTerms?.trim()) ||
+                  (terms.showLiability !== false && terms.liability?.trim())
+                ) && (
+                  <div className="flex items-start gap-3 py-3 mb-4">
+                    <input
+                      type="checkbox"
+                      id="review-terms-accept"
+                      checked={termsAccepted}
+                      onChange={(e) => setTermsAccepted(e.target.checked)}
+                      className="mt-1 h-4 w-4 rounded border-border accent-primary cursor-pointer"
+                    />
+                    <label
+                      htmlFor="review-terms-accept"
+                      className="text-sm text-muted-foreground font-body cursor-pointer leading-relaxed"
                     >
-                      Terms &amp; Conditions
-                    </button>
-                  </label>
-                </div>
-              )}
+                      I agree to the{" "}
+                      <button
+                        type="button"
+                        className="text-primary underline hover:text-primary/80 font-semibold"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          // Try terms_url from financials first, then scroll to terms section
+                          const termsUrl = (financials as any).termsUrl;
+                          if (termsUrl) {
+                            window.open(termsUrl, "_blank", "noopener,noreferrer");
+                          } else {
+                            // Scroll to the terms section on the proposal
+                            setShowReviewModal(false);
+                            setTimeout(() => {
+                              document.getElementById("terms")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                            }, 300);
+                          }
+                        }}
+                      >
+                        Terms &amp; Conditions
+                      </button>
+                    </label>
+                  </div>
+                )}
 
               <div className="flex flex-col gap-3">
                 <Button
                   variant="travel"
                   size="lg"
                   className="w-full text-base py-5 h-auto"
-                  disabled={(!isEditor && tripId && !!(vis.terms && ((terms.showCancellation !== false && terms.cancellationPolicy?.trim()) || (terms.showInsurance !== false && terms.travelInsurance?.trim()) || (terms.showBookingTerms !== false && terms.bookingTerms?.trim()) || (terms.showLiability !== false && terms.liability?.trim()))) && !termsAccepted) || approving}
+                  disabled={
+                    (!isEditor &&
+                      tripId &&
+                      !!(
+                        (terms.showCancellation !== false && terms.cancellationPolicy?.trim()) ||
+                        (terms.showInsurance !== false && terms.travelInsurance?.trim()) ||
+                        (terms.showBookingTerms !== false && terms.bookingTerms?.trim()) ||
+                        (terms.showLiability !== false && terms.liability?.trim())
+                      ) &&
+                      !termsAccepted) ||
+                    approving
+                  }
                   onClick={async () => {
                     // Final guard
-                    const missing = requiredChoiceSections.filter(s => !s.selectedId).map(s => s.label);
+                    const missing = requiredChoiceSections.filter((s) => !s.selectedId).map((s) => s.label);
                     if (missing.length > 0) {
                       setValidationError(`Please select an option for: ${missing.join(", ")}`);
                       setShowReviewModal(false);
@@ -3063,12 +3462,21 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                         if (!sec.visible || sec.items.length === 0) continue;
                         const effectiveId = sec.items.length === 1 ? sec.items[0].id : sec.selectedId;
                         if (effectiveId) {
-                          totalPrice += parseFloat(sec.items.find(i => i.id === effectiveId)?.price?.replace(/[^0-9.-]/g, "") || "0");
+                          totalPrice += parseFloat(
+                            sec.items.find((i) => i.id === effectiveId)?.price?.replace(/[^0-9.-]/g, "") || "0",
+                          );
                         }
                       }
-                      totalPrice += data.pricing.reduce((sum, l) => sum + (parseFloat(l.amount.replace(/[^0-9.-]/g, "")) || 0), 0);
+                      totalPrice += data.pricing.reduce(
+                        (sum, l) => sum + (parseFloat(l.amount.replace(/[^0-9.-]/g, "")) || 0),
+                        0,
+                      );
                       if (selectedPricingOption) {
-                        totalPrice += parseFloat(pricingOptions.find(p => p.id === selectedPricingOption)?.totalPrice?.replace(/[^0-9.-]/g, "") || "0");
+                        totalPrice += parseFloat(
+                          pricingOptions
+                            .find((p) => p.id === selectedPricingOption)
+                            ?.totalPrice?.replace(/[^0-9.-]/g, "") || "0",
+                        );
                       }
                       const finTotal = parseFloat(financials.totalPrice?.replace(/[^0-9.-]/g, "") || "0");
                       const finDeposit = parseFloat(financials.depositAmount?.replace(/[^0-9.-]/g, "") || "0");
@@ -3076,16 +3484,19 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
                       // Build detailed selection data for webhook
                       const sectionDetails = sectionRegistry
-                        .filter(s => s.visible && s.items.length > 0)
-                        .map(s => {
+                        .filter((s) => s.visible && s.items.length > 0)
+                        .map((s) => {
                           const effId = s.items.length === 1 ? s.items[0].id : s.selectedId;
                           if (!effId) return null;
-                          const item = s.items.find(i => i.id === effId);
+                          const item = s.items.find((i) => i.id === effId);
                           let name = "Selected";
-                          if (s.key === "flights") name = flightOptions.find(f => f.id === effId)?.legs?.[0]?.airline || "Flight";
-                          if (s.key === "accommodations") name = accommodations.find(a => a.id === effId)?.hotelName || "Hotel";
-                          if (s.key === "cruiseShips") name = cruiseShips.find(c => c.id === effId)?.shipName || "Cruise";
-                          if (s.key === "busTrips") name = busTrips.find(b => b.id === effId)?.routeName || "Bus";
+                          if (s.key === "flights")
+                            name = flightOptions.find((f) => f.id === effId)?.legs?.[0]?.airline || "Flight";
+                          if (s.key === "accommodations")
+                            name = accommodations.find((a) => a.id === effId)?.hotelName || "Hotel";
+                          if (s.key === "cruiseShips")
+                            name = cruiseShips.find((c) => c.id === effId)?.shipName || "Cruise";
+                          if (s.key === "busTrips") name = busTrips.find((b) => b.id === effId)?.routeName || "Bus";
                           return {
                             section: s.label,
                             sectionKey: s.key,
@@ -3098,7 +3509,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                         .filter(Boolean);
 
                       const selectionSummary = sectionDetails
-                        .map(d => `${d!.section}: ${d!.selectedName}`)
+                        .map((d) => `${d!.section}: ${d!.selectedName}`)
                         .join(" | ");
 
                       if (!isEditor && tripId) {
@@ -3136,16 +3547,16 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   }}
                 >
                   {approving ? (
-                    <><Loader2 className="h-5 w-5 mr-2 animate-spin" /> Processing...</>
+                    <>
+                      <Loader2 className="h-5 w-5 mr-2 animate-spin" /> Processing...
+                    </>
                   ) : (
-                    <><CheckCircle2 className="h-5 w-5 mr-2" /> Confirm Approval</>
+                    <>
+                      <CheckCircle2 className="h-5 w-5 mr-2" /> Confirm Approval
+                    </>
                   )}
                 </Button>
-                <Button
-                  variant="travel-ghost"
-                  className="w-full"
-                  onClick={() => setShowReviewModal(false)}
-                >
+                <Button variant="travel-ghost" className="w-full" onClick={() => setShowReviewModal(false)}>
                   Go Back
                 </Button>
               </div>
@@ -3178,8 +3589,16 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     <Check className="h-7 w-7 text-primary" />
                   </div>
                   <h2 className="font-display text-2xl font-bold text-foreground mb-2">Message Sent!</h2>
-                  <p className="text-sm text-muted-foreground font-body mb-6">Your travel advisor will get back to you shortly.</p>
-                  <Button variant="travel-ghost" onClick={() => { setShowAskQuestion(false); setQuestionSent(false); }}>
+                  <p className="text-sm text-muted-foreground font-body mb-6">
+                    Your travel advisor will get back to you shortly.
+                  </p>
+                  <Button
+                    variant="travel-ghost"
+                    onClick={() => {
+                      setShowAskQuestion(false);
+                      setQuestionSent(false);
+                    }}
+                  >
                     Close
                   </Button>
                 </div>
@@ -3188,9 +3607,14 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   <div className="flex items-center justify-between mb-6">
                     <div>
                       <h2 className="font-display text-xl font-bold text-foreground">Ask a Question</h2>
-                      <p className="text-sm text-muted-foreground font-body mt-1">We'll get back to you as soon as possible.</p>
+                      <p className="text-sm text-muted-foreground font-body mt-1">
+                        We'll get back to you as soon as possible.
+                      </p>
                     </div>
-                    <button onClick={() => setShowAskQuestion(false)} className="text-muted-foreground hover:text-foreground">
+                    <button
+                      onClick={() => setShowAskQuestion(false)}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
                       <X className="h-5 w-5" />
                     </button>
                   </div>
@@ -3223,10 +3647,12 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       <>
                         {!travelerName && (
                           <div>
-                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Name</label>
+                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
+                              Name
+                            </label>
                             <input
                               value={questionForm.name}
-                              onChange={e => setQuestionForm(prev => ({ ...prev, name: e.target.value }))}
+                              onChange={(e) => setQuestionForm((prev) => ({ ...prev, name: e.target.value }))}
                               className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                               placeholder="Your name"
                             />
@@ -3234,11 +3660,13 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                         )}
                         {!travelerEmail && (
                           <div>
-                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Email</label>
+                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
+                              Email
+                            </label>
                             <input
                               type="email"
                               value={questionForm.email}
-                              onChange={e => setQuestionForm(prev => ({ ...prev, email: e.target.value }))}
+                              onChange={(e) => setQuestionForm((prev) => ({ ...prev, email: e.target.value }))}
                               className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                               placeholder="your@email.com"
                             />
@@ -3247,18 +3675,29 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       </>
                     )}
                     <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Message *</label>
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
+                        Message *
+                      </label>
                       <textarea
                         value={questionForm.message}
-                        onChange={e => setQuestionForm(prev => ({ ...prev, message: e.target.value }))}
+                        onChange={(e) => setQuestionForm((prev) => ({ ...prev, message: e.target.value }))}
                         rows={3}
                         required
                         className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         placeholder="What would you like to know?"
                       />
                     </div>
-                    <Button type="submit" variant="travel" className="w-full" disabled={questionSending || !questionForm.message.trim()}>
-                      {questionSending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
+                    <Button
+                      type="submit"
+                      variant="travel"
+                      className="w-full"
+                      disabled={questionSending || !questionForm.message.trim()}
+                    >
+                      {questionSending ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Send className="h-4 w-4 mr-2" />
+                      )}
                       {questionSending ? "Sending..." : "Send Message"}
                     </Button>
                   </form>
@@ -3293,8 +3732,19 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     <Check className="h-7 w-7 text-primary" />
                   </div>
                   <h2 className="font-display text-2xl font-bold text-foreground mb-2">Revision Request Sent!</h2>
-                  <p className="text-sm text-muted-foreground font-body mb-6">Your revision request has been sent to your travel advisor. They will update the proposal and follow up with you shortly.</p>
-                  <Button variant="travel-ghost" onClick={() => { setShowRevisionModal(false); setRevisionSent(false); setRevisionForm({ name: travelerName, email: travelerEmail, message: "" }); setSelectedRevCategories([]); }}>
+                  <p className="text-sm text-muted-foreground font-body mb-6">
+                    Your revision request has been sent to your travel advisor. They will update the proposal and follow
+                    up with you shortly.
+                  </p>
+                  <Button
+                    variant="travel-ghost"
+                    onClick={() => {
+                      setShowRevisionModal(false);
+                      setRevisionSent(false);
+                      setRevisionForm({ name: travelerName, email: travelerEmail, message: "" });
+                      setSelectedRevCategories([]);
+                    }}
+                  >
                     Close
                   </Button>
                 </div>
@@ -3303,9 +3753,14 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   <div className="flex items-center justify-between mb-6">
                     <div>
                       <h2 className="font-display text-xl font-bold text-foreground">Request Revisions</h2>
-                      <p className="text-sm text-muted-foreground font-body mt-1">Let your advisor know what you'd like changed.</p>
+                      <p className="text-sm text-muted-foreground font-body mt-1">
+                        Let your advisor know what you'd like changed.
+                      </p>
                     </div>
-                    <button onClick={() => setShowRevisionModal(false)} className="text-muted-foreground hover:text-foreground">
+                    <button
+                      onClick={() => setShowRevisionModal(false)}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
                       <X className="h-5 w-5" />
                     </button>
                   </div>
@@ -3319,15 +3774,18 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       try {
                         // Build current selections for context
                         const currentSelections = sectionRegistry
-                          .filter(s => s.visible && s.items.length > 0)
-                          .map(s => {
+                          .filter((s) => s.visible && s.items.length > 0)
+                          .map((s) => {
                             const effId = s.items.length === 1 ? s.items[0].id : s.selectedId;
                             if (!effId) return null;
                             let name = "Selected";
-                            if (s.key === "flights") name = flightOptions.find(f => f.id === effId)?.legs?.[0]?.airline || "Flight";
-                            if (s.key === "accommodations") name = accommodations.find(a => a.id === effId)?.hotelName || "Hotel";
-                            if (s.key === "cruiseShips") name = cruiseShips.find(c => c.id === effId)?.shipName || "Cruise";
-                            if (s.key === "busTrips") name = busTrips.find(b => b.id === effId)?.routeName || "Bus";
+                            if (s.key === "flights")
+                              name = flightOptions.find((f) => f.id === effId)?.legs?.[0]?.airline || "Flight";
+                            if (s.key === "accommodations")
+                              name = accommodations.find((a) => a.id === effId)?.hotelName || "Hotel";
+                            if (s.key === "cruiseShips")
+                              name = cruiseShips.find((c) => c.id === effId)?.shipName || "Cruise";
+                            if (s.key === "busTrips") name = busTrips.find((b) => b.id === effId)?.routeName || "Bus";
                             return { section: s.label, selectedName: name };
                           })
                           .filter(Boolean);
@@ -3368,10 +3826,12 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       <>
                         {!travelerName && (
                           <div>
-                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Name</label>
+                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
+                              Name
+                            </label>
                             <input
                               value={revisionForm.name}
-                              onChange={e => setRevisionForm(prev => ({ ...prev, name: e.target.value }))}
+                              onChange={(e) => setRevisionForm((prev) => ({ ...prev, name: e.target.value }))}
                               className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                               placeholder="Your name"
                             />
@@ -3379,11 +3839,13 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                         )}
                         {!travelerEmail && (
                           <div>
-                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Email</label>
+                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
+                              Email
+                            </label>
                             <input
                               type="email"
                               value={revisionForm.email}
-                              onChange={e => setRevisionForm(prev => ({ ...prev, email: e.target.value }))}
+                              onChange={(e) => setRevisionForm((prev) => ({ ...prev, email: e.target.value }))}
                               className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                               placeholder="your@email.com"
                             />
@@ -3392,13 +3854,19 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       </>
                     )}
                     <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block font-body">What would you like changed?</label>
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block font-body">
+                        What would you like changed?
+                      </label>
                       <div className="flex flex-wrap gap-2 mb-3">
                         {revisionCategories.map((cat) => (
                           <button
                             key={cat.id}
                             type="button"
-                            onClick={() => setSelectedRevCategories(prev => prev.includes(cat.id) ? prev.filter(c => c !== cat.id) : [...prev, cat.id])}
+                            onClick={() =>
+                              setSelectedRevCategories((prev) =>
+                                prev.includes(cat.id) ? prev.filter((c) => c !== cat.id) : [...prev, cat.id],
+                              )
+                            }
                             className={`px-3 py-1.5 rounded-full text-xs font-body border transition-colors ${
                               selectedRevCategories.includes(cat.id)
                                 ? "bg-primary text-primary-foreground border-primary"
@@ -3411,18 +3879,29 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       </div>
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">Details *</label>
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
+                        Details *
+                      </label>
                       <textarea
                         value={revisionForm.message}
-                        onChange={e => setRevisionForm(prev => ({ ...prev, message: e.target.value }))}
+                        onChange={(e) => setRevisionForm((prev) => ({ ...prev, message: e.target.value }))}
                         rows={4}
                         required
                         className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         placeholder="Please describe what you'd like changed..."
                       />
                     </div>
-                    <Button type="submit" variant="travel" className="w-full" disabled={revisionSending || !revisionForm.message.trim()}>
-                      {revisionSending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
+                    <Button
+                      type="submit"
+                      variant="travel"
+                      className="w-full"
+                      disabled={revisionSending || !revisionForm.message.trim()}
+                    >
+                      {revisionSending ? (
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      ) : (
+                        <Send className="h-4 w-4 mr-2" />
+                      )}
                       {revisionSending ? "Sending..." : "Send Revision Request"}
                     </Button>
                   </form>
@@ -3436,7 +3915,11 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
       {/* ═══ FULL-SCREEN SUCCESS OVERLAY ═══ */}
       {approveSuccess && (
         <div className="fixed inset-0 z-[200] bg-background flex items-center justify-center px-6">
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center max-w-md"
+          >
             <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-8">
               <CheckCircle2 className="h-12 w-12 text-primary" />
             </div>
@@ -3469,18 +3952,23 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
       )}
 
       {/* ═══ FLOATING UTILITY — Ask a Question only ═══ */}
-      {!isGroupBooking && !approveSuccess && !isReadOnly && !isEditor && tripStatus !== "revision_requested" && tripStatus !== "reopened" && (
-        <div className="fixed bottom-6 right-6 z-[100] hidden sm:block">
-          <Button
-            variant="travel-ghost"
-            size="sm"
-            className="rounded-full shadow-md bg-background/95 border border-border hover:bg-muted text-xs px-3.5"
-            onClick={() => setShowAskQuestion(true)}
-          >
-            <HelpCircle className="h-4 w-4 mr-1.5" /> Ask a Question
-          </Button>
-        </div>
-      )}
+      {!isGroupBooking &&
+        !approveSuccess &&
+        !isReadOnly &&
+        !isEditor &&
+        tripStatus !== "revision_requested" &&
+        tripStatus !== "reopened" && (
+          <div className="fixed bottom-6 right-6 z-[100] hidden sm:block">
+            <Button
+              variant="travel-ghost"
+              size="sm"
+              className="rounded-full shadow-md bg-background/95 border border-border hover:bg-muted text-xs px-3.5"
+              onClick={() => setShowAskQuestion(true)}
+            >
+              <HelpCircle className="h-4 w-4 mr-1.5" /> Ask a Question
+            </Button>
+          </div>
+        )}
 
       <Lightbox
         images={lightboxImages}
