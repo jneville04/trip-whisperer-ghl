@@ -1334,7 +1334,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                             <div className="flex items-center gap-2 flex-wrap">
                               {opt.legs.find((l) => l.type === "departure")?.date && (
                                 <span className="text-xs text-muted-foreground font-body bg-background border border-border px-3 py-1 rounded-full">
-                                  Departs {opt.legs.find((l) => l.type === "departure")?.date}
+                                  Departs: {opt.legs.find((l) => l.type === "departure")?.date}
                                 </span>
                               )}
                               {opt.legs.find((l) => l.type === "return")?.date && (
