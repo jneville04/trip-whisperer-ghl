@@ -2564,7 +2564,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           </p>
                         </div>
                         <div
-                          className="px-6 py-5 text-[16px] text-foreground font-body leading-relaxed prose prose-sm max-w-none"
+                          className="px-6 py-5 text-[15px] text-foreground font-body leading-relaxed prose prose-sm max-w-none"
                           dangerouslySetInnerHTML={{ __html: terms.cancellationPolicy }}
                         />
                       </div>
@@ -2578,7 +2578,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           </p>
                         </div>
                         <div
-                          className="px-6 py-5 text-[16px] text-foreground font-body leading-relaxed prose prose-sm max-w-none"
+                          className="px-6 py-5 text-[15px] text-foreground font-body leading-relaxed prose prose-sm max-w-none"
                           dangerouslySetInnerHTML={{ __html: terms.travelInsurance }}
                         />
                       </div>
@@ -2592,7 +2592,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           </p>
                         </div>
                         <div
-                          className="px-6 py-5 text-[16px] text-foreground font-body leading-relaxed prose prose-sm max-w-none"
+                          className="px-6 py-5 text-[15px] text-foreground font-body leading-relaxed prose prose-sm max-w-none"
                           dangerouslySetInnerHTML={{ __html: terms.bookingTerms }}
                         />
                       </div>
@@ -2606,7 +2606,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           </p>
                         </div>
                         <div
-                          className="px-6 py-5 text-[16px] text-foreground font-body leading-relaxed prose prose-sm max-w-none"
+                          className="px-6 py-5 text-[15px] text-foreground font-body leading-relaxed prose prose-sm max-w-none"
                           dangerouslySetInnerHTML={{ __html: terms.liability }}
                         />
                       </div>
