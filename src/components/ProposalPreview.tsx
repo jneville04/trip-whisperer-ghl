@@ -2920,7 +2920,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       {finDeposit > 0 && (
                         <div className="flex justify-between items-center">
                           <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
-                          <span className="font-display text-lg font-bold text-accent">
+                          <span className="font-display text-lg font-bold text-primary">
                             {financials.currency !== "USD" ? financials.currency + " " : "$"}
                             {finDeposit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </span>
@@ -3013,7 +3013,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       {finDeposit > 0 && (
                         <div className="flex justify-between items-center">
                           <span className="font-body text-sm text-muted-foreground">Deposit Due</span>
-                          <span className="font-display text-lg font-bold text-accent">
+                          <span className="font-display text-lg font-bold text-primpary">
                             {currSymbol}
                             {finDeposit.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                           </span>
