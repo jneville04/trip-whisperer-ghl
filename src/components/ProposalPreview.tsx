@@ -1647,6 +1647,33 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               </div>
                             )}
                           </div>
+                          <div className="bg-muted/40 border-t-2 border-border px-5 sm:px-7 py-3.5 flex items-center justify-between">
+                            <div className="flex items-center gap-4 text-xs text-muted-foreground font-body flex-wrap">
+                              {ship.embarkationDate && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> Embark: {ship.embarkationDate}</span>}
+                              {ship.disembarkationDate && <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> Disembark: {ship.disembarkationDate}</span>}
+                              {ship.nights && <span className="text-primary font-semibold">{formatNightsLabel(ship.nights)}</span>}
+                            </div>
+                            {cruiseIsChoice && !isReadOnly && (
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                {isSelected ? (
+                                  <>
+                                    <Button variant="travel" size="sm" className="text-xs h-8" onClick={(e) => e.stopPropagation()}>
+                                      <Check className="h-3 w-3 mr-1" /> Selected
+                                    </Button>
+                                    <Button variant="travel-ghost" size="sm" className="text-xs text-destructive hover:text-destructive h-8"
+                                      onClick={(e) => { e.stopPropagation(); setSelectedCruise(""); }}>
+                                      ✕
+                                    </Button>
+                                  </>
+                                ) : (
+                                  <Button variant="travel" size="sm" className="text-xs h-8 font-semibold"
+                                    onClick={(e) => { e.stopPropagation(); setSelectedCruise(ship.id); }}>
+                                    Select This Option
+                                  </Button>
+                                )}
+                              </div>
+                            )}
+                          </div>
                         </motion.div>
                       );
                     })}
