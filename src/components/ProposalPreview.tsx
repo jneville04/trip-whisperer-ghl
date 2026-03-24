@@ -767,7 +767,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   e.stopPropagation();
                   openLightbox(allHeroImgs, 0);
                 }}
-                className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 md:hidden"
+                className="absolute bottom-4 right-4 z-20 flex items-center gap-1.5 hidden"
                 style={{
                   background: "rgba(0,0,0,0.55)",
                   color: "white",
