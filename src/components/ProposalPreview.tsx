@@ -1581,29 +1581,6 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               {ship.nights && (
                                 <p className="text-sm text-primary font-semibold font-body mt-2">{formatNightsLabel(ship.nights)}</p>
                               )}
-                              <div className="flex-1" />
-                              {cruiseIsChoice && !isReadOnly && (
-                                <div className="flex flex-wrap items-center justify-end mt-5 pt-4 border-t-2 border-border gap-y-2">
-                                  <div className="flex items-center gap-1.5">
-                                    {isSelected ? (
-                                      <>
-                                        <Button variant="travel" size="sm" className="text-xs h-8" onClick={(e) => e.stopPropagation()}>
-                                          <Check className="h-3 w-3 mr-1" /> Selected
-                                        </Button>
-                                        <Button variant="travel-ghost" size="sm" className="text-xs text-destructive hover:text-destructive h-8"
-                                          onClick={(e) => { e.stopPropagation(); setSelectedCruise(""); }}>
-                                          ✕
-                                        </Button>
-                                      </>
-                                    ) : (
-                                      <Button variant="travel" size="sm" className="text-xs h-8 font-semibold"
-                                        onClick={(e) => { e.stopPropagation(); setSelectedCruise(ship.id); }}>
-                                        Select This Option
-                                      </Button>
-                                    )}
-                                  </div>
-                                </div>
-                              )}
                             </div>
                             {/* RIGHT — photo stack, same as hotel */}
                             {showShipPhotos && allShipImages.length > 0 && (
