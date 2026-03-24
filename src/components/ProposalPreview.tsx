@@ -1339,7 +1339,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                               )}
                               {opt.legs.find((l) => l.type === "return")?.date && (
                                 <span className="text-xs text-muted-foreground font-body bg-background border border-border px-3 py-1 rounded-full">
-                                  Returns {opt.legs.find((l) => l.type === "return")?.date}
+                                  Returns: {opt.legs.find((l) => l.type === "return")?.date}
                                 </span>
                               )}
                             </div>
