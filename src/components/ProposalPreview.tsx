@@ -3005,12 +3005,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               })()}
 
               {/* Terms checkbox */}
-              {!isEditor && tripId && !!(
-                (terms.showCancellation !== false && terms.cancellationPolicy?.trim()) ||
-                (terms.showInsurance !== false && terms.travelInsurance?.trim()) ||
-                (terms.showBookingTerms !== false && terms.bookingTerms?.trim()) ||
-                (terms.showLiability !== false && terms.liability?.trim())
-              ) && (
+              {!isEditor && tripId && !!(vis.terms && ((terms.showCancellation !== false && terms.cancellationPolicy?.trim()) || (terms.showInsurance !== false && terms.travelInsurance?.trim()) || (terms.showBookingTerms !== false && terms.bookingTerms?.trim()) || (terms.showLiability !== false && terms.liability?.trim()))) && (
                 <div className="flex items-start gap-3 py-3 mb-4">
                   <input
                     type="checkbox"
