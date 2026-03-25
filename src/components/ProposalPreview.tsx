@@ -3235,7 +3235,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 30, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              className="bg-background rounded-2xl border border-border shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-8"
+              className="bg-background rounded-2xl border border-border shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto overscroll-contain p-8"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="text-center mb-6">
