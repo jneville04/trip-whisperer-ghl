@@ -435,6 +435,7 @@ export type Database = {
           org_id: string | null
           public_slug: string | null
           published_data: Json | null
+          section_selections: Json | null
           status: string | null
           trashed_at: string | null
           traveler_email: string
@@ -451,6 +452,7 @@ export type Database = {
           org_id?: string | null
           public_slug?: string | null
           published_data?: Json | null
+          section_selections?: Json | null
           status?: string | null
           trashed_at?: string | null
           traveler_email?: string
@@ -467,6 +469,7 @@ export type Database = {
           org_id?: string | null
           public_slug?: string | null
           published_data?: Json | null
+          section_selections?: Json | null
           status?: string | null
           trashed_at?: string | null
           traveler_email?: string

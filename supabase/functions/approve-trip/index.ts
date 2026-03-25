@@ -110,10 +110,21 @@ Deno.serve(async (req) => {
     const proposalUrl = `${siteUrl}/view/${trip.public_slug}`;
 
     // 2. UPDATE TRIP STATUS
+    // Build section_selections map from sectionDetails
+    const sectionSelections: Record<string, string> = {};
+    if (sectionDetails && Array.isArray(sectionDetails)) {
+      for (const d of sectionDetails) {
+        if (d.sectionKey && d.selectedId) {
+          sectionSelections[d.sectionKey] = d.selectedId;
+        }
+      }
+    }
+
     const { error: updateError } = await supabase
       .from("trips")
       .update({
         status: "approved",
+        section_selections: sectionSelections,
         published_data: {
           ...publishedData,
           approvedAt: approvedAt || new Date().toISOString(),
