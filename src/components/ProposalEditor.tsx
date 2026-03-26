@@ -94,6 +94,10 @@ function CollapsibleSection({
         setOpen(true);
         setTimeout(() => {
           sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+          // Deep sync: if itemIndex is provided, dispatch a sub-item focus event
+          if (detail.itemIndex !== undefined) {
+            window.dispatchEvent(new CustomEvent("editor-focus-item", { detail: { sectionKey, itemIndex: detail.itemIndex } }));
+          }
         }, 100);
       }
     };
