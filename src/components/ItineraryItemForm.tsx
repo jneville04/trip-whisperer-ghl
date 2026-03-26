@@ -63,7 +63,7 @@ export function SourceSelector({ proposalData, onSelect, onCancel, builderContex
           <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => setStep("pick")}>Back</Button>
         </div>
         {/* Flight options */}
-        {(proposalData.flightOptions || []).map((fo) => {
+        {hasFlights && (proposalData.flightOptions || []).map((fo) => {
           const firstLeg = fo.legs?.[0];
           const label = firstLeg ? `✈️ ${firstLeg.departureAirport || "?"} → ${firstLeg.arrivalAirport || "?"}` : "✈️ Flight";
           return (
