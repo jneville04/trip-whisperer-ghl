@@ -375,12 +375,15 @@ export interface ProposalData {
   sectionSelections?: SectionSelections;
 }
 
-export const createActivity = (type: Activity["type"] = "activity"): Activity => ({
+export const createActivity = (type: Activity["type"] = "activity", source: ItineraryItemSource = "itinerary"): Activity => ({
   id: crypto.randomUUID(),
   time: "",
   title: "",
   description: "",
   type,
+  source,
+  status: "included",
+  fields: {},
 });
 
 export const createDay = (dayNumber: number): ItineraryDay => ({
