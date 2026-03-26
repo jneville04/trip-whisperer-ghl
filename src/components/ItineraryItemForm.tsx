@@ -373,7 +373,7 @@ export function ItemPreviewSummary({ item }: { item: Activity }) {
         <Badge variant="secondary" className="text-[9px] h-4 px-1.5 shrink-0">From Group Trip</Badge>
       )}
       {item.status === "optional" && (
-        <Badge variant="outline" className="text-[9px] h-4 px-1.5 shrink-0 border-amber-400 text-amber-600">Optional</Badge>
+        <Badge variant="outline" className="text-[9px] h-4 px-1.5 shrink-0 border-accent text-accent-foreground">Optional</Badge>
       )}
       {item.price && (
         <span className="text-[10px] text-primary font-semibold font-body shrink-0">${item.price}</span>
