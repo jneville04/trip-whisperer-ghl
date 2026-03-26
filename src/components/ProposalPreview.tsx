@@ -1248,7 +1248,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                 : "border-border hover:border-primary/40 cursor-pointer hover:shadow-[0_18px_34px_-16px_hsl(var(--foreground)/0.35)]"
                               : "border-border"
                           }`}
-                          onClick={() => flightsIsChoice && setSelectedFlight(isSelected ? "" : opt.id)}
+                          onClick={(e) => {
+                            if (isEditor) { e.stopPropagation(); focusEditorSection("flights", optIdx); }
+                            else if (flightsIsChoice) setSelectedFlight(isSelected ? "" : opt.id);
+                          }}
                         >
                           {/* TOP BAR — airline + price */}
                           <div className="bg-muted/60 border-b-2 border-border px-5 py-3.5 flex items-center justify-between">
