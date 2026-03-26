@@ -274,7 +274,17 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 }
 
 // Agent Financials Accordion - wraps cost/commission/markup in a collapsed section
-function AgentFinancialsAccordion({ pricing, onChange }: { pricing: AgentPricing | undefined; onChange: (ap: AgentPricing) => void }) {
+function AgentFinancialsAccordion({ pricing, onChange, itemPrice }: { pricing: AgentPricing | undefined; onChange: (ap: AgentPricing) => void; itemPrice?: string }) {
+  // Auto-populate cost from item price when cost is empty
+  const effectivePricing = pricing || { cost: "", commission: "", markupType: "flat" as const, markupValue: "" };
+  const handleChange = (ap: AgentPricing) => {
+    onChange(ap);
+  };
+  // If itemPrice changed and cost is empty, auto-fill
+  const resolvedPricing = {
+    ...effectivePricing,
+    cost: effectivePricing.cost || itemPrice || "",
+  };
   return (
     <Accordion type="single" collapsible className="mt-2">
       <AccordionItem value="agent-financials" className="border-0">

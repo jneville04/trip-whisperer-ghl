@@ -122,6 +122,10 @@ export default function ClientView() {
         const pubData = r.published_data as any;
         if (r.traveler_email) pubData.clientEmail = r.traveler_email;
         if (r.traveler_phone) pubData.clientPhone = r.traveler_phone;
+        // Merge saved section_selections so returning approved clients see their choices
+        if (r.section_selections && typeof r.section_selections === "object") {
+          pubData.sectionSelections = { ...(pubData.sectionSelections || {}), ...r.section_selections };
+        }
         setData(pubData as ProposalData);
         setLoading(false);
         return;
