@@ -43,6 +43,8 @@ export default function EditorPage() {
   const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dataRef = useRef<ProposalData>(data);
   dataRef.current = data;
+  const [travelerEmail, setTravelerEmail] = useState("");
+  const [travelerPhone, setTravelerPhone] = useState("");
 
   const handleEditorSubPage = useCallback((page: EditorSubPage | null) => {
     setEditorSubPage(page);
