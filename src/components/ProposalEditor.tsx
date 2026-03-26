@@ -84,8 +84,25 @@ function CollapsibleSection({
   onCustomSubtitleChange?: (val: string) => void;
 }) {
   const [open, setOpen] = useState(defaultOpen);
+  const sectionRef = useRef<HTMLDivElement>(null);
+
+  // Listen for focus events from preview
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail?.sectionKey === sectionKey) {
+        setOpen(true);
+        setTimeout(() => {
+          sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      }
+    };
+    window.addEventListener("editor-focus-section", handler);
+    return () => window.removeEventListener("editor-focus-section", handler);
+  }, [sectionKey]);
+
   return (
-    <Card className={`border-border/50 ${visible === false ? "opacity-50" : ""}`}>
+    <Card ref={sectionRef} data-section-key={sectionKey} className={`border-border/50 ${visible === false ? "opacity-50" : ""}`}>
       <CardHeader className="py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer flex-1" onClick={() => setOpen(!open)}>
