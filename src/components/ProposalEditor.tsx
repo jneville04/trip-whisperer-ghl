@@ -1852,7 +1852,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                             </div>
                           )}
                           {data.days.map((day, dayIdx) => (
-                            <CollapsibleHotel
+                            <CollapsibleHotel sectionKey="itinerary" itemIndex={dayIdx}
                               key={day.id}
                               hotelName={`Day ${dayIdx + 1}${day.title ? `: ${day.title}` : ""}`}
                               location={day.location}
