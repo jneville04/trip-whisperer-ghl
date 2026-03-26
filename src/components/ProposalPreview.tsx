@@ -119,8 +119,8 @@ function getActivityIcon(type: Activity["type"]) {
 }
 
 // Dispatch event to focus editor section when clicking preview sections
-const focusEditorSection = (sectionKey: string) => {
-  window.dispatchEvent(new CustomEvent("editor-focus-section", { detail: { sectionKey } }));
+const focusEditorSection = (sectionKey: string, itemIndex?: number) => {
+  window.dispatchEvent(new CustomEvent("editor-focus-section", { detail: { sectionKey, itemIndex } }));
 };
 
 export type EditorSubPage = "checkout" | "approve" | "revisions";
