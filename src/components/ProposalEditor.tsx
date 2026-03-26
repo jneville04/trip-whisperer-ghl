@@ -425,9 +425,19 @@ export default function ProposalEditor({ data, onChange }: Props) {
     updateDay(dayIndex, day);
   };
 
-  const addActivity = (dayIndex: number) => {
+  const addActivity = (dayIndex: number, item?: Activity) => {
     const day = { ...data.days[dayIndex] };
-    day.activities = [...day.activities, createActivity()];
+    const newItem = item || createActivity();
+    day.activities = [...day.activities, newItem];
+    updateDay(dayIndex, day);
+    setExpandedItemId(newItem.id);
+    setAddingItemDayIdx(-1);
+  };
+
+  const updateFullActivity = (dayIndex: number, actIndex: number, updated: Activity) => {
+    const day = { ...data.days[dayIndex] };
+    day.activities = [...day.activities];
+    day.activities[actIndex] = updated;
     updateDay(dayIndex, day);
   };
 
