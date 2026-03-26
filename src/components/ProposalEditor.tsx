@@ -2008,6 +2008,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                     proposalData={data}
                                     builderContext={(data as any).proposalType === "proposal" ? "proposal" : "group-trip"}
                                     sectionVisibility={vis}
+                                    onSelect={(source, linkedItem) => {
                                       if (linkedItem) {
                                         addActivity(dayIdx, linkedItem);
                                       } else {
