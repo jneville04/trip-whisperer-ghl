@@ -119,7 +119,7 @@ export function SourceSelector({ proposalData, onSelect, onCancel, builderContex
           </button>
         ))}
         {/* Cruises */}
-        {(proposalData.cruiseShips || []).map((cr) => (
+        {hasCruises && (proposalData.cruiseShips || []).map((cr) => (
           <button key={cr.id} className="w-full text-left px-3 py-2 rounded-md border border-border/30 hover:bg-accent/10 text-sm font-body transition-colors" onClick={() => {
             const item: Activity = {
               id: crypto.randomUUID(),
