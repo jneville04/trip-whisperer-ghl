@@ -416,33 +416,76 @@ function ItinerarySection({
 
                               {/* Flight route card */}
                               {hasFlightRoute ? (
-                                <div className="bg-muted/30 rounded-xl p-4 border border-border/40">
-                                  {(airline || flightNumber) && (
-                                    <div className="flex items-center gap-2 mb-3">
-                                      {airline && <span className="text-sm font-body font-semibold text-foreground">{airline}</span>}
-                                      {flightNumber && <span className="text-xs font-body text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{flightNumber}</span>}
+                                <div className={`flex flex-col ${hasImages ? "sm:flex-row" : ""} gap-4`}>
+                                  <div className="flex-1 min-w-0 bg-muted/30 rounded-xl p-4 border border-border/40">
+                                    {(airline || flightNumber) && (
+                                      <div className="flex items-center gap-2 mb-3">
+                                        {airline && <span className="text-sm font-body font-semibold text-foreground">{airline}</span>}
+                                        {flightNumber && <span className="text-xs font-body text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{flightNumber}</span>}
+                                      </div>
+                                    )}
+                                    <div className="flex items-center justify-between gap-3">
+                                      <div className="text-center min-w-0">
+                                        <p className="font-display text-2xl font-bold text-foreground tracking-wide">{depCode || "---"}</p>
+                                        {depCity && <p className="text-xs text-muted-foreground font-body mt-0.5">{depCity}</p>}
+                                        {depTime && <p className="text-sm font-body font-semibold text-foreground mt-1">{depTime}</p>}
+                                      </div>
+                                      <div className="flex-1 flex items-center gap-1 px-2">
+                                        <div className="h-[2px] flex-1 border-t-2 border-dashed border-primary/40" />
+                                        <Plane className="h-4 w-4 text-primary shrink-0" />
+                                        <div className="h-[2px] flex-1 border-t-2 border-dashed border-primary/40" />
+                                      </div>
+                                      <div className="text-center min-w-0">
+                                        <p className="font-display text-2xl font-bold text-foreground tracking-wide">{arrCode || "---"}</p>
+                                        {arrCity && <p className="text-xs text-muted-foreground font-body mt-0.5">{arrCity}</p>}
+                                        {arrTime && <p className="text-sm font-body font-semibold text-foreground mt-1">{arrTime}</p>}
+                                      </div>
                                     </div>
-                                  )}
-                                  <div className="flex items-center justify-between gap-3">
-                                    <div className="text-center min-w-0">
-                                      <p className="font-display text-2xl font-bold text-foreground tracking-wide">{depCode || "---"}</p>
-                                      {depCity && <p className="text-xs text-muted-foreground font-body mt-0.5">{depCity}</p>}
-                                      {depTime && <p className="text-sm font-body font-semibold text-foreground mt-1">{depTime}</p>}
-                                    </div>
-                                    <div className="flex-1 flex items-center gap-1 px-2">
-                                      <div className="h-[2px] flex-1 border-t-2 border-dashed border-primary/40" />
-                                      <Plane className="h-4 w-4 text-primary shrink-0" />
-                                      <div className="h-[2px] flex-1 border-t-2 border-dashed border-primary/40" />
-                                    </div>
-                                    <div className="text-center min-w-0">
-                                      <p className="font-display text-2xl font-bold text-foreground tracking-wide">{arrCode || "---"}</p>
-                                      {arrCity && <p className="text-xs text-muted-foreground font-body mt-0.5">{arrCity}</p>}
-                                      {arrTime && <p className="text-sm font-body font-semibold text-foreground mt-1">{arrTime}</p>}
-                                    </div>
+                                    {act.description && (
+                                      <div className="mt-3 pt-3 border-t border-border/30">
+                                        <ActivityDescription text={act.description} />
+                                      </div>
+                                    )}
+                                    {/* Price + button for optional flights */}
+                                    {isOptional && act.price && (
+                                      <div className="mt-3 flex items-center gap-3 flex-wrap">
+                                        <span className="font-display text-xl font-bold text-foreground">{fmtCurrency(act.price)}</span>
+                                        <span className="text-xs text-muted-foreground font-body">per person</span>
+                                      </div>
+                                    )}
+                                    {isOptional && (
+                                      <button
+                                        className="mt-3 inline-flex items-center gap-1.5 text-sm font-body font-semibold text-primary hover:text-primary/80 bg-primary/10 hover:bg-primary/15 px-4 py-2 rounded-full transition-colors"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          window.dispatchEvent(new CustomEvent("add-optional-item", { detail: { activityId: act.id, dayId: day.id, title: displayTitle || act.title, price: act.price } }));
+                                        }}
+                                      >
+                                        + Add this experience
+                                      </button>
+                                    )}
                                   </div>
-                                  {act.description && (
-                                    <div className="mt-3 pt-3 border-t border-border/30">
-                                      <ActivityDescription text={act.description} />
+                                  {hasImages && (
+                                    <div
+                                      className="shrink-0 rounded-xl overflow-hidden cursor-pointer group relative w-full sm:w-[200px] h-[200px] border border-border/40"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        openLightbox(
+                                          act.imageUrls!.map((u) => ({ src: u, alt: act.title })),
+                                          0,
+                                        );
+                                      }}
+                                    >
+                                      <img
+                                        src={act.imageUrls![0]}
+                                        alt={displayTitle || act.title || "Flight photo"}
+                                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                                      />
+                                      {act.imageUrls!.length > 1 && (
+                                        <div className="absolute bottom-2 right-2 bg-black/55 text-white text-xs font-semibold px-2 py-1 rounded-full backdrop-blur-sm">
+                                          +{act.imageUrls!.length - 1} more
+                                        </div>
+                                      )}
                                     </div>
                                   )}
                                 </div>
