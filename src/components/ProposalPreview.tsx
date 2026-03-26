@@ -93,16 +93,26 @@ const UTILITY_ACTIVITY_TYPES: Activity["type"][] = ["transport"];
 
 function getActivityIcon(type: Activity["type"]) {
   switch (type) {
-    case "transport":
-      return <Bus className="h-4 w-4" />;
+    case "flight":
+      return <Plane className="h-4 w-4" />;
     case "hotel":
       return <Hotel className="h-4 w-4" />;
+    case "cruise":
+      return <Ship className="h-4 w-4" />;
+    case "transfer":
+    case "transport":
+      return <Bus className="h-4 w-4" />;
+    case "activity":
+      return <MapPin className="h-4 w-4" />;
+    case "excursion":
+    case "sightseeing":
+      return <MapPin className="h-4 w-4" />;
     case "dining":
       return <Utensils className="h-4 w-4" />;
-    case "sightseeing":
-      return <Camera className="h-4 w-4" />;
-    case "activity":
-      return <Wine className="h-4 w-4" />;
+    case "event":
+      return <Calendar className="h-4 w-4" />;
+    case "free_time":
+      return <Clock className="h-4 w-4" />;
     default:
       return <Camera className="h-4 w-4" />;
   }
@@ -2901,7 +2911,40 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   })()}
               </div>
 
-              {/* Additional pricing lines */}
+              {/* Itinerary item prices */}
+              {(() => {
+                const pricedActivities = (data.days || []).flatMap(day =>
+                  (day.activities || []).filter(act => {
+                    const p = parseFloat(act.price?.replace(/[^0-9.-]/g, "") || "0");
+                    return p > 0;
+                  })
+                );
+                if (pricedActivities.length === 0) return null;
+                return (
+                  <div className="space-y-0">
+                    {pricedActivities.map((act, idx) => (
+                      <div
+                        key={act.id || idx}
+                        className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-4 items-start py-3.5 border-b-2 border-border last:border-b-0"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-primary">{getActivityIcon(act.type)}</span>
+                          <span className="font-body text-foreground font-medium">{act.title || act.type}</span>
+                        </div>
+                        <span className="font-body text-sm text-left sm:text-right sm:justify-self-end">
+                          <span className="text-foreground text-xs font-medium flex items-center gap-1.5">
+                            <Check className="h-3 w-3 text-primary" />
+                            {act.status === "optional" ? "Optional" : "Included"}
+                            {showItemizedPrices && (
+                              <span className="ml-1 text-primary font-semibold">{fmtCurrency(act.price!)}</span>
+                            )}
+                          </span>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
               {data.pricing.length > 0 && (
                 <div className="space-y-3 mb-6 pt-4 border-t-2 border-border">
                   {data.pricing.map((line) => (
@@ -2993,7 +3036,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     )
                   : 0;
 
-                const currentSubtotal = baseTotal + selectedTotal + pricingLinesTotal + selectedOptionPrice;
+                const currentSubtotal = baseTotal + selectedTotal + pricingLinesTotal + selectedOptionPrice + itineraryItemPriceTotal;
                 const hasPendingSelections = pendingSections.length > 0;
 
                 if (currentSubtotal > 0 || hasPendingSelections) {
