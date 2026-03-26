@@ -3655,35 +3655,31 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   })}
               </div>
 
-              {/* Itinerary-only priced items in modal — show included + added optionals */}
-              {allItineraryPricedActivities.length > 0 && (
+              {/* Itinerary-only priced items in modal — only included + added optionals */}
+              {itineraryOnlyActivities.length > 0 && (
                 <div className="space-y-3 mb-6">
-                  {allItineraryPricedActivities.map((act, idx) => {
-                    const isAdded = act.status !== "optional" || addedOptionals.has(act.id);
-                    if (!isAdded) return null; // Hide unadded optionals from modal
-                    return (
-                      <div
-                        key={act.id || idx}
-                        className="flex justify-between items-center py-3 border-b-2 border-border"
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="text-primary">{getActivityIcon(act.type)}</span>
-                          <span className="font-body text-foreground font-medium">{act.title || act.type}</span>
-                        </div>
-                        <div className="text-right">
-                          <span className="text-foreground text-sm font-medium font-body flex items-center gap-1.5">
-                            <Check className="h-3 w-3 text-primary" />
-                            {act.status === "optional" ? "Added" : "Included"}
-                          </span>
-                          {act.price && showItemizedPrices && (
-                            <span className="text-xs text-primary font-semibold">
-                              {fmtCurrency(act.price)}
-                            </span>
-                          )}
-                        </div>
+                  {itineraryOnlyActivities.map((act, idx) => (
+                    <div
+                      key={act.id || idx}
+                      className="flex justify-between items-center py-3 border-b-2 border-border"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-primary">{getActivityIcon(act.type)}</span>
+                        <span className="font-body text-foreground font-medium">{act.title || act.type}</span>
                       </div>
-                    );
-                  })}
+                      <div className="text-right">
+                        <span className="text-foreground text-sm font-medium font-body flex items-center gap-1.5">
+                          <Check className="h-3 w-3 text-primary" />
+                          {act.status === "optional" ? "Added" : "Included"}
+                        </span>
+                        {act.price && showItemizedPrices && (
+                          <span className="text-xs text-primary font-semibold">
+                            {fmtCurrency(act.price)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
 
