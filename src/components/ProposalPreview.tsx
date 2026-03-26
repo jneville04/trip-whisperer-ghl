@@ -2970,7 +2970,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               {data.pricing.length > 0 && (
                 <div className="space-y-0 mb-6 pt-4 border-t-2 border-border">
                   {data.pricing.map((line) => (
-                    <div key={line.id} className="flex justify-between items-center font-body py-3.5 border-b-2 border-border last:border-b-0">
+                    <div key={line.id} className="flex justify-between items-center font-body py-3.5 border-b-2 border-border">
                       <span className="text-muted-foreground">{line.label}</span>
                       <span className="font-semibold text-foreground">{line.amount}</span>
                     </div>
