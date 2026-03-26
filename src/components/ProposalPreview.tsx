@@ -2911,7 +2911,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     return (
                       <div
                         key={section.key}
-                        className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-4 items-start py-3.5 border-b-2 border-border last:border-b-0"
+                        className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-4 items-start py-3.5 border-b-2 border-border"
                       >
                         <div className="flex items-center gap-2">
                           {sectionIcon}
@@ -2948,7 +2948,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   {itineraryOnlyActivities.map((act, idx) => (
                     <div
                       key={act.id || idx}
-                      className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-4 items-start py-3.5 border-b-2 border-border last:border-b-0"
+                      className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-4 items-start py-3.5 border-b-2 border-border"
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-primary">{getActivityIcon(act.type)}</span>
@@ -2970,7 +2970,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
               {data.pricing.length > 0 && (
                 <div className="space-y-0 mb-6 pt-4 border-t-2 border-border">
                   {data.pricing.map((line) => (
-                    <div key={line.id} className="flex justify-between items-center font-body py-3.5 border-b-2 border-border last:border-b-0">
+                    <div key={line.id} className="flex justify-between items-center font-body py-3.5 border-b-2 border-border">
                       <span className="text-muted-foreground">{line.label}</span>
                       <span className="font-semibold text-foreground">{line.amount}</span>
                     </div>

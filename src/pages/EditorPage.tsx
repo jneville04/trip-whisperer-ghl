@@ -289,7 +289,7 @@ export default function EditorPage() {
     const agentPhotoUrl = agentSettings.agent_photo_url || "";
     const agentAgencyLogoUrl = agentSettings.agency_logo_url || "";
 
-    return {
+    const result: any = {
       ...data,
       brand: {
         primaryColor: brand.primaryColor || fallbackPrimary,
@@ -309,7 +309,11 @@ export default function EditorPage() {
         photoUrl: agentPhotoUrl,
       },
     };
-  }, [data, agentSettings, appSettings.primary_color, appSettings.secondary_color]);
+    // Inject traveler contact info so preview forms auto-populate
+    if (travelerEmail) result.clientEmail = travelerEmail;
+    if (travelerPhone) result.clientPhone = travelerPhone;
+    return result;
+  }, [data, agentSettings, appSettings.primary_color, appSettings.secondary_color, travelerEmail, travelerPhone]);
 
   const builderBrandStyles = useMemo(() => buildBrandCssVars(previewData.brand), [previewData.brand]);
 
