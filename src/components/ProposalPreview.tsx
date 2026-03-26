@@ -100,10 +100,10 @@ interface Props {
   onEditorSubPage?: (page: EditorSubPage) => void;
 }
 
-function focusEditorSection(section: string, itemIndex?: number, activityId?: string) {
+function focusEditorSection(sectionKey: string, itemIndex?: number, activityId?: string) {
   window.dispatchEvent(
     new CustomEvent("editor-focus-section", {
-      detail: { section, itemIndex, activityId },
+      detail: { sectionKey, itemIndex, activityId },
     }),
   );
 }
@@ -148,14 +148,32 @@ function getActivityTypeLabel(type: Activity["type"]): string {
   }
 }
 
+function stripHtml(html: string): string {
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  return div.textContent || div.innerText || "";
+}
+
 function ActivityDescription({ text }: { text: string }) {
   const [expanded, setExpanded] = useState(false);
-  const isLong = text.length > 160;
+  const isHtml = /<[a-z][\s\S]*>/i.test(text);
+  const plainText = isHtml ? stripHtml(text) : text;
+  const isLong = plainText.length > 160;
   return (
     <div>
-      <p className="text-[14px] text-muted-foreground font-body leading-relaxed">
-        {isLong && !expanded ? text.slice(0, 160) + "…" : text}
-      </p>
+      {isHtml ? (
+        expanded || !isLong ? (
+          <div className="text-[14px] text-muted-foreground font-body leading-relaxed prose prose-sm max-w-none [&_p]:m-0 [&_p]:leading-relaxed" dangerouslySetInnerHTML={{ __html: text }} />
+        ) : (
+          <p className="text-[14px] text-muted-foreground font-body leading-relaxed">
+            {plainText.slice(0, 160)}…
+          </p>
+        )
+      ) : (
+        <p className="text-[14px] text-muted-foreground font-body leading-relaxed">
+          {isLong && !expanded ? text.slice(0, 160) + "…" : text}
+        </p>
+      )}
       {isLong && (
         <button
           onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
@@ -342,6 +360,26 @@ function ItinerarySection({
                           if (act.fields?.numberOfNights) pills.push(formatNightsLabel(act.fields.numberOfNights));
                           if (act.fields?.checkInTime) pills.push(`Check-in ${act.fields.checkInTime}`);
                           if (act.fields?.roomType) pills.push(act.fields.roomType);
+                          if (act.fields?.duration) pills.push(act.fields.duration);
+
+                          // Build display title — use hotelName / cruiseName / airline for typed items
+                          let displayTitle = act.title?.trim() || "";
+                          if (act.type === "hotel" && act.fields?.hotelName) displayTitle = act.fields.hotelName;
+                          if (act.type === "cruise" && act.fields?.cruiseName) displayTitle = act.fields.cruiseName;
+
+                          // Flight-specific data
+                          const isFlight = act.type === "flight";
+                          const depAirport = act.fields?.departureAirport || "";
+                          const arrAirport = act.fields?.arrivalAirport || "";
+                          const depCode = depAirport ? parseAirportValue(depAirport).code : "";
+                          const arrCode = arrAirport ? parseAirportValue(arrAirport).code : "";
+                          const depCity = depAirport ? parseAirportValue(depAirport).city : "";
+                          const arrCity = arrAirport ? parseAirportValue(arrAirport).city : "";
+                          const hasFlightRoute = isFlight && (depCode || arrCode);
+                          const flightNumber = act.fields?.flightNumber || "";
+                          const airline = act.fields?.airline || "";
+                          const depTime = act.fields?.departureTime || "";
+                          const arrTime = act.fields?.arrivalTime || "";
 
                           return (
                             <div
@@ -376,75 +414,121 @@ function ItinerarySection({
                                 </div>
                               </div>
 
-                              {/* Content row: text + image */}
-                              <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-4`}>
-                                <div className="flex-1 min-w-0">
-                                  {act.title?.trim() && (
-                                    <h4 className="font-display text-base sm:text-lg font-semibold text-foreground leading-snug">
-                                      {act.title}
-                                    </h4>
-                                  )}
-
-                                  {/* Metadata pills */}
-                                  {pills.length > 0 && (
-                                    <div className="flex flex-wrap gap-1.5 mt-2">
-                                      {pills.map((pill, pIdx) => (
-                                        <span key={pIdx} className="inline-flex items-center text-xs font-body font-medium text-muted-foreground bg-muted/60 px-2.5 py-1 rounded-full">
-                                          {pill}
-                                        </span>
-                                      ))}
+                              {/* Flight route card */}
+                              {hasFlightRoute ? (
+                                <div className="bg-muted/30 rounded-xl p-4 border border-border/40">
+                                  {(airline || flightNumber) && (
+                                    <div className="flex items-center gap-2 mb-3">
+                                      {airline && <span className="text-sm font-body font-semibold text-foreground">{airline}</span>}
+                                      {flightNumber && <span className="text-xs font-body text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{flightNumber}</span>}
                                     </div>
                                   )}
-
+                                  <div className="flex items-center justify-between gap-3">
+                                    <div className="text-center min-w-0">
+                                      <p className="font-display text-2xl font-bold text-foreground tracking-wide">{depCode || "---"}</p>
+                                      {depCity && <p className="text-xs text-muted-foreground font-body mt-0.5">{depCity}</p>}
+                                      {depTime && <p className="text-sm font-body font-semibold text-foreground mt-1">{depTime}</p>}
+                                    </div>
+                                    <div className="flex-1 flex items-center gap-1 px-2">
+                                      <div className="h-[2px] flex-1 border-t-2 border-dashed border-primary/40" />
+                                      <Plane className="h-4 w-4 text-primary shrink-0" />
+                                      <div className="h-[2px] flex-1 border-t-2 border-dashed border-primary/40" />
+                                    </div>
+                                    <div className="text-center min-w-0">
+                                      <p className="font-display text-2xl font-bold text-foreground tracking-wide">{arrCode || "---"}</p>
+                                      {arrCity && <p className="text-xs text-muted-foreground font-body mt-0.5">{arrCity}</p>}
+                                      {arrTime && <p className="text-sm font-body font-semibold text-foreground mt-1">{arrTime}</p>}
+                                    </div>
+                                  </div>
                                   {act.description && (
-                                    <div className="mt-2">
+                                    <div className="mt-3 pt-3 border-t border-border/30">
                                       <ActivityDescription text={act.description} />
                                     </div>
                                   )}
+                                </div>
+                              ) : (
+                                /* Standard content row: text + image */
+                                <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-4`}>
+                                  <div className="flex-1 min-w-0">
+                                    {displayTitle && (
+                                      <h4 className="font-display text-base sm:text-lg font-semibold text-foreground leading-snug">
+                                        {displayTitle}
+                                      </h4>
+                                    )}
 
-                                  {/* Price for optional items */}
-                                  {isOptional && act.price && (
-                                    <div className="mt-3">
-                                      <span className="font-display text-xl font-bold text-foreground">{fmtCurrency(act.price)}</span>
-                                      <span className="text-xs text-muted-foreground font-body ml-1.5">per person · optional</span>
+                                    {/* Metadata pills */}
+                                    {pills.length > 0 && (
+                                      <div className="flex flex-wrap gap-1.5 mt-2">
+                                        {pills.map((pill, pIdx) => (
+                                          <span key={pIdx} className="inline-flex items-center text-xs font-body font-medium text-muted-foreground bg-muted/60 px-2.5 py-1 rounded-full">
+                                            {pill}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    {act.description && (
+                                      <div className="mt-2">
+                                        <ActivityDescription text={act.description} />
+                                      </div>
+                                    )}
+
+                                    {/* Price + button for optional items */}
+                                    {isOptional && act.price && (
+                                      <div className="mt-3 flex items-center gap-3 flex-wrap">
+                                        <span className="font-display text-xl font-bold text-foreground">{fmtCurrency(act.price)}</span>
+                                        <span className="text-xs text-muted-foreground font-body">per person</span>
+                                      </div>
+                                    )}
+                                    {isOptional && !isEditor && (
+                                      <button
+                                        className="mt-3 inline-flex items-center gap-1.5 text-sm font-body font-semibold text-primary hover:text-primary/80 bg-primary/10 hover:bg-primary/15 px-4 py-2 rounded-full transition-colors"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          // Dispatch event for trip summary modal to pick up
+                                          window.dispatchEvent(new CustomEvent("add-optional-item", { detail: { activityId: act.id, dayId: day.id, title: displayTitle || act.title, price: act.price } }));
+                                        }}
+                                      >
+                                        + Add this experience
+                                      </button>
+                                    )}
+                                  </div>
+
+                                  {hasImages && (
+                                    <div
+                                      className="shrink-0 rounded-xl overflow-hidden cursor-pointer group relative w-full sm:w-[200px] h-[200px] border border-border/40"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        openLightbox(
+                                          act.imageUrls!.map((u) => ({ src: u, alt: act.title })),
+                                          0,
+                                        );
+                                      }}
+                                    >
+                                      <img
+                                        src={act.imageUrls![0]}
+                                        alt={displayTitle || act.title || "Activity photo"}
+                                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                                      />
+                                      {act.imageUrls!.length > 1 && (
+                                        <div className="absolute bottom-2 right-2 bg-black/55 text-white text-xs font-semibold px-2 py-1 rounded-full backdrop-blur-sm">
+                                          +{act.imageUrls!.length - 1} more
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                  {hasVideo && !hasImages && (
+                                    <div className="shrink-0 sm:w-[240px] md:w-[280px]">
+                                      <VideoEmbed
+                                        url={act.videoUrl!}
+                                        title={act.title}
+                                        thumbnailUrl={act.videoThumbnailUrl}
+                                        className="rounded-lg"
+                                      />
                                     </div>
                                   )}
                                 </div>
-
-                                {hasImages && (
-                                  <div
-                                    className="shrink-0 rounded-xl overflow-hidden cursor-pointer group relative w-full sm:w-[200px] h-[200px] border border-border/40"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      openLightbox(
-                                        act.imageUrls!.map((u) => ({ src: u, alt: act.title })),
-                                        0,
-                                      );
-                                    }}
-                                  >
-                                    <img
-                                      src={act.imageUrls![0]}
-                                      alt={act.title || "Activity photo"}
-                                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                                    />
-                                    {act.imageUrls!.length > 1 && (
-                                      <div className="absolute bottom-2 right-2 bg-black/55 text-white text-xs font-semibold px-2 py-1 rounded-full backdrop-blur-sm">
-                                        +{act.imageUrls!.length - 1} more
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-                                {hasVideo && !hasImages && (
-                                  <div className="shrink-0 sm:w-[240px] md:w-[280px]">
-                                    <VideoEmbed
-                                      url={act.videoUrl!}
-                                      title={act.title}
-                                      thumbnailUrl={act.videoThumbnailUrl}
-                                      className="rounded-lg"
-                                    />
-                                  </div>
-                                )}
-                              </div>
+                              )}
                               {hasVideo && hasImages && (
                                 <div className="mt-4">
                                   <VideoEmbed
