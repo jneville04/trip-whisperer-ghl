@@ -509,10 +509,16 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
     },
   ];
 
-  // Helper: sum prices from itinerary day activities (all sources)
-  const itineraryItemPriceTotal = (data.days || []).reduce((sum, day) =>
-    sum + (day.activities || []).reduce((s, act) =>
-      s + (parseFloat(act.price?.replace(/[^0-9.-]/g, "") || "0") || 0), 0), 0);
+  // Helper: sum prices from itinerary day activities — EXCLUDE linked items (proposal/group-trip)
+  // because those are already counted via sectionRegistry
+  const itineraryOnlyActivities = (data.days || []).flatMap(day =>
+    (day.activities || []).filter(act =>
+      act.source !== "proposal" && act.source !== "group-trip" &&
+      (parseFloat(act.price?.replace(/[^0-9.-]/g, "") || "0") || 0) > 0
+    )
+  );
+  const itineraryItemPriceTotal = itineraryOnlyActivities.reduce((sum, act) =>
+    sum + (parseFloat(act.price?.replace(/[^0-9.-]/g, "") || "0") || 0), 0);
 
   const hasAnyPricedItems = itineraryItemPriceTotal > 0
     || sectionRegistry.some(s => s.visible && s.items.some(i => parseFloat(i.price?.replace(/[^0-9.-]/g, "") || "0") > 0))
