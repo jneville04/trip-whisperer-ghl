@@ -148,14 +148,32 @@ function getActivityTypeLabel(type: Activity["type"]): string {
   }
 }
 
+function stripHtml(html: string): string {
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  return div.textContent || div.innerText || "";
+}
+
 function ActivityDescription({ text }: { text: string }) {
   const [expanded, setExpanded] = useState(false);
-  const isLong = text.length > 160;
+  const isHtml = /<[a-z][\s\S]*>/i.test(text);
+  const plainText = isHtml ? stripHtml(text) : text;
+  const isLong = plainText.length > 160;
   return (
     <div>
-      <p className="text-[14px] text-muted-foreground font-body leading-relaxed">
-        {isLong && !expanded ? text.slice(0, 160) + "…" : text}
-      </p>
+      {isHtml ? (
+        expanded || !isLong ? (
+          <div className="text-[14px] text-muted-foreground font-body leading-relaxed prose prose-sm max-w-none [&_p]:m-0 [&_p]:leading-relaxed" dangerouslySetInnerHTML={{ __html: text }} />
+        ) : (
+          <p className="text-[14px] text-muted-foreground font-body leading-relaxed">
+            {plainText.slice(0, 160)}…
+          </p>
+        )
+      ) : (
+        <p className="text-[14px] text-muted-foreground font-body leading-relaxed">
+          {isLong && !expanded ? text.slice(0, 160) + "…" : text}
+        </p>
+      )}
       {isLong && (
         <button
           onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
