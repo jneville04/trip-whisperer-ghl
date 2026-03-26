@@ -93,16 +93,26 @@ const UTILITY_ACTIVITY_TYPES: Activity["type"][] = ["transport"];
 
 function getActivityIcon(type: Activity["type"]) {
   switch (type) {
-    case "transport":
-      return <Bus className="h-4 w-4" />;
+    case "flight":
+      return <Plane className="h-4 w-4" />;
     case "hotel":
       return <Hotel className="h-4 w-4" />;
+    case "cruise":
+      return <Ship className="h-4 w-4" />;
+    case "transfer":
+    case "transport":
+      return <Bus className="h-4 w-4" />;
+    case "activity":
+      return <MapPin className="h-4 w-4" />;
+    case "excursion":
+    case "sightseeing":
+      return <MapPin className="h-4 w-4" />;
     case "dining":
       return <Utensils className="h-4 w-4" />;
-    case "sightseeing":
-      return <Camera className="h-4 w-4" />;
-    case "activity":
-      return <Wine className="h-4 w-4" />;
+    case "event":
+      return <Calendar className="h-4 w-4" />;
+    case "free_time":
+      return <Clock className="h-4 w-4" />;
     default:
       return <Camera className="h-4 w-4" />;
   }
