@@ -278,6 +278,7 @@ function ItinerarySection({
                       <div className="px-6 sm:px-7 pb-6 pt-3 space-y-3.5 border-t-2 border-border bg-background">
                         {validActivities.map((act, actIdx) => {
                           const isUtility = UTILITY_ACTIVITY_TYPES.includes(act.type as any);
+                          const isLinkedFlight = (act.type === "flight") && (act.source === "proposal" || act.source === "group-trip");
                           const hasImages = act.imageUrls && act.imageUrls.length > 0 && !isUtility;
                           const hasVideo = !!act.videoUrl && !isUtility;
                           const isFeatured = actIdx === 0 && (hasImages || hasVideo);
@@ -289,9 +290,11 @@ function ItinerarySection({
                               <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-4`}>
                                 <div className="flex-1">
                                   <div className="flex items-start gap-3">
-                                    <div className="relative z-10 mt-0.5 w-7 h-7 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                      {getActivityIcon(act.type)}
-                                    </div>
+                                    {!isLinkedFlight && (
+                                      <div className="relative z-10 mt-0.5 w-7 h-7 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                        {getActivityIcon(act.type)}
+                                      </div>
+                                    )}
                                     <div className="flex-1 min-w-0">
                                       {act.time && (
                                         <span className="text-xs font-medium text-primary font-body flex items-center gap-1 mb-1">
@@ -509,10 +512,16 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
     },
   ];
 
-  // Helper: sum prices from itinerary day activities (all sources)
-  const itineraryItemPriceTotal = (data.days || []).reduce((sum, day) =>
-    sum + (day.activities || []).reduce((s, act) =>
-      s + (parseFloat(act.price?.replace(/[^0-9.-]/g, "") || "0") || 0), 0), 0);
+  // Helper: sum prices from itinerary day activities — EXCLUDE linked items (proposal/group-trip)
+  // because those are already counted via sectionRegistry
+  const itineraryOnlyActivities = (data.days || []).flatMap(day =>
+    (day.activities || []).filter(act =>
+      act.source !== "proposal" && act.source !== "group-trip" &&
+      (parseFloat(act.price?.replace(/[^0-9.-]/g, "") || "0") || 0) > 0
+    )
+  );
+  const itineraryItemPriceTotal = itineraryOnlyActivities.reduce((sum, act) =>
+    sum + (parseFloat(act.price?.replace(/[^0-9.-]/g, "") || "0") || 0), 0);
 
   const hasAnyPricedItems = itineraryItemPriceTotal > 0
     || sectionRegistry.some(s => s.visible && s.items.some(i => parseFloat(i.price?.replace(/[^0-9.-]/g, "") || "0") > 0))
@@ -2911,40 +2920,31 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   })()}
               </div>
 
-              {/* Itinerary item prices */}
-              {(() => {
-                const pricedActivities = (data.days || []).flatMap(day =>
-                  (day.activities || []).filter(act => {
-                    const p = parseFloat(act.price?.replace(/[^0-9.-]/g, "") || "0");
-                    return p > 0;
-                  })
-                );
-                if (pricedActivities.length === 0) return null;
-                return (
-                  <div className="space-y-0">
-                    {pricedActivities.map((act, idx) => (
-                      <div
-                        key={act.id || idx}
-                        className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-4 items-start py-3.5 border-b-2 border-border last:border-b-0"
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="text-primary">{getActivityIcon(act.type)}</span>
-                          <span className="font-body text-foreground font-medium">{act.title || act.type}</span>
-                        </div>
-                        <span className="font-body text-sm text-left sm:text-right sm:justify-self-end">
-                          <span className="text-foreground text-xs font-medium flex items-center gap-1.5">
-                            <Check className="h-3 w-3 text-primary" />
-                            {act.status === "optional" ? "Optional" : "Included"}
-                            {showItemizedPrices && (
-                              <span className="ml-1 text-primary font-semibold">{fmtCurrency(act.price!)}</span>
-                            )}
-                          </span>
-                        </span>
+              {/* Itinerary item prices — only non-linked (itinerary-source) items */}
+              {itineraryOnlyActivities.length > 0 && (
+                <div className="space-y-0">
+                  {itineraryOnlyActivities.map((act, idx) => (
+                    <div
+                      key={act.id || idx}
+                      className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-4 items-start py-3.5 border-b-2 border-border last:border-b-0"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-primary">{getActivityIcon(act.type)}</span>
+                        <span className="font-body text-foreground font-medium">{act.title || act.type}</span>
                       </div>
-                    ))}
-                  </div>
-                );
-              })()}
+                      <span className="font-body text-sm text-left sm:text-right sm:justify-self-end">
+                        <span className="text-foreground text-xs font-medium flex items-center gap-1.5">
+                          <Check className="h-3 w-3 text-primary" />
+                          {act.status === "optional" ? "Optional" : "Included"}
+                          {showItemizedPrices && (
+                            <span className="ml-1 text-primary font-semibold">{fmtCurrency(act.price!)}</span>
+                          )}
+                        </span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
               {data.pricing.length > 0 && (
                 <div className="space-y-3 mb-6 pt-4 border-t-2 border-border">
                   {data.pricing.map((line) => (
@@ -3367,6 +3367,34 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     );
                   })}
               </div>
+
+              {/* Itinerary-only priced items in modal */}
+              {itineraryOnlyActivities.length > 0 && (
+                <div className="space-y-3 mb-6">
+                  {itineraryOnlyActivities.map((act, idx) => (
+                    <div
+                      key={act.id || idx}
+                      className="flex justify-between items-center py-3 border-b-2 border-border"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-primary">{getActivityIcon(act.type)}</span>
+                        <span className="font-body text-foreground font-medium">{act.title || act.type}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-foreground text-sm font-medium font-body flex items-center gap-1.5">
+                          <Check className="h-3 w-3 text-primary" />
+                          {act.status === "optional" ? "Optional" : "Included"}
+                        </span>
+                        {act.price && showItemizedPrices && (
+                          <span className="text-xs text-primary font-semibold">
+                            {fmtCurrency(act.price)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {/* Pricing summary — only shown when priced items exist */}
               {hasAnyPricedItems && (() => {
