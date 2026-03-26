@@ -516,12 +516,20 @@ export default function ProposalEditor({ data, onChange }: Props) {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent).detail;
       if (!detail) return;
-      const { sectionKey, itemIndex } = detail;
+      const { sectionKey, itemIndex, activityId } = detail;
       if (typeof itemIndex !== "number") return;
       if (sectionKey === "flights") setOpenFlightIdx(itemIndex);
       else if (sectionKey === "accommodations") setOpenAccIdx(itemIndex);
       else if (sectionKey === "cruiseShips") setOpenCruiseIdx(itemIndex);
-      else if (sectionKey === "itinerary") setOpenDayIdx(itemIndex);
+      else if (sectionKey === "itinerary") {
+        setOpenDayIdx(itemIndex);
+        if (activityId) setExpandedItemId(activityId);
+      }
+      // Scroll to the matching editor item after React re-renders
+      setTimeout(() => {
+        const el = document.querySelector(`[data-editor-item="${sectionKey}:${itemIndex}"]`);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 200);
     };
     window.addEventListener("editor-focus-item", handler);
     return () => window.removeEventListener("editor-focus-item", handler);
