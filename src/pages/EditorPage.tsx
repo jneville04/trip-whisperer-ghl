@@ -438,7 +438,7 @@ export default function EditorPage() {
       <div className="flex-1 flex overflow-hidden">
         {mode === "split" && panelOpen && !editorSubPage && (
           <div className="w-full max-w-lg border-r border-border/50 overflow-y-auto overscroll-contain bg-background">
-            <ProposalEditor data={data} onChange={handleChange} />
+            <ProposalEditor data={data} onChange={handleChange} onContactChange={handleContactChange} />
             <HelpdeskFooter />
           </div>
         )}
