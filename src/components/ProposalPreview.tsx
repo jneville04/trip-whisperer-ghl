@@ -100,38 +100,53 @@ function getActivityIcon(type: Activity["type"]) {
     case "cruise":
       return <Ship className="h-4 w-4" />;
     case "transfer":
-    case "transport":
       return <Bus className="h-4 w-4" />;
-    case "activity":
-      return <MapPin className="h-4 w-4" />;
-    case "excursion":
-    case "sightseeing":
-      return <MapPin className="h-4 w-4" />;
     case "dining":
       return <Utensils className="h-4 w-4" />;
     case "event":
-      return <Calendar className="h-4 w-4" />;
+      return <Sparkles className="h-4 w-4" />;
+    case "excursion":
+      return <Camera className="h-4 w-4" />;
     case "free_time":
       return <Clock className="h-4 w-4" />;
     default:
-      return <Camera className="h-4 w-4" />;
+      return <MapPin className="h-4 w-4" />;
   }
 }
 
-// Dispatch event to focus editor section when clicking preview sections
-const focusEditorSection = (sectionKey: string, itemIndex?: number, activityId?: string) => {
-  window.dispatchEvent(new CustomEvent("editor-focus-section", { detail: { sectionKey, itemIndex, activityId } }));
-};
+function getActivityTypeLabel(type: Activity["type"]): string {
+  switch (type) {
+    case "flight": return "FLIGHT";
+    case "hotel": return "HOTEL STAY";
+    case "cruise": return "CRUISE";
+    case "transfer": return "TRANSFER";
+    case "dining": return "DINING";
+    case "event": return "EVENT";
+    case "excursion": return "EXCURSION";
+    case "free_time": return "FREE TIME";
+    case "activity": return "ACTIVITY";
+    default: return "ACTIVITY";
+  }
+}
 
-export type EditorSubPage = "checkout" | "approve" | "revisions";
-
-interface Props {
-  data: ProposalData;
-  shareId?: string;
-  tripId?: string;
-  tripStatus?: string;
-  isEditor?: boolean;
-  onEditorSubPage?: (page: EditorSubPage) => void;
+function ActivityDescription({ text }: { text: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const isLong = text.length > 160;
+  return (
+    <div>
+      <p className="text-[14px] text-muted-foreground font-body leading-relaxed">
+        {isLong && !expanded ? text.slice(0, 160) + "…" : text}
+      </p>
+      {isLong && (
+        <button
+          onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
+          className="text-primary text-sm font-medium font-body mt-1 hover:underline"
+        >
+          {expanded ? "Show less" : "Show more"}
+        </button>
+      )}
+    </div>
+  );
 }
 
 function ItinerarySection({
@@ -247,6 +262,16 @@ function ItinerarySection({
                           </span>
                         )}
                       </div>
+                      {/* Auto-generated activity summary for collapsed state */}
+                      {!isOpen && validActivities.length > 0 && (
+                        <p className="text-sm text-muted-foreground/70 font-body italic mt-1">
+                          {validActivities
+                            .filter((a) => a.title?.trim())
+                            .slice(0, 3)
+                            .map((a) => a.title!.trim())
+                            .join(" · ")}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
@@ -282,52 +307,101 @@ function ItinerarySection({
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="px-6 sm:px-7 pb-6 pt-3 space-y-3.5 border-t-2 border-border bg-background">
+                      <div className="px-6 sm:px-7 pb-6 pt-4 border-t-2 border-border bg-background divide-y divide-border">
                         {validActivities.map((act, actIdx) => {
                           const isUtility = UTILITY_ACTIVITY_TYPES.includes(act.type as any);
                           const hasImages = act.imageUrls && act.imageUrls.length > 0 && !isUtility;
                           const hasVideo = !!act.videoUrl && !isUtility;
-                          const isFeatured = actIdx === 0 && (hasImages || hasVideo);
+                          const isOptional = act.status === "optional";
+                          const isLinked = act.source === "proposal" || act.source === "group-trip";
+                          const typeLabel = getActivityTypeLabel(act.type);
+
+                          // Build metadata pills from existing fields
+                          const pills: string[] = [];
+                          if (act.time) pills.push(act.time);
+                          if (act.fields?.location) pills.push(act.fields.location);
+                          if (act.fields?.numberOfNights) pills.push(formatNightsLabel(act.fields.numberOfNights));
+                          if (act.fields?.checkInTime) pills.push(`Check-in ${act.fields.checkInTime}`);
+                          if (act.fields?.roomType) pills.push(act.fields.roomType);
+
                           return (
                             <div
                               key={act.id || actIdx}
-                              className="rounded-xl border-2 border-border/70 bg-muted/25 p-4 sm:p-5"
+                              className={`py-5 first:pt-2 last:pb-2 ${isOptional ? "bg-primary/[0.03] -mx-6 sm:-mx-7 px-6 sm:px-7 border-l-4 border-l-primary/30" : ""}`}
                               onClick={(e) => { if (isEditor) { e.stopPropagation(); focusEditorSection("itinerary", dayIdx, act.id); } }}
                             >
-                              <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-4`}>
-                                <div className="flex-1">
-                                  <div className="flex items-start gap-3">
-                                    <div className="relative z-10 mt-0.5 w-7 h-7 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                      {getActivityIcon(act.type)}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      {act.time && (
-                                        <span className="text-xs font-medium text-primary font-body flex items-center gap-1 mb-1">
-                                          <Clock className="h-3 w-3" /> {act.time}
-                                        </span>
-                                      )}
-                                      {act.title?.trim() && (
-                                        <p className="font-display text-base sm:text-lg font-semibold text-foreground leading-snug">
-                                          {act.title}
-                                        </p>
-                                      )}
-                                      {act.description && (
-                                        <p className="text-[14px] text-muted-foreground font-body mt-1.5 leading-relaxed">
-                                          {act.description}
-                                        </p>
-                                      )}
-                                    </div>
-                                  </div>
+                              {/* Type label + status badge row */}
+                              <div className="flex items-center justify-between mb-2">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-primary">{getActivityIcon(act.type)}</span>
+                                  <span className="text-[11px] font-bold tracking-[0.12em] uppercase text-primary font-body">
+                                    {isOptional ? `Optional ${typeLabel === "ACTIVITY" ? "Experience" : typeLabel.toLowerCase()}` : typeLabel}
+                                  </span>
                                 </div>
+                                <div className="flex items-center gap-2">
+                                  {isLinked && (
+                                    <span className="text-[11px] font-medium text-muted-foreground font-body">
+                                      From {act.source === "proposal" ? "proposal" : "group trip"}
+                                    </span>
+                                  )}
+                                  {!isOptional && act.status === "included" && (
+                                    <span className="text-[11px] font-semibold text-primary font-body bg-primary/10 px-2.5 py-0.5 rounded-full">
+                                      Included
+                                    </span>
+                                  )}
+                                  {isOptional && (
+                                    <span className="text-[11px] font-semibold text-primary font-body bg-primary/10 px-2.5 py-0.5 rounded-full">
+                                      Add-on
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* Content row: text + image */}
+                              <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-4`}>
+                                <div className="flex-1 min-w-0">
+                                  {act.title?.trim() && (
+                                    <h4 className="font-display text-base sm:text-lg font-semibold text-foreground leading-snug">
+                                      {act.title}
+                                    </h4>
+                                  )}
+
+                                  {/* Metadata pills */}
+                                  {pills.length > 0 && (
+                                    <div className="flex flex-wrap gap-1.5 mt-2">
+                                      {pills.map((pill, pIdx) => (
+                                        <span key={pIdx} className="inline-flex items-center text-xs font-body font-medium text-muted-foreground bg-muted/60 px-2.5 py-1 rounded-full">
+                                          {pill}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
+
+                                  {act.description && (
+                                    <div className="mt-2">
+                                      <ActivityDescription text={act.description} />
+                                    </div>
+                                  )}
+
+                                  {/* Price for optional items */}
+                                  {isOptional && act.price && (
+                                    <div className="mt-3">
+                                      <span className="font-display text-xl font-bold text-foreground">{fmtCurrency(act.price)}</span>
+                                      <span className="text-xs text-muted-foreground font-body ml-1.5">per person · optional</span>
+                                    </div>
+                                  )}
+                                </div>
+
                                 {hasImages && (
                                   <div
-                                    className="shrink-0 rounded-xl overflow-hidden cursor-pointer group relative w-full sm:w-[200px] h-[200px] border border-border/40 mx-0 sm:mx-2 my-2"
-                                    onClick={() =>
+                                    className="shrink-0 rounded-xl overflow-hidden cursor-pointer group relative w-full sm:w-[200px] h-[200px] border border-border/40"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
                                       openLightbox(
                                         act.imageUrls!.map((u) => ({ src: u, alt: act.title })),
                                         0,
-                                      )
-                                    }
+                                      );
+                                    }}
                                   >
                                     <img
                                       src={act.imageUrls![0]}
