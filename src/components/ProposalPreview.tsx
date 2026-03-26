@@ -523,12 +523,11 @@ function ItinerarySection({
                                         <span className="text-xs text-muted-foreground font-body">per person</span>
                                       </div>
                                     )}
-                                    {isOptional && !isEditor && (
+                                    {isOptional && (
                                       <button
                                         className="mt-3 inline-flex items-center gap-1.5 text-sm font-body font-semibold text-primary hover:text-primary/80 bg-primary/10 hover:bg-primary/15 px-4 py-2 rounded-full transition-colors"
                                         onClick={(e) => {
                                           e.stopPropagation();
-                                          // Dispatch event for trip summary modal to pick up
                                           window.dispatchEvent(new CustomEvent("add-optional-item", { detail: { activityId: act.id, dayId: day.id, title: displayTitle || act.title, price: act.price } }));
                                         }}
                                       >
