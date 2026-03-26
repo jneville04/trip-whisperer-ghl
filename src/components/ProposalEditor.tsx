@@ -473,6 +473,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const [openAccIdx, setOpenAccIdx] = useState<number>(0);
   const [openCruiseIdx, setOpenCruiseIdx] = useState<number>(0);
   const [openDayIdx, setOpenDayIdx] = useState<number>(0);
+  const [addingItemDayIdx, setAddingItemDayIdx] = useState<number>(-1);
+  const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
 
   const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "", showAgencyNameWithLogo: true };
   const resolvedPrimaryColor = agentSettings.primary_color || appSettings.primary_color;
