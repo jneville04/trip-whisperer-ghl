@@ -94,7 +94,7 @@ export function SourceSelector({ proposalData, onSelect, onCancel, builderContex
           );
         })}
         {/* Accommodations */}
-        {(proposalData.accommodations || []).map((acc) => (
+        {hasAccommodations && (proposalData.accommodations || []).map((acc) => (
           <button key={acc.id} className="w-full text-left px-3 py-2 rounded-md border border-border/30 hover:bg-accent/10 text-sm font-body transition-colors" onClick={() => {
             const item: Activity = {
               id: crypto.randomUUID(),
