@@ -2007,7 +2007,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                   <SourceSelector
                                     proposalData={data}
                                     builderContext={(data as any).proposalType === "proposal" ? "proposal" : "group-trip"}
-                                    sectionVisibility={vis}
+                                    sectionVisibility={vis as unknown as Partial<Record<string, boolean>>}
                                     onSelect={(source, linkedItem) => {
                                       if (linkedItem) {
                                         addActivity(dayIdx, linkedItem);
