@@ -2712,6 +2712,13 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
           default:
             return null;
         }
+        })();
+        if (!sectionEl) return null;
+        return isEditor ? (
+          <div key={sectionKey} onClick={() => focusEditorSection(sectionKey)} className="cursor-pointer">
+            {sectionEl}
+          </div>
+        ) : sectionEl;
       })}
 
       {/* PROPOSAL SELECTION SUMMARY — only for Proposal type */}
