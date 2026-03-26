@@ -904,7 +904,17 @@ export default function ProposalEditor({ data, onChange }: Props) {
                         <div className="space-y-3">
                           <div>
                             <FieldLabel>Client Name</FieldLabel>
-                            <Input value={data.clientName} onChange={(e) => update("clientName", e.target.value)} placeholder="Michael & Sarah Johnson" />
+                            <GhlContactSearch
+                              value={data.clientName}
+                              onChange={(val) => update("clientName", val)}
+                              onSelect={(contact) => {
+                                update("clientName", contact.name);
+                                if (onContactChange) {
+                                  onContactChange(contact.email, contact.phone);
+                                }
+                              }}
+                              placeholder="Search or enter client name..."
+                            />
                           </div>
                           <div>
                             <FieldLabel>Introduction Text</FieldLabel>
