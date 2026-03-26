@@ -37,7 +37,7 @@ interface SourceSelectorProps {
   /** "proposal" shows Link from Proposal; "group-trip" shows Link from Group Trip */
   builderContext?: "proposal" | "group-trip";
   /** Section visibility from the parent builder – only visible+populated sections are linkable */
-  sectionVisibility?: Record<string, boolean>;
+  sectionVisibility?: Partial<Record<string, boolean>>;
 }
 
 export function SourceSelector({ proposalData, onSelect, onCancel, builderContext, sectionVisibility }: SourceSelectorProps) {
