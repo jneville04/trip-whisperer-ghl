@@ -2596,7 +2596,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
           case "itinerary":
             if (data.days.filter((d) => !d.hidden).length === 0) return null;
-            return <ItinerarySection key="itinerary" data={data} fadeUp={fadeUp} openLightbox={openLightbox} isEditor={isEditor} />;
+            return <ItinerarySection key="itinerary" data={data} fadeUp={fadeUp} openLightbox={openLightbox} isEditor={isEditor} addedOptionals={addedOptionals} />;
 
           case "inclusions":
             const exclusions = (((data as any).exclusions as string[]) || []).filter(Boolean);
