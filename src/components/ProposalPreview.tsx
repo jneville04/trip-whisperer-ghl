@@ -1764,7 +1764,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                 : "border-border hover:border-primary/40 cursor-pointer"
                               : "border-border"
                           }`}
-                          onClick={() => cruiseIsChoice && setSelectedCruise(isSelected ? "" : ship.id)}
+                          onClick={(e) => {
+                            if (isEditor) { e.stopPropagation(); focusEditorSection("cruiseShips", shipIdx); }
+                            else if (cruiseIsChoice) setSelectedCruise(isSelected ? "" : ship.id);
+                          }}
                         >
                           <div className="flex flex-col sm:flex-row">
                             {/* LEFT — all text content */}
