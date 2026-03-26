@@ -434,7 +434,7 @@ const CITY_DESTINATIONS = POPULAR_DESTINATIONS.filter(
   ].includes(d)
 );
 
-export default function ProposalEditor({ data, onChange }: Props) {
+export default function ProposalEditor({ data, onChange, onContactChange }: Props) {
   const { settings: agentSettings } = useAgentSettings();
   const { settings: appSettings } = useAppSettings();
   
