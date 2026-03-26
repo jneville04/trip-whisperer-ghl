@@ -119,8 +119,8 @@ function getActivityIcon(type: Activity["type"]) {
 }
 
 // Dispatch event to focus editor section when clicking preview sections
-const focusEditorSection = (sectionKey: string) => {
-  window.dispatchEvent(new CustomEvent("editor-focus-section", { detail: { sectionKey } }));
+const focusEditorSection = (sectionKey: string, itemIndex?: number) => {
+  window.dispatchEvent(new CustomEvent("editor-focus-section", { detail: { sectionKey, itemIndex } }));
 };
 
 export type EditorSubPage = "checkout" | "approve" | "revisions";
@@ -138,10 +138,12 @@ function ItinerarySection({
   data,
   fadeUp,
   openLightbox,
+  isEditor,
 }: {
   data: ProposalData;
   fadeUp: any;
   openLightbox: (images: { src: string; alt?: string }[], index?: number) => void;
+  isEditor?: boolean;
 }) {
   const itineraryDisplayMode = ((data as any).itineraryDisplayMode || "single_open") as
     | "collapsed"
@@ -220,7 +222,7 @@ function ItinerarySection({
                 className="rounded-2xl border-2 border-border bg-card overflow-hidden shadow-[0_14px_36px_-20px_hsl(var(--foreground)/0.35)] hover:shadow-[0_18px_42px_-18px_hsl(var(--foreground)/0.35)] transition-shadow"
               >
                 <button
-                  onClick={() => toggleDay(day.id)}
+                  onClick={() => { toggleDay(day.id); if (isEditor) focusEditorSection("itinerary", dayIdx); }}
                   className="w-full flex items-center justify-between gap-3 px-6 sm:px-7 py-5 cursor-pointer group text-left bg-muted/35 hover:bg-muted/55 transition-colors"
                 >
                   <div className="flex items-start gap-3 sm:gap-4 flex-wrap">
@@ -286,17 +288,21 @@ function ItinerarySection({
                           const hasImages = act.imageUrls && act.imageUrls.length > 0 && !isUtility;
                           const hasVideo = !!act.videoUrl && !isUtility;
                           const isFeatured = actIdx === 0 && (hasImages || hasVideo);
+                          const isLinkedFlight = act.type === "flight" && (act.source === "proposal" || act.source === "group-trip");
                           return (
                             <div
                               key={act.id || actIdx}
                               className="rounded-xl border-2 border-border/70 bg-muted/25 p-4 sm:p-5"
+                              onClick={(e) => { if (isEditor) { e.stopPropagation(); focusEditorSection("itinerary", dayIdx); } }}
                             >
                               <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-4`}>
                                 <div className="flex-1">
                                   <div className="flex items-start gap-3">
-                                    <div className="relative z-10 mt-0.5 w-7 h-7 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                      {getActivityIcon(act.type)}
-                                    </div>
+                                    {!isLinkedFlight && (
+                                      <div className="relative z-10 mt-0.5 w-7 h-7 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                        {getActivityIcon(act.type)}
+                                      </div>
+                                    )}
                                     <div className="flex-1 min-w-0">
                                       {act.time && (
                                         <span className="text-xs font-medium text-primary font-body flex items-center gap-1 mb-1">
@@ -1242,7 +1248,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                 : "border-border hover:border-primary/40 cursor-pointer hover:shadow-[0_18px_34px_-16px_hsl(var(--foreground)/0.35)]"
                               : "border-border"
                           }`}
-                          onClick={() => flightsIsChoice && setSelectedFlight(isSelected ? "" : opt.id)}
+                          onClick={(e) => {
+                            if (isEditor) { e.stopPropagation(); focusEditorSection("flights", optIdx); }
+                            else if (flightsIsChoice) setSelectedFlight(isSelected ? "" : opt.id);
+                          }}
                         >
                           {/* TOP BAR — airline + price */}
                           <div className="bg-muted/60 border-b-2 border-border px-5 py-3.5 flex items-center justify-between">
@@ -1484,7 +1493,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                 : "border-border hover:border-primary/40 cursor-pointer"
                               : "border-border"
                           }`}
-                          onClick={() => accommodationsIsChoice && setSelectedAccommodation(isSelected ? "" : acc.id)}
+                          onClick={(e) => {
+                            if (isEditor) { e.stopPropagation(); focusEditorSection("accommodations", accIdx); }
+                            else if (accommodationsIsChoice) setSelectedAccommodation(isSelected ? "" : acc.id);
+                          }}
                         >
                           <div className="flex flex-col sm:flex-row">
                             {/* LEFT — all text content */}
@@ -1752,7 +1764,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                 : "border-border hover:border-primary/40 cursor-pointer"
                               : "border-border"
                           }`}
-                          onClick={() => cruiseIsChoice && setSelectedCruise(isSelected ? "" : ship.id)}
+                          onClick={(e) => {
+                            if (isEditor) { e.stopPropagation(); focusEditorSection("cruiseShips", shipIdx); }
+                            else if (cruiseIsChoice) setSelectedCruise(isSelected ? "" : ship.id);
+                          }}
                         >
                           <div className="flex flex-col sm:flex-row">
                             {/* LEFT — all text content */}
@@ -2333,7 +2348,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
           case "itinerary":
             if (data.days.filter((d) => !d.hidden).length === 0) return null;
-            return <ItinerarySection key="itinerary" data={data} fadeUp={fadeUp} openLightbox={openLightbox} />;
+            return <ItinerarySection key="itinerary" data={data} fadeUp={fadeUp} openLightbox={openLightbox} isEditor={isEditor} />;
 
           case "inclusions":
             const exclusions = (((data as any).exclusions as string[]) || []).filter(Boolean);
@@ -3051,27 +3066,33 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
 
                 if (currentSubtotal > 0 || hasPendingSelections) {
                   const currSymbol = financials.currency !== "USD" ? financials.currency + " " : "$";
+                  const isPackageView = financials.clientView === "package";
+                  const hideTotal = isPackageView && hasPendingSelections;
                   return (
                     <div className="pt-4 border-t-2 border-primary/30 mb-6 space-y-3">
-                      <div className="flex justify-between items-center">
-                        <span className="font-display text-xl font-bold text-foreground">
-                          {hasPendingSelections ? "Current Subtotal" : "Estimated Total"}
-                        </span>
-                        <span className="font-display text-2xl font-bold text-primary">
-                          {currSymbol}
-                          {currentSubtotal.toLocaleString("en-US", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
-                        </span>
-                      </div>
+                      {!hideTotal && (
+                        <div className="flex justify-between items-center">
+                          <span className="font-display text-xl font-bold text-foreground">
+                            Estimated Total
+                          </span>
+                          <span className="font-display text-2xl font-bold text-primary">
+                            {currSymbol}
+                            {currentSubtotal.toLocaleString("en-US", {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                          </span>
+                        </div>
+                      )}
                       {hasPendingSelections && (
                         <div className="bg-accent/10 border border-accent/30 rounded-lg px-4 py-2.5">
                           <p className="text-xs font-semibold text-accent font-body">
                             Pending selections: {pendingSections.join(", ")}
                           </p>
                           <p className="text-[11px] text-muted-foreground font-body mt-0.5">
-                            Total will update as you make your selections above.
+                            {isPackageView
+                              ? "Your total will appear once all selections are made."
+                              : "Total will update as you make your selections above."}
                           </p>
                         </div>
                       )}
