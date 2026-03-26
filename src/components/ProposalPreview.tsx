@@ -3201,35 +3201,29 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   })()}
               </div>
 
-              {/* Itinerary item prices — show included items always, optional only when added */}
-              {allItineraryPricedActivities.length > 0 && (
+              {/* Itinerary item prices — only included + client-added optionals */}
+              {itineraryOnlyActivities.length > 0 && (
                 <div className="space-y-0">
-                  {allItineraryPricedActivities.map((act, idx) => {
-                    const isAdded = act.status !== "optional" || addedOptionals.has(act.id);
-                    return (
-                      <div
-                        key={act.id || idx}
-                        className={`grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-4 items-start py-3.5 border-b-2 border-border ${!isAdded ? "opacity-50" : ""}`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <span className="text-primary">{getActivityIcon(act.type)}</span>
-                          <span className="font-body text-foreground font-medium">{act.title || act.type}</span>
-                        </div>
-                        <span className="font-body text-sm text-left sm:text-right sm:justify-self-end">
-                          <span className="text-foreground text-xs font-medium flex items-center gap-1.5">
-                            {isAdded ? (
-                              <><Check className="h-3 w-3 text-primary" /> {act.status === "optional" ? "Added" : "Included"}</>
-                            ) : (
-                              <span className="text-muted-foreground italic">Optional — not added</span>
-                            )}
-                            {showItemizedPrices && (
-                              <span className="ml-1 text-primary font-semibold">{fmtCurrency(act.price!)}</span>
-                            )}
-                          </span>
-                        </span>
+                  {itineraryOnlyActivities.map((act, idx) => (
+                    <div
+                      key={act.id || idx}
+                      className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-4 items-start py-3.5 border-b-2 border-border"
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className="text-primary">{getActivityIcon(act.type)}</span>
+                        <span className="font-body text-foreground font-medium">{act.title || act.type}</span>
                       </div>
-                    );
-                  })}
+                      <span className="font-body text-sm text-left sm:text-right sm:justify-self-end">
+                        <span className="text-foreground text-xs font-medium flex items-center gap-1.5">
+                          <Check className="h-3 w-3 text-primary" />
+                          {act.status === "optional" ? "Added" : "Included"}
+                          {showItemizedPrices && (
+                            <span className="ml-1 text-primary font-semibold">{fmtCurrency(act.price!)}</span>
+                          )}
+                        </span>
+                      </span>
+                    </div>
+                  ))}
                 </div>
               )}
               {data.pricing.length > 0 && (
