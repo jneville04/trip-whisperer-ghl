@@ -108,7 +108,7 @@ export default function GhlContactSearch({
           value={value}
           onChange={(e) => {
             onChange(e.target.value);
-            if (e.target.value.trim().length >= 2) setOpen(true);
+            if (e.target.value.trim().length >= 3) setOpen(true);
           }}
           onFocus={() => {
             if (results.length > 0) setOpen(true);
