@@ -89,6 +89,25 @@ const fadeUp = {
   }),
 };
 
+export type EditorSubPage = "checkout" | "approve" | "revisions";
+
+interface Props {
+  data: ProposalData;
+  shareId?: string;
+  tripId?: string;
+  tripStatus?: string;
+  isEditor?: boolean;
+  onEditorSubPage?: (page: EditorSubPage) => void;
+}
+
+function focusEditorSection(section: string, itemIndex?: number, activityId?: string) {
+  window.dispatchEvent(
+    new CustomEvent("editor-focus-section", {
+      detail: { section, itemIndex, activityId },
+    }),
+  );
+}
+
 const UTILITY_ACTIVITY_TYPES: Activity["type"][] = ["transport"];
 
 function getActivityIcon(type: Activity["type"]) {
