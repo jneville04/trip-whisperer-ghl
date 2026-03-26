@@ -211,6 +211,8 @@ export default function EditorPage() {
     const updatePayload: Record<string, any> = {
       draft_data: dataToSave as any,
       status: targetStatus,
+      traveler_email: travelerEmail,
+      traveler_phone: travelerPhone,
     };
 
     // On publish: copy draft_data into published_data
