@@ -5,6 +5,7 @@ import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, ChevronRight, Eye, 
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import GhlContactSearch, { type GhlContact } from "@/components/GhlContactSearch";
 
 import DatePickerField from "@/components/DatePickerField";
 import InlineTimePicker from "@/components/InlineTimePicker";
