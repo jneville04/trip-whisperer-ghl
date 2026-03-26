@@ -915,7 +915,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                             const routeParts = opt.legs.map(l => [l.departureAirport, l.arrivalAirport].filter(Boolean).join(" → ")).filter(Boolean);
                             const flightSummary = [routeParts.join(" · "), opt.price ? `$${opt.price}` : ""].filter(Boolean).join(" · ");
                             return (
-                            <CollapsibleHotel
+                            <CollapsibleHotel sectionKey="flights" itemIndex={oi}
                               key={opt.id}
                               hotelName={`✈️ Option ${oi + 1}`}
                               summaryExtra={flightSummary}
