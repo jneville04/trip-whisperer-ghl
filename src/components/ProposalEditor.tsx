@@ -507,6 +507,22 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const [addingItemDayIdx, setAddingItemDayIdx] = useState<number>(-1);
   const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
 
+  // Listen for deep sync events from preview clicks
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (!detail) return;
+      const { sectionKey, itemIndex } = detail;
+      if (typeof itemIndex !== "number") return;
+      if (sectionKey === "flights") setOpenFlightIdx(itemIndex);
+      else if (sectionKey === "accommodations") setOpenAccIdx(itemIndex);
+      else if (sectionKey === "cruiseShips") setOpenCruiseIdx(itemIndex);
+      else if (sectionKey === "itinerary") setOpenDayIdx(itemIndex);
+    };
+    window.addEventListener("editor-focus-item", handler);
+    return () => window.removeEventListener("editor-focus-item", handler);
+  }, []);
+
   const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "", showAgencyNameWithLogo: true };
   const resolvedPrimaryColor = agentSettings.primary_color || appSettings.primary_color;
   const resolvedSecondaryColor = agentSettings.secondary_color || appSettings.secondary_color;
