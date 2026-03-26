@@ -1150,6 +1150,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
       {/* DYNAMIC SECTIONS */}
       {sectionOrder.map((sectionKey) => {
         if (!vis[sectionKey]) return null;
+        const sectionEl = (() => {
 
         switch (sectionKey) {
           case "overview":
