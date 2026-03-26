@@ -187,14 +187,18 @@ export function SourceSelector({ proposalData, onSelect, onCancel, builderContex
       <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md border border-border/30 hover:bg-accent/10 text-sm font-body transition-colors" onClick={() => onSelect("itinerary")}>
         <Plus className="h-3.5 w-3.5 text-primary" /> Add to Itinerary
       </button>
-      <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md border border-border/30 hover:bg-accent/10 text-sm font-body transition-colors" onClick={() => setStep("proposal")} disabled={!hasProposalItems}>
-        <Link2 className="h-3.5 w-3.5 text-primary" /> Link from Proposal
-        {!hasProposalItems && <span className="text-[10px] text-muted-foreground ml-auto">No items</span>}
-      </button>
-      <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md border border-border/30 hover:bg-accent/10 text-sm font-body transition-colors" onClick={() => setStep("group-trip")} disabled={!hasBusTrips}>
-        <Users className="h-3.5 w-3.5 text-primary" /> Link from Group Trip
-        {!hasBusTrips && <span className="text-[10px] text-muted-foreground ml-auto">No items</span>}
-      </button>
+      {showProposalOption && (
+        <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md border border-border/30 hover:bg-accent/10 text-sm font-body transition-colors" onClick={() => setStep("proposal")} disabled={!hasProposalItems}>
+          <Link2 className="h-3.5 w-3.5 text-primary" /> Link from Proposal
+          {!hasProposalItems && <span className="text-[10px] text-muted-foreground ml-auto">No items</span>}
+        </button>
+      )}
+      {showGroupTripOption && (
+        <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md border border-border/30 hover:bg-accent/10 text-sm font-body transition-colors" onClick={() => setStep("group-trip")} disabled={!hasBusTrips}>
+          <Users className="h-3.5 w-3.5 text-primary" /> Link from Group Trip
+          {!hasBusTrips && <span className="text-[10px] text-muted-foreground ml-auto">No items</span>}
+        </button>
+      )}
       <Button variant="ghost" size="sm" className="h-6 text-xs w-full mt-1" onClick={onCancel}>Cancel</Button>
     </div>
   );
