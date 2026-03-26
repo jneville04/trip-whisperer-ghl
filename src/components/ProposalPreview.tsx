@@ -100,38 +100,53 @@ function getActivityIcon(type: Activity["type"]) {
     case "cruise":
       return <Ship className="h-4 w-4" />;
     case "transfer":
-    case "transport":
       return <Bus className="h-4 w-4" />;
-    case "activity":
-      return <MapPin className="h-4 w-4" />;
-    case "excursion":
-    case "sightseeing":
-      return <MapPin className="h-4 w-4" />;
     case "dining":
       return <Utensils className="h-4 w-4" />;
     case "event":
-      return <Calendar className="h-4 w-4" />;
+      return <Sparkles className="h-4 w-4" />;
+    case "excursion":
+      return <Camera className="h-4 w-4" />;
     case "free_time":
       return <Clock className="h-4 w-4" />;
     default:
-      return <Camera className="h-4 w-4" />;
+      return <MapPin className="h-4 w-4" />;
   }
 }
 
-// Dispatch event to focus editor section when clicking preview sections
-const focusEditorSection = (sectionKey: string, itemIndex?: number, activityId?: string) => {
-  window.dispatchEvent(new CustomEvent("editor-focus-section", { detail: { sectionKey, itemIndex, activityId } }));
-};
+function getActivityTypeLabel(type: Activity["type"]): string {
+  switch (type) {
+    case "flight": return "FLIGHT";
+    case "hotel": return "HOTEL STAY";
+    case "cruise": return "CRUISE";
+    case "transfer": return "TRANSFER";
+    case "dining": return "DINING";
+    case "event": return "EVENT";
+    case "excursion": return "EXCURSION";
+    case "free_time": return "FREE TIME";
+    case "activity": return "ACTIVITY";
+    default: return "ACTIVITY";
+  }
+}
 
-export type EditorSubPage = "checkout" | "approve" | "revisions";
-
-interface Props {
-  data: ProposalData;
-  shareId?: string;
-  tripId?: string;
-  tripStatus?: string;
-  isEditor?: boolean;
-  onEditorSubPage?: (page: EditorSubPage) => void;
+function ActivityDescription({ text }: { text: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const isLong = text.length > 160;
+  return (
+    <div>
+      <p className="text-[14px] text-muted-foreground font-body leading-relaxed">
+        {isLong && !expanded ? text.slice(0, 160) + "…" : text}
+      </p>
+      {isLong && (
+        <button
+          onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
+          className="text-primary text-sm font-medium font-body mt-1 hover:underline"
+        >
+          {expanded ? "Show less" : "Show more"}
+        </button>
+      )}
+    </div>
+  );
 }
 
 function ItinerarySection({
