@@ -3325,8 +3325,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   })}
               </div>
 
-              {/* Pricing summary */}
-              {(() => {
+              {/* Pricing summary — only shown when priced items exist */}
+              {hasAnyPricedItems && (() => {
                 const finTotal = parseFloat(financials.totalPrice?.replace(/[^0-9.-]/g, "") || "0");
                 const finDeposit = parseFloat(financials.depositAmount?.replace(/[^0-9.-]/g, "") || "0");
                 const currSymbol = financials.currency !== "USD" ? financials.currency + " " : "$";
@@ -3341,6 +3341,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     if (effId)
                       calc += parseFloat(sec.items.find((i) => i.id === effId)?.price?.replace(/[^0-9.-]/g, "") || "0");
                   }
+                  // Include itinerary item prices (itinerary-source, proposal-linked, group-trip-linked)
+                  calc += itineraryItemPriceTotal;
                   calc += data.pricing.reduce(
                     (sum, l) => sum + (parseFloat(l.amount.replace(/[^0-9.-]/g, "")) || 0),
                     0,
