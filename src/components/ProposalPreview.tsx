@@ -531,13 +531,17 @@ function ItinerarySection({
                                     )}
                                     {isOptional && (
                                       <button
-                                        className="mt-3 inline-flex items-center gap-1.5 text-sm font-body font-semibold text-primary hover:text-primary/80 bg-primary/10 hover:bg-primary/15 px-4 py-2 rounded-full transition-colors"
+                                        className={`mt-3 inline-flex items-center gap-1.5 text-sm font-body font-semibold px-4 py-2 rounded-full transition-colors ${
+                                          addedOptionals.has(act.id)
+                                            ? "text-primary-foreground bg-primary hover:bg-primary/90"
+                                            : "text-primary hover:text-primary/80 bg-primary/10 hover:bg-primary/15"
+                                        }`}
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           window.dispatchEvent(new CustomEvent("add-optional-item", { detail: { activityId: act.id, dayId: day.id, title: displayTitle || act.title, price: act.price } }));
                                         }}
                                       >
-                                        + Add this experience
+                                        {addedOptionals.has(act.id) ? "✓ Added" : "+ Add this experience"}
                                       </button>
                                     )}
                                   </div>
