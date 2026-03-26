@@ -164,6 +164,15 @@ export default function EditorPage() {
     setSaveFailed(false);
   }, []);
 
+  const handleContactChange = useCallback((email: string, phone: string) => {
+    setTravelerEmail(email);
+    setTravelerPhone(phone);
+    // Save immediately to DB
+    if (id) {
+      supabase.from("trips").update({ traveler_email: email, traveler_phone: phone }).eq("id", id).then(() => {});
+    }
+  }, [id]);
+
   // Core save function
   const saveTrip = async (status?: string, dataOverride?: ProposalData): Promise<boolean> => {
     if (!id) return false;
