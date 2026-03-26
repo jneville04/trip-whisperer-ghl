@@ -2006,7 +2006,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                 {addingItemDayIdx === dayIdx ? (
                                   <SourceSelector
                                     proposalData={data}
-                                    onSelect={(source, linkedItem) => {
+                                    builderContext={(data as any).proposalType === "proposal" ? "proposal" : "group-trip"}
+                                    sectionVisibility={vis}
                                       if (linkedItem) {
                                         addActivity(dayIdx, linkedItem);
                                       } else {

@@ -373,10 +373,12 @@ export function ItemPreviewSummary({ item }: { item: Activity }) {
   };
 
   const timeStr = item.type === "flight" ? (f.departureTime || item.time) : item.time;
+  // Hide generic flight icon for linked flight items — structured preview is enough
+  const isLinkedFlight = item.type === "flight" && (item.source === "proposal" || item.source === "group-trip");
 
   return (
     <div className="flex items-center gap-2 flex-1 min-w-0">
-      <Icon className="h-3.5 w-3.5 text-primary shrink-0" />
+      {!isLinkedFlight && <Icon className="h-3.5 w-3.5 text-primary shrink-0" />}
       <span className="text-xs font-semibold font-body truncate">{getPreview()}</span>
       {timeStr && <span className="text-[10px] text-muted-foreground font-body shrink-0">{timeStr}</span>}
       {item.source === "proposal" && (
