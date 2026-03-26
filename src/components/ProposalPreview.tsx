@@ -3003,7 +3003,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     )
                   : 0;
 
-                const currentSubtotal = baseTotal + selectedTotal + pricingLinesTotal + selectedOptionPrice;
+                const currentSubtotal = baseTotal + selectedTotal + pricingLinesTotal + selectedOptionPrice + itineraryItemPriceTotal;
                 const hasPendingSelections = pendingSections.length > 0;
 
                 if (currentSubtotal > 0 || hasPendingSelections) {
