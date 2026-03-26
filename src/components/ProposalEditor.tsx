@@ -35,6 +35,7 @@ import { useAppSettings } from "@/hooks/useAppSettings";
 interface Props {
   data: ProposalData;
   onChange: (data: ProposalData) => void;
+  onContactChange?: (email: string, phone: string) => void;
 }
 const PARSE_FMTS = ["MMMM d, yyyy", "MMM d, yyyy", "yyyy-MM-dd", "MM/dd/yyyy"];
 function tryParse(v: string): Date | undefined {
