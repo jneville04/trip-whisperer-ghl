@@ -96,7 +96,7 @@ function CollapsibleSection({
           sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
           // Deep sync: if itemIndex is provided, dispatch a sub-item focus event
           if (detail.itemIndex !== undefined) {
-            window.dispatchEvent(new CustomEvent("editor-focus-item", { detail: { sectionKey, itemIndex: detail.itemIndex } }));
+            window.dispatchEvent(new CustomEvent("editor-focus-item", { detail: { sectionKey, itemIndex: detail.itemIndex, activityId: detail.activityId } }));
           }
         }, 100);
       }
@@ -231,6 +231,8 @@ function CollapsibleHotel({
   onToggle,
   summaryExtra,
   defaultOpen = false,
+  sectionKey,
+  itemIndex,
 }: {
   hotelName: string;
   location?: string;
@@ -243,12 +245,14 @@ function CollapsibleHotel({
   onToggle?: () => void;
   summaryExtra?: string;
   defaultOpen?: boolean;
+  sectionKey?: string;
+  itemIndex?: number;
 }) {
   const [internalOpen, setInternalOpen] = useState(defaultOpen);
   const open = isOpen !== undefined ? isOpen : internalOpen;
   const toggle = onToggle || (() => setInternalOpen(!internalOpen));
   return (
-    <div className={`border border-border/40 rounded-lg bg-muted/20 overflow-hidden ${hidden ? "opacity-50" : ""}`}>
+    <div data-editor-item={`${sectionKey || ""}:${itemIndex ?? ""}`} className={`border border-border/40 rounded-lg bg-muted/20 overflow-hidden ${hidden ? "opacity-50" : ""}`}>
       <div className="flex items-center justify-between px-3 py-2.5 bg-muted/40">
         <button className="flex items-center gap-2 flex-1 text-left min-w-0" onClick={toggle}>
           {open ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground shrink-0" />}
@@ -512,12 +516,20 @@ export default function ProposalEditor({ data, onChange }: Props) {
     const handler = (e: Event) => {
       const detail = (e as CustomEvent).detail;
       if (!detail) return;
-      const { sectionKey, itemIndex } = detail;
+      const { sectionKey, itemIndex, activityId } = detail;
       if (typeof itemIndex !== "number") return;
       if (sectionKey === "flights") setOpenFlightIdx(itemIndex);
       else if (sectionKey === "accommodations") setOpenAccIdx(itemIndex);
       else if (sectionKey === "cruiseShips") setOpenCruiseIdx(itemIndex);
-      else if (sectionKey === "itinerary") setOpenDayIdx(itemIndex);
+      else if (sectionKey === "itinerary") {
+        setOpenDayIdx(itemIndex);
+        if (activityId) setExpandedItemId(activityId);
+      }
+      // Scroll to the matching editor item after React re-renders
+      setTimeout(() => {
+        const el = document.querySelector(`[data-editor-item="${sectionKey}:${itemIndex}"]`);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 200);
     };
     window.addEventListener("editor-focus-item", handler);
     return () => window.removeEventListener("editor-focus-item", handler);
@@ -911,7 +923,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                             const routeParts = opt.legs.map(l => [l.departureAirport, l.arrivalAirport].filter(Boolean).join(" → ")).filter(Boolean);
                             const flightSummary = [routeParts.join(" · "), opt.price ? `$${opt.price}` : ""].filter(Boolean).join(" · ");
                             return (
-                            <CollapsibleHotel
+                            <CollapsibleHotel sectionKey="flights" itemIndex={oi}
                               key={opt.id}
                               hotelName={`✈️ Option ${oi + 1}`}
                               summaryExtra={flightSummary}
@@ -1094,7 +1106,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                             };
 
                             return (
-                              <CollapsibleHotel key={acc.id} hotelName={acc.hotelName || `Hotel ${i + 1}`} location={acc.location} summaryExtra={[acc.roomType, acc.nights ? `${acc.nights}n` : "", acc.price ? `$${acc.price}` : ""].filter(Boolean).join(" · ")} isOpen={openAccIdx === i} onToggle={() => setOpenAccIdx(openAccIdx === i ? -1 : i)} onDelete={() => { update("accommodations", accommodations.filter((_, idx) => idx !== i)); if (openAccIdx === i) setOpenAccIdx(-1); }} hidden={acc.hidden} onHide={() => { const a = [...accommodations]; a[i] = { ...a[i], hidden: !a[i].hidden }; update("accommodations", a); }} onCopy={() => { const clone = { ...acc, id: crypto.randomUUID(), hidden: false }; update("accommodations", [...accommodations.slice(0, i + 1), clone, ...accommodations.slice(i + 1)]); setOpenAccIdx(i + 1); }}>
+                              <CollapsibleHotel sectionKey="accommodations" itemIndex={i} key={acc.id} hotelName={acc.hotelName || `Hotel ${i + 1}`} location={acc.location} summaryExtra={[acc.roomType, acc.nights ? `${acc.nights}n` : "", acc.price ? `$${acc.price}` : ""].filter(Boolean).join(" · ")} isOpen={openAccIdx === i} onToggle={() => setOpenAccIdx(openAccIdx === i ? -1 : i)} onDelete={() => { update("accommodations", accommodations.filter((_, idx) => idx !== i)); if (openAccIdx === i) setOpenAccIdx(-1); }} hidden={acc.hidden} onHide={() => { const a = [...accommodations]; a[i] = { ...a[i], hidden: !a[i].hidden }; update("accommodations", a); }} onCopy={() => { const clone = { ...acc, id: crypto.randomUUID(), hidden: false }; update("accommodations", [...accommodations.slice(0, i + 1), clone, ...accommodations.slice(i + 1)]); setOpenAccIdx(i + 1); }}>
                                 <div className="border-t border-border/30">
                                   <Tabs defaultValue="general" className="w-full">
                                     <TabsList className="w-full justify-start rounded-none border-b border-border/30 bg-transparent h-9 px-3">
@@ -1329,7 +1341,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                             };
 
                             return (
-                              <CollapsibleHotel key={ship.id} hotelName={ship.shipName || `Ship ${i + 1}`} location={ship.cruiseLine} summaryExtra={[ship.cabinType, ship.nights ? `${ship.nights}n` : "", ship.price ? `$${ship.price}` : ""].filter(Boolean).join(" · ")} isOpen={openCruiseIdx === i} onToggle={() => setOpenCruiseIdx(openCruiseIdx === i ? -1 : i)} onDelete={() => { update("cruiseShips", cruiseShips.filter((_, idx) => idx !== i)); if (openCruiseIdx === i) setOpenCruiseIdx(-1); }} hidden={ship.hidden} onHide={() => { const s = [...cruiseShips]; s[i] = { ...s[i], hidden: !s[i].hidden }; update("cruiseShips", s); }} onCopy={() => { const clone = { ...ship, id: crypto.randomUUID(), hidden: false }; update("cruiseShips", [...cruiseShips.slice(0, i + 1), clone, ...cruiseShips.slice(i + 1)]); setOpenCruiseIdx(i + 1); }}>
+                              <CollapsibleHotel sectionKey="cruiseShips" itemIndex={i} key={ship.id} hotelName={ship.shipName || `Ship ${i + 1}`} location={ship.cruiseLine} summaryExtra={[ship.cabinType, ship.nights ? `${ship.nights}n` : "", ship.price ? `$${ship.price}` : ""].filter(Boolean).join(" · ")} isOpen={openCruiseIdx === i} onToggle={() => setOpenCruiseIdx(openCruiseIdx === i ? -1 : i)} onDelete={() => { update("cruiseShips", cruiseShips.filter((_, idx) => idx !== i)); if (openCruiseIdx === i) setOpenCruiseIdx(-1); }} hidden={ship.hidden} onHide={() => { const s = [...cruiseShips]; s[i] = { ...s[i], hidden: !s[i].hidden }; update("cruiseShips", s); }} onCopy={() => { const clone = { ...ship, id: crypto.randomUUID(), hidden: false }; update("cruiseShips", [...cruiseShips.slice(0, i + 1), clone, ...cruiseShips.slice(i + 1)]); setOpenCruiseIdx(i + 1); }}>
                                 <div className="border-t border-border/30">
                                   <Tabs defaultValue="general" className="w-full">
                                     <TabsList className="w-full justify-start rounded-none border-b border-border/30 bg-transparent h-9 px-3">
@@ -1567,7 +1579,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                             };
 
                             return (
-                              <CollapsibleHotel key={trip.id} defaultOpen={i === 0} hotelName={trip.routeName || `Bus Trip ${i + 1}`} location={trip.busCompany} onDelete={() => update("busTrips", busTrips.filter((_, idx) => idx !== i))}>
+                              <CollapsibleHotel sectionKey="busTrips" itemIndex={i} key={trip.id} defaultOpen={i === 0} hotelName={trip.routeName || `Bus Trip ${i + 1}`} location={trip.busCompany} onDelete={() => update("busTrips", busTrips.filter((_, idx) => idx !== i))}>
                                 <div className="border-t border-border/30">
                                   <Tabs defaultValue="general" className="w-full">
                                     <TabsList className="w-full justify-start rounded-none border-b border-border/30 bg-transparent h-9 px-3">
@@ -1848,7 +1860,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                             </div>
                           )}
                           {data.days.map((day, dayIdx) => (
-                            <CollapsibleHotel
+                            <CollapsibleHotel sectionKey="itinerary" itemIndex={dayIdx}
                               key={day.id}
                               hotelName={`Day ${dayIdx + 1}${day.title ? `: ${day.title}` : ""}`}
                               location={day.location}

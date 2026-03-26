@@ -119,8 +119,8 @@ function getActivityIcon(type: Activity["type"]) {
 }
 
 // Dispatch event to focus editor section when clicking preview sections
-const focusEditorSection = (sectionKey: string, itemIndex?: number) => {
-  window.dispatchEvent(new CustomEvent("editor-focus-section", { detail: { sectionKey, itemIndex } }));
+const focusEditorSection = (sectionKey: string, itemIndex?: number, activityId?: string) => {
+  window.dispatchEvent(new CustomEvent("editor-focus-section", { detail: { sectionKey, itemIndex, activityId } }));
 };
 
 export type EditorSubPage = "checkout" | "approve" | "revisions";
@@ -292,7 +292,7 @@ function ItinerarySection({
                             <div
                               key={act.id || actIdx}
                               className="rounded-xl border-2 border-border/70 bg-muted/25 p-4 sm:p-5"
-                              onClick={(e) => { if (isEditor) { e.stopPropagation(); focusEditorSection("itinerary", dayIdx); } }}
+                              onClick={(e) => { if (isEditor) { e.stopPropagation(); focusEditorSection("itinerary", dayIdx, act.id); } }}
                             >
                               <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-4`}>
                                 <div className="flex-1">
