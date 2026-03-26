@@ -1845,7 +1845,6 @@ export default function ProposalEditor({ data, onChange, onContactChange }: Prop
                                   className="h-7 text-xs"
                                   onClick={() => {
                                     onChange({ ...(data as any), itineraryDisplayMode: "collapsed" } as ProposalData);
-                                    setOpenDayIdx(-1);
                                   }}
                                 >
                                   Collapsed
@@ -1857,7 +1856,6 @@ export default function ProposalEditor({ data, onChange, onContactChange }: Prop
                                   className="h-7 text-xs"
                                   onClick={() => {
                                     onChange({ ...(data as any), itineraryDisplayMode: "single_open" } as ProposalData);
-                                    setOpenDayIdx(data.days.length > 0 ? 0 : -1);
                                   }}
                                 >
                                   Open one day
@@ -1869,7 +1867,6 @@ export default function ProposalEditor({ data, onChange, onContactChange }: Prop
                                   className="h-7 text-xs"
                                   onClick={() => {
                                     onChange({ ...(data as any), itineraryDisplayMode: "all_open" } as ProposalData);
-                                    setOpenDayIdx(-1);
                                   }}
                                 >
                                   Open all days
