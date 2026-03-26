@@ -138,10 +138,12 @@ function ItinerarySection({
   data,
   fadeUp,
   openLightbox,
+  isEditor,
 }: {
   data: ProposalData;
   fadeUp: any;
   openLightbox: (images: { src: string; alt?: string }[], index?: number) => void;
+  isEditor?: boolean;
 }) {
   const itineraryDisplayMode = ((data as any).itineraryDisplayMode || "single_open") as
     | "collapsed"
