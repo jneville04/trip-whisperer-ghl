@@ -286,17 +286,21 @@ function ItinerarySection({
                           const hasImages = act.imageUrls && act.imageUrls.length > 0 && !isUtility;
                           const hasVideo = !!act.videoUrl && !isUtility;
                           const isFeatured = actIdx === 0 && (hasImages || hasVideo);
+                          const isLinkedFlight = act.type === "flight" && (act.source === "proposal" || act.source === "group-trip");
                           return (
                             <div
                               key={act.id || actIdx}
                               className="rounded-xl border-2 border-border/70 bg-muted/25 p-4 sm:p-5"
+                              onClick={(e) => { if (isEditor) { e.stopPropagation(); focusEditorSection("itinerary", dayIdx); } }}
                             >
                               <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-4`}>
                                 <div className="flex-1">
                                   <div className="flex items-start gap-3">
-                                    <div className="relative z-10 mt-0.5 w-7 h-7 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                      {getActivityIcon(act.type)}
-                                    </div>
+                                    {!isLinkedFlight && (
+                                      <div className="relative z-10 mt-0.5 w-7 h-7 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                        {getActivityIcon(act.type)}
+                                      </div>
+                                    )}
                                     <div className="flex-1 min-w-0">
                                       {act.time && (
                                         <span className="text-xs font-medium text-primary font-body flex items-center gap-1 mb-1">
