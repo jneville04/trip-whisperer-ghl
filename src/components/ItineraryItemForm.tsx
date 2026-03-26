@@ -34,17 +34,26 @@ interface SourceSelectorProps {
   proposalData: ProposalData;
   onSelect: (source: ItineraryItemSource, linkedItem?: Activity) => void;
   onCancel: () => void;
+  /** "proposal" shows Link from Proposal; "group-trip" shows Link from Group Trip */
+  builderContext?: "proposal" | "group-trip";
+  /** Section visibility from the parent builder – only visible+populated sections are linkable */
+  sectionVisibility?: Partial<Record<string, boolean>>;
 }
 
-export function SourceSelector({ proposalData, onSelect, onCancel }: SourceSelectorProps) {
+export function SourceSelector({ proposalData, onSelect, onCancel, builderContext, sectionVisibility }: SourceSelectorProps) {
   const [step, setStep] = useState<"pick" | "proposal" | "group-trip">("pick");
+  const vis = sectionVisibility || {};
 
-  const hasProposalItems =
-    (proposalData.flightOptions?.length ?? 0) > 0 ||
-    (proposalData.accommodations?.length ?? 0) > 0 ||
-    (proposalData.cruiseShips?.length ?? 0) > 0;
+  // Only show linkable proposal items from sections that are visible AND have data
+  const hasFlights = vis.flights !== false && (proposalData.flightOptions?.length ?? 0) > 0;
+  const hasAccommodations = vis.accommodations !== false && (proposalData.accommodations?.length ?? 0) > 0;
+  const hasCruises = vis.cruiseShips !== false && (proposalData.cruiseShips?.length ?? 0) > 0;
+  const hasProposalItems = hasFlights || hasAccommodations || hasCruises;
 
-  const hasBusTrips = (proposalData.busTrips?.length ?? 0) > 0;
+  const hasBusTrips = vis.busTrips !== false && (proposalData.busTrips?.length ?? 0) > 0;
+
+  const showProposalOption = builderContext !== "group-trip";
+  const showGroupTripOption = builderContext !== "proposal";
 
   if (step === "proposal") {
     return (
@@ -54,7 +63,7 @@ export function SourceSelector({ proposalData, onSelect, onCancel }: SourceSelec
           <Button variant="ghost" size="sm" className="h-6 text-xs" onClick={() => setStep("pick")}>Back</Button>
         </div>
         {/* Flight options */}
-        {(proposalData.flightOptions || []).map((fo) => {
+        {hasFlights && (proposalData.flightOptions || []).map((fo) => {
           const firstLeg = fo.legs?.[0];
           const label = firstLeg ? `✈️ ${firstLeg.departureAirport || "?"} → ${firstLeg.arrivalAirport || "?"}` : "✈️ Flight";
           return (
@@ -85,7 +94,7 @@ export function SourceSelector({ proposalData, onSelect, onCancel }: SourceSelec
           );
         })}
         {/* Accommodations */}
-        {(proposalData.accommodations || []).map((acc) => (
+        {hasAccommodations && (proposalData.accommodations || []).map((acc) => (
           <button key={acc.id} className="w-full text-left px-3 py-2 rounded-md border border-border/30 hover:bg-accent/10 text-sm font-body transition-colors" onClick={() => {
             const item: Activity = {
               id: crypto.randomUUID(),
@@ -110,7 +119,7 @@ export function SourceSelector({ proposalData, onSelect, onCancel }: SourceSelec
           </button>
         ))}
         {/* Cruises */}
-        {(proposalData.cruiseShips || []).map((cr) => (
+        {hasCruises && (proposalData.cruiseShips || []).map((cr) => (
           <button key={cr.id} className="w-full text-left px-3 py-2 rounded-md border border-border/30 hover:bg-accent/10 text-sm font-body transition-colors" onClick={() => {
             const item: Activity = {
               id: crypto.randomUUID(),
@@ -178,14 +187,18 @@ export function SourceSelector({ proposalData, onSelect, onCancel }: SourceSelec
       <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md border border-border/30 hover:bg-accent/10 text-sm font-body transition-colors" onClick={() => onSelect("itinerary")}>
         <Plus className="h-3.5 w-3.5 text-primary" /> Add to Itinerary
       </button>
-      <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md border border-border/30 hover:bg-accent/10 text-sm font-body transition-colors" onClick={() => setStep("proposal")} disabled={!hasProposalItems}>
-        <Link2 className="h-3.5 w-3.5 text-primary" /> Link from Proposal
-        {!hasProposalItems && <span className="text-[10px] text-muted-foreground ml-auto">No items</span>}
-      </button>
-      <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md border border-border/30 hover:bg-accent/10 text-sm font-body transition-colors" onClick={() => setStep("group-trip")} disabled={!hasBusTrips}>
-        <Users className="h-3.5 w-3.5 text-primary" /> Link from Group Trip
-        {!hasBusTrips && <span className="text-[10px] text-muted-foreground ml-auto">No items</span>}
-      </button>
+      {showProposalOption && (
+        <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md border border-border/30 hover:bg-accent/10 text-sm font-body transition-colors" onClick={() => setStep("proposal")} disabled={!hasProposalItems}>
+          <Link2 className="h-3.5 w-3.5 text-primary" /> Link from Proposal
+          {!hasProposalItems && <span className="text-[10px] text-muted-foreground ml-auto">No items</span>}
+        </button>
+      )}
+      {showGroupTripOption && (
+        <button className="w-full flex items-center gap-2 px-3 py-2 rounded-md border border-border/30 hover:bg-accent/10 text-sm font-body transition-colors" onClick={() => setStep("group-trip")} disabled={!hasBusTrips}>
+          <Users className="h-3.5 w-3.5 text-primary" /> Link from Group Trip
+          {!hasBusTrips && <span className="text-[10px] text-muted-foreground ml-auto">No items</span>}
+        </button>
+      )}
       <Button variant="ghost" size="sm" className="h-6 text-xs w-full mt-1" onClick={onCancel}>Cancel</Button>
     </div>
   );
@@ -360,10 +373,12 @@ export function ItemPreviewSummary({ item }: { item: Activity }) {
   };
 
   const timeStr = item.type === "flight" ? (f.departureTime || item.time) : item.time;
+  // Hide generic flight icon for linked flight items — structured preview is enough
+  const isLinkedFlight = item.type === "flight" && (item.source === "proposal" || item.source === "group-trip");
 
   return (
     <div className="flex items-center gap-2 flex-1 min-w-0">
-      <Icon className="h-3.5 w-3.5 text-primary shrink-0" />
+      {!isLinkedFlight && <Icon className="h-3.5 w-3.5 text-primary shrink-0" />}
       <span className="text-xs font-semibold font-body truncate">{getPreview()}</span>
       {timeStr && <span className="text-[10px] text-muted-foreground font-body shrink-0">{timeStr}</span>}
       {item.source === "proposal" && (
