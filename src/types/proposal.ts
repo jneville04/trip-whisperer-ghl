@@ -1,9 +1,48 @@
+export type ItineraryItemType =
+  | "flight" | "hotel" | "cruise" | "transfer"
+  | "activity" | "excursion" | "dining" | "event" | "free_time"
+  // Legacy compat
+  | "transport" | "sightseeing";
+
+export type ItineraryItemSource = "itinerary" | "proposal" | "group-trip";
+export type ItineraryItemStatus = "included" | "optional";
+
+export interface ItineraryItemFields {
+  // Flight
+  departureAirport?: string;
+  arrivalAirport?: string;
+  departureTime?: string;
+  arrivalTime?: string;
+  airline?: string;
+  flightNumber?: string;
+  // Hotel
+  hotelName?: string;
+  checkInTime?: string;
+  numberOfNights?: string;
+  location?: string;
+  roomType?: string;
+  // Cruise
+  cruiseName?: string;
+  embarkationPort?: string;
+  duration?: string;
+  // Transfer
+  pickupLocation?: string;
+  dropoffLocation?: string;
+  // Generic (Activity / Excursion / Dining / Event)
+  // uses title + time + location from above
+}
+
 export interface Activity {
   id: string;
   time: string;
   title: string;
   description: string;
-  type: "transport" | "hotel" | "dining" | "activity" | "sightseeing";
+  type: ItineraryItemType;
+  source?: ItineraryItemSource;
+  status?: ItineraryItemStatus;
+  linkedId?: string; // ID of linked proposal/group-trip item
+  price?: string;
+  fields?: ItineraryItemFields;
   imageUrls?: string[];
   videoUrl?: string;
   videoThumbnailUrl?: string;
