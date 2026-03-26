@@ -1493,7 +1493,10 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                                 : "border-border hover:border-primary/40 cursor-pointer"
                               : "border-border"
                           }`}
-                          onClick={() => accommodationsIsChoice && setSelectedAccommodation(isSelected ? "" : acc.id)}
+                          onClick={(e) => {
+                            if (isEditor) { e.stopPropagation(); focusEditorSection("accommodations", accIdx); }
+                            else if (accommodationsIsChoice) setSelectedAccommodation(isSelected ? "" : acc.id);
+                          }}
                         >
                           <div className="flex flex-col sm:flex-row">
                             {/* LEFT — all text content */}
