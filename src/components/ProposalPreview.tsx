@@ -3481,6 +3481,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           );
                         }
                       }
+                      // Include itinerary item prices
+                      totalPrice += itineraryItemPriceTotal;
                       totalPrice += data.pricing.reduce(
                         (sum, l) => sum + (parseFloat(l.amount.replace(/[^0-9.-]/g, "")) || 0),
                         0,
