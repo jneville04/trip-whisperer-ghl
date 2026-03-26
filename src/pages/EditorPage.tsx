@@ -152,6 +152,8 @@ export default function EditorPage() {
     setMaxCapacity(r.max_capacity ?? null);
     setPublicSlug(r.public_slug || "");
     setCurrentStatus(normalizeStatus(r.status));
+    setTravelerEmail(r.traveler_email || "");
+    setTravelerPhone(r.traveler_phone || "");
     setLastSavedAt(new Date());
     setLoading(false);
   };
