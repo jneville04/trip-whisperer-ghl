@@ -499,6 +499,17 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
     },
   ];
 
+  // Helper: sum prices from itinerary day activities (all sources)
+  const itineraryItemPriceTotal = (data.days || []).reduce((sum, day) =>
+    sum + (day.activities || []).reduce((s, act) =>
+      s + (parseFloat(act.price?.replace(/[^0-9.-]/g, "") || "0") || 0), 0), 0);
+
+  const hasAnyPricedItems = itineraryItemPriceTotal > 0
+    || sectionRegistry.some(s => s.visible && s.items.some(i => parseFloat(i.price?.replace(/[^0-9.-]/g, "") || "0") > 0))
+    || data.pricing.some(l => parseFloat(l.amount?.replace(/[^0-9.-]/g, "") || "0") > 0)
+    || parseFloat(financials.totalPrice?.replace(/[^0-9.-]/g, "") || "0") > 0
+    || parseFloat(financials.depositAmount?.replace(/[^0-9.-]/g, "") || "0") > 0;
+
   // A section is a "required choice" if visible, not group-booking, and has 2+ items
   const requiredChoiceSections = sectionRegistry.filter((s) => s.visible && !isGroupBooking && s.items.length >= 2);
 
@@ -3314,8 +3325,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   })}
               </div>
 
-              {/* Pricing summary */}
-              {(() => {
+              {/* Pricing summary — only shown when priced items exist */}
+              {hasAnyPricedItems && (() => {
                 const finTotal = parseFloat(financials.totalPrice?.replace(/[^0-9.-]/g, "") || "0");
                 const finDeposit = parseFloat(financials.depositAmount?.replace(/[^0-9.-]/g, "") || "0");
                 const currSymbol = financials.currency !== "USD" ? financials.currency + " " : "$";
@@ -3330,6 +3341,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     if (effId)
                       calc += parseFloat(sec.items.find((i) => i.id === effId)?.price?.replace(/[^0-9.-]/g, "") || "0");
                   }
+                  // Include itinerary item prices (itinerary-source, proposal-linked, group-trip-linked)
+                  calc += itineraryItemPriceTotal;
                   calc += data.pricing.reduce(
                     (sum, l) => sum + (parseFloat(l.amount.replace(/[^0-9.-]/g, "")) || 0),
                     0,
@@ -3468,6 +3481,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           );
                         }
                       }
+                      // Include itinerary item prices
+                      totalPrice += itineraryItemPriceTotal;
                       totalPrice += data.pricing.reduce(
                         (sum, l) => sum + (parseFloat(l.amount.replace(/[^0-9.-]/g, "")) || 0),
                         0,
