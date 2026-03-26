@@ -293,7 +293,7 @@ function AgentFinancialsAccordion({ pricing, onChange, itemPrice }: { pricing: A
           🔒 Agent Financials
         </AccordionTrigger>
         <AccordionContent className="pt-0 pb-0">
-          <AgentPricingFields pricing={pricing} onChange={onChange} />
+          <AgentPricingFields pricing={resolvedPricing} onChange={handleChange} />
         </AccordionContent>
       </AccordionItem>
     </Accordion>
