@@ -677,6 +677,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
     return () => window.removeEventListener("add-optional-item", handler);
   }, []);
 
+  const vis = data.sectionVisibility || {
     hero: true,
     overview: true,
     flights: true,
