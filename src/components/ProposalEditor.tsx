@@ -1085,6 +1085,7 @@ export default function ProposalEditor({ data, onChange, onContactChange }: Prop
                               )}
                               <AgentFinancialsAccordion
                                 pricing={opt.agentPricing}
+                                itemPrice={opt.price}
                                 onChange={(ap) => { const opts = [...flightOptions]; opts[oi] = { ...opts[oi], agentPricing: ap }; update("flightOptions", opts); }}
                               />
                               </div>
