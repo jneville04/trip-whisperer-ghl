@@ -231,6 +231,8 @@ function CollapsibleHotel({
   onToggle,
   summaryExtra,
   defaultOpen = false,
+  sectionKey,
+  itemIndex,
 }: {
   hotelName: string;
   location?: string;
@@ -243,6 +245,8 @@ function CollapsibleHotel({
   onToggle?: () => void;
   summaryExtra?: string;
   defaultOpen?: boolean;
+  sectionKey?: string;
+  itemIndex?: number;
 }) {
   const [internalOpen, setInternalOpen] = useState(defaultOpen);
   const open = isOpen !== undefined ? isOpen : internalOpen;
