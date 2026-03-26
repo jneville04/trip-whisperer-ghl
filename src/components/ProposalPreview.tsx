@@ -758,8 +758,17 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   ];
 
   // Helper: sum prices from itinerary day activities — EXCLUDE linked items (proposal/group-trip)
-  // because those are already counted via sectionRegistry
+  // because those are already counted via sectionRegistry.
+  // Also exclude optional items that the client has NOT added yet.
   const itineraryOnlyActivities = (data.days || []).flatMap(day =>
+    (day.activities || []).filter(act =>
+      act.source !== "proposal" && act.source !== "group-trip" &&
+      (parseFloat(act.price?.replace(/[^0-9.-]/g, "") || "0") || 0) > 0 &&
+      (act.status !== "optional" || addedOptionals.has(act.id))
+    )
+  );
+  // All optional itinerary activities (for display, even if not yet added)
+  const allItineraryPricedActivities = (data.days || []).flatMap(day =>
     (day.activities || []).filter(act =>
       act.source !== "proposal" && act.source !== "group-trip" &&
       (parseFloat(act.price?.replace(/[^0-9.-]/g, "") || "0") || 0) > 0
