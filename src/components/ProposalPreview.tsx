@@ -278,7 +278,6 @@ function ItinerarySection({
                       <div className="px-6 sm:px-7 pb-6 pt-3 space-y-3.5 border-t-2 border-border bg-background">
                         {validActivities.map((act, actIdx) => {
                           const isUtility = UTILITY_ACTIVITY_TYPES.includes(act.type as any);
-                          const isLinkedFlight = (act.type === "flight") && (act.source === "proposal" || act.source === "group-trip");
                           const hasImages = act.imageUrls && act.imageUrls.length > 0 && !isUtility;
                           const hasVideo = !!act.videoUrl && !isUtility;
                           const isFeatured = actIdx === 0 && (hasImages || hasVideo);
@@ -290,11 +289,9 @@ function ItinerarySection({
                               <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-4`}>
                                 <div className="flex-1">
                                   <div className="flex items-start gap-3">
-                                    {!isLinkedFlight && (
-                                      <div className="relative z-10 mt-0.5 w-7 h-7 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                        {getActivityIcon(act.type)}
-                                      </div>
-                                    )}
+                                    <div className="relative z-10 mt-0.5 w-7 h-7 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                      {getActivityIcon(act.type)}
+                                    </div>
                                     <div className="flex-1 min-w-0">
                                       {act.time && (
                                         <span className="text-xs font-medium text-primary font-body flex items-center gap-1 mb-1">
