@@ -2948,7 +2948,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                   {itineraryOnlyActivities.map((act, idx) => (
                     <div
                       key={act.id || idx}
-                      className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-4 items-start py-3.5 border-b-2 border-border last:border-b-0"
+                      className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-4 items-start py-3.5 border-b-2 border-border"
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-primary">{getActivityIcon(act.type)}</span>
