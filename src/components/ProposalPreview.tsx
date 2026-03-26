@@ -3758,37 +3758,29 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       setQuestionSent(true);
                     }}
                   >
-                    {(!travelerName || !travelerEmail) && (
-                      <>
-                        {!travelerName && (
-                          <div>
-                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
-                              Name
-                            </label>
-                            <input
-                              value={questionForm.name}
-                              onChange={(e) => setQuestionForm((prev) => ({ ...prev, name: e.target.value }))}
-                              className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                              placeholder="Your name"
-                            />
-                          </div>
-                        )}
-                        {!travelerEmail && (
-                          <div>
-                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
-                              Email
-                            </label>
-                            <input
-                              type="email"
-                              value={questionForm.email}
-                              onChange={(e) => setQuestionForm((prev) => ({ ...prev, email: e.target.value }))}
-                              className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                              placeholder="your@email.com"
-                            />
-                          </div>
-                        )}
-                      </>
-                    )}
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
+                        Name
+                      </label>
+                      <input
+                        value={questionForm.name}
+                        onChange={(e) => setQuestionForm((prev) => ({ ...prev, name: e.target.value }))}
+                        className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        placeholder="Your name"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        value={questionForm.email}
+                        onChange={(e) => setQuestionForm((prev) => ({ ...prev, email: e.target.value }))}
+                        className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        placeholder="your@email.com"
+                      />
+                    </div>
                     <div>
                       <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
                         Message *
@@ -3937,37 +3929,29 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                       setRevisionSent(true);
                     }}
                   >
-                    {(!travelerName || !travelerEmail) && (
-                      <>
-                        {!travelerName && (
-                          <div>
-                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
-                              Name
-                            </label>
-                            <input
-                              value={revisionForm.name}
-                              onChange={(e) => setRevisionForm((prev) => ({ ...prev, name: e.target.value }))}
-                              className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                              placeholder="Your name"
-                            />
-                          </div>
-                        )}
-                        {!travelerEmail && (
-                          <div>
-                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
-                              Email
-                            </label>
-                            <input
-                              type="email"
-                              value={revisionForm.email}
-                              onChange={(e) => setRevisionForm((prev) => ({ ...prev, email: e.target.value }))}
-                              className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                              placeholder="your@email.com"
-                            />
-                          </div>
-                        )}
-                      </>
-                    )}
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
+                        Name
+                      </label>
+                      <input
+                        value={revisionForm.name}
+                        onChange={(e) => setRevisionForm((prev) => ({ ...prev, name: e.target.value }))}
+                        className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        placeholder="Your name"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block font-body">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        value={revisionForm.email}
+                        onChange={(e) => setRevisionForm((prev) => ({ ...prev, email: e.target.value }))}
+                        className="flex w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm font-body placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        placeholder="your@email.com"
+                      />
+                    </div>
                     <div>
                       <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block font-body">
                         What would you like changed?
