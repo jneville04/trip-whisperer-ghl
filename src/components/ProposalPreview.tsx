@@ -292,7 +292,7 @@ function ItinerarySection({
                             <div
                               key={act.id || actIdx}
                               className="rounded-xl border-2 border-border/70 bg-muted/25 p-4 sm:p-5"
-                              onClick={(e) => { if (isEditor) { e.stopPropagation(); focusEditorSection("itinerary", dayIdx); } }}
+                              onClick={(e) => { if (isEditor) { e.stopPropagation(); focusEditorSection("itinerary", dayIdx, act.id); } }}
                             >
                               <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-4`}>
                                 <div className="flex-1">
