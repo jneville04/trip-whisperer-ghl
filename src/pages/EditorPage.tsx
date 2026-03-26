@@ -313,7 +313,7 @@ export default function EditorPage() {
     if (travelerEmail) result.clientEmail = travelerEmail;
     if (travelerPhone) result.clientPhone = travelerPhone;
     return result;
-  }, [data, agentSettings, appSettings.primary_color, appSettings.secondary_color]);
+  }, [data, agentSettings, appSettings.primary_color, appSettings.secondary_color, travelerEmail, travelerPhone]);
 
   const builderBrandStyles = useMemo(() => buildBrandCssVars(previewData.brand), [previewData.brand]);
 
