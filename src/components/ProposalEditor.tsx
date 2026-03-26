@@ -5,6 +5,7 @@ import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, ChevronRight, Eye, 
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, type DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy, useSortable, arrayMove } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import GhlContactSearch, { type GhlContact } from "@/components/GhlContactSearch";
 
 import DatePickerField from "@/components/DatePickerField";
 import InlineTimePicker from "@/components/InlineTimePicker";
@@ -35,6 +36,7 @@ import { useAppSettings } from "@/hooks/useAppSettings";
 interface Props {
   data: ProposalData;
   onChange: (data: ProposalData) => void;
+  onContactChange?: (email: string, phone: string) => void;
 }
 const PARSE_FMTS = ["MMMM d, yyyy", "MMM d, yyyy", "yyyy-MM-dd", "MM/dd/yyyy"];
 function tryParse(v: string): Date | undefined {
@@ -273,7 +275,17 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 }
 
 // Agent Financials Accordion - wraps cost/commission/markup in a collapsed section
-function AgentFinancialsAccordion({ pricing, onChange }: { pricing: AgentPricing | undefined; onChange: (ap: AgentPricing) => void }) {
+function AgentFinancialsAccordion({ pricing, onChange, itemPrice }: { pricing: AgentPricing | undefined; onChange: (ap: AgentPricing) => void; itemPrice?: string }) {
+  // Auto-populate cost from item price when cost is empty
+  const effectivePricing = pricing || { cost: "", commission: "", markupType: "flat" as const, markupValue: "" };
+  const handleChange = (ap: AgentPricing) => {
+    onChange(ap);
+  };
+  // If itemPrice changed and cost is empty, auto-fill
+  const resolvedPricing = {
+    ...effectivePricing,
+    cost: effectivePricing.cost || itemPrice || "",
+  };
   return (
     <Accordion type="single" collapsible className="mt-2">
       <AccordionItem value="agent-financials" className="border-0">
@@ -281,7 +293,7 @@ function AgentFinancialsAccordion({ pricing, onChange }: { pricing: AgentPricing
           🔒 Agent Financials
         </AccordionTrigger>
         <AccordionContent className="pt-0 pb-0">
-          <AgentPricingFields pricing={pricing} onChange={onChange} />
+          <AgentPricingFields pricing={resolvedPricing} onChange={handleChange} />
         </AccordionContent>
       </AccordionItem>
     </Accordion>
@@ -422,7 +434,7 @@ const CITY_DESTINATIONS = POPULAR_DESTINATIONS.filter(
   ].includes(d)
 );
 
-export default function ProposalEditor({ data, onChange }: Props) {
+export default function ProposalEditor({ data, onChange, onContactChange }: Props) {
   const { settings: agentSettings } = useAgentSettings();
   const { settings: appSettings } = useAppSettings();
   
@@ -904,7 +916,17 @@ export default function ProposalEditor({ data, onChange }: Props) {
                         <div className="space-y-3">
                           <div>
                             <FieldLabel>Client Name</FieldLabel>
-                            <Input value={data.clientName} onChange={(e) => update("clientName", e.target.value)} placeholder="Michael & Sarah Johnson" />
+                            <GhlContactSearch
+                              value={data.clientName}
+                              onChange={(val) => update("clientName", val)}
+                              onSelect={(contact) => {
+                                update("clientName", contact.name);
+                                if (onContactChange) {
+                                  onContactChange(contact.email, contact.phone);
+                                }
+                              }}
+                              placeholder="Search or enter client name..."
+                            />
                           </div>
                           <div>
                             <FieldLabel>Introduction Text</FieldLabel>
@@ -1063,6 +1085,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                               )}
                               <AgentFinancialsAccordion
                                 pricing={opt.agentPricing}
+                                itemPrice={opt.price}
                                 onChange={(ap) => { const opts = [...flightOptions]; opts[oi] = { ...opts[oi], agentPricing: ap }; update("flightOptions", opts); }}
                               />
                               </div>
@@ -1166,6 +1189,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                       )}
                                       <AgentFinancialsAccordion
                                         pricing={acc.agentPricing}
+                                        itemPrice={acc.price}
                                         onChange={(ap) => { const a = [...accommodations]; a[i] = { ...a[i], agentPricing: ap }; update("accommodations", a); }}
                                       />
                                       <div>
@@ -1403,6 +1427,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                       )}
                                       <AgentFinancialsAccordion
                                         pricing={ship.agentPricing}
+                                        itemPrice={ship.price}
                                         onChange={(ap) => { const s = [...cruiseShips]; s[i] = { ...s[i], agentPricing: ap }; update("cruiseShips", s); }}
                                       />
                                     </TabsContent>
@@ -2206,9 +2231,6 @@ export default function ProposalEditor({ data, onChange }: Props) {
         </SortableContext>
       </DndContext>
 
-      {/* Checkout Settings */}
-      <CheckoutEditorSection data={data} onChange={onChange} />
-
       {/* Agent Financial Summary */}
       <AgentFinancialSummary data={data} />
     </div>
@@ -2351,122 +2373,6 @@ function AgentFinancialSummary({ data }: { data: ProposalData }) {
               </div>
             </div>
           </div>
-        </CardContent>
-      )}
-    </Card>
-  );
-}
-
-function CheckoutEditorSection({ data, onChange }: { data: ProposalData; onChange: (d: ProposalData) => void }) {
-  const [open, setOpen] = useState(false);
-  const checkout = data.checkout || createDefaultCheckout();
-
-  const updateCheckout = (partial: Partial<CheckoutSettings>) => {
-    onChange({ ...data, checkout: { ...checkout, ...partial } });
-  };
-
-  const updatePaymentOption = (id: string, partial: Partial<PaymentOption>) => {
-    const updated = checkout.paymentOptions.map((o) => o.id === id ? { ...o, ...partial } : o);
-    updateCheckout({ paymentOptions: updated });
-  };
-
-  return (
-    <Card className="border-border/50">
-      <CardHeader className="py-4">
-        <div className="flex items-center justify-between cursor-pointer" onClick={() => setOpen(!open)}>
-          <CardTitle className="text-sm font-display flex items-center gap-2">
-            💳 Checkout & Booking
-          </CardTitle>
-          {open ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />}
-        </div>
-      </CardHeader>
-      {open && (
-        <CardContent className="pt-0 space-y-4">
-          <div className="flex items-center justify-between">
-            <label className="text-xs font-medium text-muted-foreground font-body">Enable Checkout Page</label>
-            <Switch checked={checkout.enabled} onCheckedChange={(v) => updateCheckout({ enabled: v })} />
-          </div>
-
-          {checkout.enabled && (
-            <>
-              <div>
-                <FieldLabel>Headline</FieldLabel>
-                <Input value={checkout.headline} onChange={(e) => updateCheckout({ headline: e.target.value })} className="h-8 text-sm" />
-              </div>
-              <div>
-                <FieldLabel>Message</FieldLabel>
-                <Textarea value={checkout.message} onChange={(e) => updateCheckout({ message: e.target.value })} rows={2} className="text-sm" />
-              </div>
-
-              <div className="space-y-3">
-                <FieldLabel>Payment Options</FieldLabel>
-                {checkout.paymentOptions.map((opt) => (
-                  <div key={opt.id} className={`border rounded-lg p-3 space-y-2 ${opt.enabled ? "border-primary/30 bg-primary/5" : "border-border/50 opacity-60"}`}>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold font-body">{opt.type === "full" ? "💳 Pay in Full" : opt.type === "deposit" ? "💰 Deposit" : "📅 Installments"}</span>
-                      <Switch checked={opt.enabled} onCheckedChange={(v) => updatePaymentOption(opt.id, { enabled: v })} />
-                    </div>
-                    {opt.enabled && (
-                      <>
-                        <Input value={opt.label} onChange={(e) => updatePaymentOption(opt.id, { label: e.target.value })} placeholder="Label" className="h-7 text-xs" />
-                        <Input value={opt.description} onChange={(e) => updatePaymentOption(opt.id, { description: e.target.value })} placeholder="Description" className="h-7 text-xs" />
-                        {opt.type === "deposit" && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs text-muted-foreground">$</span>
-                            <Input type="number" value={opt.depositPercent || ""} onChange={(e) => updatePaymentOption(opt.id, { depositPercent: parseInt(e.target.value) || 0 })} placeholder="300" className="h-7 text-xs w-24" />
-                            <span className="text-xs text-muted-foreground">deposit amount</span>
-                          </div>
-                        )}
-                        {opt.type === "installments" && (
-                          <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                              <Input type="number" value={opt.installmentCount || ""} onChange={(e) => updatePaymentOption(opt.id, { installmentCount: parseInt(e.target.value) || 0 })} placeholder="3" className="h-7 text-xs w-20" />
-                              <span className="text-xs text-muted-foreground">payments</span>
-                            </div>
-                            {opt.installmentCount && opt.installmentCount > 0 && (() => {
-                              // Auto-calculate from first pricing option's total
-                              const firstOpt = (data as any).pricingOptions?.[0];
-                              const total = firstOpt?.totalPrice ? parseFloat(firstOpt.totalPrice.replace(/[^0-9.-]/g, "")) : 0;
-                              const deposit = firstOpt?.deposit ? parseFloat(firstOpt.deposit.replace(/[^0-9.-]/g, "")) : 0;
-                              const remaining = total - deposit;
-                              if (remaining > 0) {
-                                const per = remaining / opt.installmentCount;
-                                return (
-                                  <div className="text-[10px] text-muted-foreground bg-muted/50 rounded p-2 space-y-0.5">
-                                    {deposit > 0 && <div>Deposit: <span className="font-semibold text-foreground">${deposit.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span></div>}
-                                    <div>{opt.installmentCount}× <span className="font-semibold text-foreground">${per.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span> each</div>
-                                    <div>Total: <span className="font-semibold text-foreground">${total.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span></div>
-                                  </div>
-                                );
-                              }
-                              return null;
-                            })()}
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              <div>
-                <FieldLabel>Custom Checkout Form URL (optional)</FieldLabel>
-                <Input value={checkout.customFormUrl} onChange={(e) => updateCheckout({ customFormUrl: e.target.value })} placeholder="https://your-checkout-form.com" className="h-8 text-sm" />
-                <p className="text-[10px] text-muted-foreground mt-1">If set, embeds this form instead of the built-in checkout.</p>
-              </div>
-
-
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-medium text-muted-foreground font-body">Show Trip Summary</label>
-                <Switch checked={checkout.showTripSummary} onCheckedChange={(v) => updateCheckout({ showTripSummary: v })} />
-              </div>
-
-              <div>
-                <FieldLabel>Confirmation Message</FieldLabel>
-                <Textarea value={checkout.confirmationMessage} onChange={(e) => updateCheckout({ confirmationMessage: e.target.value })} rows={2} className="text-sm" />
-              </div>
-            </>
-          )}
         </CardContent>
       )}
     </Card>

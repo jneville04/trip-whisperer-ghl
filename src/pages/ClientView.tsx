@@ -68,7 +68,7 @@ export default function ClientView() {
         Expires: "0",
       };
 
-      const url = `${supabaseUrl}/rest/v1/trips?select=id,status,published_data,draft_data,org_id,archived_at,traveler_email,traveler_phone&public_slug=eq.${encodeURIComponent(shareId)}`;
+      const url = `${supabaseUrl}/rest/v1/trips?select=id,status,published_data,draft_data,org_id,archived_at,traveler_email,traveler_phone,section_selections&public_slug=eq.${encodeURIComponent(shareId)}`;
 
       const res = await fetch(url, {
         headers,
@@ -122,6 +122,10 @@ export default function ClientView() {
         const pubData = r.published_data as any;
         if (r.traveler_email) pubData.clientEmail = r.traveler_email;
         if (r.traveler_phone) pubData.clientPhone = r.traveler_phone;
+        // Merge saved section_selections so returning approved clients see their choices
+        if (r.section_selections && typeof r.section_selections === "object") {
+          pubData.sectionSelections = { ...(pubData.sectionSelections || {}), ...r.section_selections };
+        }
         setData(pubData as ProposalData);
         setLoading(false);
         return;

@@ -40,7 +40,7 @@ export default function GhlContactSearch({
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
-    if (!value || value.trim().length < 2) {
+    if (!value || value.trim().length < 3) {
       setResults([]);
       setOpen(false);
       setApiError(null);
@@ -108,7 +108,7 @@ export default function GhlContactSearch({
           value={value}
           onChange={(e) => {
             onChange(e.target.value);
-            if (e.target.value.trim().length >= 2) setOpen(true);
+            if (e.target.value.trim().length >= 3) setOpen(true);
           }}
           onFocus={() => {
             if (results.length > 0) setOpen(true);
@@ -120,7 +120,7 @@ export default function GhlContactSearch({
         )}
       </div>
 
-      {apiError && !loading && value.trim().length >= 2 && (
+      {apiError && !loading && value.trim().length >= 3 && (
         <div className="flex items-center gap-1.5 mt-1.5 text-xs text-destructive">
           <AlertCircle className="h-3 w-3 shrink-0" />
           <span>{apiError}</span>

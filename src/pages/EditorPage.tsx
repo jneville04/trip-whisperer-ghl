@@ -43,6 +43,8 @@ export default function EditorPage() {
   const autosaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const dataRef = useRef<ProposalData>(data);
   dataRef.current = data;
+  const [travelerEmail, setTravelerEmail] = useState("");
+  const [travelerPhone, setTravelerPhone] = useState("");
 
   const handleEditorSubPage = useCallback((page: EditorSubPage | null) => {
     setEditorSubPage(page);
@@ -150,6 +152,8 @@ export default function EditorPage() {
     setMaxCapacity(r.max_capacity ?? null);
     setPublicSlug(r.public_slug || "");
     setCurrentStatus(normalizeStatus(r.status));
+    setTravelerEmail(r.traveler_email || "");
+    setTravelerPhone(r.traveler_phone || "");
     setLastSavedAt(new Date());
     setLoading(false);
   };
@@ -159,6 +163,15 @@ export default function EditorPage() {
     setDirty(true);
     setSaveFailed(false);
   }, []);
+
+  const handleContactChange = useCallback((email: string, phone: string) => {
+    setTravelerEmail(email);
+    setTravelerPhone(phone);
+    // Save immediately to DB
+    if (id) {
+      supabase.from("trips").update({ traveler_email: email, traveler_phone: phone }).eq("id", id).then(() => {});
+    }
+  }, [id]);
 
   // Core save function
   const saveTrip = async (status?: string, dataOverride?: ProposalData): Promise<boolean> => {
@@ -198,6 +211,8 @@ export default function EditorPage() {
     const updatePayload: Record<string, any> = {
       draft_data: dataToSave as any,
       status: targetStatus,
+      traveler_email: travelerEmail,
+      traveler_phone: travelerPhone,
     };
 
     // On publish: copy draft_data into published_data
@@ -425,7 +440,7 @@ export default function EditorPage() {
       <div className="flex-1 flex overflow-hidden">
         {mode === "split" && panelOpen && !editorSubPage && (
           <div className="w-full max-w-lg border-r border-border/50 overflow-y-auto overscroll-contain bg-background">
-            <ProposalEditor data={data} onChange={handleChange} />
+            <ProposalEditor data={data} onChange={handleChange} onContactChange={handleContactChange} />
             <HelpdeskFooter />
           </div>
         )}
