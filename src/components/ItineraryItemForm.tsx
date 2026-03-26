@@ -34,17 +34,26 @@ interface SourceSelectorProps {
   proposalData: ProposalData;
   onSelect: (source: ItineraryItemSource, linkedItem?: Activity) => void;
   onCancel: () => void;
+  /** "proposal" shows Link from Proposal; "group-trip" shows Link from Group Trip */
+  builderContext?: "proposal" | "group-trip";
+  /** Section visibility from the parent builder – only visible+populated sections are linkable */
+  sectionVisibility?: Record<string, boolean>;
 }
 
-export function SourceSelector({ proposalData, onSelect, onCancel }: SourceSelectorProps) {
+export function SourceSelector({ proposalData, onSelect, onCancel, builderContext, sectionVisibility }: SourceSelectorProps) {
   const [step, setStep] = useState<"pick" | "proposal" | "group-trip">("pick");
+  const vis = sectionVisibility || {};
 
-  const hasProposalItems =
-    (proposalData.flightOptions?.length ?? 0) > 0 ||
-    (proposalData.accommodations?.length ?? 0) > 0 ||
-    (proposalData.cruiseShips?.length ?? 0) > 0;
+  // Only show linkable proposal items from sections that are visible AND have data
+  const hasFlights = vis.flights !== false && (proposalData.flightOptions?.length ?? 0) > 0;
+  const hasAccommodations = vis.accommodations !== false && (proposalData.accommodations?.length ?? 0) > 0;
+  const hasCruises = vis.cruiseShips !== false && (proposalData.cruiseShips?.length ?? 0) > 0;
+  const hasProposalItems = hasFlights || hasAccommodations || hasCruises;
 
-  const hasBusTrips = (proposalData.busTrips?.length ?? 0) > 0;
+  const hasBusTrips = vis.busTrips !== false && (proposalData.busTrips?.length ?? 0) > 0;
+
+  const showProposalOption = builderContext !== "group-trip";
+  const showGroupTripOption = builderContext !== "proposal";
 
   if (step === "proposal") {
     return (
