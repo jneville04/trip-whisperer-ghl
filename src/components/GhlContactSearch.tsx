@@ -40,7 +40,7 @@ export default function GhlContactSearch({
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
-    if (!value || value.trim().length < 2) {
+    if (!value || value.trim().length < 3) {
       setResults([]);
       setOpen(false);
       setApiError(null);
