@@ -2911,7 +2911,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                     return (
                       <div
                         key={section.key}
-                        className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-4 items-start py-3.5 border-b-2 border-border last:border-b-0"
+                        className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_auto] gap-2 sm:gap-4 items-start py-3.5 border-b-2 border-border"
                       >
                         <div className="flex items-center gap-2">
                           {sectionIcon}
