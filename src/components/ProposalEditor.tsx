@@ -24,8 +24,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import RichTextEditor from "@/components/RichTextEditor";
 import AgentPricingFields from "@/components/AgentPricingFields";
-import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, BusStop, SectionKey, CheckoutSettings, PaymentOption, LocationAddress, PricingOption, SectionTitles, PricingDisplayMode, FinancialsSettings, SectionSelections, AgentPricing } from "@/types/proposal";
+import type { ProposalData, ItineraryDay, Activity, SectionVisibility, FlightLeg, FlightOption, Accommodation, CruiseShip, BusTrip, BusStop, SectionKey, CheckoutSettings, PaymentOption, LocationAddress, PricingOption, SectionTitles, PricingDisplayMode, FinancialsSettings, SectionSelections, AgentPricing, ItineraryItemSource } from "@/types/proposal";
 import { createActivity, createDay, createPricingLine, createPricingOption, createFlightLeg, createFlightOption, createAccommodation, createCruiseShip, createBusTrip, createBusStop, defaultSectionOrder, createDefaultCheckout, createDefaultFinancials } from "@/types/proposal";
+import { SourceSelector, ItemPreviewSummary, ItineraryItemEditForm, itemTypes } from "@/components/ItineraryItemForm";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { normalizeHexInput } from "@/lib/brand";
 import { useAgentSettings } from "@/hooks/useAgentSettings";
@@ -42,13 +43,7 @@ function tryParse(v: string): Date | undefined {
   const d = new Date(v); return isNaN(d.getTime()) ? undefined : d;
 }
 
-const activityTypes: { value: Activity["type"]; label: string }[] = [
-  { value: "transport", label: "🚗 Transport" },
-  { value: "hotel", label: "🏨 Hotel" },
-  { value: "dining", label: "🍽️ Dining" },
-  { value: "activity", label: "🎯 Activity" },
-  { value: "sightseeing", label: "📸 Sightseeing" },
-];
+// activityTypes moved to ItineraryItemForm.tsx as itemTypes
 
 // Default section titles/subtitles used in client-facing output
 const sectionDefaults: Record<string, { title: string; subtitle: string }> = {
@@ -430,9 +425,19 @@ export default function ProposalEditor({ data, onChange }: Props) {
     updateDay(dayIndex, day);
   };
 
-  const addActivity = (dayIndex: number) => {
+  const addActivity = (dayIndex: number, item?: Activity) => {
     const day = { ...data.days[dayIndex] };
-    day.activities = [...day.activities, createActivity()];
+    const newItem = item || createActivity();
+    day.activities = [...day.activities, newItem];
+    updateDay(dayIndex, day);
+    setExpandedItemId(newItem.id);
+    setAddingItemDayIdx(-1);
+  };
+
+  const updateFullActivity = (dayIndex: number, actIndex: number, updated: Activity) => {
+    const day = { ...data.days[dayIndex] };
+    day.activities = [...day.activities];
+    day.activities[actIndex] = updated;
     updateDay(dayIndex, day);
   };
 
@@ -478,6 +483,8 @@ export default function ProposalEditor({ data, onChange }: Props) {
   const [openAccIdx, setOpenAccIdx] = useState<number>(0);
   const [openCruiseIdx, setOpenCruiseIdx] = useState<number>(0);
   const [openDayIdx, setOpenDayIdx] = useState<number>(0);
+  const [addingItemDayIdx, setAddingItemDayIdx] = useState<number>(-1);
+  const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
 
   const brand = data.brand || { primaryColor: "", secondaryColor: "", accentColor: "", logoUrl: "", showAgencyNameWithLogo: true };
   const resolvedPrimaryColor = agentSettings.primary_color || appSettings.primary_color;
@@ -1851,143 +1858,168 @@ export default function ProposalEditor({ data, onChange }: Props) {
                                 </div>
                               </div>
                               <div className="space-y-2">
-                                <FieldLabel>Activities</FieldLabel>
-                                {day.activities.map((act, actIdx) => (
-                                  <div key={act.id} className="bg-background rounded-lg p-3 border border-border/30 space-y-2">
-                                    <div className="flex items-center justify-between flex-wrap gap-1.5">
-                                      <div className="flex items-center gap-1.5 flex-wrap">
-                                        <select value={act.type} onChange={(e) => updateActivity(dayIdx, actIdx, "type", e.target.value)} className="h-7 text-xs rounded-md border border-input bg-background px-1.5 font-body shrink-0">
-                                          {activityTypes.map((t) => (
-                                            <option key={t.value} value={t.value}>{t.label}</option>
-                                          ))}
-                                        </select>
-                                        <InlineTimePicker value={act.time} onChange={(val) => updateActivity(dayIdx, actIdx, "time", val)} />
+                                <FieldLabel>Items</FieldLabel>
+                                {day.activities.map((act, actIdx) => {
+                                  const isExpanded = expandedItemId === act.id;
+                                  return (
+                                    <div key={act.id} className="bg-background rounded-lg border border-border/30 overflow-hidden">
+                                      {/* Collapsed preview header */}
+                                      <div
+                                        className="flex items-center gap-1.5 px-3 py-2 cursor-pointer hover:bg-muted/30 transition-colors"
+                                        onClick={() => setExpandedItemId(isExpanded ? null : act.id)}
+                                      >
+                                        <ItemPreviewSummary item={act} />
+                                        <div className="flex items-center gap-0.5 shrink-0">
+                                          <button onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (actIdx === 0) return;
+                                            const acts = [...day.activities];
+                                            [acts[actIdx - 1], acts[actIdx]] = [acts[actIdx], acts[actIdx - 1]];
+                                            updateDay(dayIdx, { ...day, activities: acts });
+                                          }} disabled={actIdx === 0} className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-20">
+                                            <ArrowUp className="h-3.5 w-3.5" />
+                                          </button>
+                                          <button onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (actIdx === day.activities.length - 1) return;
+                                            const acts = [...day.activities];
+                                            [acts[actIdx], acts[actIdx + 1]] = [acts[actIdx + 1], acts[actIdx]];
+                                            updateDay(dayIdx, { ...day, activities: acts });
+                                          }} disabled={actIdx === day.activities.length - 1} className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-20">
+                                            <ArrowDown className="h-3.5 w-3.5" />
+                                          </button>
+                                          <Button variant="travel-ghost" size="icon" onClick={(e) => { e.stopPropagation(); removeActivity(dayIdx, actIdx); }} className="h-7 w-7 text-muted-foreground/40 hover:text-destructive" disabled={day.activities.length <= 1}>
+                                            <Trash2 className="h-3 w-3" />
+                                          </Button>
+                                          {isExpanded ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
+                                        </div>
                                       </div>
-                                      <div className="flex items-center gap-0.5">
-                                        <button onClick={() => {
-                                          if (actIdx === 0) return;
-                                          const acts = [...day.activities];
-                                          [acts[actIdx - 1], acts[actIdx]] = [acts[actIdx], acts[actIdx - 1]];
-                                          updateDay(dayIdx, { ...day, activities: acts });
-                                        }} disabled={actIdx === 0} className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-20">
-                                          <ArrowUp className="h-3.5 w-3.5" />
-                                        </button>
-                                        <button onClick={() => {
-                                          if (actIdx === day.activities.length - 1) return;
-                                          const acts = [...day.activities];
-                                          [acts[actIdx], acts[actIdx + 1]] = [acts[actIdx + 1], acts[actIdx]];
-                                          updateDay(dayIdx, { ...day, activities: acts });
-                                        }} disabled={actIdx === day.activities.length - 1} className="p-1 rounded text-muted-foreground hover:text-foreground disabled:opacity-20">
-                                          <ArrowDown className="h-3.5 w-3.5" />
-                                        </button>
-                                        <Button variant="travel-ghost" size="icon" onClick={() => removeActivity(dayIdx, actIdx)} className="h-7 w-7 text-muted-foreground/40 hover:text-destructive" disabled={day.activities.length <= 1}>
-                                          <Trash2 className="h-3 w-3" />
-                                        </Button>
-                                      </div>
-                                    </div>
-                                    <Input value={act.title} onChange={(e) => updateActivity(dayIdx, actIdx, "title", e.target.value)} placeholder="Activity name" className="h-8 text-sm font-medium" />
-                                    <Textarea value={act.description} onChange={(e) => updateActivity(dayIdx, actIdx, "description", e.target.value)} placeholder="Describe this activity in detail..." className="text-sm min-h-[100px] resize-y" />
-                                    {/* Activity Images */}
-                                    <div className="space-y-1.5">
-                                      <div className="flex items-center gap-2">
-                                        <button
-                                          type="button"
-                                          onClick={() => {
-                                            const input = document.createElement("input");
-                                            input.type = "file";
-                                            input.accept = "image/*";
-                                            input.multiple = true;
-                                            input.onchange = async (ev) => {
-                                              const files = Array.from((ev.target as HTMLInputElement).files || []);
-                                              if (!files.length) return;
-                                              const urls = await uploadImages(files);
-                                              const existing = act.imageUrls || [];
-                                              updateActivity(dayIdx, actIdx, "imageUrls", [...existing, ...urls]);
-                                            };
-                                            input.click();
-                                          }}
-                                          className="text-[11px] text-primary hover:text-primary/80 font-medium flex items-center gap-1"
-                                        >
-                                          <ImagePlus className="h-3 w-3" /> Add Photos
-                                        </button>
-                                      </div>
-                                      {act.imageUrls && act.imageUrls.length > 0 && (
-                                        <div className="flex flex-wrap gap-1.5">
-                                          {act.imageUrls.map((url, imgIdx) => (
-                                            <div key={imgIdx} className="relative group/img w-14 h-14 rounded overflow-hidden border border-border/30">
-                                              <img src={url} alt="" className="w-full h-full object-cover" />
+                                      {/* Expanded edit form */}
+                                      {isExpanded && (
+                                        <div className="px-3 pb-3 pt-1 border-t border-border/20">
+                                          <ItineraryItemEditForm
+                                            item={act}
+                                            onChange={(updated) => updateFullActivity(dayIdx, actIdx, updated)}
+                                          />
+                                          {/* Activity Images */}
+                                          <div className="space-y-1.5 mt-3">
+                                            <div className="flex items-center gap-2">
                                               <button
+                                                type="button"
                                                 onClick={() => {
-                                                  const newUrls = act.imageUrls!.filter((_, i) => i !== imgIdx);
-                                                  updateActivity(dayIdx, actIdx, "imageUrls", newUrls);
+                                                  const input = document.createElement("input");
+                                                  input.type = "file";
+                                                  input.accept = "image/*";
+                                                  input.multiple = true;
+                                                  input.onchange = async (ev) => {
+                                                    const files = Array.from((ev.target as HTMLInputElement).files || []);
+                                                    if (!files.length) return;
+                                                    const urls = await uploadImages(files);
+                                                    const existing = act.imageUrls || [];
+                                                    updateActivity(dayIdx, actIdx, "imageUrls", [...existing, ...urls]);
+                                                  };
+                                                  input.click();
                                                 }}
-                                                className="absolute top-0.5 right-0.5 bg-foreground/70 text-background rounded-full p-0.5 opacity-0 group-hover/img:opacity-100 transition-opacity"
+                                                className="text-[11px] text-primary hover:text-primary/80 font-medium flex items-center gap-1"
                                               >
-                                                <X className="h-2.5 w-2.5" />
+                                                <ImagePlus className="h-3 w-3" /> Add Photos
                                               </button>
                                             </div>
-                                          ))}
+                                            {act.imageUrls && act.imageUrls.length > 0 && (
+                                              <div className="flex flex-wrap gap-1.5">
+                                                {act.imageUrls.map((url, imgIdx) => (
+                                                  <div key={imgIdx} className="relative group/img w-14 h-14 rounded overflow-hidden border border-border/30">
+                                                    <img src={url} alt="" className="w-full h-full object-cover" />
+                                                    <button
+                                                      onClick={() => {
+                                                        const newUrls = act.imageUrls!.filter((_, i) => i !== imgIdx);
+                                                        updateActivity(dayIdx, actIdx, "imageUrls", newUrls);
+                                                      }}
+                                                      className="absolute top-0.5 right-0.5 bg-foreground/70 text-background rounded-full p-0.5 opacity-0 group-hover/img:opacity-100 transition-opacity"
+                                                    >
+                                                      <X className="h-2.5 w-2.5" />
+                                                    </button>
+                                                  </div>
+                                                ))}
+                                              </div>
+                                            )}
+                                          </div>
+                                          {/* Video */}
+                                          <div className="mt-2">
+                                            <FieldLabel>Video (Upload or paste URL)</FieldLabel>
+                                            <div className="flex gap-1.5">
+                                              <Input
+                                                value={act.videoUrl || ""}
+                                                onChange={(e) => updateActivity(dayIdx, actIdx, "videoUrl", e.target.value)}
+                                                placeholder="https://youtube.com/... or upload"
+                                                className="h-7 text-xs flex-1"
+                                              />
+                                              <Button variant="travel-outline" size="sm" className="h-7 text-xs" onClick={() => {
+                                                const input = document.createElement("input");
+                                                input.type = "file";
+                                                input.accept = "video/*,audio/*";
+                                                input.onchange = async (ev) => {
+                                                  const file = (ev.target as HTMLInputElement).files?.[0];
+                                                  if (!file) return;
+                                                  const url = await uploadImage(file);
+                                                  updateActivity(dayIdx, actIdx, "videoUrl", url);
+                                                };
+                                                input.click();
+                                              }}>
+                                                <Upload className="h-3 w-3 mr-1" /> Upload
+                                              </Button>
+                                            </div>
+                                          </div>
+                                          {act.videoUrl && (
+                                            <div className="mt-2">
+                                              <FieldLabel>Video Thumbnail</FieldLabel>
+                                              <div className="flex gap-1.5 items-center">
+                                                {act.videoThumbnailUrl && (
+                                                  <div className="relative w-16 h-10 rounded overflow-hidden border border-border/40 shrink-0">
+                                                    <img src={act.videoThumbnailUrl} alt="Thumbnail" className="w-full h-full object-cover" />
+                                                    <button onClick={() => updateActivity(dayIdx, actIdx, "videoThumbnailUrl", "")} className="absolute top-0 right-0 bg-foreground/70 text-background rounded-full p-0.5"><X className="h-2.5 w-2.5" /></button>
+                                                  </div>
+                                                )}
+                                                <Button variant="travel-outline" size="sm" className="h-7 text-xs" onClick={() => {
+                                                  const input = document.createElement("input");
+                                                  input.type = "file";
+                                                  input.accept = "image/*";
+                                                  input.onchange = async (ev) => {
+                                                    const file = (ev.target as HTMLInputElement).files?.[0];
+                                                    if (!file) return;
+                                                    const url = await uploadImage(file);
+                                                    updateActivity(dayIdx, actIdx, "videoThumbnailUrl", url);
+                                                  };
+                                                  input.click();
+                                                }}>
+                                                  <ImagePlus className="h-3 w-3 mr-1" /> {act.videoThumbnailUrl ? "Replace" : "Upload Thumbnail"}
+                                                </Button>
+                                              </div>
+                                            </div>
+                                          )}
                                         </div>
                                       )}
                                     </div>
-                                    {/* Video */}
-                                    <div>
-                                      <FieldLabel>Video (Upload or paste URL)</FieldLabel>
-                                      <div className="flex gap-1.5">
-                                        <Input
-                                          value={act.videoUrl || ""}
-                                          onChange={(e) => updateActivity(dayIdx, actIdx, "videoUrl", e.target.value)}
-                                          placeholder="https://youtube.com/... or upload"
-                                          className="h-7 text-xs flex-1"
-                                        />
-                                        <Button variant="travel-outline" size="sm" className="h-7 text-xs" onClick={() => {
-                                          const input = document.createElement("input");
-                                          input.type = "file";
-                                          input.accept = "video/*,audio/*";
-                                          input.onchange = async (ev) => {
-                                            const file = (ev.target as HTMLInputElement).files?.[0];
-                                            if (!file) return;
-                                            const url = await uploadImage(file);
-                                            updateActivity(dayIdx, actIdx, "videoUrl", url);
-                                          };
-                                          input.click();
-                                        }}>
-                                          <Upload className="h-3 w-3 mr-1" /> Upload
-                                        </Button>
-                                      </div>
-                                    </div>
-                                    {act.videoUrl && (
-                                      <div>
-                                        <FieldLabel>Video Thumbnail</FieldLabel>
-                                        <div className="flex gap-1.5 items-center">
-                                          {act.videoThumbnailUrl && (
-                                            <div className="relative w-16 h-10 rounded overflow-hidden border border-border/40 shrink-0">
-                                              <img src={act.videoThumbnailUrl} alt="Thumbnail" className="w-full h-full object-cover" />
-                                              <button onClick={() => updateActivity(dayIdx, actIdx, "videoThumbnailUrl", "")} className="absolute top-0 right-0 bg-foreground/70 text-background rounded-full p-0.5"><X className="h-2.5 w-2.5" /></button>
-                                            </div>
-                                          )}
-                                          <Button variant="travel-outline" size="sm" className="h-7 text-xs" onClick={() => {
-                                            const input = document.createElement("input");
-                                            input.type = "file";
-                                            input.accept = "image/*";
-                                            input.onchange = async (ev) => {
-                                              const file = (ev.target as HTMLInputElement).files?.[0];
-                                              if (!file) return;
-                                              const url = await uploadImage(file);
-                                              updateActivity(dayIdx, actIdx, "videoThumbnailUrl", url);
-                                            };
-                                            input.click();
-                                          }}>
-                                            <ImagePlus className="h-3 w-3 mr-1" /> {act.videoThumbnailUrl ? "Replace" : "Upload Thumbnail"}
-                                          </Button>
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-                                <Button variant="travel-ghost" size="sm" onClick={() => addActivity(dayIdx)} className="text-primary text-xs h-7">
-                                  <Plus className="h-3 w-3 mr-1" /> Activity
-                                </Button>
+                                  );
+                                })}
+                                {/* Source selector for adding items */}
+                                {addingItemDayIdx === dayIdx ? (
+                                  <SourceSelector
+                                    proposalData={data}
+                                    onSelect={(source, linkedItem) => {
+                                      if (linkedItem) {
+                                        addActivity(dayIdx, linkedItem);
+                                      } else {
+                                        addActivity(dayIdx);
+                                      }
+                                    }}
+                                    onCancel={() => setAddingItemDayIdx(-1)}
+                                  />
+                                ) : (
+                                  <Button variant="travel-ghost" size="sm" onClick={() => setAddingItemDayIdx(dayIdx)} className="text-primary text-xs h-7">
+                                    <Plus className="h-3 w-3 mr-1" /> Add Item
+                                  </Button>
+                                )}
                               </div>
                               </div>
                             </CollapsibleHotel>
