@@ -413,7 +413,7 @@ export function ItineraryItemEditForm({ item, onChange }: ItemFormProps) {
             onClick={() => upd("status", item.status === "optional" ? "included" : "optional")}
             className={`h-6 px-2 rounded-full text-[10px] font-semibold font-body border transition-colors ${
               item.status === "optional"
-                ? "bg-amber-50 border-amber-300 text-amber-700"
+                ? "bg-accent/10 border-accent/40 text-accent-foreground"
                 : "bg-primary/5 border-primary/20 text-primary"
             }`}
           >
