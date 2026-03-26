@@ -222,7 +222,7 @@ function ItinerarySection({
                 className="rounded-2xl border-2 border-border bg-card overflow-hidden shadow-[0_14px_36px_-20px_hsl(var(--foreground)/0.35)] hover:shadow-[0_18px_42px_-18px_hsl(var(--foreground)/0.35)] transition-shadow"
               >
                 <button
-                  onClick={() => toggleDay(day.id)}
+                  onClick={() => { toggleDay(day.id); if (isEditor) focusEditorSection("itinerary", dayIdx); }}
                   className="w-full flex items-center justify-between gap-3 px-6 sm:px-7 py-5 cursor-pointer group text-left bg-muted/35 hover:bg-muted/55 transition-colors"
                 >
                   <div className="flex items-start gap-3 sm:gap-4 flex-wrap">
