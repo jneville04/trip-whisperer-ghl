@@ -1571,7 +1571,7 @@ export default function ProposalEditor({ data, onChange }: Props) {
                             };
 
                             return (
-                              <CollapsibleHotel key={trip.id} defaultOpen={i === 0} hotelName={trip.routeName || `Bus Trip ${i + 1}`} location={trip.busCompany} onDelete={() => update("busTrips", busTrips.filter((_, idx) => idx !== i))}>
+                              <CollapsibleHotel sectionKey="busTrips" itemIndex={i} key={trip.id} defaultOpen={i === 0} hotelName={trip.routeName || `Bus Trip ${i + 1}`} location={trip.busCompany} onDelete={() => update("busTrips", busTrips.filter((_, idx) => idx !== i))}>
                                 <div className="border-t border-border/30">
                                   <Tabs defaultValue="general" className="w-full">
                                     <TabsList className="w-full justify-start rounded-none border-b border-border/30 bg-transparent h-9 px-3">
