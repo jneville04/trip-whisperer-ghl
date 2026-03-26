@@ -43,13 +43,7 @@ function tryParse(v: string): Date | undefined {
   const d = new Date(v); return isNaN(d.getTime()) ? undefined : d;
 }
 
-const activityTypes: { value: Activity["type"]; label: string }[] = [
-  { value: "transport", label: "🚗 Transport" },
-  { value: "hotel", label: "🏨 Hotel" },
-  { value: "dining", label: "🍽️ Dining" },
-  { value: "activity", label: "🎯 Activity" },
-  { value: "sightseeing", label: "📸 Sightseeing" },
-];
+// activityTypes moved to ItineraryItemForm.tsx as itemTypes
 
 // Default section titles/subtitles used in client-facing output
 const sectionDefaults: Record<string, { title: string; subtitle: string }> = {
