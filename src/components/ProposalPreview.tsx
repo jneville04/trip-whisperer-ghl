@@ -656,7 +656,27 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   ]);
   const [selectedRevCategories, setSelectedRevCategories] = useState<string[]>([]);
 
-  const vis = data.sectionVisibility || {
+  // Track optional items the client has chosen to add
+  const [addedOptionals, setAddedOptionals] = useState<Set<string>>(new Set());
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail?.activityId) {
+        setAddedOptionals(prev => {
+          const next = new Set(prev);
+          if (next.has(detail.activityId)) {
+            next.delete(detail.activityId);
+          } else {
+            next.add(detail.activityId);
+          }
+          return next;
+        });
+      }
+    };
+    window.addEventListener("add-optional-item", handler);
+    return () => window.removeEventListener("add-optional-item", handler);
+  }, []);
+
     hero: true,
     overview: true,
     flights: true,
