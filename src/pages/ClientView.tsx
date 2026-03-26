@@ -68,7 +68,7 @@ export default function ClientView() {
         Expires: "0",
       };
 
-      const url = `${supabaseUrl}/rest/v1/trips?select=id,status,published_data,draft_data,org_id,archived_at,traveler_email,traveler_phone&public_slug=eq.${encodeURIComponent(shareId)}`;
+      const url = `${supabaseUrl}/rest/v1/trips?select=id,status,published_data,draft_data,org_id,archived_at,traveler_email,traveler_phone,section_selections&public_slug=eq.${encodeURIComponent(shareId)}`;
 
       const res = await fetch(url, {
         headers,
