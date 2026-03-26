@@ -100,10 +100,10 @@ interface Props {
   onEditorSubPage?: (page: EditorSubPage) => void;
 }
 
-function focusEditorSection(section: string, itemIndex?: number, activityId?: string) {
+function focusEditorSection(sectionKey: string, itemIndex?: number, activityId?: string) {
   window.dispatchEvent(
     new CustomEvent("editor-focus-section", {
-      detail: { section, itemIndex, activityId },
+      detail: { sectionKey, itemIndex, activityId },
     }),
   );
 }
