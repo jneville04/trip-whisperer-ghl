@@ -120,7 +120,7 @@ export default function GhlContactSearch({
         )}
       </div>
 
-      {apiError && !loading && value.trim().length >= 2 && (
+      {apiError && !loading && value.trim().length >= 3 && (
         <div className="flex items-center gap-1.5 mt-1.5 text-xs text-destructive">
           <AlertCircle className="h-3 w-3 shrink-0" />
           <span>{apiError}</span>
