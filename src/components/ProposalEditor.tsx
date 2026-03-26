@@ -248,7 +248,7 @@ function CollapsibleHotel({
   const open = isOpen !== undefined ? isOpen : internalOpen;
   const toggle = onToggle || (() => setInternalOpen(!internalOpen));
   return (
-    <div className={`border border-border/40 rounded-lg bg-muted/20 overflow-hidden ${hidden ? "opacity-50" : ""}`}>
+    <div data-editor-item={`${sectionKey || ""}:${itemIndex ?? ""}`} className={`border border-border/40 rounded-lg bg-muted/20 overflow-hidden ${hidden ? "opacity-50" : ""}`}>
       <div className="flex items-center justify-between px-3 py-2.5 bg-muted/40">
         <button className="flex items-center gap-2 flex-1 text-left min-w-0" onClick={toggle}>
           {open ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground shrink-0" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground shrink-0" />}
