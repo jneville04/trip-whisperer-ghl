@@ -206,34 +206,37 @@ function TypeSpecificFields({ type, fields, onChange, locked, time, onTimeChange
   const f = fields || {};
   const upd = (key: keyof ItineraryItemFields, val: string) => onChange({ ...f, [key]: val });
 
+  const lockedWrap = (children: React.ReactNode) =>
+    locked ? <div className="pointer-events-none opacity-70">{children}</div> : <>{children}</>;
+
   switch (type) {
     case "flight":
-      return (
+      return lockedWrap(
         <div className="space-y-2">
           <div className="grid grid-cols-2 gap-2">
             <div>
               <FieldLabel>Departure Airport</FieldLabel>
-              <AirportAutocomplete value={f.departureAirport || ""} onChange={(v) => upd("departureAirport", v)} placeholder="e.g. JFK" disabled={locked} />
+              <AirportAutocomplete value={f.departureAirport || ""} onChange={(v) => upd("departureAirport", v)} placeholder="e.g. JFK" />
             </div>
             <div>
               <FieldLabel>Arrival Airport</FieldLabel>
-              <AirportAutocomplete value={f.arrivalAirport || ""} onChange={(v) => upd("arrivalAirport", v)} placeholder="e.g. LIS" disabled={locked} />
+              <AirportAutocomplete value={f.arrivalAirport || ""} onChange={(v) => upd("arrivalAirport", v)} placeholder="e.g. LIS" />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
               <FieldLabel>Departure Time</FieldLabel>
-              <InlineTimePicker value={f.departureTime || ""} onChange={(v) => locked ? undefined : upd("departureTime", v)} />
+              <InlineTimePicker value={f.departureTime || ""} onChange={(v) => upd("departureTime", v)} />
             </div>
             <div>
               <FieldLabel>Arrival Time</FieldLabel>
-              <InlineTimePicker value={f.arrivalTime || ""} onChange={(v) => locked ? undefined : upd("arrivalTime", v)} />
+              <InlineTimePicker value={f.arrivalTime || ""} onChange={(v) => upd("arrivalTime", v)} />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-2">
             <div>
               <FieldLabel>Airline</FieldLabel>
-              <AirlineAutocomplete value={f.airline || ""} onChange={(v) => upd("airline", v)} disabled={locked} />
+              <AirlineAutocomplete value={f.airline || ""} onChange={(v) => upd("airline", v)} />
             </div>
             <div>
               <FieldLabel>Flight Number</FieldLabel>
@@ -244,7 +247,7 @@ function TypeSpecificFields({ type, fields, onChange, locked, time, onTimeChange
       );
 
     case "hotel":
-      return (
+      return lockedWrap(
         <div className="space-y-2">
           <div>
             <FieldLabel>Hotel Name</FieldLabel>
@@ -253,7 +256,7 @@ function TypeSpecificFields({ type, fields, onChange, locked, time, onTimeChange
           <div className="grid grid-cols-2 gap-2">
             <div>
               <FieldLabel>Check-in Time</FieldLabel>
-              <InlineTimePicker value={f.checkInTime || ""} onChange={(v) => locked ? undefined : upd("checkInTime", v)} />
+              <InlineTimePicker value={f.checkInTime || ""} onChange={(v) => upd("checkInTime", v)} />
             </div>
             <div>
               <FieldLabel>Number of Nights</FieldLabel>
@@ -263,7 +266,7 @@ function TypeSpecificFields({ type, fields, onChange, locked, time, onTimeChange
           <div className="grid grid-cols-2 gap-2">
             <div>
               <FieldLabel>Location</FieldLabel>
-              <LocationAutocomplete value={f.location || ""} onChange={(v) => upd("location", v)} placeholder="City" className="h-8 text-sm" disabled={locked} />
+              <LocationAutocomplete value={f.location || ""} onChange={(v) => upd("location", v)} placeholder="City" className="h-8 text-sm" />
             </div>
             <div>
               <FieldLabel>Room Type</FieldLabel>
@@ -274,7 +277,7 @@ function TypeSpecificFields({ type, fields, onChange, locked, time, onTimeChange
       );
 
     case "cruise":
-      return (
+      return lockedWrap(
         <div className="space-y-2">
           <div>
             <FieldLabel>Cruise Name</FieldLabel>
@@ -294,40 +297,39 @@ function TypeSpecificFields({ type, fields, onChange, locked, time, onTimeChange
       );
 
     case "transfer":
-      return (
+      return lockedWrap(
         <div className="space-y-2">
           <div className="grid grid-cols-2 gap-2">
             <div>
               <FieldLabel>Pickup Location</FieldLabel>
-              <LocationAutocomplete value={f.pickupLocation || ""} onChange={(v) => upd("pickupLocation", v)} placeholder="Pickup" className="h-8 text-sm" disabled={locked} />
+              <LocationAutocomplete value={f.pickupLocation || ""} onChange={(v) => upd("pickupLocation", v)} placeholder="Pickup" className="h-8 text-sm" />
             </div>
             <div>
               <FieldLabel>Dropoff Location</FieldLabel>
-              <LocationAutocomplete value={f.dropoffLocation || ""} onChange={(v) => upd("dropoffLocation", v)} placeholder="Dropoff" className="h-8 text-sm" disabled={locked} />
+              <LocationAutocomplete value={f.dropoffLocation || ""} onChange={(v) => upd("dropoffLocation", v)} placeholder="Dropoff" className="h-8 text-sm" />
             </div>
           </div>
           <div>
             <FieldLabel>Time</FieldLabel>
-            <InlineTimePicker value={time} onChange={locked ? () => {} : onTimeChange} />
+            <InlineTimePicker value={time} onChange={onTimeChange} />
           </div>
         </div>
       );
 
     case "free_time":
-      return null; // No structured fields needed
+      return null;
 
-    // activity, excursion, dining, event — same structure
     default:
-      return (
+      return lockedWrap(
         <div className="space-y-2">
           <div className="grid grid-cols-2 gap-2">
             <div>
               <FieldLabel>Time</FieldLabel>
-              <InlineTimePicker value={time} onChange={locked ? () => {} : onTimeChange} />
+              <InlineTimePicker value={time} onChange={onTimeChange} />
             </div>
             <div>
               <FieldLabel>Location</FieldLabel>
-              <LocationAutocomplete value={f.location || ""} onChange={(v) => upd("location", v)} placeholder="Location" className="h-8 text-sm" disabled={locked} />
+              <LocationAutocomplete value={f.location || ""} onChange={(v) => upd("location", v)} placeholder="Location" className="h-8 text-sm" />
             </div>
           </div>
         </div>
