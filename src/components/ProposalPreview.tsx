@@ -278,64 +278,76 @@ function ItinerarySection({
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
                 custom={0}
-                className="rounded-2xl border border-border/60 bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
+                className="rounded-2xl border border-border/70 bg-background overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300"
               >
                 {/* Collapsed / Header row */}
-                <button
-                  type="button"
-                  onClick={(e) => {
+                <div
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={isOpen}
+                  onPointerUp={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     toggleDay(day.id);
-                    if (isEditor) focusEditorSection("itinerary", dayIdx);
                   }}
-                  className="w-full flex items-center gap-4 sm:gap-5 px-5 sm:px-7 py-6 sm:py-7 cursor-pointer group text-left hover:bg-muted/30 transition-colors"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleDay(day.id);
+                    }
+                  }}
+                  className="relative w-full px-5 sm:px-7 py-6 sm:py-7 cursor-pointer group text-left hover:bg-muted/30 transition-colors touch-manipulation select-none"
                 >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2.5 mb-1.5 min-w-0">
-                      <span className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground px-3 py-1 text-[11px] font-body font-bold uppercase tracking-[0.16em] shrink-0 shadow-sm">
-                        Day {dayIdx + 1}
-                      </span>
-                      {day.date && (
-                        <span className="text-xs text-muted-foreground font-body flex items-center gap-1 whitespace-nowrap shrink-0">
-                          <Calendar className="h-3 w-3" /> {day.date}
+                  <div className="flex items-start gap-4 sm:gap-5">
+                    <div className="flex-1 min-w-0 pr-10 sm:pr-12">
+                      <div className="flex items-center gap-2.5 mb-1.5 min-w-0">
+                        <span className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground px-3 py-1 text-[11px] font-body font-bold uppercase tracking-[0.16em] shrink-0 shadow-sm">
+                          Day {dayIdx + 1}
                         </span>
+                        {day.date && (
+                          <span className="text-xs text-muted-foreground font-body flex items-center gap-1 whitespace-nowrap shrink-0">
+                            <Calendar className="h-3 w-3" /> {day.date}
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="font-display text-xl sm:text-2xl lg:text-[1.65rem] font-bold text-foreground leading-tight">
+                        {day.title || `Day ${dayIdx + 1}`}
+                      </h3>
+                      <div className="flex items-center gap-3 mt-2 flex-wrap">
+                        {day.location && (
+                          <span className="text-sm text-muted-foreground font-body flex items-center gap-1">
+                            <MapPin className="h-3 w-3" /> {day.location}
+                          </span>
+                        )}
+                      </div>
+                      {/* Activity summary for collapsed state */}
+                      {!isOpen && validActivities.length > 0 && (
+                        <p className="text-[13px] text-muted-foreground/70 font-body mt-2 line-clamp-1">
+                          {validActivities
+                            .filter((a) => a.title?.trim())
+                            .slice(0, 3)
+                            .map((a) => a.title!.trim())
+                            .join("  ·  ")}
+                        </p>
                       )}
                     </div>
-                    <h3 className="font-display text-xl sm:text-2xl lg:text-[1.65rem] font-bold text-foreground leading-tight">
-                      {day.title || `Day ${dayIdx + 1}`}
-                    </h3>
-                    <div className="flex items-center gap-3 mt-1 flex-wrap">
-                      {day.location && (
-                        <span className="text-sm text-muted-foreground font-body flex items-center gap-1">
-                          <MapPin className="h-3 w-3" /> {day.location}
-                        </span>
-                      )}
-                    </div>
-                    {/* Activity summary for collapsed state */}
-                    {!isOpen && validActivities.length > 0 && (
-                      <p className="text-[13px] text-muted-foreground/60 font-body mt-1.5 line-clamp-1">
-                        {validActivities
-                          .filter((a) => a.title?.trim())
-                          .slice(0, 3)
-                          .map((a) => a.title!.trim())
-                          .join("  ·  ")}
-                      </p>
+
+                    {/* Hero image on right (collapsed only) */}
+                    {!isOpen && heroImg && (
+                      <div className="shrink-0 w-24 h-20 sm:w-[140px] sm:h-[100px] rounded-xl overflow-hidden border border-border/30">
+                        <img src={heroImg} alt="" draggable={false} className="w-full h-full object-cover" />
+                      </div>
                     )}
                   </div>
 
-                  {/* Hero image on right (collapsed only) */}
-                  {!isOpen && heroImg && (
-                    <div className="shrink-0 w-24 h-20 sm:w-[140px] sm:h-[100px] rounded-xl overflow-hidden border border-border/30">
-                      <img src={heroImg} alt="" className="w-full h-full object-cover" />
-                    </div>
-                  )}
-
-                  <ChevronDown
-                    className={`h-5 w-5 text-muted-foreground/50 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-                  />
-                </button>
-
+                  <span className="absolute top-4 right-4 inline-flex h-8 w-8 items-center justify-center rounded-full border border-border/70 bg-background/95 text-muted-foreground shadow-sm">
+                    <ChevronDown
+                      className={`h-4 w-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                    />
+                  </span>
+                </div>
+ 
                 {/* Expanded content */}
                 <AnimatePresence initial={false}>
                   {isOpen && (
@@ -353,6 +365,7 @@ function ItinerarySection({
                           const hasVideo = !!act.videoUrl && !isUtility;
                           const isOptional = act.status === "optional";
                           const isLinked = act.source === "proposal" || act.source === "group-trip";
+                          const showActivityPrice = Boolean(act.price) && !isLinked;
                           const typeLabel = getActivityTypeLabel(act.type);
 
                           const pills: string[] = [];
@@ -404,19 +417,15 @@ function ItinerarySection({
 
                           /* --- Shared optional CTA block --- */
                           const optionalCta = isOptional ? (
-                            <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
-                              {act.price && (
+                            <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-2.5">
+                              {showActivityPrice && (
                                 <div className="flex items-baseline gap-1.5">
-                                  <span className="font-display text-lg font-bold text-foreground">{fmtCurrency(act.price)}</span>
+                                  <span className="font-display text-lg font-bold text-foreground">{fmtCurrency(act.price!)}</span>
                                   <span className="text-xs text-muted-foreground font-body">per person</span>
                                 </div>
                               )}
                               <button
-                                className={`inline-flex items-center gap-1.5 text-sm font-body font-semibold px-5 py-2.5 rounded-full transition-all duration-200 ${
-                                  addedOptionals.has(act.id)
-                                    ? "text-primary-foreground bg-primary shadow-sm"
-                                    : "text-primary bg-primary/10 hover:bg-primary/15 hover:shadow-sm"
-                                }`}
+                                className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-body font-semibold px-3.5 py-2 rounded-full text-primary-foreground bg-primary hover:bg-primary/90 shadow-sm transition-all duration-200"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   window.dispatchEvent(new CustomEvent("add-optional-item", { detail: { activityId: act.id, dayId: day.id, title: displayTitle || act.title, price: act.price } }));
@@ -491,9 +500,9 @@ function ItinerarySection({
                                       </div>
                                     )}
                                     <div className="hidden sm:block">
-                                      {!isOptional && act.price && (
+                                      {!isOptional && showActivityPrice && (
                                         <div className="mt-3">
-                                          <span className="font-display text-lg font-bold text-foreground">{fmtCurrency(act.price)}</span>
+                                          <span className="font-display text-lg font-bold text-foreground">{fmtCurrency(act.price!)}</span>
                                         </div>
                                       )}
                                       {optionalCta}
@@ -501,9 +510,9 @@ function ItinerarySection({
                                   </div>
                                   <div className="order-1 sm:order-2">{imageBlock}</div>
                                   <div className="sm:hidden order-3">
-                                    {!isOptional && act.price && (
+                                    {!isOptional && showActivityPrice && (
                                       <div>
-                                        <span className="font-display text-lg font-bold text-foreground">{fmtCurrency(act.price)}</span>
+                                        <span className="font-display text-lg font-bold text-foreground">{fmtCurrency(act.price!)}</span>
                                       </div>
                                     )}
                                     {optionalCta}
@@ -537,9 +546,9 @@ function ItinerarySection({
 
                                     {/* Price & CTA on desktop only (below text) */}
                                     <div className="hidden sm:block">
-                                      {!isOptional && act.price && (
+                                      {!isOptional && showActivityPrice && (
                                         <div className="mt-3">
-                                          <span className="font-display text-lg font-bold text-foreground">{fmtCurrency(act.price)}</span>
+                                          <span className="font-display text-lg font-bold text-foreground">{fmtCurrency(act.price!)}</span>
                                         </div>
                                       )}
                                       {optionalCta}
@@ -562,9 +571,9 @@ function ItinerarySection({
 
                                   {/* Price & CTA on mobile only (below image) */}
                                   <div className="sm:hidden order-3">
-                                    {!isOptional && act.price && (
+                                    {!isOptional && showActivityPrice && (
                                       <div>
-                                        <span className="font-display text-lg font-bold text-foreground">{fmtCurrency(act.price)}</span>
+                                        <span className="font-display text-lg font-bold text-foreground">{fmtCurrency(act.price!)}</span>
                                       </div>
                                     )}
                                     {optionalCta}
