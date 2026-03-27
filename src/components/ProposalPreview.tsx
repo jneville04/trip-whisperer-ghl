@@ -453,7 +453,7 @@ function ItinerarySection({
                           return (
                             <div
                               key={act.id || actIdx}
-                              className={`rounded-xl p-5 sm:p-6 ${isOptional ? "bg-accent/5 border border-accent/20" : "bg-muted/20 border border-border/30"}`}
+                              className={`rounded-xl border border-border/30 p-5 sm:p-6 bg-background`}
                               onClick={(e) => { if (isEditor) { e.stopPropagation(); focusEditorSection("itinerary", dayIdx, act.id); } }}
                             >
                               {statusLabel}
