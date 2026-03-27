@@ -282,7 +282,8 @@ function ItinerarySection({
               >
                 {/* Collapsed / Header row */}
                 <button
-                  onClick={() => { toggleDay(day.id); if (isEditor) focusEditorSection("itinerary", dayIdx); }}
+                  type="button"
+                  onClick={(e) => { e.preventDefault(); toggleDay(day.id); if (isEditor) focusEditorSection("itinerary", dayIdx); }}
                   className="w-full flex items-center gap-4 sm:gap-5 px-5 sm:px-7 py-6 sm:py-7 cursor-pointer group text-left hover:bg-muted/30 transition-colors"
                 >
                   <div className="flex-1 min-w-0">
