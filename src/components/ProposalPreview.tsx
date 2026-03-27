@@ -282,7 +282,8 @@ function ItinerarySection({
               >
                 {/* Collapsed / Header row */}
                 <button
-                  onClick={() => { toggleDay(day.id); if (isEditor) focusEditorSection("itinerary", dayIdx); }}
+                  type="button"
+                  onClick={(e) => { e.preventDefault(); toggleDay(day.id); if (isEditor) focusEditorSection("itinerary", dayIdx); }}
                   className="w-full flex items-center gap-4 sm:gap-5 px-5 sm:px-7 py-6 sm:py-7 cursor-pointer group text-left hover:bg-muted/30 transition-colors"
                 >
                   <div className="flex-1 min-w-0">
@@ -496,7 +497,7 @@ function ItinerarySection({
                               ) : (
                                 /* Standard content row: text left + image right */
                                 <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-5`}>
-                                  <div className="flex-1 min-w-0">
+                                  <div className="flex-1 min-w-0 order-2 sm:order-1">
                                     {displayTitle && (
                                       <h4 className="font-display text-lg sm:text-xl font-bold text-foreground leading-snug">
                                         {displayTitle}
@@ -519,25 +520,40 @@ function ItinerarySection({
                                       </div>
                                     )}
 
+                                    {/* Price & CTA on desktop only (below text) */}
+                                    <div className="hidden sm:block">
+                                      {!isOptional && act.price && (
+                                        <div className="mt-3">
+                                          <span className="font-display text-lg font-bold text-foreground">{fmtCurrency(act.price)}</span>
+                                        </div>
+                                      )}
+                                      {optionalCta}
+                                    </div>
+                                  </div>
+
+                                  <div className="order-1 sm:order-2 flex flex-col gap-4">
+                                    {imageBlock}
+                                    {hasVideo && !hasImages && (
+                                      <div className="shrink-0 sm:w-[220px]">
+                                        <VideoEmbed
+                                          url={act.videoUrl!}
+                                          title={act.title}
+                                          thumbnailUrl={act.videoThumbnailUrl}
+                                          className="rounded-xl"
+                                        />
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* Price & CTA on mobile only (below image) */}
+                                  <div className="sm:hidden order-3">
                                     {!isOptional && act.price && (
-                                      <div className="mt-3">
+                                      <div>
                                         <span className="font-display text-lg font-bold text-foreground">{fmtCurrency(act.price)}</span>
                                       </div>
                                     )}
                                     {optionalCta}
                                   </div>
-
-                                  {imageBlock}
-                                  {hasVideo && !hasImages && (
-                                    <div className="shrink-0 sm:w-[220px]">
-                                      <VideoEmbed
-                                        url={act.videoUrl!}
-                                        title={act.title}
-                                        thumbnailUrl={act.videoThumbnailUrl}
-                                        className="rounded-xl"
-                                      />
-                                    </div>
-                                  )}
                                 </div>
                               )}
                               {hasVideo && hasImages && (
