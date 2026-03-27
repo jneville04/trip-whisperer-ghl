@@ -283,7 +283,12 @@ function ItinerarySection({
                 {/* Collapsed / Header row */}
                 <button
                   type="button"
-                  onClick={(e) => { e.preventDefault(); toggleDay(day.id); if (isEditor) focusEditorSection("itinerary", dayIdx); }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleDay(day.id);
+                    if (isEditor) focusEditorSection("itinerary", dayIdx);
+                  }}
                   className="w-full flex items-center gap-4 sm:gap-5 px-5 sm:px-7 py-6 sm:py-7 cursor-pointer group text-left hover:bg-muted/30 transition-colors"
                 >
                   <div className="flex-1 min-w-0">
@@ -456,7 +461,7 @@ function ItinerarySection({
                               {/* Flight route card */}
                               {hasFlightRoute ? (
                                 <div className={`flex flex-col ${hasImages ? "sm:flex-row" : ""} gap-5`}>
-                                  <div className="flex-1 min-w-0">
+                                  <div className="flex-1 min-w-0 order-2 sm:order-1">
                                     {(airline || flightNumber) && (
                                       <div className="flex items-center gap-2 mb-3">
                                         {airline && <span className="text-sm font-body font-semibold text-foreground">{airline}</span>}
@@ -485,14 +490,24 @@ function ItinerarySection({
                                         <ActivityDescription text={act.description} />
                                       </div>
                                     )}
+                                    <div className="hidden sm:block">
+                                      {!isOptional && act.price && (
+                                        <div className="mt-3">
+                                          <span className="font-display text-lg font-bold text-foreground">{fmtCurrency(act.price)}</span>
+                                        </div>
+                                      )}
+                                      {optionalCta}
+                                    </div>
+                                  </div>
+                                  <div className="order-1 sm:order-2">{imageBlock}</div>
+                                  <div className="sm:hidden order-3">
                                     {!isOptional && act.price && (
-                                      <div className="mt-3">
+                                      <div>
                                         <span className="font-display text-lg font-bold text-foreground">{fmtCurrency(act.price)}</span>
                                       </div>
                                     )}
                                     {optionalCta}
                                   </div>
-                                  {imageBlock}
                                 </div>
                               ) : (
                                 /* Standard content row: text left + image right */
