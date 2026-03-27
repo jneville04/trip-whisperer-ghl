@@ -426,36 +426,30 @@ function ItinerarySection({
                           ) : null;
 
                           /* --- Shared status label --- */
+                          const statusPill = isOptional
+                            ? <span className="text-[10px] font-semibold text-muted-foreground font-body bg-muted px-2.5 py-0.5 rounded-full">Optional</span>
+                            : isLinked
+                              ? <span className="text-[10px] font-semibold text-primary-foreground font-body bg-primary px-2.5 py-0.5 rounded-full">Included · From {act.source === "proposal" ? "proposal" : "group trip"}</span>
+                              : act.status === "included"
+                                ? <span className="text-[10px] font-semibold text-primary-foreground font-body bg-primary px-2.5 py-0.5 rounded-full">Included</span>
+                                : null;
+
                           const statusLabel = (
                             <div className="flex items-center gap-2 mb-3">
                               <span className="text-primary">{getActivityIcon(act.type)}</span>
                               <span className="text-[10px] font-bold tracking-[0.14em] uppercase text-muted-foreground font-body">
                                 {typeLabel}
                               </span>
-                              {!isOptional && act.status === "included" && (
-                                <span className="text-[10px] font-semibold text-primary-foreground font-body bg-primary px-2.5 py-0.5 rounded-full ml-auto">
-                                  Included
-                                </span>
-                              )}
-                              {isOptional && (
-                                <span className="text-[10px] font-semibold text-muted-foreground font-body bg-muted px-2.5 py-0.5 rounded-full ml-auto">
-                                  Optional
-                                </span>
-                              )}
+                              {statusPill && <span className="ml-auto">{statusPill}</span>}
                             </div>
                           );
 
                           return (
                             <div
                               key={act.id || actIdx}
-                              className="rounded-xl border border-border bg-background p-5 sm:p-6 shadow-sm relative"
+                              className="rounded-xl border border-border bg-background p-5 sm:p-6 shadow-md relative"
                               onClick={(e) => { if (isEditor) { e.stopPropagation(); focusEditorSection("itinerary", dayIdx, act.id); } }}
                             >
-                              {isLinked && (
-                                <span className="absolute top-3 right-3 text-[9px] font-semibold text-muted-foreground font-body bg-muted px-2 py-0.5 rounded-full">
-                                  From {act.source === "proposal" ? "proposal" : "group trip"}
-                                </span>
-                              )}
                               {statusLabel}
 
                               {/* Flight route card */}
