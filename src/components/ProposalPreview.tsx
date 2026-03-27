@@ -448,9 +448,14 @@ function ItinerarySection({
                           return (
                             <div
                               key={act.id || actIdx}
-                              className={`rounded-xl border border-border/30 p-5 sm:p-6 bg-background`}
+                              className="rounded-xl border border-border bg-background p-5 sm:p-6 shadow-sm relative"
                               onClick={(e) => { if (isEditor) { e.stopPropagation(); focusEditorSection("itinerary", dayIdx, act.id); } }}
                             >
+                              {isLinked && (
+                                <span className="absolute top-3 right-3 text-[9px] font-semibold text-muted-foreground font-body bg-muted px-2 py-0.5 rounded-full">
+                                  From {act.source === "proposal" ? "proposal" : "group trip"}
+                                </span>
+                              )}
                               {statusLabel}
 
                               {/* Flight route card */}
