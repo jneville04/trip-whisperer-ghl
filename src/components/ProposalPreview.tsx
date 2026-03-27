@@ -283,15 +283,8 @@ function ItinerarySection({
                 {/* Collapsed / Header row */}
                 <button
                   onClick={() => { toggleDay(day.id); if (isEditor) focusEditorSection("itinerary", dayIdx); }}
-                  className="w-full flex items-center gap-4 sm:gap-5 px-5 sm:px-7 py-5 sm:py-6 cursor-pointer group text-left hover:bg-muted/30 transition-colors"
+                  className="w-full flex items-center gap-4 sm:gap-5 px-5 sm:px-7 py-6 sm:py-7 cursor-pointer group text-left hover:bg-muted/30 transition-colors"
                 >
-                  {/* Hero image peek (collapsed only) */}
-                  {!isOpen && heroImg && (
-                    <div className="shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border border-border/30">
-                      <img src={heroImg} alt="" className="w-full h-full object-cover" />
-                    </div>
-                  )}
-
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2.5 flex-wrap mb-1.5">
                       <span className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground px-3 py-1 text-[11px] font-body font-bold uppercase tracking-[0.16em] shrink-0 shadow-sm">
@@ -324,6 +317,13 @@ function ItinerarySection({
                       </p>
                     )}
                   </div>
+
+                  {/* Hero image on right (collapsed only) */}
+                  {!isOpen && heroImg && (
+                    <div className="shrink-0 w-24 h-20 sm:w-[140px] sm:h-[100px] rounded-xl overflow-hidden border border-border/30">
+                      <img src={heroImg} alt="" className="w-full h-full object-cover" />
+                    </div>
+                  )}
 
                   <ChevronDown
                     className={`h-5 w-5 text-muted-foreground/50 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
