@@ -255,7 +255,7 @@ function ItinerarySection({
           </h2>
           <div className="w-16 h-0.5 bg-primary/30 mx-auto mt-5" />
         </motion.div>
-        <div className="space-y-5">
+        <div className="space-y-6 sm:space-y-8">
           {visibleDays.map((day, dayIdx) => {
             const isOpen = openDayIds.has(day.id);
             const validActivities = day.activities.filter(
@@ -265,6 +265,11 @@ function ItinerarySection({
                 (act.imageUrls && act.imageUrls.length > 0) ||
                 act.videoUrl,
             );
+            // Get the first hero image from this day's activities
+            const heroImg = day.activities
+              .filter((a) => !UTILITY_ACTIVITY_TYPES.includes(a.type as any) && a.imageUrls && a.imageUrls.length > 0)
+              .map((a) => a.imageUrls![0])[0];
+
             return (
               <motion.div
                 key={day.id}
@@ -273,70 +278,59 @@ function ItinerarySection({
                 whileInView="visible"
                 viewport={{ once: true, margin: "-50px" }}
                 custom={0}
-                className="rounded-2xl border-2 border-border bg-card overflow-hidden shadow-[0_14px_36px_-20px_hsl(var(--foreground)/0.35)] hover:shadow-[0_18px_42px_-18px_hsl(var(--foreground)/0.35)] transition-shadow"
+                className="rounded-2xl border border-border/60 bg-card overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
               >
+                {/* Collapsed / Header row */}
                 <button
                   onClick={() => { toggleDay(day.id); if (isEditor) focusEditorSection("itinerary", dayIdx); }}
-                  className="w-full flex items-center justify-between gap-3 px-6 sm:px-7 py-5 cursor-pointer group text-left bg-muted/35 hover:bg-muted/55 transition-colors"
+                  className="w-full flex items-center gap-4 sm:gap-5 px-5 sm:px-7 py-5 sm:py-6 cursor-pointer group text-left hover:bg-muted/30 transition-colors"
                 >
-                  <div className="flex items-start gap-3 sm:gap-4 flex-wrap">
-                    <span className="inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground px-4 py-1.5 text-xs font-body font-bold uppercase tracking-[0.14em] shrink-0">
-                      Day {dayIdx + 1}
-                    </span>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-display text-xl sm:text-2xl font-bold text-foreground leading-tight">
-                          {day.title || `Day ${dayIdx + 1}`}
-                        </h3>
-                      </div>
-                      <div className="flex items-center gap-3 mt-1.5 flex-wrap">
-                        {day.date && (
-                          <span className="text-sm text-muted-foreground font-body flex items-center gap-1.5">
-                            <Calendar className="h-3 w-3" /> {day.date}
-                          </span>
-                        )}
-                        {day.location && (
-                          <span className="text-sm text-muted-foreground font-body flex items-center gap-1.5">
-                            <MapPin className="h-3 w-3" /> {day.location}
-                          </span>
-                        )}
-                      </div>
-                      {/* Auto-generated activity summary for collapsed state */}
-                      {!isOpen && validActivities.length > 0 && (
-                        <p className="text-sm text-muted-foreground/70 font-body italic mt-1">
-                          {validActivities
-                            .filter((a) => a.title?.trim())
-                            .slice(0, 3)
-                            .map((a) => a.title!.trim())
-                            .join(" · ")}
-                        </p>
+                  {/* Hero image peek (collapsed only) */}
+                  {!isOpen && heroImg && (
+                    <div className="shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border border-border/30">
+                      <img src={heroImg} alt="" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2.5 flex-wrap mb-1.5">
+                      <span className="inline-flex items-center justify-center rounded-lg bg-primary text-primary-foreground px-3 py-1 text-[11px] font-body font-bold uppercase tracking-[0.16em] shrink-0 shadow-sm">
+                        Day {dayIdx + 1}
+                      </span>
+                      {day.date && (
+                        <span className="text-xs text-muted-foreground font-body flex items-center gap-1">
+                          <Calendar className="h-3 w-3" /> {day.date}
+                        </span>
                       )}
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    {!isOpen && (
-                      <div className="flex gap-1">
-                        {day.activities
-                          .filter(
-                            (a) =>
-                              !UTILITY_ACTIVITY_TYPES.includes(a.type as any) && a.imageUrls && a.imageUrls.length > 0,
-                          )
+                    <h3 className="font-display text-xl sm:text-2xl lg:text-[1.65rem] font-bold text-foreground leading-tight">
+                      {day.title || `Day ${dayIdx + 1}`}
+                    </h3>
+                    <div className="flex items-center gap-3 mt-1 flex-wrap">
+                      {day.location && (
+                        <span className="text-sm text-muted-foreground font-body flex items-center gap-1">
+                          <MapPin className="h-3 w-3" /> {day.location}
+                        </span>
+                      )}
+                    </div>
+                    {/* Activity summary for collapsed state */}
+                    {!isOpen && validActivities.length > 0 && (
+                      <p className="text-[13px] text-muted-foreground/60 font-body mt-1.5 line-clamp-1">
+                        {validActivities
+                          .filter((a) => a.title?.trim())
                           .slice(0, 3)
-                          .map((a, i) => (
-                            <div
-                              key={i}
-                              className="w-11 h-9 rounded-lg overflow-hidden border border-border/40 shrink-0"
-                            >
-                              <img src={a.imageUrls![0]} alt="" className="w-full h-full object-cover" />
-                            </div>
-                          ))}
-                      </div>
+                          .map((a) => a.title!.trim())
+                          .join("  ·  ")}
+                      </p>
                     )}
-                    <ChevronDown
-                      className={`h-5 w-5 text-muted-foreground shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-                    />
                   </div>
+
+                  <ChevronDown
+                    className={`h-5 w-5 text-muted-foreground/50 shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                  />
                 </button>
+
+                {/* Expanded content */}
                 <AnimatePresence initial={false}>
                   {isOpen && (
                     <motion.div
@@ -346,7 +340,7 @@ function ItinerarySection({
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                       className="overflow-hidden"
                     >
-                      <div className="px-6 sm:px-7 pb-6 pt-4 border-t-2 border-border bg-background divide-y divide-border">
+                      <div className="px-5 sm:px-7 pb-7 pt-2 space-y-6">
                         {validActivities.map((act, actIdx) => {
                           const isUtility = UTILITY_ACTIVITY_TYPES.includes(act.type as any);
                           const hasImages = act.imageUrls && act.imageUrls.length > 0 && !isUtility;
@@ -355,7 +349,6 @@ function ItinerarySection({
                           const isLinked = act.source === "proposal" || act.source === "group-trip";
                           const typeLabel = getActivityTypeLabel(act.type);
 
-                          // Build metadata pills from existing fields
                           const pills: string[] = [];
                           if (act.time) pills.push(act.time);
                           if (act.fields?.location) pills.push(act.fields.location);
@@ -364,12 +357,10 @@ function ItinerarySection({
                           if (act.fields?.roomType) pills.push(act.fields.roomType);
                           if (act.fields?.duration) pills.push(act.fields.duration);
 
-                          // Build display title — use hotelName / cruiseName / airline for typed items
                           let displayTitle = act.title?.trim() || "";
                           if (act.type === "hotel" && act.fields?.hotelName) displayTitle = act.fields.hotelName;
                           if (act.type === "cruise" && act.fields?.cruiseName) displayTitle = act.fields.cruiseName;
 
-                          // Flight-specific data
                           const isFlight = act.type === "flight";
                           const depAirport = act.fields?.departureAirport || "";
                           const arrAirport = act.fields?.arrivalAirport || "";
@@ -383,59 +374,110 @@ function ItinerarySection({
                           const depTime = act.fields?.departureTime || "";
                           const arrTime = act.fields?.arrivalTime || "";
 
+                          /* --- Shared image block --- */
+                          const imageBlock = hasImages ? (
+                            <div
+                              className="shrink-0 rounded-xl overflow-hidden cursor-pointer group/img relative w-full sm:w-[220px] aspect-[4/3] sm:aspect-auto sm:h-[180px] border border-border/30"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openLightbox(act.imageUrls!.map((u) => ({ src: u, alt: act.title })), 0);
+                              }}
+                            >
+                              <img
+                                src={act.imageUrls![0]}
+                                alt={displayTitle || act.title || "Photo"}
+                                className="w-full h-full object-cover object-center group-hover/img:scale-105 transition-transform duration-500"
+                              />
+                              {act.imageUrls!.length > 1 && (
+                                <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs font-semibold px-2 py-0.5 rounded-full backdrop-blur-sm">
+                                  +{act.imageUrls!.length - 1}
+                                </div>
+                              )}
+                            </div>
+                          ) : null;
+
+                          /* --- Shared optional CTA block --- */
+                          const optionalCta = isOptional ? (
+                            <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
+                              {act.price && (
+                                <div className="flex items-baseline gap-1.5">
+                                  <span className="font-display text-lg font-bold text-foreground">{fmtCurrency(act.price)}</span>
+                                  <span className="text-xs text-muted-foreground font-body">per person</span>
+                                </div>
+                              )}
+                              <button
+                                className={`inline-flex items-center gap-1.5 text-sm font-body font-semibold px-5 py-2.5 rounded-full transition-all duration-200 ${
+                                  addedOptionals.has(act.id)
+                                    ? "text-primary-foreground bg-primary shadow-sm"
+                                    : "text-primary bg-primary/10 hover:bg-primary/15 hover:shadow-sm"
+                                }`}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.dispatchEvent(new CustomEvent("add-optional-item", { detail: { activityId: act.id, dayId: day.id, title: displayTitle || act.title, price: act.price } }));
+                                }}
+                              >
+                                {addedOptionals.has(act.id) ? (
+                                  <><Check className="h-3.5 w-3.5" /> Added to trip</>
+                                ) : (
+                                  "Add to trip"
+                                )}
+                              </button>
+                            </div>
+                          ) : null;
+
+                          /* --- Shared status label --- */
+                          const statusLabel = (
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-primary">{getActivityIcon(act.type)}</span>
+                              <span className="text-[10px] font-bold tracking-[0.14em] uppercase text-muted-foreground font-body">
+                                {typeLabel}
+                              </span>
+                              {isLinked && (
+                                <span className="text-[10px] font-medium text-muted-foreground/60 font-body ml-auto">
+                                  From {act.source === "proposal" ? "proposal" : "group trip"}
+                                </span>
+                              )}
+                              {!isOptional && act.status === "included" && (
+                                <span className="text-[10px] font-semibold text-primary font-body bg-primary/8 px-2 py-0.5 rounded-full ml-auto">
+                                  Included
+                                </span>
+                              )}
+                              {isOptional && (
+                                <span className="text-[10px] font-semibold text-accent-foreground font-body bg-accent/20 px-2 py-0.5 rounded-full ml-auto">
+                                  Optional
+                                </span>
+                              )}
+                            </div>
+                          );
+
                           return (
                             <div
                               key={act.id || actIdx}
-                              className={`py-5 first:pt-2 last:pb-2 ${isOptional ? "bg-primary/[0.03] -mx-6 sm:-mx-7 px-6 sm:px-7 border-l-4 border-l-primary/30" : ""}`}
+                              className={`rounded-xl p-5 sm:p-6 ${isOptional ? "bg-accent/5 border border-accent/20" : "bg-muted/20 border border-border/30"}`}
                               onClick={(e) => { if (isEditor) { e.stopPropagation(); focusEditorSection("itinerary", dayIdx, act.id); } }}
                             >
-                              {/* Type label + status badge row */}
-                              <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-primary">{getActivityIcon(act.type)}</span>
-                                  <span className="text-[11px] font-bold tracking-[0.12em] uppercase text-primary font-body">
-                                    {isOptional ? `Optional ${typeLabel === "ACTIVITY" ? "Experience" : typeLabel.toLowerCase()}` : typeLabel}
-                                  </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                  {isLinked && (
-                                    <span className="text-[11px] font-medium text-muted-foreground font-body">
-                                      From {act.source === "proposal" ? "proposal" : "group trip"}
-                                    </span>
-                                  )}
-                                  {!isOptional && act.status === "included" && (
-                                    <span className="text-[11px] font-semibold text-primary font-body bg-primary/10 px-2.5 py-0.5 rounded-full">
-                                      Included
-                                    </span>
-                                  )}
-                                  {isOptional && (
-                                    <span className="text-[11px] font-semibold text-primary font-body bg-primary/10 px-2.5 py-0.5 rounded-full">
-                                      Add-on
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
+                              {statusLabel}
 
                               {/* Flight route card */}
                               {hasFlightRoute ? (
-                                <div className={`flex flex-col ${hasImages ? "sm:flex-row" : ""} gap-4`}>
-                                  <div className="flex-1 min-w-0 bg-muted/30 rounded-xl p-4 border border-border/40">
+                                <div className={`flex flex-col ${hasImages ? "sm:flex-row" : ""} gap-5`}>
+                                  <div className="flex-1 min-w-0">
                                     {(airline || flightNumber) && (
                                       <div className="flex items-center gap-2 mb-3">
                                         {airline && <span className="text-sm font-body font-semibold text-foreground">{airline}</span>}
-                                        {flightNumber && <span className="text-xs font-body text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{flightNumber}</span>}
+                                        {flightNumber && <span className="text-[11px] font-body text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{flightNumber}</span>}
                                       </div>
                                     )}
-                                    <div className="flex items-center justify-between gap-3">
+                                    <div className="flex items-center justify-between gap-3 py-2">
                                       <div className="text-center min-w-0">
                                         <p className="font-display text-2xl font-bold text-foreground tracking-wide">{depCode || "---"}</p>
                                         {depCity && <p className="text-xs text-muted-foreground font-body mt-0.5">{depCity}</p>}
                                         {depTime && <p className="text-sm font-body font-semibold text-foreground mt-1">{depTime}</p>}
                                       </div>
                                       <div className="flex-1 flex items-center gap-1 px-2">
-                                        <div className="h-[2px] flex-1 border-t-2 border-dashed border-primary/40" />
+                                        <div className="h-[2px] flex-1 border-t-2 border-dashed border-primary/30" />
                                         <Plane className="h-4 w-4 text-primary shrink-0" />
-                                        <div className="h-[2px] flex-1 border-t-2 border-dashed border-primary/40" />
+                                        <div className="h-[2px] flex-1 border-t-2 border-dashed border-primary/30" />
                                       </div>
                                       <div className="text-center min-w-0">
                                         <p className="font-display text-2xl font-bold text-foreground tracking-wide">{arrCode || "---"}</p>
@@ -444,72 +486,33 @@ function ItinerarySection({
                                       </div>
                                     </div>
                                     {act.description && (
-                                      <div className="mt-3 pt-3 border-t border-border/30">
+                                      <div className="mt-3 pt-3 border-t border-border/20">
                                         <ActivityDescription text={act.description} />
                                       </div>
                                     )}
-                                    {/* Price + button for optional flights */}
-                                    {isOptional && act.price && (
-                                      <div className="mt-3 flex items-center gap-3 flex-wrap">
-                                        <span className="font-display text-xl font-bold text-foreground">{fmtCurrency(act.price)}</span>
-                                        <span className="text-xs text-muted-foreground font-body">per person</span>
+                                    {!isOptional && act.price && (
+                                      <div className="mt-3">
+                                        <span className="font-display text-lg font-bold text-foreground">{fmtCurrency(act.price)}</span>
                                       </div>
                                     )}
-                                    {isOptional && (
-                                      <button
-                                        className={`mt-3 inline-flex items-center gap-1.5 text-sm font-body font-semibold px-4 py-2 rounded-full transition-colors ${
-                                          addedOptionals.has(act.id)
-                                            ? "text-primary-foreground bg-primary hover:bg-primary/90"
-                                            : "text-primary hover:text-primary/80 bg-primary/10 hover:bg-primary/15"
-                                        }`}
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          window.dispatchEvent(new CustomEvent("add-optional-item", { detail: { activityId: act.id, dayId: day.id, title: displayTitle || act.title, price: act.price } }));
-                                        }}
-                                      >
-                                        {addedOptionals.has(act.id) ? "✓ Added" : "+ Add this experience"}
-                                      </button>
-                                    )}
+                                    {optionalCta}
                                   </div>
-                                  {hasImages && (
-                                    <div
-                                      className="shrink-0 rounded-xl overflow-hidden cursor-pointer group relative w-full sm:w-[200px] h-[200px] border border-border/40"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        openLightbox(
-                                          act.imageUrls!.map((u) => ({ src: u, alt: act.title })),
-                                          0,
-                                        );
-                                      }}
-                                    >
-                                      <img
-                                        src={act.imageUrls![0]}
-                                        alt={displayTitle || act.title || "Flight photo"}
-                                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                                      />
-                                      {act.imageUrls!.length > 1 && (
-                                        <div className="absolute bottom-2 right-2 bg-black/55 text-white text-xs font-semibold px-2 py-1 rounded-full backdrop-blur-sm">
-                                          +{act.imageUrls!.length - 1} more
-                                        </div>
-                                      )}
-                                    </div>
-                                  )}
+                                  {imageBlock}
                                 </div>
                               ) : (
-                                /* Standard content row: text + image */
-                                <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-4`}>
+                                /* Standard content row: text left + image right */
+                                <div className={`flex flex-col ${hasImages || hasVideo ? "sm:flex-row" : ""} gap-5`}>
                                   <div className="flex-1 min-w-0">
                                     {displayTitle && (
-                                      <h4 className="font-display text-base sm:text-lg font-semibold text-foreground leading-snug">
+                                      <h4 className="font-display text-lg sm:text-xl font-bold text-foreground leading-snug">
                                         {displayTitle}
                                       </h4>
                                     )}
 
-                                    {/* Metadata pills */}
                                     {pills.length > 0 && (
-                                      <div className="flex flex-wrap gap-1.5 mt-2">
+                                      <div className="flex flex-wrap gap-1.5 mt-2.5">
                                         {pills.map((pill, pIdx) => (
-                                          <span key={pIdx} className="inline-flex items-center text-xs font-body font-medium text-muted-foreground bg-muted/60 px-2.5 py-1 rounded-full">
+                                          <span key={pIdx} className="inline-flex items-center text-xs font-body font-medium text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-full">
                                             {pill}
                                           </span>
                                         ))}
@@ -517,65 +520,27 @@ function ItinerarySection({
                                     )}
 
                                     {act.description && (
-                                      <div className="mt-2">
+                                      <div className="mt-3">
                                         <ActivityDescription text={act.description} />
                                       </div>
                                     )}
 
-                                    {/* Price + button for optional items */}
-                                    {isOptional && act.price && (
-                                      <div className="mt-3 flex items-center gap-3 flex-wrap">
-                                        <span className="font-display text-xl font-bold text-foreground">{fmtCurrency(act.price)}</span>
-                                        <span className="text-xs text-muted-foreground font-body">per person</span>
+                                    {!isOptional && act.price && (
+                                      <div className="mt-3">
+                                        <span className="font-display text-lg font-bold text-foreground">{fmtCurrency(act.price)}</span>
                                       </div>
                                     )}
-                                    {isOptional && (
-                                      <button
-                                        className={`mt-3 inline-flex items-center gap-1.5 text-sm font-body font-semibold px-4 py-2 rounded-full transition-colors ${
-                                          addedOptionals.has(act.id)
-                                            ? "text-primary-foreground bg-primary hover:bg-primary/90"
-                                            : "text-primary hover:text-primary/80 bg-primary/10 hover:bg-primary/15"
-                                        }`}
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          window.dispatchEvent(new CustomEvent("add-optional-item", { detail: { activityId: act.id, dayId: day.id, title: displayTitle || act.title, price: act.price } }));
-                                        }}
-                                      >
-                                        {addedOptionals.has(act.id) ? "✓ Added" : "+ Add this experience"}
-                                      </button>
-                                    )}
+                                    {optionalCta}
                                   </div>
 
-                                  {hasImages && (
-                                    <div
-                                      className="shrink-0 rounded-xl overflow-hidden cursor-pointer group relative w-full sm:w-[200px] h-[200px] border border-border/40"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        openLightbox(
-                                          act.imageUrls!.map((u) => ({ src: u, alt: act.title })),
-                                          0,
-                                        );
-                                      }}
-                                    >
-                                      <img
-                                        src={act.imageUrls![0]}
-                                        alt={displayTitle || act.title || "Activity photo"}
-                                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                                      />
-                                      {act.imageUrls!.length > 1 && (
-                                        <div className="absolute bottom-2 right-2 bg-black/55 text-white text-xs font-semibold px-2 py-1 rounded-full backdrop-blur-sm">
-                                          +{act.imageUrls!.length - 1} more
-                                        </div>
-                                      )}
-                                    </div>
-                                  )}
+                                  {imageBlock}
                                   {hasVideo && !hasImages && (
-                                    <div className="shrink-0 sm:w-[240px] md:w-[280px]">
+                                    <div className="shrink-0 sm:w-[220px]">
                                       <VideoEmbed
                                         url={act.videoUrl!}
                                         title={act.title}
                                         thumbnailUrl={act.videoThumbnailUrl}
-                                        className="rounded-lg"
+                                        className="rounded-xl"
                                       />
                                     </div>
                                   )}
@@ -587,7 +552,7 @@ function ItinerarySection({
                                     url={act.videoUrl!}
                                     title={act.title}
                                     thumbnailUrl={act.videoThumbnailUrl}
-                                    className="max-w-md"
+                                    className="max-w-md rounded-xl"
                                   />
                                 </div>
                               )}
