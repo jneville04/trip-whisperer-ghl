@@ -126,7 +126,10 @@ export type Database = {
           login_message: string | null
           logo_url: string | null
           primary_color: string
+          resend_api_key: string | null
           secondary_color: string
+          stripe_customer_portal_url: string | null
+          stripe_payment_link: string | null
           tagline: string
           updated_at: string | null
         }
@@ -151,7 +154,10 @@ export type Database = {
           login_message?: string | null
           logo_url?: string | null
           primary_color?: string
+          resend_api_key?: string | null
           secondary_color?: string
+          stripe_customer_portal_url?: string | null
+          stripe_payment_link?: string | null
           tagline?: string
           updated_at?: string | null
         }
@@ -176,7 +182,10 @@ export type Database = {
           login_message?: string | null
           logo_url?: string | null
           primary_color?: string
+          resend_api_key?: string | null
           secondary_color?: string
+          stripe_customer_portal_url?: string | null
+          stripe_payment_link?: string | null
           tagline?: string
           updated_at?: string | null
         }
@@ -266,6 +275,42 @@ export type Database = {
           id?: string
           token?: string
           used_at?: string | null
+        }
+        Relationships: []
+      }
+      library_items: {
+        Row: {
+          agent_id: string
+          created_at: string | null
+          destination: string | null
+          details: Json | null
+          id: string
+          name: string
+          photo_url: string | null
+          type: string
+          use_count: number | null
+        }
+        Insert: {
+          agent_id: string
+          created_at?: string | null
+          destination?: string | null
+          details?: Json | null
+          id?: string
+          name: string
+          photo_url?: string | null
+          type: string
+          use_count?: number | null
+        }
+        Update: {
+          agent_id?: string
+          created_at?: string | null
+          destination?: string | null
+          details?: Json | null
+          id?: string
+          name?: string
+          photo_url?: string | null
+          type?: string
+          use_count?: number | null
         }
         Relationships: []
       }
@@ -429,6 +474,7 @@ export type Database = {
           archived_at: string | null
           created_at: string | null
           current_occupancy: number | null
+          deleted_at: string | null
           draft_data: Json | null
           id: string
           max_capacity: number | null
@@ -446,6 +492,7 @@ export type Database = {
           archived_at?: string | null
           created_at?: string | null
           current_occupancy?: number | null
+          deleted_at?: string | null
           draft_data?: Json | null
           id?: string
           max_capacity?: number | null
@@ -463,6 +510,7 @@ export type Database = {
           archived_at?: string | null
           created_at?: string | null
           current_occupancy?: number | null
+          deleted_at?: string | null
           draft_data?: Json | null
           id?: string
           max_capacity?: number | null
