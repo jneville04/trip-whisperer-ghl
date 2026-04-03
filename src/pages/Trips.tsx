@@ -17,7 +17,6 @@ type ViewTab = "active" | "archived" | "trash";
 
 export default function Trips() {
   const { user } = useAuth();
-  const { data: isAdmin } = useAdminCheck(user?.id);
   const navigate = useNavigate();
   const [trips, setTrips] = useState<TripRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,8 +27,8 @@ export default function Trips() {
   const [dupModal, setDupModal] = useState<{ open: boolean; trip: TripRow | null }>({ open: false, trip: null });
 
   useEffect(() => {
-    loadTrips();
-  }, []);
+    if (user) loadTrips();
+  }, [user]);
 
   const filtered = useMemo(() => {
     let result = trips.filter((t) => {
