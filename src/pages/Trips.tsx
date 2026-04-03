@@ -8,7 +8,7 @@ import ProposalFilters, { type FilterType, type SortType } from "@/components/Pr
 import TripCard from "@/components/TripCard";
 import AppLayout from "@/components/AppLayout";
 import { Search, FileText, Archive, Trash2 } from "lucide-react";
-import { type ProposalData, type TripRow } from "@/types/proposal";
+import { type TripSummaryRow } from "@/types/proposal";
 import DuplicateTripModal from "@/components/DuplicateTripModal";
 import { Button } from "@/components/ui/button";
 
@@ -17,13 +17,13 @@ type ViewTab = "active" | "archived" | "trash";
 export default function Trips() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [trips, setTrips] = useState<TripRow[]>([]);
+  const [trips, setTrips] = useState<TripSummaryRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<FilterType>("all");
   const [sort, setSort] = useState<SortType>("newest");
   const [viewTab, setViewTab] = useState<ViewTab>("active");
-  const [dupModal, setDupModal] = useState<{ open: boolean; trip: TripRow | null }>({ open: false, trip: null });
+  const [dupModal, setDupModal] = useState<{ open: boolean; trip: TripSummaryRow | null }>({ open: false, trip: null });
 
   useEffect(() => {
     if (user) loadTrips();
@@ -31,16 +31,13 @@ export default function Trips() {
 
   const filtered = useMemo(() => {
     let result = trips.filter((t) => {
-      const row = t as any;
-      // Tab filter
-      if (viewTab === "active" && (row.archived_at || row.trashed_at)) return false;
-      if (viewTab === "archived" && (!row.archived_at || row.trashed_at)) return false;
-      if (viewTab === "trash" && !row.trashed_at) return false;
+      if (viewTab === "active" && (t.archived_at || t.trashed_at)) return false;
+      if (viewTab === "archived" && (!t.archived_at || t.trashed_at)) return false;
+      if (viewTab === "trash" && !t.trashed_at) return false;
 
-      const d = t.draft_data as ProposalData | null;
-      const title = d?.tripName || "";
-      const clientName = d?.clientName || "";
-      const destination = d?.destination || "";
+      const title = t.trip_name || "";
+      const clientName = t.client_name || "";
+      const destination = t.destination || "";
       const q = search.toLowerCase();
       const matchesSearch =
         !q ||
@@ -60,8 +57,8 @@ export default function Trips() {
     });
 
     result.sort((a, b) => {
-      const aTitle = (a.draft_data as any)?.tripName || "";
-      const bTitle = (b.draft_data as any)?.tripName || "";
+      const aTitle = a.trip_name || "";
+      const bTitle = b.trip_name || "";
       switch (sort) {
         case "oldest": return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime();
         case "az": return aTitle.localeCompare(bTitle);
@@ -75,8 +72,8 @@ export default function Trips() {
 
   const loadTrips = async () => {
     const { data, error } = await supabase
-      .from("trips")
-      .select("id,created_at,status,trip_type,public_slug,archived_at,trashed_at,draft_data,owner_id,org_id,traveler_email,traveler_phone,current_occupancy,max_capacity,deleted_at")
+      .from("trip_summaries" as any)
+      .select("*")
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -87,12 +84,20 @@ export default function Trips() {
     setLoading(false);
   };
 
-  const duplicateTrip = async (tripName: string, clientName: string, trip: TripRow) => {
+  const duplicateTrip = async (tripName: string, clientName: string, trip: TripSummaryRow) => {
     const user = (await supabase.auth.getUser()).data.user;
     if (!user) return;
 
+    const { data: fullTrip } = await supabase
+      .from("trips")
+      .select("draft_data,trip_type,max_capacity")
+      .eq("id", trip.id)
+      .single();
+
+    if (!fullTrip) return;
+
     const dupData = {
-      ...(trip.draft_data as any),
+      ...(fullTrip.draft_data as any),
       tripName,
       clientName,
     };
@@ -100,10 +105,10 @@ export default function Trips() {
     const { error } = await supabase
       .from("trips")
       .insert({
-        trip_type: trip.trip_type || "individual",
+        trip_type: fullTrip.trip_type || "individual",
         status: "draft",
         draft_data: dupData as any,
-        max_capacity: trip.max_capacity,
+        max_capacity: fullTrip.max_capacity,
       })
       .select()
       .single();
@@ -116,7 +121,6 @@ export default function Trips() {
     }
   };
 
-  // Soft delete — move to trash
   const trashTrip = async (id: string) => {
     const { error } = await supabase
       .from("trips")
@@ -127,12 +131,11 @@ export default function Trips() {
     } else {
       toast({ title: "Trip moved to Trash" });
       setTrips((prev) =>
-        prev.map((t) => t.id === id ? { ...t, trashed_at: new Date().toISOString() } as any : t)
+        prev.map((t) => t.id === id ? { ...t, trashed_at: new Date().toISOString() } : t)
       );
     }
   };
 
-  // Restore from trash
   const restoreFromTrash = async (id: string) => {
     const { error } = await supabase
       .from("trips")
@@ -143,12 +146,11 @@ export default function Trips() {
     } else {
       toast({ title: "Trip restored from Trash" });
       setTrips((prev) =>
-        prev.map((t) => t.id === id ? { ...t, trashed_at: null } as any : t)
+        prev.map((t) => t.id === id ? { ...t, trashed_at: null } : t)
       );
     }
   };
 
-  // Permanent delete
   const permanentDeleteTrip = async (id: string) => {
     if (!confirm("Permanently delete this trip? This cannot be undone.")) return;
     const { error } = await supabase.from("trips").delete().eq("id", id);
@@ -170,7 +172,7 @@ export default function Trips() {
     } else {
       toast({ title: "Trip archived" });
       setTrips((prev) =>
-        prev.map((t) => t.id === id ? { ...t, archived_at: new Date().toISOString() } as any : t)
+        prev.map((t) => t.id === id ? { ...t, archived_at: new Date().toISOString() } : t)
       );
     }
   };
@@ -185,7 +187,7 @@ export default function Trips() {
     } else {
       toast({ title: "Trip restored" });
       setTrips((prev) =>
-        prev.map((t) => t.id === id ? { ...t, archived_at: null } as any : t)
+        prev.map((t) => t.id === id ? { ...t, archived_at: null } : t)
       );
     }
   };
@@ -217,13 +219,12 @@ export default function Trips() {
     toast({ title: "Link copied!", description: "Share this link with your client." });
   };
 
-  const archivedCount = trips.filter((t) => (t as any).archived_at && !(t as any).trashed_at).length;
-  const trashedCount = trips.filter((t) => (t as any).trashed_at).length;
+  const archivedCount = trips.filter((t) => t.archived_at && !t.trashed_at).length;
+  const trashedCount = trips.filter((t) => t.trashed_at).length;
 
   return (
     <AppLayout>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        {/* Tab Toggle */}
         <div className="flex items-center gap-2 mb-6">
           <Button
             variant={viewTab === "active" ? "travel" : "travel-ghost"}
@@ -301,8 +302,8 @@ export default function Trips() {
           <DuplicateTripModal
             open={dupModal.open}
             onOpenChange={(open) => setDupModal((prev) => ({ ...prev, open }))}
-            tripName={`${(dupModal.trip.draft_data as any)?.tripName || ""} (Copy)`}
-            clientName={(dupModal.trip.draft_data as any)?.clientName || ""}
+            tripName={`${dupModal.trip.trip_name || ""} (Copy)`}
+            clientName={dupModal.trip.client_name || ""}
             onConfirm={(name, client) => duplicateTrip(name, client, dupModal.trip!)}
           />
         )}

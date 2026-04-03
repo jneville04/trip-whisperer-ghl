@@ -610,6 +610,33 @@ export interface TripRow {
   created_at: string | null;
 }
 
+/** Lightweight row returned by the trip_summaries DB view — no heavy JSONB blobs */
+export interface TripSummaryRow {
+  id: string;
+  created_at: string | null;
+  status: string | null;
+  trip_type: string | null;
+  public_slug: string | null;
+  archived_at: string | null;
+  trashed_at: string | null;
+  owner_id: string | null;
+  org_id: string | null;
+  traveler_email: string | null;
+  traveler_phone: string | null;
+  current_occupancy: number | null;
+  max_capacity: number | null;
+  deleted_at: string | null;
+  trip_name: string | null;
+  client_name: string | null;
+  destination: string | null;
+  hero_image_url: string | null;
+  hero_first_url: string | null;
+  hero_video_url: string | null;
+  hero_video_thumbnail_url: string | null;
+  hero_media_type: string | null;
+  proposal_type: string | null;
+}
+
 export function createDefaultCheckout(): CheckoutSettings {
   return {
     enabled: false,

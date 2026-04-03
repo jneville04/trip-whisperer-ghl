@@ -440,6 +440,13 @@ export type Database = {
             foreignKeyName: "snapshots_trip_id_fkey"
             columns: ["trip_id"]
             isOneToOne: false
+            referencedRelation: "trip_summaries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "snapshots_trip_id_fkey"
+            columns: ["trip_id"]
+            isOneToOne: false
             referencedRelation: "trips"
             referencedColumns: ["id"]
           },
@@ -557,7 +564,92 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      trip_summaries: {
+        Row: {
+          archived_at: string | null
+          client_name: string | null
+          created_at: string | null
+          current_occupancy: number | null
+          deleted_at: string | null
+          destination: string | null
+          hero_first_url: string | null
+          hero_image_url: string | null
+          hero_media_type: string | null
+          hero_video_thumbnail_url: string | null
+          hero_video_url: string | null
+          id: string | null
+          max_capacity: number | null
+          org_id: string | null
+          owner_id: string | null
+          proposal_type: string | null
+          public_slug: string | null
+          status: string | null
+          trashed_at: string | null
+          traveler_email: string | null
+          traveler_phone: string | null
+          trip_name: string | null
+          trip_type: string | null
+        }
+        Insert: {
+          archived_at?: string | null
+          client_name?: never
+          created_at?: string | null
+          current_occupancy?: number | null
+          deleted_at?: string | null
+          destination?: never
+          hero_first_url?: never
+          hero_image_url?: never
+          hero_media_type?: never
+          hero_video_thumbnail_url?: never
+          hero_video_url?: never
+          id?: string | null
+          max_capacity?: number | null
+          org_id?: string | null
+          owner_id?: string | null
+          proposal_type?: never
+          public_slug?: string | null
+          status?: string | null
+          trashed_at?: string | null
+          traveler_email?: string | null
+          traveler_phone?: string | null
+          trip_name?: never
+          trip_type?: string | null
+        }
+        Update: {
+          archived_at?: string | null
+          client_name?: never
+          created_at?: string | null
+          current_occupancy?: number | null
+          deleted_at?: string | null
+          destination?: never
+          hero_first_url?: never
+          hero_image_url?: never
+          hero_media_type?: never
+          hero_video_thumbnail_url?: never
+          hero_video_url?: never
+          id?: string | null
+          max_capacity?: number | null
+          org_id?: string | null
+          owner_id?: string | null
+          proposal_type?: never
+          public_slug?: string | null
+          status?: string | null
+          trashed_at?: string | null
+          traveler_email?: string | null
+          traveler_phone?: string | null
+          trip_name?: never
+          trip_type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trips_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       delete_email: {
