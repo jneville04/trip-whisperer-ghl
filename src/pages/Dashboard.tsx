@@ -8,17 +8,17 @@ import AppLayout from "@/components/AppLayout";
 import TripCard from "@/components/TripCard";
 import CreateTripMenu from "@/components/CreateTripMenu";
 import { MapPin } from "lucide-react";
-import { type ProposalData, type TripRow } from "@/types/proposal";
+import { type TripSummaryRow } from "@/types/proposal";
 import DuplicateTripModal from "@/components/DuplicateTripModal";
 
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth();
   const { settings } = useAppSettings();
   const navigate = useNavigate();
-  const [trips, setTrips] = useState<TripRow[]>([]);
+  const [trips, setTrips] = useState<TripSummaryRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [firstName, setFirstName] = useState<string | null>(null);
-  const [dupModal, setDupModal] = useState<{ open: boolean; trip: TripRow | null }>({ open: false, trip: null });
+  const [dupModal, setDupModal] = useState<{ open: boolean; trip: TripSummaryRow | null }>({ open: false, trip: null });
 
   useEffect(() => {
     if (user) {
@@ -41,8 +41,8 @@ export default function Dashboard() {
 
   const loadTrips = async () => {
     const { data, error } = await supabase
-      .from("trips")
-      .select("id,created_at,status,trip_type,public_slug,archived_at,trashed_at,draft_data,owner_id,org_id,traveler_email,traveler_phone,current_occupancy,max_capacity,deleted_at")
+      .from("trip_summaries" as any)
+      .select("*")
       .is("archived_at", null)
       .order("created_at", { ascending: false });
 
@@ -54,12 +54,21 @@ export default function Dashboard() {
     setLoading(false);
   };
 
-  const duplicateTrip = async (tripName: string, clientName: string, trip: TripRow) => {
+  const duplicateTrip = async (tripName: string, clientName: string, trip: TripSummaryRow) => {
     const user = (await supabase.auth.getUser()).data.user;
     if (!user) return;
 
+    // For duplication we need the full draft_data from the original trip
+    const { data: fullTrip } = await supabase
+      .from("trips")
+      .select("draft_data,trip_type,max_capacity")
+      .eq("id", trip.id)
+      .single();
+
+    if (!fullTrip) return;
+
     const dupData = {
-      ...(trip.draft_data as any),
+      ...(fullTrip.draft_data as any),
       tripName,
       clientName,
     };
@@ -67,10 +76,10 @@ export default function Dashboard() {
     const { error } = await supabase
       .from("trips")
       .insert({
-        trip_type: trip.trip_type || "individual",
+        trip_type: fullTrip.trip_type || "individual",
         status: "draft",
         draft_data: dupData as any,
-        max_capacity: trip.max_capacity,
+        max_capacity: fullTrip.max_capacity,
       })
       .select()
       .single();
@@ -165,8 +174,8 @@ export default function Dashboard() {
           <DuplicateTripModal
             open={dupModal.open}
             onOpenChange={(open) => setDupModal((prev) => ({ ...prev, open }))}
-            tripName={`${(dupModal.trip.draft_data as any)?.tripName || ""} (Copy)`}
-            clientName={(dupModal.trip.draft_data as any)?.clientName || ""}
+            tripName={`${dupModal.trip.trip_name || ""} (Copy)`}
+            clientName={dupModal.trip.client_name || ""}
             onConfirm={(name, client) => duplicateTrip(name, client, dupModal.trip!)}
           />
         )}

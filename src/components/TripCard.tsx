@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Copy, Trash2, ExternalLink, MapPin, Calendar, Eye, Clock, MoreVertical, Pencil, RotateCcw, ArchiveRestore } from "lucide-react";
-import { type ProposalData, type TripRow } from "@/types/proposal";
+import { type TripSummaryRow } from "@/types/proposal";
 import { format } from "date-fns";
 
 /** Captures a frame from a direct video URL or fetches Vimeo thumbnail */
@@ -69,7 +69,7 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 };
 
 interface TripCardProps {
-  trip: TripRow;
+  trip: TripSummaryRow;
   onOpen: () => void;
   onDuplicate: () => void;
   onDelete: () => void;
@@ -85,16 +85,14 @@ interface TripCardProps {
 
 export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLink, onArchive, onRestore, onReopen, isArchived, isTrashed, onRestoreFromTrash, onPermanentDelete }: TripCardProps) {
   const navigate = useNavigate();
-  const draftData = trip.draft_data as ProposalData | null;
-  const heroImg = draftData?.heroImageUrl || (draftData?.heroImageUrls?.length ? draftData.heroImageUrls[0] : "");
+  const heroImg = trip.hero_image_url || (trip.hero_image_urls?.length ? trip.hero_image_urls[0] : "");
   const tripType = trip.trip_type || "individual";
-  const title = draftData?.tripName || "Untitled";
-  const clientName = draftData?.clientName || "";
-  const destination = draftData?.destination || "";
+  const title = trip.trip_name || "Untitled";
+  const clientName = trip.client_name || "";
+  const destination = trip.destination || "";
   const sc = statusConfig[trip.status || "draft"] || statusConfig.draft;
   const isApproved = trip.status === "approved";
   const isDraft = trip.status === "draft";
-  const isPublished = ["published", "sent", "approved", "reopened", "revision_requested"].includes(trip.status || "");
 
   const formatCreatedAt = (dateStr: string | null) => {
     if (!dateStr) return "";
@@ -113,9 +111,9 @@ export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLi
       {/* Image */}
       <div className="h-40 relative overflow-hidden flex-shrink-0">
         {(() => {
-          const videoUrl = draftData?.heroVideoUrl;
-          const videoThumb = draftData?.heroVideoThumbnailUrl;
-          const heroMediaType = draftData?.heroMediaType;
+          const videoUrl = trip.hero_video_url;
+          const videoThumb = trip.hero_video_thumbnail_url;
+          const heroMediaType = trip.hero_media_type;
           const isVideo = heroMediaType === "video" && videoUrl;
 
           if (isVideo) {
@@ -145,8 +143,8 @@ export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLi
       <div className="p-4 flex flex-col flex-1 gap-3">
         {/* Type + Status Badges */}
         <div className="flex items-center gap-2">
-          <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full text-white ${tripType === "individual" || (draftData as any)?.proposalType === "proposal" ? "bg-primary" : "bg-travel-ocean"}`}>
-            {tripType === "group" || (draftData as any)?.proposalType === "group_booking" ? "Group Trip" : "Proposal"}
+          <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full text-white ${tripType === "individual" || trip.proposal_type === "proposal" ? "bg-primary" : "bg-travel-ocean"}`}>
+            {tripType === "group" || trip.proposal_type === "group_booking" ? "Group Trip" : "Proposal"}
           </span>
           <span className={`text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full ${sc.className}`}>
             {sc.label}
@@ -219,7 +217,6 @@ export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLi
                 }}>
                   <Eye className="h-3.5 w-3.5 mr-2" /> Preview
                 </DropdownMenuItem>
-                {/* Share only visible for non-draft trips */}
                 {!isDraft && (
                   <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onCopyLink(); }}>
                     <ExternalLink className="h-3.5 w-3.5 mr-2" /> Share
@@ -242,7 +239,6 @@ export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLi
                     <Clock className="h-3.5 w-3.5 mr-2" /> Archive
                   </DropdownMenuItem>
                 ) : null}
-                {/* Delete available for ALL statuses — soft-deletes to Trash */}
                 <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={(e) => { e.stopPropagation(); onDelete(); }}>
                   <Trash2 className="h-3.5 w-3.5 mr-2" /> Delete
                 </DropdownMenuItem>
