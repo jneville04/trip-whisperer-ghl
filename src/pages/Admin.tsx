@@ -76,6 +76,51 @@ export default function AdminPage() {
   );
 }
 
+function SampleTripPicker({ currentId, onChange }: { currentId: string | null; onChange: (id: string | null) => void }) {
+  const [trips, setTrips] = useState<{ id: string; label: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    supabase
+      .from("trip_summaries" as any)
+      .select("id, trip_name, client_name, trip_type")
+      .is("archived_at", null)
+      .is("trashed_at", null)
+      .order("created_at", { ascending: false })
+      .then(({ data }) => {
+        setTrips(
+          ((data as any[]) || []).map((t: any) => ({
+            id: t.id,
+            label: [t.trip_name, t.client_name].filter(Boolean).join(" — ") || t.id,
+          }))
+        );
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <p className="text-xs text-muted-foreground font-body">Loading trips...</p>;
+
+  return (
+    <div className="flex items-center gap-3">
+      <select
+        value={currentId || ""}
+        onChange={(e) => onChange(e.target.value || null)}
+        className="flex-1 h-9 rounded-md border border-input bg-background px-3 text-sm font-body"
+      >
+        <option value="">— None (no sample) —</option>
+        {trips.map((t) => (
+          <option key={t.id} value={t.id}>{t.label}</option>
+        ))}
+      </select>
+      {currentId && (
+        <Button variant="travel-ghost" size="sm" className="text-xs text-destructive" onClick={() => onChange(null)}>
+          Clear
+        </Button>
+      )}
+    </div>
+  );
+}
+
 function BrandingTab() {
   const queryClient = useQueryClient();
   const { settings } = useAppSettings();
@@ -123,6 +168,7 @@ function BrandingTab() {
         helpdesk_email: (form as any).helpdesk_email || "",
         helpdesk_phone: (form as any).helpdesk_phone || "",
         helpdesk_message: (form as any).helpdesk_message || "",
+        sample_trip_id: (form as any).sample_trip_id || null,
         updated_at: new Date().toISOString(),
       } as any)
       .eq("id", 1);
@@ -472,6 +518,18 @@ function BrandingTab() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Sample Proposal */}
+      <div className="border-t border-border/50 pt-6 mt-2">
+        <h3 className="font-display text-base font-semibold text-foreground mb-2">Sample Proposal</h3>
+        <p className="text-xs text-muted-foreground font-body mb-4">
+          Choose a trip to automatically clone for every new agent who signs up. Each agent gets their own independent copy they can edit freely.
+        </p>
+        <SampleTripPicker
+          currentId={(form as any).sample_trip_id || null}
+          onChange={(id) => setForm({ ...form, sample_trip_id: id } as any)}
+        />
       </div>
 
       <Button variant="travel" onClick={handleSave} disabled={saving}>

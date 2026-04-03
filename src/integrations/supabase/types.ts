@@ -127,6 +127,7 @@ export type Database = {
           logo_url: string | null
           primary_color: string
           resend_api_key: string | null
+          sample_trip_id: string | null
           secondary_color: string
           stripe_customer_portal_url: string | null
           stripe_payment_link: string | null
@@ -155,6 +156,7 @@ export type Database = {
           logo_url?: string | null
           primary_color?: string
           resend_api_key?: string | null
+          sample_trip_id?: string | null
           secondary_color?: string
           stripe_customer_portal_url?: string | null
           stripe_payment_link?: string | null
@@ -183,13 +185,29 @@ export type Database = {
           logo_url?: string | null
           primary_color?: string
           resend_api_key?: string | null
+          sample_trip_id?: string | null
           secondary_color?: string
           stripe_customer_portal_url?: string | null
           stripe_payment_link?: string | null
           tagline?: string
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "app_settings_sample_trip_id_fkey"
+            columns: ["sample_trip_id"]
+            isOneToOne: false
+            referencedRelation: "trip_summaries"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "app_settings_sample_trip_id_fkey"
+            columns: ["sample_trip_id"]
+            isOneToOne: false
+            referencedRelation: "trips"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       email_send_log: {
         Row: {
