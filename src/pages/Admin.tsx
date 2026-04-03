@@ -474,6 +474,18 @@ function BrandingTab() {
         </div>
       </div>
 
+      {/* Sample Proposal */}
+      <div className="border-t border-border/50 pt-6 mt-2">
+        <h3 className="font-display text-base font-semibold text-foreground mb-2">Sample Proposal</h3>
+        <p className="text-xs text-muted-foreground font-body mb-4">
+          Choose a trip to automatically clone for every new agent who signs up. Each agent gets their own independent copy they can edit freely.
+        </p>
+        <SampleTripPicker
+          currentId={(form as any).sample_trip_id || null}
+          onChange={(id) => setForm({ ...form, sample_trip_id: id } as any)}
+        />
+      </div>
+
       <Button variant="travel" onClick={handleSave} disabled={saving}>
         <Save className="h-4 w-4 mr-1" /> {saving ? "Saving..." : "Save Branding"}
       </Button>
