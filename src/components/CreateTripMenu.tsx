@@ -199,7 +199,17 @@ export default function CreateTripMenu({ trialExpired, onTrialBlock }: CreateTri
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="travel" size="sm" className="gap-2.5 px-6 font-medium">
+          <Button
+            variant="travel"
+            size="sm"
+            className="gap-2.5 px-6 font-medium"
+            onClick={(e) => {
+              if (trialExpired) {
+                e.preventDefault();
+                onTrialBlock?.();
+              }
+            }}
+          >
             <Plus className="h-4 w-4" />
             Create Trip
           </Button>
