@@ -76,7 +76,7 @@ export default function Trips() {
   const loadTrips = async () => {
     const { data, error } = await supabase
       .from("trips")
-      .select("*")
+      .select("id,created_at,status,trip_type,public_slug,archived_at,trashed_at,draft_data,owner_id,org_id,traveler_email,traveler_phone,current_occupancy,max_capacity,deleted_at")
       .order("created_at", { ascending: false });
 
     if (error) {
