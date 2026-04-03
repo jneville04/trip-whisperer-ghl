@@ -630,7 +630,7 @@ export interface TripSummaryRow {
   client_name: string | null;
   destination: string | null;
   hero_image_url: string | null;
-  hero_image_urls: string[] | null;
+  hero_first_url: string | null;
   hero_video_url: string | null;
   hero_video_thumbnail_url: string | null;
   hero_media_type: string | null;

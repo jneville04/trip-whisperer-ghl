@@ -85,7 +85,7 @@ interface TripCardProps {
 
 export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLink, onArchive, onRestore, onReopen, isArchived, isTrashed, onRestoreFromTrash, onPermanentDelete }: TripCardProps) {
   const navigate = useNavigate();
-  const heroImg = trip.hero_image_url || (trip.hero_image_urls?.length ? trip.hero_image_urls[0] : "");
+  const heroImg = trip.hero_image_url || trip.hero_first_url || "";
   const tripType = trip.trip_type || "individual";
   const title = trip.trip_name || "Untitled";
   const clientName = trip.client_name || "";
