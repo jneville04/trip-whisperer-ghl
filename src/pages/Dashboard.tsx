@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import AppLayout from "@/components/AppLayout";
 import TripCard from "@/components/TripCard";
@@ -13,8 +12,7 @@ import { type ProposalData, type TripRow } from "@/types/proposal";
 import DuplicateTripModal from "@/components/DuplicateTripModal";
 
 export default function Dashboard() {
-  const { user, loading: authLoading, profileStatus } = useAuth();
-  const { data: isAdmin } = useAdminCheck(user?.id);
+  const { user, loading: authLoading } = useAuth();
   const { settings } = useAppSettings();
   const navigate = useNavigate();
   const [trips, setTrips] = useState<TripRow[]>([]);
@@ -23,10 +21,10 @@ export default function Dashboard() {
   const [dupModal, setDupModal] = useState<{ open: boolean; trip: TripRow | null }>({ open: false, trip: null });
 
   useEffect(() => {
-    if (profileStatus === "approved" || isAdmin) {
+    if (user) {
       loadTrips();
     }
-  }, [profileStatus, isAdmin]);
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
