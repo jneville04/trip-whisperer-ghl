@@ -50,7 +50,12 @@ type GroupErrors = {
   groupDestination?: string;
 };
 
-export default function CreateTripMenu() {
+interface CreateTripMenuProps {
+  trialExpired?: boolean;
+  onTrialBlock?: () => void;
+}
+
+export default function CreateTripMenu({ trialExpired, onTrialBlock }: CreateTripMenuProps) {
   const navigate = useNavigate();
   const [proposalOpen, setProposalOpen] = useState(false);
   const [groupOpen, setGroupOpen] = useState(false);
@@ -194,7 +199,17 @@ export default function CreateTripMenu() {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="travel" size="sm" className="gap-2.5 px-6 font-medium">
+          <Button
+            variant="travel"
+            size="sm"
+            className="gap-2.5 px-6 font-medium"
+            onClick={(e) => {
+              if (trialExpired) {
+                e.preventDefault();
+                onTrialBlock?.();
+              }
+            }}
+          >
             <Plus className="h-4 w-4" />
             Create Trip
           </Button>
