@@ -572,8 +572,8 @@ export type Database = {
           current_occupancy: number | null
           deleted_at: string | null
           destination: string | null
+          hero_first_url: string | null
           hero_image_url: string | null
-          hero_image_urls: Json | null
           hero_media_type: string | null
           hero_video_thumbnail_url: string | null
           hero_video_url: string | null
@@ -597,8 +597,8 @@ export type Database = {
           current_occupancy?: number | null
           deleted_at?: string | null
           destination?: never
+          hero_first_url?: never
           hero_image_url?: never
-          hero_image_urls?: never
           hero_media_type?: never
           hero_video_thumbnail_url?: never
           hero_video_url?: never
@@ -622,8 +622,8 @@ export type Database = {
           current_occupancy?: number | null
           deleted_at?: string | null
           destination?: never
+          hero_first_url?: never
           hero_image_url?: never
-          hero_image_urls?: never
           hero_media_type?: never
           hero_video_thumbnail_url?: never
           hero_video_url?: never
