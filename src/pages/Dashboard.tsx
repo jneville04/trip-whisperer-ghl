@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { useAdminCheck } from "@/hooks/useAdminCheck";
 import { useAppSettings } from "@/hooks/useAppSettings";
 import AppLayout from "@/components/AppLayout";
 import TripCard from "@/components/TripCard";

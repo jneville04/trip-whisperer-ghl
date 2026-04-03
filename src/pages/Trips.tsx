@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { useAdminCheck } from "@/hooks/useAdminCheck";
 import ProposalFilters, { type FilterType, type SortType } from "@/components/ProposalFilters";
 import TripCard from "@/components/TripCard";
 import AppLayout from "@/components/AppLayout";
