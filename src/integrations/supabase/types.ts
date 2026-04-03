@@ -479,6 +479,7 @@ export type Database = {
           id: string
           max_capacity: number | null
           org_id: string | null
+          owner_id: string | null
           public_slug: string | null
           published_data: Json | null
           section_selections: Json | null
@@ -497,6 +498,7 @@ export type Database = {
           id?: string
           max_capacity?: number | null
           org_id?: string | null
+          owner_id?: string | null
           public_slug?: string | null
           published_data?: Json | null
           section_selections?: Json | null
@@ -515,6 +517,7 @@ export type Database = {
           id?: string
           max_capacity?: number | null
           org_id?: string | null
+          owner_id?: string | null
           public_slug?: string | null
           published_data?: Json | null
           section_selections?: Json | null
