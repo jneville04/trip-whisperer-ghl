@@ -350,6 +350,8 @@ export type Database = {
           full_name: string | null
           id: string
           status: string
+          subscription_status: string
+          trial_ends_at: string | null
         }
         Insert: {
           agency_name?: string | null
@@ -359,6 +361,8 @@ export type Database = {
           full_name?: string | null
           id: string
           status?: string
+          subscription_status?: string
+          trial_ends_at?: string | null
         }
         Update: {
           agency_name?: string | null
@@ -368,6 +372,8 @@ export type Database = {
           full_name?: string | null
           id?: string
           status?: string
+          subscription_status?: string
+          trial_ends_at?: string | null
         }
         Relationships: []
       }
