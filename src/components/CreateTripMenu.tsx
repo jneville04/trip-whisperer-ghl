@@ -50,7 +50,12 @@ type GroupErrors = {
   groupDestination?: string;
 };
 
-export default function CreateTripMenu() {
+interface CreateTripMenuProps {
+  trialExpired?: boolean;
+  onTrialBlock?: () => void;
+}
+
+export default function CreateTripMenu({ trialExpired, onTrialBlock }: CreateTripMenuProps) {
   const navigate = useNavigate();
   const [proposalOpen, setProposalOpen] = useState(false);
   const [groupOpen, setGroupOpen] = useState(false);
