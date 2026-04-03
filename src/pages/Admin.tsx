@@ -168,6 +168,7 @@ function BrandingTab() {
         helpdesk_email: (form as any).helpdesk_email || "",
         helpdesk_phone: (form as any).helpdesk_phone || "",
         helpdesk_message: (form as any).helpdesk_message || "",
+        sample_trip_id: (form as any).sample_trip_id || null,
         updated_at: new Date().toISOString(),
       } as any)
       .eq("id", 1);
