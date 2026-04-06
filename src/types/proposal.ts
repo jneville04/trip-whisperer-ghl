@@ -629,6 +629,9 @@ export interface TripSummaryRow {
   trip_name: string | null;
   client_name: string | null;
   destination: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  number_of_travelers: string | null;
   hero_image_url: string | null;
   hero_first_url: string | null;
   hero_video_url: string | null;
