@@ -596,6 +596,7 @@ export type Database = {
           current_occupancy: number | null
           deleted_at: string | null
           destination: string | null
+          end_date: string | null
           hero_first_url: string | null
           hero_image_url: string | null
           hero_media_type: string | null
@@ -603,10 +604,12 @@ export type Database = {
           hero_video_url: string | null
           id: string | null
           max_capacity: number | null
+          number_of_travelers: string | null
           org_id: string | null
           owner_id: string | null
           proposal_type: string | null
           public_slug: string | null
+          start_date: string | null
           status: string | null
           trashed_at: string | null
           traveler_email: string | null
@@ -621,6 +624,7 @@ export type Database = {
           current_occupancy?: number | null
           deleted_at?: string | null
           destination?: never
+          end_date?: never
           hero_first_url?: never
           hero_image_url?: never
           hero_media_type?: never
@@ -628,10 +632,12 @@ export type Database = {
           hero_video_url?: never
           id?: string | null
           max_capacity?: number | null
+          number_of_travelers?: never
           org_id?: string | null
           owner_id?: string | null
           proposal_type?: never
           public_slug?: string | null
+          start_date?: never
           status?: string | null
           trashed_at?: string | null
           traveler_email?: string | null
@@ -646,6 +652,7 @@ export type Database = {
           current_occupancy?: number | null
           deleted_at?: string | null
           destination?: never
+          end_date?: never
           hero_first_url?: never
           hero_image_url?: never
           hero_media_type?: never
@@ -653,10 +660,12 @@ export type Database = {
           hero_video_url?: never
           id?: string | null
           max_capacity?: number | null
+          number_of_travelers?: never
           org_id?: string | null
           owner_id?: string | null
           proposal_type?: never
           public_slug?: string | null
+          start_date?: never
           status?: string | null
           trashed_at?: string | null
           traveler_email?: string | null
