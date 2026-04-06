@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Copy, Trash2, ExternalLink, MapPin, Calendar, Eye, Clock, MoreVertical, Pencil, RotateCcw, ArchiveRestore } from "lucide-react";
+import { Copy, Trash2, ExternalLink, MapPin, Calendar, Eye, Clock, MoreVertical, Pencil, RotateCcw, ArchiveRestore, Users } from "lucide-react";
 import { type TripSummaryRow } from "@/types/proposal";
 import { format } from "date-fns";
 
