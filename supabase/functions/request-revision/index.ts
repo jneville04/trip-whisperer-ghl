@@ -32,13 +32,17 @@ function buildBrandedEmailHtml({
     : `<h1 style="font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;color:#1a1a1a;text-align:center;margin:0 0 16px;">${businessName}</h1>`;
 
   const rows = detailsRows
-    .filter(r => r.value)
-    .map(r => `<tr><td style="padding:8px 12px;color:#6b7280;font-size:13px;width:150px;vertical-align:top;">${r.label}</td><td style="padding:8px 12px;font-size:14px;color:#1a1a1a;font-weight:500;">${r.value}</td></tr>`)
+    .filter((r) => r.value)
+    .map(
+      (r) =>
+        `<tr><td style="padding:8px 12px;color:#6b7280;font-size:13px;width:150px;vertical-align:top;">${r.label}</td><td style="padding:8px 12px;font-size:14px;color:#1a1a1a;font-weight:500;">${r.value}</td></tr>`,
+    )
     .join("");
 
-  const ctaBlock = ctaUrl && ctaLabel
-    ? `<div style="text-align:center;margin:28px 0 0;"><a href="${ctaUrl}" style="display:inline-block;background-color:${primaryColor};color:#ffffff;padding:12px 28px;text-decoration:none;border-radius:6px;font-weight:600;font-size:14px;">${ctaLabel}</a></div>`
-    : "";
+  const ctaBlock =
+    ctaUrl && ctaLabel
+      ? `<div style="text-align:center;margin:28px 0 0;"><a href="${ctaUrl}" style="display:inline-block;background-color:${primaryColor};color:#ffffff;padding:12px 28px;text-decoration:none;border-radius:6px;font-weight:600;font-size:14px;">${ctaLabel}</a></div>`
+      : "";
 
   return `<!DOCTYPE html><html><head><meta charset="utf-8"/></head><body style="margin:0;padding:0;background-color:#f8fafc;font-family:'DM Sans',Arial,sans-serif;">
 <div style="max-width:600px;margin:0 auto;padding:40px 20px;">
@@ -70,10 +74,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-    );
+    const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
     // Fetch the trip
     const { data: trip, error: tripError } = await supabase
@@ -106,7 +107,7 @@ Deno.serve(async (req) => {
 
     const siteUrl = Deno.env.get("SITE_URL") || "https://trip-whisperer-ghl.lovable.app";
     // Agent CTA links to internal editor route, not public traveler view
-    const editorUrl = `${siteUrl}/editor/${trip.id}`;
+    const editorUrl = `${siteUrl}/#/editor/${trip.id}`;
 
     // 1. Update trip status to revision_requested
     const { error: updateError } = await supabase
@@ -128,21 +129,31 @@ Deno.serve(async (req) => {
           { label: "Proposal", value: tripName },
           { label: "Traveler", value: travelerName || "" },
           { label: "Email", value: travelerEmail || "" },
-          { label: "Requested At", value: new Date().toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }) },
+          {
+            label: "Requested At",
+            value: new Date().toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }),
+          },
         ];
 
         const revisionNoteHtml = revisionNote
           ? `<p style="font-size:12px;text-transform:uppercase;color:#9ca3af;margin:0 0 8px;letter-spacing:0.5px;">Revision Note</p><p style="font-size:14px;color:#374151;margin:0;white-space:pre-wrap;">${revisionNote}</p>`
           : "";
 
-        const categoriesHtml = categories && categories.length > 0
-          ? `<p style="font-size:12px;text-transform:uppercase;color:#9ca3af;margin:16px 0 8px;letter-spacing:0.5px;">Categories</p><p style="font-size:13px;color:#374151;margin:0;">${categories.join(", ")}</p>`
-          : "";
+        const categoriesHtml =
+          categories && categories.length > 0
+            ? `<p style="font-size:12px;text-transform:uppercase;color:#9ca3af;margin:16px 0 8px;letter-spacing:0.5px;">Categories</p><p style="font-size:13px;color:#374151;margin:0;">${categories.join(", ")}</p>`
+            : "";
 
-        const selectionsHtml = currentSelections && currentSelections.length > 0
-          ? `<p style="font-size:12px;text-transform:uppercase;color:#9ca3af;margin:16px 0 8px;letter-spacing:0.5px;">Current Selections</p>` +
-            currentSelections.map((s: any) => `<p style="font-size:13px;color:#374151;margin:2px 0;">• ${s.section}: ${s.selectedName}</p>`).join("")
-          : "";
+        const selectionsHtml =
+          currentSelections && currentSelections.length > 0
+            ? `<p style="font-size:12px;text-transform:uppercase;color:#9ca3af;margin:16px 0 8px;letter-spacing:0.5px;">Current Selections</p>` +
+              currentSelections
+                .map(
+                  (s: any) =>
+                    `<p style="font-size:13px;color:#374151;margin:2px 0;">• ${s.section}: ${s.selectedName}</p>`,
+                )
+                .join("")
+            : "";
 
         const emailHtml = buildBrandedEmailHtml({
           logoUrl,
@@ -159,7 +170,7 @@ Deno.serve(async (req) => {
         const resendRes = await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: {
-            "Authorization": `Bearer ${resendKey}`,
+            Authorization: `Bearer ${resendKey}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
@@ -177,11 +188,7 @@ Deno.serve(async (req) => {
     }
 
     // 3. Fire GHL webhook if configured
-    const { data: settings } = await supabase
-      .from("app_settings")
-      .select("ghl_webhook_revision")
-      .eq("id", 1)
-      .single();
+    const { data: settings } = await supabase.from("app_settings").select("ghl_webhook_revision").eq("id", 1).single();
 
     if (settings?.ghl_webhook_revision) {
       try {
@@ -208,11 +215,7 @@ Deno.serve(async (req) => {
 
     // 4. Fire org webhook if configured
     if (trip.org_id) {
-      const { data: org } = await supabase
-        .from("organizations")
-        .select("webhook_url")
-        .eq("id", trip.org_id)
-        .single();
+      const { data: org } = await supabase.from("organizations").select("webhook_url").eq("id", trip.org_id).single();
 
       if (org?.webhook_url) {
         try {
@@ -235,15 +238,15 @@ Deno.serve(async (req) => {
       }
     }
 
-    return new Response(
-      JSON.stringify({ success: true }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error) {
     console.error("Error in request-revision:", error);
-    return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
+    return new Response(JSON.stringify({ error: error instanceof Error ? error.message : "Unknown error" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });
