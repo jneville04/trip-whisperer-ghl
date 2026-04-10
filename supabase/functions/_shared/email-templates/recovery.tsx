@@ -9,6 +9,7 @@ import {
   Head,
   Heading,
   Html,
+  Img,
   Preview,
   Text,
 } from 'npm:@react-email/components@0.0.22'
@@ -17,6 +18,8 @@ interface RecoveryEmailProps {
   siteName: string
   confirmationUrl: string
 }
+
+const LOGO_URL = 'https://faxbjbbwniypaffevbuo.supabase.co/storage/v1/object/public/app-assets/logo-1773489226711.svg'
 
 export const RecoveryEmail = ({
   siteName,
@@ -27,6 +30,7 @@ export const RecoveryEmail = ({
     <Preview>Reset your password for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Img src={LOGO_URL} alt={siteName} style={logo} />
         <Heading style={h1}>Reset your password</Heading>
         <Text style={text}>
           We received a request to reset your password for {siteName}. Click
@@ -48,6 +52,7 @@ export default RecoveryEmail
 
 const main = { backgroundColor: '#ffffff', fontFamily: "'DM Sans', Arial, sans-serif" }
 const container = { padding: '20px 25px' }
+const logo = { maxHeight: '50px', maxWidth: '200px', marginBottom: '24px' }
 const h1 = {
   fontSize: '24px',
   fontWeight: 'bold' as const,
@@ -62,11 +67,11 @@ const text = {
   margin: '0 0 25px',
 }
 const button = {
-  backgroundColor: '#c05d15',
+  backgroundColor: '#03989e',
   color: '#ffffff',
   fontSize: '14px',
   fontWeight: '600' as const,
-  borderRadius: '12px',
+  borderRadius: '6px',
   padding: '12px 24px',
   textDecoration: 'none',
 }
