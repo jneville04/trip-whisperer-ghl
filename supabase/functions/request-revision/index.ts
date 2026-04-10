@@ -144,10 +144,45 @@ Deno.serve(async (req) => {
             ? `<p style="font-size:12px;text-transform:uppercase;color:#9ca3af;margin:16px 0 8px;letter-spacing:0.5px;">Categories</p><p style="font-size:13px;color:#374151;margin:0;">${categories.join(", ")}</p>`
             : "";
 
+        // Resolve human-readable names from published_data
+        const resolvedSelections = (currentSelections || []).map((s: any) => {
+          let displayName = s.selectedName || "Selected";
+          const sKey = s.sectionKey || s.section;
+          const selId = s.selectedId || s.selectedName;
+          if (publishedData && selId) {
+            const arr = publishedData[sKey];
+            if (Array.isArray(arr)) {
+              const item = arr.find((i: any) => i.id === selId);
+              if (item) {
+                if (sKey === "flights") displayName = item.legs?.[0]?.airline || item.legs?.map((l: any) => `${l.departureCode}→${l.arrivalCode}`).join(", ") || "Flight";
+                else if (sKey === "accommodations") displayName = item.hotelName || "Hotel";
+                else if (sKey === "cruiseShips") displayName = item.shipName || "Cruise";
+                else if (sKey === "busTrips") displayName = item.routeName || "Bus";
+                else displayName = item.name || item.title || "Selected";
+              }
+            }
+          }
+          // If displayName still looks like a UUID, try harder
+          if (/^[0-9a-f]{8}-/.test(displayName) && publishedData) {
+            for (const key of ["flights", "accommodations", "cruiseShips", "busTrips"]) {
+              const arr = publishedData[key];
+              if (Array.isArray(arr)) {
+                const item = arr.find((i: any) => i.id === displayName);
+                if (item) {
+                  displayName = item.hotelName || item.shipName || item.routeName || item.legs?.[0]?.airline || item.name || "Selected";
+                  break;
+                }
+              }
+            }
+          }
+          const sectionLabel = s.section && !/^[a-z]+[A-Z]/.test(s.section) ? s.section : sKey?.replace(/([A-Z])/g, " $1").replace(/^./, (c: string) => c.toUpperCase()) || s.section;
+          return { section: sectionLabel, selectedName: displayName };
+        });
+
         const selectionsHtml =
-          currentSelections && currentSelections.length > 0
+          resolvedSelections.length > 0
             ? `<p style="font-size:12px;text-transform:uppercase;color:#9ca3af;margin:16px 0 8px;letter-spacing:0.5px;">Current Selections</p>` +
-              currentSelections
+              resolvedSelections
                 .map(
                   (s: any) =>
                     `<p style="font-size:13px;color:#374151;margin:2px 0;">• ${s.section}: ${s.selectedName}</p>`,

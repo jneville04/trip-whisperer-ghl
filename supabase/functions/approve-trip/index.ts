@@ -167,9 +167,40 @@ Deno.serve(async (req) => {
           { label: "Currency", value: currency || "USD" },
         ];
 
-        const selectionsHtml = sectionDetails && sectionDetails.length > 0
+        // Resolve human-readable names from published_data
+        const resolvedDetails = (sectionDetails || []).map((d: any) => {
+          let displayName = d.selectedName || "Selected";
+          const sKey = d.sectionKey || d.section;
+          const selId = d.selectedId || d.selectedName;
+          if (publishedData && selId) {
+            const arr = publishedData[sKey];
+            if (Array.isArray(arr)) {
+              const item = arr.find((i: any) => i.id === selId);
+              if (item) {
+                if (sKey === "flights") displayName = item.legs?.[0]?.airline || item.legs?.map((l: any) => `${l.departureCode}→${l.arrivalCode}`).join(", ") || "Flight";
+                else if (sKey === "accommodations") displayName = item.hotelName || "Hotel";
+                else if (sKey === "cruiseShips") displayName = item.shipName || "Cruise";
+                else if (sKey === "busTrips") displayName = item.routeName || "Bus";
+                else displayName = item.name || item.title || "Selected";
+              }
+            }
+          }
+          if (/^[0-9a-f]{8}-/.test(displayName) && publishedData) {
+            for (const key of ["flights", "accommodations", "cruiseShips", "busTrips"]) {
+              const arr = publishedData[key];
+              if (Array.isArray(arr)) {
+                const found = arr.find((i: any) => i.id === displayName);
+                if (found) { displayName = found.hotelName || found.shipName || found.routeName || found.legs?.[0]?.airline || found.name || "Selected"; break; }
+              }
+            }
+          }
+          const sectionLabel = d.section && !/^[a-z]+[A-Z]/.test(d.section) ? d.section : sKey?.replace(/([A-Z])/g, " $1").replace(/^./, (c: string) => c.toUpperCase()) || d.section;
+          return { ...d, section: sectionLabel, selectedName: displayName };
+        });
+
+        const selectionsHtml = resolvedDetails.length > 0
           ? `<p style="font-size:12px;text-transform:uppercase;color:#9ca3af;margin:0 0 8px;letter-spacing:0.5px;">Approved Selections</p>` +
-            sectionDetails.map((d: any) => `<p style="font-size:13px;color:#374151;margin:2px 0;">• <strong>${d.section}:</strong> ${d.selectedName}</p>`).join("")
+            resolvedDetails.map((d: any) => `<p style="font-size:13px;color:#374151;margin:2px 0;">• <strong>${d.section}:</strong> ${d.selectedName}</p>`).join("")
           : "";
 
         const emailHtml = buildBrandedEmailHtml({
