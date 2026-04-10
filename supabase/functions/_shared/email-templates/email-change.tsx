@@ -9,6 +9,7 @@ import {
   Head,
   Heading,
   Html,
+  Img,
   Link,
   Preview,
   Text,
@@ -21,6 +22,8 @@ interface EmailChangeEmailProps {
   confirmationUrl: string
 }
 
+const LOGO_URL = 'https://faxbjbbwniypaffevbuo.supabase.co/storage/v1/object/public/app-assets/logo-1773489226711.svg'
+
 export const EmailChangeEmail = ({
   siteName,
   email,
@@ -32,6 +35,7 @@ export const EmailChangeEmail = ({
     <Preview>Confirm your email change for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
+        <Img src={LOGO_URL} alt={siteName} style={logo} />
         <Heading style={h1}>Confirm your email change</Heading>
         <Text style={text}>
           You requested to change your email address for {siteName} from{' '}
@@ -63,6 +67,7 @@ export default EmailChangeEmail
 
 const main = { backgroundColor: '#ffffff', fontFamily: "'DM Sans', Arial, sans-serif" }
 const container = { padding: '20px 25px' }
+const logo = { maxHeight: '50px', maxWidth: '200px', marginBottom: '24px' }
 const h1 = {
   fontSize: '24px',
   fontWeight: 'bold' as const,
@@ -76,13 +81,13 @@ const text = {
   lineHeight: '1.6',
   margin: '0 0 25px',
 }
-const link = { color: '#c05d15', textDecoration: 'underline' }
+const link = { color: '#03989e', textDecoration: 'underline' }
 const button = {
-  backgroundColor: '#c05d15',
+  backgroundColor: '#03989e',
   color: '#ffffff',
   fontSize: '14px',
   fontWeight: '600' as const,
-  borderRadius: '12px',
+  borderRadius: '6px',
   padding: '12px 24px',
   textDecoration: 'none',
 }
