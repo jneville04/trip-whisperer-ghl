@@ -121,21 +121,13 @@ Deno.serve(async (req) => {
     if (type === "question" || type === "revision") {
       const resendApiKey = Deno.env.get("RESEND_SECRET_API");
       let emailSent = false;
-      let agentEmail: string | null = null;
-      let tripOwnerId: string | null = null;
+      const trip = await resolveTripContext(supabase, payload);
+      const pubData = (trip?.published_data as Record<string, any> | null) || null;
+      const tripOwnerId = trip?.owner_id || null;
+      const resolvedTripName = payload.tripName || pubData?.tripName || pubData?.destination || "a trip";
 
-      // Find agent email from the trip's published_data
-      if (payload.tripId) {
-        const { data: trip } = await supabase
-          .from("trips")
-          .select("published_data, owner_id")
-          .eq("id", payload.tripId)
-          .maybeSingle();
-
-        const pubData = trip?.published_data as Record<string, any> | null;
-        agentEmail = pubData?.agent?.email || null;
-        tripOwnerId = trip?.owner_id || null;
-      }
+      // Find agent email from resolved trip context
+      agentEmail = pubData?.agent?.email || null;
 
       // Fallback: check agent_settings for the trip owner first, then any
       if (!agentEmail && tripOwnerId) {
@@ -163,7 +155,7 @@ Deno.serve(async (req) => {
 
         const travelerName = payload.name || "A traveler";
         const travelerEmail = payload.email || "Not provided";
-        const tripName = payload.tripName || "a trip";
+        const tripName = resolvedTripName;
         const message = payload.message || "";
 
         const isRevision = type === "revision";
