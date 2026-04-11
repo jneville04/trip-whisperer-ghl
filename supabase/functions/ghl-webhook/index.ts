@@ -86,24 +86,35 @@ Deno.serve(async (req) => {
       const resendApiKey = Deno.env.get("RESEND_SECRET_API");
       let emailSent = false;
       let agentEmail: string | null = null;
+      let tripOwnerId: string | null = null;
 
       // Find agent email from the trip's published_data
       if (payload.tripId) {
         const { data: trip } = await supabase
           .from("trips")
-          .select("published_data")
+          .select("published_data, owner_id")
           .eq("id", payload.tripId)
           .maybeSingle();
 
         const pubData = trip?.published_data as Record<string, any> | null;
         agentEmail = pubData?.agent?.email || null;
+        tripOwnerId = trip?.owner_id || null;
       }
 
-      // Fallback: check agent_settings
+      // Fallback: check agent_settings for the trip owner first, then any
+      if (!agentEmail && tripOwnerId) {
+        const { data: agentSettings } = await supabase
+          .from("agent_settings")
+          .select("agent_email")
+          .eq("user_id", tripOwnerId)
+          .maybeSingle();
+        agentEmail = agentSettings?.agent_email || null;
+      }
       if (!agentEmail) {
         const { data: agentSettings } = await supabase
           .from("agent_settings")
           .select("agent_email")
+          .neq("agent_email", "")
           .limit(1)
           .maybeSingle();
         agentEmail = agentSettings?.agent_email || null;
