@@ -121,6 +121,7 @@ Deno.serve(async (req) => {
     if (type === "question" || type === "revision") {
       const resendApiKey = Deno.env.get("RESEND_SECRET_API");
       let emailSent = false;
+      let agentEmail: string | null = null;
       const trip = await resolveTripContext(supabase, payload);
       const pubData = (trip?.published_data as Record<string, any> | null) || null;
       const tripOwnerId = trip?.owner_id || null;
