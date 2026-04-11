@@ -46,6 +46,42 @@ function buildBrandedEmailHtml({
 </body></html>`;
 }
 
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
+function getTripLookupCandidates(payload: Record<string, any>) {
+  return [payload.tripId, payload.trip_id, payload.proposalId, payload.shareId, payload.share, payload.publicSlug, payload.slug]
+    .filter((value): value is string => typeof value === "string" && value.trim().length > 0)
+    .map((value) => value.trim());
+}
+
+async function resolveTripContext(supabase: any, payload: Record<string, any>) {
+  const tripSelect = "id, owner_id, public_slug, published_data";
+
+  for (const candidate of getTripLookupCandidates(payload)) {
+    if (isUuid(candidate)) {
+      const { data: tripById } = await supabase
+        .from("trips")
+        .select(tripSelect)
+        .eq("id", candidate)
+        .maybeSingle();
+
+      if (tripById) return tripById;
+    }
+
+    const { data: tripBySlug } = await supabase
+      .from("trips")
+      .select(tripSelect)
+      .eq("public_slug", candidate)
+      .maybeSingle();
+
+    if (tripBySlug) return tripBySlug;
+  }
+
+  return null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
