@@ -234,9 +234,12 @@ async function handleWebhook(req: Request): Promise<Response> {
     )
   }
 
+  // Fetch dynamic app name from database
+  const appName = await getAppName()
+
   // Build template props from payload.data (HookData structure)
   const templateProps = {
-    siteName: SITE_NAME,
+    siteName: appName,
     siteUrl: `https://${ROOT_DOMAIN}`,
     recipient: payload.data.email,
     confirmationUrl: payload.data.url,
@@ -273,7 +276,7 @@ async function handleWebhook(req: Request): Promise<Response> {
       run_id,
       message_id: messageId,
       to: payload.data.email,
-      from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+      from: `${appName} <noreply@${FROM_DOMAIN}>`,
       sender_domain: SENDER_DOMAIN,
       subject: EMAIL_SUBJECTS[emailType] || 'Notification',
       html,
