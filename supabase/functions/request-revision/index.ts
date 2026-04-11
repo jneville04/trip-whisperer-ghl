@@ -146,7 +146,7 @@ Deno.serve(async (req) => {
     const { error: updateError } = await supabase
       .from("trips")
       .update({ status: "revision_requested" })
-      .eq("id", tripId);
+      .eq("id", trip.id);
 
     if (updateError) {
       console.error("Failed to update trip status:", updateError);
@@ -264,9 +264,9 @@ Deno.serve(async (req) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            type: "revision",
-            tripId,
-            tripName,
+              type: "revision",
+              tripId: trip.id,
+              tripName,
             travelerName: travelerName || "",
             travelerEmail: travelerEmail || "",
             revisionNote: revisionNote || "",
