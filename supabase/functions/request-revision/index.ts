@@ -79,7 +79,7 @@ Deno.serve(async (req) => {
     // Fetch the trip
     const { data: trip, error: tripError } = await supabase
       .from("trips")
-      .select("id, published_data, org_id, public_slug, status")
+      .select("id, published_data, org_id, public_slug, status, owner_id")
       .eq("id", tripId)
       .single();
 
@@ -103,7 +103,26 @@ Deno.serve(async (req) => {
 
     const publishedData = trip.published_data as Record<string, any> | null;
     const tripName = publishedData?.tripName || publishedData?.destination || "Untitled Trip";
-    const agentEmail = publishedData?.agent?.email;
+    let agentEmail = publishedData?.agent?.email || null;
+
+    if (!agentEmail && trip.owner_id) {
+      const { data: ownerSettings } = await supabase
+        .from("agent_settings")
+        .select("agent_email")
+        .eq("user_id", trip.owner_id)
+        .maybeSingle();
+      agentEmail = ownerSettings?.agent_email || null;
+    }
+
+    if (!agentEmail) {
+      const { data: fallbackSettings } = await supabase
+        .from("agent_settings")
+        .select("agent_email")
+        .neq("agent_email", "")
+        .limit(1)
+        .maybeSingle();
+      agentEmail = fallbackSettings?.agent_email || null;
+    }
 
     const siteUrl = Deno.env.get("SITE_URL") || "https://trip-whisperer-ghl.lovable.app";
     // Agent CTA links to internal editor route, not public traveler view
