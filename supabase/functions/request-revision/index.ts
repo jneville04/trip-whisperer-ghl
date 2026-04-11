@@ -65,10 +65,21 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { tripId, revisionNote, travelerName, travelerEmail, categories, currentSelections } = await req.json();
+    const body = await req.json();
+    const {
+      tripId,
+      proposalId,
+      publicSlug,
+      shareId,
+      revisionNote,
+      travelerName,
+      travelerEmail,
+      categories,
+      currentSelections,
+    } = body;
 
-    if (!tripId) {
-      return new Response(JSON.stringify({ error: "Missing tripId" }), {
+    if (!tripId && !proposalId && !publicSlug && !shareId) {
+      return new Response(JSON.stringify({ error: "Missing trip identifier" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -76,11 +87,14 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
+    const tripLookupValue = tripId || proposalId || publicSlug || shareId;
+    const tripLookupColumn = tripId ? "id" : proposalId ? "id" : "public_slug";
+
     // Fetch the trip
     const { data: trip, error: tripError } = await supabase
       .from("trips")
       .select("id, published_data, org_id, public_slug, status, owner_id")
-      .eq("id", tripId)
+      .eq(tripLookupColumn, tripLookupValue)
       .single();
 
     if (tripError || !trip) {
