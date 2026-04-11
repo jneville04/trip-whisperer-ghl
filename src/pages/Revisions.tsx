@@ -97,6 +97,8 @@ export default function RevisionsPage() {
         await supabase.functions.invoke("request-revision", {
           body: {
             tripId,
+            proposalId: proposalId || shareId,
+            shareId: shareId || "",
             revisionNote: form.message,
             travelerName: form.name,
             travelerEmail: form.email,
