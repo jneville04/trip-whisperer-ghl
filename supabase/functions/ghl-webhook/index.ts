@@ -81,8 +81,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    // ── QUESTION TYPE: send email to agent ──
-    if (type === "question") {
+    // ── QUESTION / REVISION TYPE: send email to agent ──
+    if (type === "question" || type === "revision") {
       const resendApiKey = Deno.env.get("RESEND_SECRET_API");
       let emailSent = false;
       let agentEmail: string | null = null;
@@ -119,6 +119,15 @@ Deno.serve(async (req) => {
         const tripName = payload.tripName || "a trip";
         const message = payload.message || "";
 
+        const isRevision = type === "revision";
+        const heading = isRevision ? "Revision Request" : "New Question from Traveler";
+        const introText = isRevision
+          ? `${travelerName} has requested revisions for ${tripName}.`
+          : `${travelerName} has a question about ${tripName}.`;
+        const subjectLine = isRevision
+          ? `Revision Request: ${tripName} — ${travelerName}`
+          : `New Question: ${tripName} — ${travelerName}`;
+
         const detailsRows = [
           { label: "From", value: travelerName },
           { label: "Email", value: `<a href="mailto:${travelerEmail}" style="color:${primaryColor};text-decoration:none;">${travelerEmail}</a>` },
@@ -126,15 +135,15 @@ Deno.serve(async (req) => {
         ];
 
         const messageHtml = message
-          ? `<p style="font-size:12px;text-transform:uppercase;color:#9ca3af;margin:0 0 8px;letter-spacing:0.5px;">Message</p><p style="font-size:14px;color:#374151;margin:0;line-height:1.6;white-space:pre-wrap;">${message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>`
+          ? `<p style="font-size:12px;text-transform:uppercase;color:#9ca3af;margin:0 0 8px;letter-spacing:0.5px;">${isRevision ? "Revision Notes" : "Message"}</p><p style="font-size:14px;color:#374151;margin:0;line-height:1.6;white-space:pre-wrap;">${message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>`
           : "";
 
         const emailHtml = buildBrandedEmailHtml({
           logoUrl,
           businessName,
           primaryColor,
-          heading: "New Question from Traveler",
-          introText: `${travelerName} has a question about ${tripName}.`,
+          heading,
+          introText,
           detailsRows,
           messageHtml,
         });
@@ -150,26 +159,28 @@ Deno.serve(async (req) => {
               from: `${businessName} <updates@updates.journeyswithjoi.com>`,
               to: [agentEmail],
               reply_to: travelerEmail !== "Not provided" ? travelerEmail : agentEmail,
-              subject: `New Question: ${tripName} — ${travelerName}`,
+              subject: subjectLine,
               html: emailHtml,
             }),
           });
 
           const resendData = await emailResp.json();
-          console.log("Question email response:", resendData);
+          console.log(`${type} email response:`, resendData);
           emailSent = emailResp.ok;
         } catch (err) {
-          console.error("Question email failed:", err);
+          console.error(`${type} email failed:`, err);
         }
       } else {
-        console.warn("Question email not sent — missing RESEND_SECRET_API or agentEmail", {
+        console.warn(`${type} email not sent — missing RESEND_SECRET_API or agentEmail`, {
           hasKey: !!resendApiKey,
           agentEmail,
         });
       }
 
       // Also forward to GHL webhook if configured
-      const webhookUrl = settings?.ghl_webhook_revision;
+      const webhookUrl = type === "revision"
+        ? settings?.ghl_webhook_revision
+        : settings?.ghl_webhook_revision;
       if (webhookUrl) {
         try {
           await fetch(webhookUrl, {
@@ -178,7 +189,7 @@ Deno.serve(async (req) => {
             body: JSON.stringify({ type, ...payload, timestamp: new Date().toISOString() }),
           });
         } catch (err) {
-          console.error("GHL webhook for question failed:", err);
+          console.error(`GHL webhook for ${type} failed:`, err);
         }
       }
 
