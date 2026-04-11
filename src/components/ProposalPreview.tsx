@@ -3999,7 +3999,8 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                             type: "question",
                             payload: {
                               ...questionForm,
-                              tripId: tripId || shareId || "",
+                              tripId: tripId || "",
+                              shareId: shareId || "",
                               tripName: (data as any).tripName || data.destination || "",
                               source: window.location.href,
                             },
@@ -4155,6 +4156,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                           await supabase.functions.invoke("request-revision", {
                             body: {
                               tripId,
+                              shareId: shareId || "",
                               revisionNote: revisionForm.message,
                               travelerName: revisionForm.name,
                               travelerEmail: revisionForm.email,

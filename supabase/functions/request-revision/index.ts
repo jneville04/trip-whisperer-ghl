@@ -65,10 +65,21 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { tripId, revisionNote, travelerName, travelerEmail, categories, currentSelections } = await req.json();
+    const body = await req.json();
+    const {
+      tripId,
+      proposalId,
+      publicSlug,
+      shareId,
+      revisionNote,
+      travelerName,
+      travelerEmail,
+      categories,
+      currentSelections,
+    } = body;
 
-    if (!tripId) {
-      return new Response(JSON.stringify({ error: "Missing tripId" }), {
+    if (!tripId && !proposalId && !publicSlug && !shareId) {
+      return new Response(JSON.stringify({ error: "Missing trip identifier" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -76,11 +87,14 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
+    const tripLookupValue = tripId || proposalId || publicSlug || shareId;
+    const tripLookupColumn = tripId ? "id" : proposalId ? "id" : "public_slug";
+
     // Fetch the trip
     const { data: trip, error: tripError } = await supabase
       .from("trips")
-      .select("id, published_data, org_id, public_slug, status")
-      .eq("id", tripId)
+      .select("id, published_data, org_id, public_slug, status, owner_id")
+      .eq(tripLookupColumn, tripLookupValue)
       .single();
 
     if (tripError || !trip) {
@@ -103,7 +117,26 @@ Deno.serve(async (req) => {
 
     const publishedData = trip.published_data as Record<string, any> | null;
     const tripName = publishedData?.tripName || publishedData?.destination || "Untitled Trip";
-    const agentEmail = publishedData?.agent?.email;
+    let agentEmail = publishedData?.agent?.email || null;
+
+    if (!agentEmail && trip.owner_id) {
+      const { data: ownerSettings } = await supabase
+        .from("agent_settings")
+        .select("agent_email")
+        .eq("user_id", trip.owner_id)
+        .maybeSingle();
+      agentEmail = ownerSettings?.agent_email || null;
+    }
+
+    if (!agentEmail) {
+      const { data: fallbackSettings } = await supabase
+        .from("agent_settings")
+        .select("agent_email")
+        .neq("agent_email", "")
+        .limit(1)
+        .maybeSingle();
+      agentEmail = fallbackSettings?.agent_email || null;
+    }
 
     const siteUrl = Deno.env.get("SITE_URL") || "https://trip-whisperer-ghl.lovable.app";
     // Agent CTA links to internal editor route, not public traveler view
@@ -113,7 +146,7 @@ Deno.serve(async (req) => {
     const { error: updateError } = await supabase
       .from("trips")
       .update({ status: "revision_requested" })
-      .eq("id", tripId);
+      .eq("id", trip.id);
 
     if (updateError) {
       console.error("Failed to update trip status:", updateError);
@@ -231,14 +264,14 @@ Deno.serve(async (req) => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            type: "revision",
-            tripId,
-            tripName,
-            travelerName: travelerName || "",
-            travelerEmail: travelerEmail || "",
-            revisionNote: revisionNote || "",
-            categories: categories || [],
-            currentSelections: currentSelections || [],
+              type: "revision",
+              tripId: trip.id,
+              tripName,
+              travelerName: travelerName || "",
+              travelerEmail: travelerEmail || "",
+              revisionNote: revisionNote || "",
+              categories: categories || [],
+              currentSelections: currentSelections || [],
             status: "revision_requested",
             timestamp: new Date().toISOString(),
           }),

@@ -46,6 +46,42 @@ function buildBrandedEmailHtml({
 </body></html>`;
 }
 
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
+function getTripLookupCandidates(payload: Record<string, any>) {
+  return [payload.tripId, payload.trip_id, payload.proposalId, payload.shareId, payload.share, payload.publicSlug, payload.slug]
+    .filter((value): value is string => typeof value === "string" && value.trim().length > 0)
+    .map((value) => value.trim());
+}
+
+async function resolveTripContext(supabase: any, payload: Record<string, any>) {
+  const tripSelect = "id, owner_id, public_slug, published_data";
+
+  for (const candidate of getTripLookupCandidates(payload)) {
+    if (isUuid(candidate)) {
+      const { data: tripById } = await supabase
+        .from("trips")
+        .select(tripSelect)
+        .eq("id", candidate)
+        .maybeSingle();
+
+      if (tripById) return tripById;
+    }
+
+    const { data: tripBySlug } = await supabase
+      .from("trips")
+      .select(tripSelect)
+      .eq("public_slug", candidate)
+      .maybeSingle();
+
+    if (tripBySlug) return tripBySlug;
+  }
+
+  return null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -86,20 +122,13 @@ Deno.serve(async (req) => {
       const resendApiKey = Deno.env.get("RESEND_SECRET_API");
       let emailSent = false;
       let agentEmail: string | null = null;
-      let tripOwnerId: string | null = null;
+      const trip = await resolveTripContext(supabase, payload);
+      const pubData = (trip?.published_data as Record<string, any> | null) || null;
+      const tripOwnerId = trip?.owner_id || null;
+      const resolvedTripName = payload.tripName || pubData?.tripName || pubData?.destination || "a trip";
 
-      // Find agent email from the trip's published_data
-      if (payload.tripId) {
-        const { data: trip } = await supabase
-          .from("trips")
-          .select("published_data, owner_id")
-          .eq("id", payload.tripId)
-          .maybeSingle();
-
-        const pubData = trip?.published_data as Record<string, any> | null;
-        agentEmail = pubData?.agent?.email || null;
-        tripOwnerId = trip?.owner_id || null;
-      }
+      // Find agent email from resolved trip context
+      agentEmail = pubData?.agent?.email || null;
 
       // Fallback: check agent_settings for the trip owner first, then any
       if (!agentEmail && tripOwnerId) {
@@ -127,7 +156,7 @@ Deno.serve(async (req) => {
 
         const travelerName = payload.name || "A traveler";
         const travelerEmail = payload.email || "Not provided";
-        const tripName = payload.tripName || "a trip";
+        const tripName = resolvedTripName;
         const message = payload.message || "";
 
         const isRevision = type === "revision";
