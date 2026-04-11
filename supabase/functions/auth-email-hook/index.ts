@@ -36,10 +36,27 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "trip-whisperer-ghl"
+const SITE_NAME_FALLBACK = "Journey Itinerary Studio"
 const SENDER_DOMAIN = "notify.notify.journeyswithjoi.com"
 const ROOT_DOMAIN = "notify.journeyswithjoi.com"
 const FROM_DOMAIN = "notify.journeyswithjoi.com" // Domain shown in From address (may be root or sender subdomain)
+
+async function getAppName(): Promise<string> {
+  try {
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    )
+    const { data } = await supabase
+      .from('app_settings')
+      .select('app_name')
+      .eq('id', 1)
+      .single()
+    return data?.app_name || SITE_NAME_FALLBACK
+  } catch {
+    return SITE_NAME_FALLBACK
+  }
+}
 
 // Sample data for preview mode ONLY (not used in actual email sending).
 // URLs are baked in at scaffold time from the project's real data.
