@@ -36,10 +36,27 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "trip-whisperer-ghl"
+const SITE_NAME_FALLBACK = "Journey Itinerary Studio"
 const SENDER_DOMAIN = "notify.notify.journeyswithjoi.com"
 const ROOT_DOMAIN = "notify.journeyswithjoi.com"
 const FROM_DOMAIN = "notify.journeyswithjoi.com" // Domain shown in From address (may be root or sender subdomain)
+
+async function getAppName(): Promise<string> {
+  try {
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    )
+    const { data } = await supabase
+      .from('app_settings')
+      .select('app_name')
+      .eq('id', 1)
+      .single()
+    return data?.app_name || SITE_NAME_FALLBACK
+  } catch {
+    return SITE_NAME_FALLBACK
+  }
+}
 
 // Sample data for preview mode ONLY (not used in actual email sending).
 // URLs are baked in at scaffold time from the project's real data.
@@ -50,26 +67,26 @@ const SAMPLE_PROJECT_URL = "https://trip-whisperer-ghl.lovable.app"
 const SAMPLE_EMAIL = "user@example.test"
 const SAMPLE_DATA: Record<string, object> = {
   signup: {
-    siteName: SITE_NAME,
+    siteName: SITE_NAME_FALLBACK,
     siteUrl: SAMPLE_PROJECT_URL,
     recipient: SAMPLE_EMAIL,
     confirmationUrl: SAMPLE_PROJECT_URL,
   },
   magiclink: {
-    siteName: SITE_NAME,
+    siteName: SITE_NAME_FALLBACK,
     confirmationUrl: SAMPLE_PROJECT_URL,
   },
   recovery: {
-    siteName: SITE_NAME,
+    siteName: SITE_NAME_FALLBACK,
     confirmationUrl: SAMPLE_PROJECT_URL,
   },
   invite: {
-    siteName: SITE_NAME,
+    siteName: SITE_NAME_FALLBACK,
     siteUrl: SAMPLE_PROJECT_URL,
     confirmationUrl: SAMPLE_PROJECT_URL,
   },
   email_change: {
-    siteName: SITE_NAME,
+    siteName: SITE_NAME_FALLBACK,
     email: SAMPLE_EMAIL,
     newEmail: SAMPLE_EMAIL,
     confirmationUrl: SAMPLE_PROJECT_URL,
@@ -217,9 +234,12 @@ async function handleWebhook(req: Request): Promise<Response> {
     )
   }
 
+  // Fetch dynamic app name from database
+  const appName = await getAppName()
+
   // Build template props from payload.data (HookData structure)
   const templateProps = {
-    siteName: SITE_NAME,
+    siteName: appName,
     siteUrl: `https://${ROOT_DOMAIN}`,
     recipient: payload.data.email,
     confirmationUrl: payload.data.url,
@@ -256,7 +276,7 @@ async function handleWebhook(req: Request): Promise<Response> {
       run_id,
       message_id: messageId,
       to: payload.data.email,
-      from: `${SITE_NAME} <noreply@${FROM_DOMAIN}>`,
+      from: `${appName} <noreply@${FROM_DOMAIN}>`,
       sender_domain: SENDER_DOMAIN,
       subject: EMAIL_SUBJECTS[emailType] || 'Notification',
       html,
