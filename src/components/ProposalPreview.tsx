@@ -1009,16 +1009,12 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
   ]);
 
   const goToRevisions = useCallback(() => {
-    if (isEditor && onEditorSubPage) {
-      onEditorSubPage("revisions");
-      return;
-    }
     // Use financials.revisionUrl first, then legacy revisionsUrl
     const revUrl = financials.revisionUrl || revisionsUrl;
-    if (revUrl) {
+    if (revUrl && !isEditor) {
       openModal(revUrl, "Request Revisions");
     } else {
-      // Show inline revision modal
+      // Show inline revision modal (works in editor and public view with tripId)
       setShowRevisionModal(true);
     }
   }, [navigate, shareId, brandData, returnTo, revisionsUrl, openModal, isEditor, onEditorSubPage, financials]);
