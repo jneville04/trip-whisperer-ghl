@@ -9,7 +9,7 @@ const corsHeaders = {
 /**
  * sync-ghl-contact
  *
- * Accepts: { email, firstName, lastName, phone, tripId? }
+ * Accepts: { email, firstName, lastName, phone, tripId?, accessToken?, locationId? }
  *
  * 1. Searches GHL for existing contact by email
  * 2. If not found → creates the contact in GHL
@@ -26,6 +26,19 @@ Deno.serve(async (req) => {
     const firstName = (body.firstName || "").trim();
     const lastName = (body.lastName || "").trim();
     const phone = (body.phone || "").trim();
+    const requestAccessToken = (
+      body.accessToken ||
+      body.access_token ||
+      body.ghlAccessToken ||
+      body.token ||
+      ""
+    ).trim().replace(/^Bearer\s+/i, "");
+    const requestLocationId = (
+      body.locationId ||
+      body.location_id ||
+      body.ghlLocationId ||
+      ""
+    ).trim();
 
     if (!email) {
       return new Response(
@@ -35,8 +48,20 @@ Deno.serve(async (req) => {
     }
 
     // ── Resolve GHL credentials ──
-    let ghlApiKey = (Deno.env.get("GHL_API_KEY") || "").trim().replace(/^Bearer\s+/i, "");
-    let ghlLocationId = (Deno.env.get("GHL_LOCATION_ID") || "").trim();
+    let ghlApiKey = requestAccessToken;
+    let ghlLocationId = requestLocationId;
+    let tokenSource = requestAccessToken ? "request_body" : "";
+    let locationSource = requestLocationId ? "request_body" : "";
+
+    if (!ghlApiKey) {
+      ghlApiKey = (Deno.env.get("GHL_API_KEY") || "").trim().replace(/^Bearer\s+/i, "");
+      if (ghlApiKey) tokenSource = "secrets";
+    }
+
+    if (!ghlLocationId) {
+      ghlLocationId = (Deno.env.get("GHL_LOCATION_ID") || "").trim();
+      if (ghlLocationId) locationSource = "secrets";
+    }
 
     if (!ghlApiKey || !ghlLocationId) {
       const supabase = createClient(
@@ -48,11 +73,19 @@ Deno.serve(async (req) => {
         .select("ghl_access_token, ghl_location_id")
         .neq("ghl_access_token", "")
         .neq("ghl_location_id", "")
+        .order("updated_at", { ascending: false })
         .limit(1)
         .maybeSingle();
 
-      if (!ghlApiKey) ghlApiKey = (agentRow?.ghl_access_token || "").trim().replace(/^Bearer\s+/i, "");
-      if (!ghlLocationId) ghlLocationId = (agentRow?.ghl_location_id || "").trim();
+      if (!ghlApiKey) {
+        ghlApiKey = (agentRow?.ghl_access_token || "").trim().replace(/^Bearer\s+/i, "");
+        if (ghlApiKey) tokenSource = "agent_settings";
+      }
+
+      if (!ghlLocationId) {
+        ghlLocationId = (agentRow?.ghl_location_id || "").trim();
+        if (ghlLocationId) locationSource = "agent_settings";
+      }
     }
 
     if (!ghlApiKey || !ghlLocationId) {
@@ -70,8 +103,10 @@ Deno.serve(async (req) => {
       lastName,
       tokenLength: ghlApiKey.length,
       tokenPrefix: ghlApiKey.substring(0, 4),
+      tokenSource,
       isJwt,
       locationId: ghlLocationId,
+      locationSource,
     });
 
     // ── Step 1: Search for existing contact by email ──
