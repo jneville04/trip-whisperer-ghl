@@ -201,7 +201,7 @@ Deno.serve(async (req) => {
       };
     } else {
       // v2 API
-      createUrl = "https://services.leadconnectorhq.com/contacts/";
+      createUrl = "https://services.leadconnectorhq.com/contacts/upsert";
       createHeaders = {
         Authorization: `Bearer ${ghlApiKey}`,
         Version: "2021-07-28",
