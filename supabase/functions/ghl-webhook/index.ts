@@ -189,6 +189,7 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const requestBody = await req.json();
     console.log("RAW GHL PAYLOAD:", JSON.stringify(requestBody).slice(0, 2000));
 
     let type = normalizeRequestType(typeof requestBody?.type === "string" ? requestBody.type : "");
