@@ -189,18 +189,28 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const requestBody = await req.json();
-    const type = normalizeRequestType(typeof requestBody?.type === "string" ? requestBody.type : "");
+    console.log("RAW GHL PAYLOAD:", JSON.stringify(requestBody).slice(0, 2000));
+
+    let type = normalizeRequestType(typeof requestBody?.type === "string" ? requestBody.type : "");
     const payload = requestBody?.payload && typeof requestBody.payload === "object" && !Array.isArray(requestBody.payload)
       ? requestBody.payload as Record<string, any>
       : requestBody as Record<string, any>;
 
+    // If type couldn't be determined from the 'type' field, try to infer from payload shape
+    if (!type) {
+      type = inferTypeFromPayload(payload);
+      if (type) console.log("Inferred type from payload shape:", type);
+    }
+
     if (!type || !payload) {
-      return new Response(JSON.stringify({ error: "Missing type or payload" }), {
+      console.error("Could not determine request type. Keys received:", Object.keys(requestBody));
+      return new Response(JSON.stringify({ error: "Missing type or payload", receivedKeys: Object.keys(requestBody) }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    console.log("Resolved type:", type, "| Payload keys:", Object.keys(payload));
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
