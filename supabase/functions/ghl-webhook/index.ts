@@ -96,11 +96,19 @@ function pickFirstString(...values: unknown[]) {
 function normalizeRequestType(value: string) {
   const normalized = value.toLowerCase().replace(/[\s_-]+/g, "");
 
-  if (["question", "ask", "askquestion"].includes(normalized)) return "question";
-  if (["revision", "requestrevision", "revisionrequest"].includes(normalized)) return "revision";
-  if (["approve", "approval"].includes(normalized)) return "approve";
+  if (["question", "ask", "askquestion", "askaquestion", "contactus", "contact", "inquiry", "enquiry"].includes(normalized)) return "question";
+  if (["revision", "requestrevision", "revisionrequest", "revisions", "requestrevisions", "change", "changerequest"].includes(normalized)) return "revision";
+  if (["approve", "approval", "approved", "accept"].includes(normalized)) return "approve";
 
   return value.trim().toLowerCase();
+}
+
+function inferTypeFromPayload(body: Record<string, any>): string {
+  // If there's a question/message field but no revision-specific fields, it's likely a question
+  if (body.question || body.inquiry) return "question";
+  if (body.revisionNote || body.revision_note || body.revisions) return "revision";
+  if (body.approved === true || body.approval === true) return "approve";
+  return "";
 }
 
 function getTripLookupCandidates(payload: Record<string, any>) {
