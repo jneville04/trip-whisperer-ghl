@@ -6,6 +6,77 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+function isUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
+function getTripLookupCandidates(payload: Record<string, unknown>) {
+  return [
+    payload.tripId,
+    payload.trip_id,
+    payload.proposalId,
+    payload.shareId,
+    payload.share,
+    payload.publicSlug,
+    payload.slug,
+  ]
+    .filter((value): value is string => typeof value === "string" && value.trim().length > 0)
+    .map((value) => value.trim());
+}
+
+async function resolveTripContext(supabase: any, payload: Record<string, unknown>) {
+  const tripSelect = "id, owner_id, org_id, public_slug, published_data, status";
+
+  for (const candidate of getTripLookupCandidates(payload)) {
+    if (isUuid(candidate)) {
+      const { data: tripById } = await supabase
+        .from("trips")
+        .select(tripSelect)
+        .eq("id", candidate)
+        .maybeSingle();
+
+      if (tripById) return tripById;
+    }
+
+    const { data: tripBySlug } = await supabase
+      .from("trips")
+      .select(tripSelect)
+      .eq("public_slug", candidate)
+      .maybeSingle();
+
+    if (tripBySlug) return tripBySlug;
+  }
+
+  return null;
+}
+
+async function resolveAgentEmail(supabase: any, trip: any) {
+  const publishedData = (trip?.published_data as Record<string, any> | null) || null;
+  const candidateFromTrip = typeof publishedData?.agent?.email === "string" ? publishedData.agent.email.trim() : "";
+  if (candidateFromTrip) return candidateFromTrip;
+
+  if (trip?.owner_id) {
+    const { data: ownerSettings } = await supabase
+      .from("agent_settings")
+      .select("agent_email")
+      .eq("user_id", trip.owner_id)
+      .maybeSingle();
+
+    const ownerEmail = typeof ownerSettings?.agent_email === "string" ? ownerSettings.agent_email.trim() : "";
+    if (ownerEmail) return ownerEmail;
+  }
+
+  const { data: fallbackSettings } = await supabase
+    .from("agent_settings")
+    .select("agent_email")
+    .neq("agent_email", "")
+    .limit(1)
+    .maybeSingle();
+
+  const fallbackEmail = typeof fallbackSettings?.agent_email === "string" ? fallbackSettings.agent_email.trim() : "";
+  return fallbackEmail || null;
+}
+
 function buildBrandedEmailHtml({
   logoUrl,
   businessName,
@@ -66,11 +137,8 @@ Deno.serve(async (req) => {
 
   try {
     const body = await req.json();
+    const payload = body as Record<string, unknown>;
     const {
-      tripId,
-      proposalId,
-      publicSlug,
-      shareId,
       revisionNote,
       travelerName,
       travelerEmail,
@@ -78,7 +146,7 @@ Deno.serve(async (req) => {
       currentSelections,
     } = body;
 
-    if (!tripId && !proposalId && !publicSlug && !shareId) {
+    if (getTripLookupCandidates(payload).length === 0) {
       return new Response(JSON.stringify({ error: "Missing trip identifier" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -87,17 +155,10 @@ Deno.serve(async (req) => {
 
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
 
-    const tripLookupValue = tripId || proposalId || publicSlug || shareId;
-    const tripLookupColumn = tripId ? "id" : proposalId ? "id" : "public_slug";
+    const trip = await resolveTripContext(supabase, payload);
 
-    // Fetch the trip
-    const { data: trip, error: tripError } = await supabase
-      .from("trips")
-      .select("id, published_data, org_id, public_slug, status, owner_id")
-      .eq(tripLookupColumn, tripLookupValue)
-      .single();
-
-    if (tripError || !trip) {
+    if (!trip) {
+      console.error("Trip resolution failed", { lookupCandidates: getTripLookupCandidates(payload) });
       return new Response(JSON.stringify({ error: "Trip not found" }), {
         status: 404,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -117,26 +178,7 @@ Deno.serve(async (req) => {
 
     const publishedData = trip.published_data as Record<string, any> | null;
     const tripName = publishedData?.tripName || publishedData?.destination || "Untitled Trip";
-    let agentEmail = publishedData?.agent?.email || null;
-
-    if (!agentEmail && trip.owner_id) {
-      const { data: ownerSettings } = await supabase
-        .from("agent_settings")
-        .select("agent_email")
-        .eq("user_id", trip.owner_id)
-        .maybeSingle();
-      agentEmail = ownerSettings?.agent_email || null;
-    }
-
-    if (!agentEmail) {
-      const { data: fallbackSettings } = await supabase
-        .from("agent_settings")
-        .select("agent_email")
-        .neq("agent_email", "")
-        .limit(1)
-        .maybeSingle();
-      agentEmail = fallbackSettings?.agent_email || null;
-    }
+    const agentEmail = await resolveAgentEmail(supabase, trip);
 
     const siteUrl = Deno.env.get("SITE_URL") || "https://trip-whisperer-ghl.lovable.app";
     // Agent CTA links to internal editor route, not public traveler view
@@ -154,7 +196,13 @@ Deno.serve(async (req) => {
 
     // 2. Send agent email notification via Resend with branded template
     const resendKey = Deno.env.get("RESEND_SECRET_API");
-    console.log("Email check:", { hasResendKey: !!resendKey, agentEmail: agentEmail || "none" });
+    console.log("Email check:", {
+      hasResendKey: !!resendKey,
+      tripId: trip.id,
+      ownerId: trip.owner_id || "none",
+      publicSlug: trip.public_slug || "none",
+      agentEmail: agentEmail || "none",
+    });
 
     if (resendKey && agentEmail) {
       try {
