@@ -77,6 +77,49 @@ async function resolveAgentEmail(supabase: any, trip: any) {
   return fallbackEmail || null;
 }
 
+function normalizeSelectionSectionKey(value: unknown) {
+  const raw = typeof value === "string" ? value.trim() : "";
+  if (!raw) return "";
+
+  const normalized = raw.toLowerCase().replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
+  const aliases: Record<string, string> = {
+    flight: "flights",
+    flights: "flights",
+    accommodation: "accommodations",
+    accommodations: "accommodations",
+    hotel: "accommodations",
+    hotels: "accommodations",
+    cruise: "cruiseShips",
+    cruises: "cruiseShips",
+    "cruise ship": "cruiseShips",
+    "cruise ships": "cruiseShips",
+    bus: "busTrips",
+    "bus trip": "busTrips",
+    "bus trips": "busTrips",
+  };
+
+  return aliases[normalized] || raw;
+}
+
+function formatSelectionSectionLabel(sectionKey: string, fallback?: string) {
+  if (fallback && !/^[a-z]+[A-Z]/.test(fallback) && fallback.trim().length > 0) {
+    return fallback.trim();
+  }
+
+  return sectionKey.replace(/([A-Z])/g, " $1").replace(/^./, (c: string) => c.toUpperCase());
+}
+
+function resolveSelectionDisplayName(item: Record<string, any>, sectionKey: string) {
+  if (sectionKey === "flights") {
+    return item.legs?.[0]?.airline || item.legs?.map((l: any) => `${l.departureCode}→${l.arrivalCode}`).join(", ") || "Flight";
+  }
+
+  if (sectionKey === "accommodations") return item.hotelName || item.name || item.title || "Hotel";
+  if (sectionKey === "cruiseShips") return item.shipName || item.name || item.title || "Cruise";
+  if (sectionKey === "busTrips") return item.routeName || item.name || item.title || "Bus";
+  return item.name || item.title || "Selected";
+}
+
 function buildBrandedEmailHtml({
   logoUrl,
   businessName,
@@ -227,36 +270,37 @@ Deno.serve(async (req) => {
 
         // Resolve human-readable names from published_data
         const resolvedSelections = (currentSelections || []).map((s: any) => {
-          let displayName = s.selectedName || "Selected";
-          const sKey = s.sectionKey || s.section;
-          const selId = s.selectedId || s.selectedName;
+          let displayName = typeof s.selectedName === "string" && s.selectedName.trim().length > 0 ? s.selectedName.trim() : "Selected";
+          const sKey = normalizeSelectionSectionKey(s.sectionKey || s.section);
+          const selId = typeof s.selectedId === "string" && s.selectedId.trim().length > 0
+            ? s.selectedId.trim()
+            : typeof s.id === "string" && s.id.trim().length > 0
+              ? s.id.trim()
+              : displayName;
           if (publishedData && selId) {
             const arr = publishedData[sKey];
             if (Array.isArray(arr)) {
               const item = arr.find((i: any) => i.id === selId);
               if (item) {
-                if (sKey === "flights") displayName = item.legs?.[0]?.airline || item.legs?.map((l: any) => `${l.departureCode}→${l.arrivalCode}`).join(", ") || "Flight";
-                else if (sKey === "accommodations") displayName = item.hotelName || "Hotel";
-                else if (sKey === "cruiseShips") displayName = item.shipName || "Cruise";
-                else if (sKey === "busTrips") displayName = item.routeName || "Bus";
-                else displayName = item.name || item.title || "Selected";
+                displayName = resolveSelectionDisplayName(item, sKey);
               }
             }
           }
           // If displayName still looks like a UUID, try harder
-          if (/^[0-9a-f]{8}-/.test(displayName) && publishedData) {
+          const fallbackUuid = /^[0-9a-f]{8}-/i.test(selId) ? selId : /^[0-9a-f]{8}-/i.test(displayName) ? displayName : "";
+          if (fallbackUuid && publishedData) {
             for (const key of ["flights", "accommodations", "cruiseShips", "busTrips"]) {
               const arr = publishedData[key];
               if (Array.isArray(arr)) {
-                const item = arr.find((i: any) => i.id === displayName);
+                const item = arr.find((i: any) => i.id === fallbackUuid);
                 if (item) {
-                  displayName = item.hotelName || item.shipName || item.routeName || item.legs?.[0]?.airline || item.name || "Selected";
+                  displayName = resolveSelectionDisplayName(item, key);
                   break;
                 }
               }
             }
           }
-          const sectionLabel = s.section && !/^[a-z]+[A-Z]/.test(s.section) ? s.section : sKey?.replace(/([A-Z])/g, " $1").replace(/^./, (c: string) => c.toUpperCase()) || s.section;
+          const sectionLabel = formatSelectionSectionLabel(sKey, s.section);
           return { section: sectionLabel, selectedName: displayName };
         });
 

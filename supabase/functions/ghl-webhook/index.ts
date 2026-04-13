@@ -50,8 +50,41 @@ function isUuid(value: string) {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
+function normalizeEmail(value: unknown) {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function getSourceSlug(source: unknown) {
+  if (typeof source !== "string" || source.trim().length === 0) return null;
+
+  try {
+    const url = new URL(source);
+    const pathMatch = url.pathname.match(/\/view\/([^/?#]+)/);
+    if (pathMatch?.[1]) return decodeURIComponent(pathMatch[1]);
+
+    const hashPath = url.hash.startsWith("#") ? url.hash.slice(1) : url.hash;
+    const hashMatch = hashPath.match(/\/view\/([^/?#]+)/);
+    if (hashMatch?.[1]) return decodeURIComponent(hashMatch[1]);
+
+    return url.searchParams.get("share");
+  } catch {
+    return null;
+  }
+}
+
 function getTripLookupCandidates(payload: Record<string, any>) {
-  return [payload.tripId, payload.trip_id, payload.proposalId, payload.shareId, payload.share, payload.publicSlug, payload.slug]
+  return [payload.tripId, payload.trip_id, payload.proposalId, payload.shareId, payload.share, payload.publicSlug, payload.slug, getSourceSlug(payload.source)]
     .filter((value): value is string => typeof value === "string" && value.trim().length > 0)
     .map((value) => value.trim());
 }
@@ -80,6 +113,32 @@ async function resolveTripContext(supabase: any, payload: Record<string, any>) {
   }
 
   return null;
+}
+
+async function resolveAgentEmail(supabase: any, trip: any) {
+  const publishedData = (trip?.published_data as Record<string, any> | null) || null;
+  const candidateFromTrip = normalizeEmail(publishedData?.agent?.email);
+  if (candidateFromTrip) return candidateFromTrip;
+
+  if (trip?.owner_id) {
+    const { data: ownerSettings } = await supabase
+      .from("agent_settings")
+      .select("agent_email")
+      .eq("user_id", trip.owner_id)
+      .maybeSingle();
+
+    const ownerEmail = normalizeEmail(ownerSettings?.agent_email);
+    if (ownerEmail) return ownerEmail;
+  }
+
+  const { data: fallbackSettings } = await supabase
+    .from("agent_settings")
+    .select("agent_email")
+    .neq("agent_email", "")
+    .limit(1)
+    .maybeSingle();
+
+  return normalizeEmail(fallbackSettings?.agent_email);
 }
 
 Deno.serve(async (req) => {
@@ -121,43 +180,21 @@ Deno.serve(async (req) => {
     if (type === "question" || type === "revision") {
       const resendApiKey = Deno.env.get("RESEND_SECRET_API");
       let emailSent = false;
-      let agentEmail: string | null = null;
       const trip = await resolveTripContext(supabase, payload);
       const pubData = (trip?.published_data as Record<string, any> | null) || null;
-      const tripOwnerId = trip?.owner_id || null;
       const resolvedTripName = payload.tripName || pubData?.tripName || pubData?.destination || "a trip";
-
-      // Find agent email from resolved trip context
-      agentEmail = pubData?.agent?.email || null;
-
-      // Fallback: check agent_settings for the trip owner first, then any
-      if (!agentEmail && tripOwnerId) {
-        const { data: agentSettings } = await supabase
-          .from("agent_settings")
-          .select("agent_email")
-          .eq("user_id", tripOwnerId)
-          .maybeSingle();
-        agentEmail = agentSettings?.agent_email || null;
-      }
-      if (!agentEmail) {
-        const { data: agentSettings } = await supabase
-          .from("agent_settings")
-          .select("agent_email")
-          .neq("agent_email", "")
-          .limit(1)
-          .maybeSingle();
-        agentEmail = agentSettings?.agent_email || null;
-      }
+      const agentEmail = await resolveAgentEmail(supabase, trip);
 
       if (resendApiKey && agentEmail) {
         const businessName = settings?.app_name || "Travel Advisor";
         const logoUrl = settings?.logo_url || "";
         const primaryColor = settings?.primary_color || "#0c7d69";
 
-        const travelerName = payload.name || "A traveler";
-        const travelerEmail = payload.email || "Not provided";
+        const travelerName = typeof payload.name === "string" && payload.name.trim().length > 0 ? payload.name.trim() : "A traveler";
+        const replyToEmail = normalizeEmail(payload.email);
+        const travelerEmail = replyToEmail || "Not provided";
         const tripName = resolvedTripName;
-        const message = payload.message || "";
+        const message = typeof payload.message === "string" ? payload.message.trim() : "";
 
         const isRevision = type === "revision";
         const heading = isRevision ? "Revision Request" : "New Question from Traveler";
@@ -175,7 +212,7 @@ Deno.serve(async (req) => {
         ];
 
         const messageHtml = message
-          ? `<p style="font-size:12px;text-transform:uppercase;color:#9ca3af;margin:0 0 8px;letter-spacing:0.5px;">${isRevision ? "Revision Notes" : "Message"}</p><p style="font-size:14px;color:#374151;margin:0;line-height:1.6;white-space:pre-wrap;">${message.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</p>`
+          ? `<p style="font-size:12px;text-transform:uppercase;color:#9ca3af;margin:0 0 8px;letter-spacing:0.5px;">${isRevision ? "Revision Notes" : "Message"}</p><p style="font-size:14px;color:#374151;margin:0;line-height:1.6;white-space:pre-wrap;">${escapeHtml(message)}</p>`
           : "";
 
         const emailHtml = buildBrandedEmailHtml({
@@ -198,14 +235,14 @@ Deno.serve(async (req) => {
             body: JSON.stringify({
               from: `${businessName} <updates@updates.journeyswithjoi.com>`,
               to: [agentEmail],
-              reply_to: travelerEmail !== "Not provided" ? travelerEmail : agentEmail,
+              reply_to: replyToEmail || agentEmail,
               subject: subjectLine,
               html: emailHtml,
             }),
           });
 
-          const resendData = await emailResp.json();
-          console.log(`${type} email response:`, resendData);
+          const resendBody = await emailResp.text();
+          console.log(`${type} email response:`, { status: emailResp.status, body: resendBody });
           emailSent = emailResp.ok;
         } catch (err) {
           console.error(`${type} email failed:`, err);
@@ -214,6 +251,7 @@ Deno.serve(async (req) => {
         console.warn(`${type} email not sent — missing RESEND_SECRET_API or agentEmail`, {
           hasKey: !!resendApiKey,
           agentEmail,
+          lookupCandidates: getTripLookupCandidates(payload),
         });
       }
 
