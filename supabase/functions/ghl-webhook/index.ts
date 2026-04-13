@@ -83,8 +83,42 @@ function getSourceSlug(source: unknown) {
   }
 }
 
+function pickFirstString(...values: unknown[]) {
+  for (const value of values) {
+    if (typeof value === "string" && value.trim().length > 0) {
+      return value.trim();
+    }
+  }
+
+  return "";
+}
+
+function normalizeRequestType(value: string) {
+  const normalized = value.toLowerCase().replace(/[\s_-]+/g, "");
+
+  if (["question", "ask", "askquestion"].includes(normalized)) return "question";
+  if (["revision", "requestrevision", "revisionrequest"].includes(normalized)) return "revision";
+  if (["approve", "approval"].includes(normalized)) return "approve";
+
+  return value.trim().toLowerCase();
+}
+
 function getTripLookupCandidates(payload: Record<string, any>) {
-  return [payload.tripId, payload.trip_id, payload.proposalId, payload.shareId, payload.share, payload.publicSlug, payload.slug, getSourceSlug(payload.source)]
+  return [
+    payload.tripId,
+    payload.trip_id,
+    payload.trip,
+    payload.proposalId,
+    payload.proposal_id,
+    payload.shareId,
+    payload.share_id,
+    payload.share,
+    payload.publicSlug,
+    payload.public_slug,
+    payload.tripSlug,
+    payload.slug,
+    getSourceSlug(payload.source),
+  ]
     .filter((value): value is string => typeof value === "string" && value.trim().length > 0)
     .map((value) => value.trim());
 }
@@ -147,7 +181,11 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { type, payload } = await req.json();
+    const requestBody = await req.json();
+    const type = normalizeRequestType(typeof requestBody?.type === "string" ? requestBody.type : "");
+    const payload = requestBody?.payload && typeof requestBody.payload === "object" && !Array.isArray(requestBody.payload)
+      ? requestBody.payload as Record<string, any>
+      : requestBody as Record<string, any>;
 
     if (!type || !payload) {
       return new Response(JSON.stringify({ error: "Missing type or payload" }), {
@@ -182,7 +220,13 @@ Deno.serve(async (req) => {
       let emailSent = false;
       const trip = await resolveTripContext(supabase, payload);
       const pubData = (trip?.published_data as Record<string, any> | null) || null;
-      const resolvedTripName = payload.tripName || pubData?.tripName || pubData?.destination || "a trip";
+      const resolvedTripName = pickFirstString(
+        payload.tripName,
+        payload.proposalName,
+        payload.title,
+        pubData?.tripName,
+        pubData?.destination,
+      ) || "a trip";
       const agentEmail = await resolveAgentEmail(supabase, trip);
 
       if (resendApiKey && agentEmail) {
@@ -190,11 +234,17 @@ Deno.serve(async (req) => {
         const logoUrl = settings?.logo_url || "";
         const primaryColor = settings?.primary_color || "#0c7d69";
 
-        const travelerName = typeof payload.name === "string" && payload.name.trim().length > 0 ? payload.name.trim() : "A traveler";
-        const replyToEmail = normalizeEmail(payload.email);
+        const travelerName = pickFirstString(payload.name, payload.travelerName, payload.fullName) || "A traveler";
+        const replyToEmail = normalizeEmail(payload.email ?? payload.travelerEmail ?? payload.contactEmail);
         const travelerEmail = replyToEmail || "Not provided";
         const tripName = resolvedTripName;
-        const message = typeof payload.message === "string" ? payload.message.trim() : "";
+        const message = pickFirstString(
+          payload.message,
+          payload.question,
+          payload.revisionNote,
+          payload.note,
+          payload.body,
+        );
 
         const isRevision = type === "revision";
         const heading = isRevision ? "Revision Request" : "New Question from Traveler";
