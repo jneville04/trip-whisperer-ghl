@@ -83,8 +83,10 @@ function normalizeSelectionSectionKey(value: unknown) {
 
   const normalized = raw.toLowerCase().replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
   const aliases: Record<string, string> = {
-    flight: "flights",
-    flights: "flights",
+    flight: "flightOptions",
+    flights: "flightOptions",
+    "flight option": "flightOptions",
+    "flight options": "flightOptions",
     accommodation: "accommodations",
     accommodations: "accommodations",
     hotel: "accommodations",
@@ -102,6 +104,11 @@ function normalizeSelectionSectionKey(value: unknown) {
 }
 
 function formatSelectionSectionLabel(sectionKey: string, fallback?: string) {
+  if (sectionKey === "flightOptions") return "Flight";
+  if (sectionKey === "accommodations") return "Accommodation";
+  if (sectionKey === "cruiseShips") return "Cruise";
+  if (sectionKey === "busTrips") return "Bus Trip";
+
   if (fallback && !/^[a-z]+[A-Z]/.test(fallback) && fallback.trim().length > 0) {
     return fallback.trim();
   }
@@ -110,7 +117,7 @@ function formatSelectionSectionLabel(sectionKey: string, fallback?: string) {
 }
 
 function resolveSelectionDisplayName(item: Record<string, any>, sectionKey: string) {
-  if (sectionKey === "flights") {
+  if (sectionKey === "flightOptions") {
     return item.legs?.[0]?.airline || item.legs?.map((l: any) => `${l.departureCode}→${l.arrivalCode}`).join(", ") || "Flight";
   }
 
@@ -289,7 +296,7 @@ Deno.serve(async (req) => {
           // If displayName still looks like a UUID, try harder
           const fallbackUuid = /^[0-9a-f]{8}-/i.test(selId) ? selId : /^[0-9a-f]{8}-/i.test(displayName) ? displayName : "";
           if (fallbackUuid && publishedData) {
-            for (const key of ["flights", "accommodations", "cruiseShips", "busTrips"]) {
+            for (const key of ["flightOptions", "accommodations", "cruiseShips", "busTrips"]) {
               const arr = publishedData[key];
               if (Array.isArray(arr)) {
                 const item = arr.find((i: any) => i.id === fallbackUuid);

@@ -4148,7 +4148,7 @@ export default function ProposalPreview({ data, shareId, tripId, tripStatus, isE
                             if (s.key === "cruiseShips")
                               name = cruiseShips.find((c) => c.id === effId)?.shipName || "Cruise";
                             if (s.key === "busTrips") name = busTrips.find((b) => b.id === effId)?.routeName || "Bus";
-                            return { section: s.label, selectedName: name };
+                            return { section: s.label, sectionKey: s.key, selectedId: effId, selectedName: name };
                           })
                           .filter(Boolean);
 
