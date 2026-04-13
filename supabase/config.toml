@@ -16,5 +16,5 @@ project_id = "faxbjbbwniypaffevbuo"
   [functions.process-email-queue]
     verify_jwt = true
 
-[functions.tripadvisor-search]
-verify_jwt = false
+  [functions.tripadvisor-search]
+    verify_jwt = false
