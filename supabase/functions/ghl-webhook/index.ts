@@ -96,11 +96,19 @@ function pickFirstString(...values: unknown[]) {
 function normalizeRequestType(value: string) {
   const normalized = value.toLowerCase().replace(/[\s_-]+/g, "");
 
-  if (["question", "ask", "askquestion"].includes(normalized)) return "question";
-  if (["revision", "requestrevision", "revisionrequest"].includes(normalized)) return "revision";
-  if (["approve", "approval"].includes(normalized)) return "approve";
+  if (["question", "ask", "askquestion", "askaquestion", "contactus", "contact", "inquiry", "enquiry"].includes(normalized)) return "question";
+  if (["revision", "requestrevision", "revisionrequest", "revisions", "requestrevisions", "change", "changerequest"].includes(normalized)) return "revision";
+  if (["approve", "approval", "approved", "accept"].includes(normalized)) return "approve";
 
   return value.trim().toLowerCase();
+}
+
+function inferTypeFromPayload(body: Record<string, any>): string {
+  // If there's a question/message field but no revision-specific fields, it's likely a question
+  if (body.question || body.inquiry) return "question";
+  if (body.revisionNote || body.revision_note || body.revisions) return "revision";
+  if (body.approved === true || body.approval === true) return "approve";
+  return "";
 }
 
 function getTripLookupCandidates(payload: Record<string, any>) {
@@ -181,18 +189,28 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const requestBody = await req.json();
-    const type = normalizeRequestType(typeof requestBody?.type === "string" ? requestBody.type : "");
+    console.log("RAW GHL PAYLOAD:", JSON.stringify(requestBody).slice(0, 2000));
+
+    let type = normalizeRequestType(typeof requestBody?.type === "string" ? requestBody.type : "");
     const payload = requestBody?.payload && typeof requestBody.payload === "object" && !Array.isArray(requestBody.payload)
       ? requestBody.payload as Record<string, any>
       : requestBody as Record<string, any>;
 
+    // If type couldn't be determined from the 'type' field, try to infer from payload shape
+    if (!type) {
+      type = inferTypeFromPayload(payload);
+      if (type) console.log("Inferred type from payload shape:", type);
+    }
+
     if (!type || !payload) {
-      return new Response(JSON.stringify({ error: "Missing type or payload" }), {
+      console.error("Could not determine request type. Keys received:", Object.keys(requestBody));
+      return new Response(JSON.stringify({ error: "Missing type or payload", receivedKeys: Object.keys(requestBody) }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    console.log("Resolved type:", type, "| Payload keys:", Object.keys(payload));
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
