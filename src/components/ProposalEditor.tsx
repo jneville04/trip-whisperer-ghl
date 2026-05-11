@@ -1883,21 +1883,20 @@ export default function ProposalEditor({ data, onChange, onContactChange }: Prop
                           )}
                           {data.days.map((day, dayIdx) => (
                             <CollapsibleHotel sectionKey="itinerary" itemIndex={dayIdx}
-                              key={day.id}
+                              key={day.id || `day-${dayIdx}`}
                               hotelName={`Day ${dayIdx + 1}${day.title ? `: ${day.title}` : ""}`}
                               location={day.location}
                               isOpen={itineraryDisplayMode === "all_open" ? true : openDayIdx === dayIdx}
                               onToggle={() => {
                                 if (itineraryDisplayMode === "all_open") return;
-                                if (itineraryDisplayMode === "single_open") {
-                                  if (openDayIdx !== dayIdx) setOpenDayIdx(dayIdx);
-                                  return;
-                                }
+                                // Both single_open and collapsed modes: toggle current day open/closed
                                 setOpenDayIdx(openDayIdx === dayIdx ? -1 : dayIdx);
                               }}
                               onDelete={() => {
                                 removeDay(dayIdx);
+                                // Adjust openDayIdx for the array shift after removal
                                 if (openDayIdx === dayIdx) setOpenDayIdx(-1);
+                                else if (openDayIdx > dayIdx) setOpenDayIdx(openDayIdx - 1);
                               }}
                               hidden={day.hidden}
                               onHide={() => {
@@ -1908,7 +1907,11 @@ export default function ProposalEditor({ data, onChange, onContactChange }: Prop
                               onCopy={() => {
                                 const clone = { ...day, id: crypto.randomUUID(), hidden: false };
                                 update("days", [...data.days.slice(0, dayIdx + 1), clone, ...data.days.slice(dayIdx + 1)]);
-                                if (itineraryDisplayMode !== "all_open") setOpenDayIdx(dayIdx + 1);
+                                // Shift openDayIdx if the open day is after the insertion point
+                                if (itineraryDisplayMode !== "all_open") {
+                                  if (openDayIdx > dayIdx) setOpenDayIdx(openDayIdx + 1);
+                                  else setOpenDayIdx(dayIdx + 1);
+                                }
                               }}
                             >
                               <div className="p-4 space-y-3">
