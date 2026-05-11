@@ -1889,15 +1889,14 @@ export default function ProposalEditor({ data, onChange, onContactChange }: Prop
                               isOpen={itineraryDisplayMode === "all_open" ? true : openDayIdx === dayIdx}
                               onToggle={() => {
                                 if (itineraryDisplayMode === "all_open") return;
-                                if (itineraryDisplayMode === "single_open") {
-                                  if (openDayIdx !== dayIdx) setOpenDayIdx(dayIdx);
-                                  return;
-                                }
+                                // Both single_open and collapsed modes: toggle current day open/closed
                                 setOpenDayIdx(openDayIdx === dayIdx ? -1 : dayIdx);
                               }}
                               onDelete={() => {
                                 removeDay(dayIdx);
+                                // Adjust openDayIdx for the array shift after removal
                                 if (openDayIdx === dayIdx) setOpenDayIdx(-1);
+                                else if (openDayIdx > dayIdx) setOpenDayIdx(openDayIdx - 1);
                               }}
                               hidden={day.hidden}
                               onHide={() => {
