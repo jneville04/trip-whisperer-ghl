@@ -1883,7 +1883,7 @@ export default function ProposalEditor({ data, onChange, onContactChange }: Prop
                           )}
                           {data.days.map((day, dayIdx) => (
                             <CollapsibleHotel sectionKey="itinerary" itemIndex={dayIdx}
-                              key={day.id}
+                              key={day.id || `day-${dayIdx}`}
                               hotelName={`Day ${dayIdx + 1}${day.title ? `: ${day.title}` : ""}`}
                               location={day.location}
                               isOpen={itineraryDisplayMode === "all_open" ? true : openDayIdx === dayIdx}
