@@ -1907,7 +1907,11 @@ export default function ProposalEditor({ data, onChange, onContactChange }: Prop
                               onCopy={() => {
                                 const clone = { ...day, id: crypto.randomUUID(), hidden: false };
                                 update("days", [...data.days.slice(0, dayIdx + 1), clone, ...data.days.slice(dayIdx + 1)]);
-                                if (itineraryDisplayMode !== "all_open") setOpenDayIdx(dayIdx + 1);
+                                // Shift openDayIdx if the open day is after the insertion point
+                                if (itineraryDisplayMode !== "all_open") {
+                                  if (openDayIdx > dayIdx) setOpenDayIdx(openDayIdx + 1);
+                                  else setOpenDayIdx(dayIdx + 1);
+                                }
                               }}
                             >
                               <div className="p-4 space-y-3">
