@@ -5,6 +5,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Copy, Trash2, ExternalLink, MapPin, Calendar, Eye, Clock, MoreVertical, Pencil, RotateCcw, ArchiveRestore, Users } from "lucide-react";
 import { type TripSummaryRow } from "@/types/proposal";
 import { format } from "date-fns";
+import { thumbUrl } from "@/lib/imageThumb";
 
 /** Captures a frame from a direct video URL or fetches Vimeo thumbnail */
 function VideoFrameThumb({ videoUrl, vimeoId, alt }: { videoUrl: string; vimeoId?: string; alt: string }) {
@@ -124,12 +125,12 @@ export default function TripCard({ trip, onOpen, onDuplicate, onDelete, onCopyLi
               || (vimeoMatch ? `vimeo:${vimeoMatch[1]}` : null);
 
             if (autoThumb && !autoThumb.startsWith("vimeo:")) {
-              return <img src={autoThumb} alt={destination || "Trip"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />;
+              return <img src={autoThumb} alt={destination || "Trip"} loading="lazy" decoding="async" width={480} height={320} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />;
             }
             return <VideoFrameThumb videoUrl={videoUrl} vimeoId={vimeoMatch ? vimeoMatch[1] : undefined} alt={destination || "Trip"} />;
           }
           if (heroImg) {
-            return <img src={heroImg} alt={destination || "Trip"} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />;
+            return <img src={thumbUrl(heroImg, 480)} alt={destination || "Trip"} loading="lazy" decoding="async" width={480} height={320} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />;
           }
           return (
             <div className="w-full h-full bg-muted flex items-center justify-center">
